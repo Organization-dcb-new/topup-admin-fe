@@ -5,12 +5,12 @@ import { Label } from '@/components/ui/label'
 import { useLogin, useLoginForm } from '@/hooks/useLogin'
 import { isAuthenticated } from '@/lib/auth'
 import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 export default function LoginPage() {
   const form = useLoginForm()
-  const { mutate: login, isPending } = useLogin()
+  const { mutate: loginMutate, isPending } = useLogin()
 
-  
   useEffect(() => {
     if (isAuthenticated()) {
       window.location.href = '/'
@@ -18,14 +18,13 @@ export default function LoginPage() {
   }, [])
 
   const onSubmit = (values: { email_or_username: string; password: string }) => {
-    login(values, {
+    loginMutate(values, {
       onSuccess: () => {
+        toast.success('Login berhasil')
         window.location.href = '/'
       },
-      onError: (err) => {
-        form.setError('email_or_username', {
-          message: err.message,
-        })
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message || 'Login gagal')
       },
     })
   }
@@ -63,7 +62,7 @@ export default function LoginPage() {
               )}
             </div>
 
-            <Button type="submit" className="w-full rounded-xl" disabled={isPending}>
+            <Button type="submit" className="w-full rounded-xl cursor-pointer" disabled={isPending}>
               {isPending ? 'Logging in...' : 'Masuk'}
             </Button>
           </form>

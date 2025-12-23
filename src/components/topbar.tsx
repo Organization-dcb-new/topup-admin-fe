@@ -3,35 +3,87 @@ import { Button } from '@/components/ui/button'
 import { authStorage } from '@/lib/auth'
 import { pageTitleMap } from '@/lib/title-map'
 import { useLocation } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from './ui/dialog'
 
 interface TopbarProps {
   onOpenMobile: () => void
 }
 
-export function logout() {
-  authStorage.clearToken()
-  window.location.href = '/login'
+export async function logout(): Promise<void> {
+  try {
+    authStorage.clearToken()
+    toast.success('Berhasil logout')
+    window.location.href = '/login'
+  } catch (error) {
+    console.error(error)
+    toast.error('Gagal logout, coba lagi!')
+  }
 }
 
 export function Topbar({ onOpenMobile }: TopbarProps) {
   const { pathname } = useLocation()
-
   const title = pageTitleMap[pathname] ?? 'Dashboard'
-  return (
-    <header className="h-16 border-b bg-white flex items-center justify-between px-4 md:px-6">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={onOpenMobile}>
-          <Menu className="h-5 w-5" />
-        </Button>
+  const [openLogoutModal, setOpenLogoutModal] = useState(false)
 
-        <h1 className="text-lg font-semibold">{title}</h1>
-      </div>
-      <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" className="gap-2 cursor-pointer" onClick={logout}>
-          <LogOut className="w-4 h-4" />
-          Logout
-        </Button>
-      </div>
-    </header>
+  return (
+    <>
+      <header className="h-16 border-b bg-white flex items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={onOpenMobile}>
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          <h1 className="text-lg font-semibold">{title}</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 cursor-pointer"
+            onClick={() => setOpenLogoutModal(true)}
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
+        </div>
+      </header>
+      {/* Modal Konfirmasi Logout */}
+      <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Konfirmasi Logout</DialogTitle>
+            <DialogDescription>Apakah Anda yakin ingin logout?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              onClick={() => setOpenLogoutModal(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              className="cursor-pointer"
+              variant="destructive"
+              onClick={async () => {
+                await logout()
+                setOpenLogoutModal(false)
+              }}
+            >
+              Logout
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

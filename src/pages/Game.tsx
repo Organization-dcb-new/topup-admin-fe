@@ -1,16 +1,29 @@
 import { DashboardLayout } from '@/components/dashboard-layout'
+import ErrorComponent from '@/components/error'
+import TableSkeleton from '@/components/loading'
 import { DataTable } from '@/components/table-data'
-import { useGames } from '@/hooks/useGame'
+import { useGetGames } from '@/hooks/useGame'
 import { gameColumns } from '@/tables/table-game'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 export default function GamePage() {
-  const { data, isLoading } = useGames()
+  const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetGames()
 
-  if (isLoading) return <div>Loading...</div>
+  useEffect(() => {
+    if (isSuccess && isFetchedAfterMount) {
+      toast.success(`Berhasil memuat Game`)
+    }
+    if (isError && isFetchedAfterMount) {
+      toast.error('Gagal memuat Game')
+    }
+  }, [isSuccess, isError])
 
   return (
     <DashboardLayout>
-      <DataTable columns={gameColumns} data={data?.data ?? []} />
+      {isLoading && <TableSkeleton />}
+      {isError && <ErrorComponent message="Failed to load categories" />}
+      {isSuccess && <DataTable columns={gameColumns} data={data?.data ?? []} />}
     </DashboardLayout>
   )
 }

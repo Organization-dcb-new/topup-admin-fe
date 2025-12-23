@@ -1,17 +1,29 @@
 import { DashboardLayout } from '@/components/dashboard-layout'
+import ErrorComponent from '@/components/error'
+import TableSkeleton from '@/components/loading'
 import { DataTable } from '@/components/table-data'
-import { useCategories } from '@/hooks/useCategory'
+import { useGetCategories } from '@/hooks/useCategory'
 import { categoryColumns } from '@/tables/table-category'
+import { useEffect } from 'react'
+import toast from 'react-hot-toast'
 
 export default function CategoryPage() {
-  const { data, isLoading, isError } = useCategories()
+  const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetCategories()
 
-  if (isLoading) return <div>Loading...</div>
-  if (isError) return <div>Failed to load categories</div>
+  useEffect(() => {
+    if (isSuccess && isFetchedAfterMount) {
+      toast.success(`Berhasil memuat kategori`)
+    }
+    if (isError && isFetchedAfterMount) {
+      toast.error('Gagal memuat kategori')
+    }
+  }, [isSuccess, isError])
 
   return (
     <DashboardLayout>
-      <DataTable columns={categoryColumns} data={data?.data ?? []} />
+      {isLoading && <TableSkeleton />}
+      {isError && <ErrorComponent message="Failed to load categories" />}
+      {isSuccess && <DataTable columns={categoryColumns} data={data?.data ?? []} />}
     </DashboardLayout>
   )
 }

@@ -2,14 +2,12 @@ import { api } from '@/api/axios'
 import type { GamesResponse } from '@/types/game'
 import { useQuery } from '@tanstack/react-query'
 
-export const getGames = async (): Promise<GamesResponse> => {
-  const res = await api.get<GamesResponse>('/games')
-  return res.data
-}
-
-export const useGames = () => {
-  return useQuery({
+// Use Get Games
+export const useGetGames = () =>
+  useQuery<GamesResponse>({
     queryKey: ['games'],
-    queryFn: getGames,
+    queryFn: async () => {
+      const res = await api.get('/games')
+      return res.data
+    },
   })
-}

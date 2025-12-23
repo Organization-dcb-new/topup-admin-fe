@@ -8,14 +8,6 @@ import type { LoginRequest, LoginResponse } from '@/types/login'
 import { api } from '@/api/axios'
 import { authStorage } from '@/lib/auth'
 
-export async function login(payload: LoginRequest): Promise<LoginResponse> {
-  const { data } = await api.post<LoginResponse>('/admin/login', payload)
-
-  authStorage.setToken(data.token)
-
-  return data
-}
-
 export function useLoginForm() {
   return useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -24,6 +16,14 @@ export function useLoginForm() {
       password: '',
     },
   })
+}
+
+export async function login(payload: LoginRequest): Promise<LoginResponse> {
+  const { data } = await api.post<LoginResponse>('/admin/login', payload)
+
+  authStorage.setToken(data.token)
+
+  return data
 }
 
 export function useLogin() {
