@@ -1,8 +1,14 @@
 import { LogOut, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { authStorage } from '@/lib/auth'
 
 interface TopbarProps {
   onOpenMobile: () => void
+}
+
+export function logout() {
+  authStorage.clearToken()
+  window.location.href = '/login'
 }
 
 export function Topbar({ onOpenMobile }: TopbarProps) {
@@ -16,7 +22,7 @@ export function Topbar({ onOpenMobile }: TopbarProps) {
         <h1 className="text-lg font-semibold">Dashboard</h1>
       </div>
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="sm" className="gap-2">
+        <Button variant="outline" size="sm" className="gap-2 cursor-pointer" onClick={logout}>
           <LogOut className="w-4 h-4" />
           Logout
         </Button>

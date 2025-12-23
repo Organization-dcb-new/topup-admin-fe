@@ -1,10 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Sidebar } from './sidebar'
 import { Topbar } from './topbar'
+import { useAuth } from '@/lib/auth'
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const { isAuthenticated } = useAuth()
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      window.location.href = '/login'
+    }
+  }, [isAuthenticated])
+
+  if (!isAuthenticated) return null
 
   return (
     <div className="flex">
