@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-500/20 ">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-300/20 ">
       <Card className="w-95 rounded-2xl shadow-xl">
         <CardHeader className="text-center space-y-1">
           <CardTitle className="text-2xl font-bold">Dashboard Redigame</CardTitle>
