@@ -32,7 +32,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
         >
           {!collapsed && (
             <span className="font-bold text-lg">
-              Redi<span className="text-primary">Game</span>
+              Pakar<span className="text-primary">Gaming</span>
             </span>
           )}
 
@@ -41,7 +41,10 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
             variant="ghost"
             size="icon"
             onClick={onToggleCollapse}
-            className={cn('hidden md:flex cursor-pointer', collapsed && 'absolute left-1/2 -translate-x-1/2')}
+            className={cn(
+              'hidden md:flex cursor-pointer',
+              collapsed && 'absolute left-1/2 -translate-x-1/2'
+            )}
           >
             <ChevronLeft
               className={cn('h-4 w-4 transition-transform', collapsed && 'rotate-180')}

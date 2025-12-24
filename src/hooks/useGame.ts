@@ -2,12 +2,19 @@ import { api } from '@/api/axios'
 import type { GamesResponse } from '@/types/game'
 import { useQuery } from '@tanstack/react-query'
 
-// Use Get Games
-export const useGetGames = () =>
-  useQuery<GamesResponse>({
-    queryKey: ['games'],
+export function useGetGames(search: string, page: number, limit: number) {
+  return useQuery<GamesResponse>({
+    queryKey: ['games', search, page, limit],
     queryFn: async () => {
-      const res = await api.get('/games')
-      return res.data
+      const { data } = await api.get('/games/pagination', {
+        params: {
+          search,
+          page,
+          limit,
+        },
+      })
+      return data
     },
+    staleTime: 5000,
   })
+}

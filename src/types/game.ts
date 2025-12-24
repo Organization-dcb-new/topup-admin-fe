@@ -1,4 +1,4 @@
-import type { Category } from "./category"
+import type { Category } from './category'
 
 export interface Game {
   id: string
@@ -26,5 +26,15 @@ export interface Game {
 export interface GamesResponse {
   status: string
   message: string
+  meta: PaginationMeta
   data: Game[]
+}
+
+export interface PaginationMeta {
+  page: number
+  limit: number
+  total_data: number
+  total_page: number
+  has_next: boolean
+  has_prev: boolean
 }
