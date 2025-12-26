@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DashboardLayout } from '@/components/dashboard-layout'
+// import BackgroundMusic from '@/components/BackgroundMusic'
 
 export default function DashboardPage() {
   return (

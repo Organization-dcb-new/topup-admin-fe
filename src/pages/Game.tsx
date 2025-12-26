@@ -2,7 +2,7 @@ import { DashboardLayout } from '@/components/dashboard-layout'
 import ErrorComponent from '@/components/error'
 import GameSearchInput from '@/components/Games/GameInput'
 import GameImageModal from '@/components/Games/GameModal'
-import Pagination from '@/components/Games/Pagination'
+import Pagination from '@/components/Pagination'
 import TableSkeleton from '@/components/loading'
 import { DataTable } from '@/components/table-data'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -19,6 +19,9 @@ export default function GamePage() {
   const debouncedSearch = useDebounce(search, 500)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
 
+  const [noImageOnly, setNoImageOnly] = useState(false)
+  const imageFilter = noImageOnly ? 'no_image' : 'all'
+
   const openModal = (game: Game) => {
     setSelectedGame(game)
   }
@@ -34,7 +37,8 @@ export default function GamePage() {
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount, refetch } = useGetGames(
     debouncedSearch,
     page,
-    limit
+    limit,
+    imageFilter
   )
 
   useEffect(() => {
@@ -49,9 +53,13 @@ export default function GamePage() {
   return (
     <DashboardLayout>
       <div className="mb-4 flex justify-between">
-        <GameSearchInput value={search} onChange={setSearch} />
+        <GameSearchInput
+          value={search}
+          onChange={setSearch}
+          noImageOnly={noImageOnly}
+          onToggleNoImage={setNoImageOnly}
+        />
       </div>
-
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load categories" />}
       {isSuccess && (

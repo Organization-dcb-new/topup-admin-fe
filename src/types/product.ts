@@ -1,3 +1,5 @@
+import type { PaginationMeta } from './game'
+
 export interface ProductMetaData {
   min: number
   max: number
@@ -26,4 +28,5 @@ export interface ProductResponse {
   data: Product[]
   message: string
   status: string
+  meta: PaginationMeta
 }

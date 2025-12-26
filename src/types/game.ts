@@ -19,8 +19,25 @@ export interface Game {
   created_at: string
   updated_at: string
   category: Category
-  input: unknown | null
+  input: GameInput | null
   product: unknown | null
+}
+
+export type GameInput = {
+  id: string
+  game_id: string
+  key: string
+  label: string
+  input_type: 'text' | 'number' | 'email' | 'password' | 'select'
+  required: boolean
+  sort_order: number
+  placeholder: string
+}
+
+export interface GameByIDResponse {
+  status: string
+  message: string
+  data: Game[]
 }
 
 export interface GamesResponse {

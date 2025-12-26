@@ -22,6 +22,7 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [saving, setSaving] = useState(false)
 
   // reset modal
   useEffect(() => {
@@ -57,7 +58,8 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (e) => {
           if (!e.total) return
-          setProgress(Math.round((e.loaded * 100) / e.total))
+          const percent = Math.min(Math.round((e.loaded * 100) / e.total), 100)
+          setProgress(percent)
         },
       })
 
@@ -71,7 +73,9 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
       toast.error('Upload failed')
       setPreview(game?.thumbnail_url || DEFAULT_GAME_IMAGE)
     } finally {
-      setLoading(false)
+      setProgress(100)
+
+      setTimeout(() => setLoading(false), 200)
     }
   }
 
@@ -89,6 +93,7 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
     if (!uploadedUrl || !game) return
 
     try {
+      setSaving(true)
       await api.patch('/games/image', {
         game_id: game.id,
         thumbnail_url: uploadedUrl,
@@ -99,6 +104,8 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
       onClose()
     } catch {
       toast.error('Failed to save image')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -161,8 +168,12 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
           />
 
           {/* Save */}
-          <Button onClick={handleSave} disabled={!uploadedUrl || loading} className="w-full cursor-pointer">
-            Save Image
+          <Button
+            onClick={handleSave}
+            disabled={!uploadedUrl || loading || saving}
+            className="w-full cursor-pointer"
+          >
+            {saving ? 'Saving...' : 'Save Image'}
           </Button>
         </div>
       </DialogContent>
