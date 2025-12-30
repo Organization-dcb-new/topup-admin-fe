@@ -1,6 +1,6 @@
 import { api } from '@/api/axios'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 export function useGetGames(
   search: string,
@@ -34,5 +34,16 @@ export function useGetGameById(gameId: string) {
     },
     enabled: !!gameId,
     staleTime: 5000,
+  })
+}
+
+export const useCreateGame = () => {
+  return useMutation({
+    mutationFn: async (payload: FormData) => {
+      const res = await api.post('/games', payload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      return res.data
+    },
   })
 }

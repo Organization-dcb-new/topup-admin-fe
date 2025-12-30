@@ -208,6 +208,15 @@ export function CreateCategoryModal() {
 
             {/* Save */}
             <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => {
+                  setOpen(false)
+                }}
+              >
+                Cancel
+              </Button>
               <Button type="submit" disabled={isUploading || mutation.isPending}>
                 {mutation.isPending ? 'Saving...' : 'Create'}
               </Button>

@@ -11,10 +11,14 @@ import { gameColumns } from '@/tables/table-game'
 import type { Game } from '@/types/game'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { AddGameModal } from '@/components/Games/AddModal'
+import { Button } from '@/components/ui/button'
 
 export default function GamePage() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [addOpen, setAddOpen] = useState(false)
+
   const limit = 20
   const debouncedSearch = useDebounce(search, 500)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
@@ -59,6 +63,7 @@ export default function GamePage() {
           noImageOnly={noImageOnly}
           onToggleNoImage={setNoImageOnly}
         />
+        <Button onClick={() => setAddOpen(true)}>+ Add Game</Button>
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Games" />}
@@ -69,6 +74,7 @@ export default function GamePage() {
         </>
       )}
       <GameImageModal game={selectedGame} onClose={closeModal} onSuccess={() => refetch()} />
+      <AddGameModal open={addOpen} onClose={() => setAddOpen(false)} onSuccess={() => refetch()} />
     </DashboardLayout>
   )
 }
