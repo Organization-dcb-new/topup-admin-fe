@@ -1,3 +1,4 @@
+import { CreateCategoryModal } from '@/components/Category/ModalAddCategory'
 import { DashboardLayout } from '@/components/dashboard-layout'
 import ErrorComponent from '@/components/error'
 import TableSkeleton from '@/components/loading'
@@ -21,6 +22,9 @@ export default function CategoryPage() {
 
   return (
     <DashboardLayout>
+      <div className="flex justify-end mb-4">
+        <CreateCategoryModal />
+      </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load categories" />}
       {isSuccess && <DataTable columns={categoryColumns} data={data?.data ?? []} />}

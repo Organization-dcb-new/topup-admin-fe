@@ -1,6 +1,6 @@
 // sidebar-menu.ts
 import { Home, CreditCard, Boxes, Gamepad2, Wallet } from 'lucide-react'
-import { MdOutlineCategory } from 'react-icons/md'
+import { MdOutlineCategory, MdCorporateFare } from 'react-icons/md'
 
 export type SidebarMenu = {
   label: string
@@ -50,6 +50,11 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Payment Method',
         icon: CreditCard,
         path: '/payment-methods',
+      },
+      {
+        label: 'Provider',
+        icon: MdCorporateFare,
+        path: '/provider',
       },
     ],
   },

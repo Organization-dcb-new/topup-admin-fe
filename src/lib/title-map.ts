@@ -5,4 +5,5 @@ export const pageTitleMap: Record<string, string> = {
   '/games': 'Games',
   '/categories': 'Categories',
   '/products': 'Products',
+  '/provider': 'Provider',
 }

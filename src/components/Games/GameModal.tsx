@@ -54,7 +54,7 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await api.post('/upload/single', formData, {
+      const res = await api.post('/upload/new', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (e) => {
           if (!e.total) return
@@ -82,7 +82,6 @@ export default function GameImageModal({ game, onClose, onSuccess }: Props) {
   const handleFile = (file: File) => {
     if (!validateFile(file)) return
 
-    // preview lokal cepat
     const localUrl = URL.createObjectURL(file)
     setPreview(localUrl)
 

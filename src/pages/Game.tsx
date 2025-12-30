@@ -61,7 +61,7 @@ export default function GamePage() {
         />
       </div>
       {isLoading && <TableSkeleton />}
-      {isError && <ErrorComponent message="Failed to load categories" />}
+      {isError && <ErrorComponent message="Failed to load Games" />}
       {isSuccess && (
         <>
           <DataTable columns={gameColumns(openModal)} data={data?.data ?? []} />

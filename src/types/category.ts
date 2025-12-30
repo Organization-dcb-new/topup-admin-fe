@@ -4,8 +4,6 @@ export interface Category {
   slug: string
   icon_url: string
   description: string
-  sort_order: number
-  is_active: boolean
   created_at: string
   updated_at: string
 }
