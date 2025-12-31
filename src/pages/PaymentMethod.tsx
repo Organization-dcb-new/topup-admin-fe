@@ -1,15 +1,21 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import TableSkeleton from '@/components/Layout/loading'
+import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import ModalAddPaymentMethod from '@/components/PaymentMethod/ModalAddPaymentMethod'
 import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
 import { paymentMethodColumns } from '@/tables/table-payment-method'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function PaymentMethodPage() {
-  const { data, isLoading, isError, isFetchedAfterMount, isSuccess } = useGetPaymentMethods()
+  const limit = 5
+  const [page, setPage] = useState(1)
+  const { data, isLoading, isError, isFetchedAfterMount, isSuccess } = useGetPaymentMethods(
+    page,
+    limit
+  )
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
@@ -27,7 +33,12 @@ export default function PaymentMethodPage() {
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Payment Method" />}
-      {isSuccess && <DataTable columns={paymentMethodColumns} data={data?.data ?? []} />}
+      {isSuccess &&  (
+        <>
+         <DataTable columns={paymentMethodColumns} data={data?.data ?? []} />
+         <Pagination page={page} totalPage={data?.meta?.total_page} onChange={setPage} />
+        </>
+      )}
     </DashboardLayout>
   )
 }

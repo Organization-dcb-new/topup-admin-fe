@@ -1,4 +1,5 @@
 import { api } from '@/api/axios'
+import type { FormValuesPaymentMethod } from '@/components/PaymentMethod/ModalEditPaymentMethod'
 import type { PaymentMethodResponse } from '@/types/payment-method'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -17,11 +18,16 @@ export type PaymentMethodPayload = {
   config: string
 }
 
-export const useGetPaymentMethods = () => {
+export const useGetPaymentMethods = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ['payment-methods'],
+    queryKey: ['payment-methods', page, limit],
     queryFn: async (): Promise<PaymentMethodResponse> => {
-      const res = await api.get('/payment-methods')
+      const res = await api.get('/payment-methods', {
+        params: {
+          page,
+          limit,
+        },
+      })
       return res.data
     },
   })
@@ -64,6 +70,29 @@ export function useDeletePaymentMethod(id: string) {
     onError: () => {
       toast.error('Failed to delete Payment Method')
     },
+  })
+
+  return mutation
+}
+
+export function useEditPaymentMethod(paymentMethodId: string, onClose: () => void) {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (values: FormValuesPaymentMethod) => {
+      const payload = {
+        ...values,
+      }
+
+      const res = await api.put(`/payment-methods/${paymentMethodId}`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Payment Method updated')
+      queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
+      onClose()
+    },
+    onError: () => toast.error('Failed to update Payment Method'),
   })
 
   return mutation

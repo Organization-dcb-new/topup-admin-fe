@@ -1,3 +1,5 @@
+import type { PaginationMeta } from "./game"
+
 export interface PaymentMethodConfig {
   note?: string
 }
@@ -25,4 +27,5 @@ export interface PaymentMethodResponse {
   data: PaymentMethod[]
   message: string
   status: string
+  meta: PaginationMeta
 }
