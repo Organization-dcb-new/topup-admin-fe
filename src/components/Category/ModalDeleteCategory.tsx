@@ -35,7 +35,7 @@ export function DeleteCategoryButton({ id }: { id: string }) {
         <Button
           variant="ghost"
           size="icon"
-          className="text-destructive hover:bg-destructive/10"
+          className="text-destructive hover:bg-destructive/10 cursor-pointer"
           disabled={mutation.isPending}
         >
           <Trash2 className="h-4 w-4" />

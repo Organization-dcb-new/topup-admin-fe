@@ -19,19 +19,19 @@ import { UploadCloud } from 'lucide-react'
 import type { Category } from '@/types/category'
 import { updateCategory, uploadFile } from '@/hooks/useCategory'
 
-type Props = {
+type PropsEditModal = {
   open: boolean
   onClose: () => void
   category: Category
 }
 
-type FormValues = {
+type FormValuesEditModal = {
   name: string
   description: string
   icon_url: string
 }
 
-export function EditCategoryModal({ open, onClose, category }: Props) {
+export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
   const queryClient = useQueryClient()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -47,9 +47,8 @@ export function EditCategoryModal({ open, onClose, category }: Props) {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValues>()
+  } = useForm<FormValuesEditModal>()
 
-  /* ---------- init form ---------- */
   useEffect(() => {
     if (!open || !category) return
 
@@ -93,7 +92,7 @@ export function EditCategoryModal({ open, onClose, category }: Props) {
 
   /* ---------- submit ---------- */
   const mutation = useMutation({
-    mutationFn: (values: FormValues) =>
+    mutationFn: (values: FormValuesEditModal) =>
       updateCategory(category.id, {
         ...values,
         slug: slugify(values.name),
@@ -131,7 +130,9 @@ export function EditCategoryModal({ open, onClose, category }: Props) {
               {...register('description', {
                 required: 'Description is required',
               })}
-              className={errors.description ? 'border-destructive' : ''}
+              className={` overflow-auto max-h-40 ${
+                errors.description ? 'border-destructive' : ''
+              }`}
             />
             {errors.description && (
               <p className="text-xs text-destructive">{errors.description.message}</p>
@@ -207,10 +208,14 @@ export function EditCategoryModal({ open, onClose, category }: Props) {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" type="button" onClick={onClose}>
+            <Button variant="outline" type="button" onClick={onClose} className="cursor-pointer">
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending || uploading}>
+            <Button
+              type="submit"
+              disabled={mutation.isPending || uploading}
+              className="cursor-pointer"
+            >
               {mutation.isPending ? 'Saving...' : 'Update'}
             </Button>
           </DialogFooter>

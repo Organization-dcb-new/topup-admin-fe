@@ -1,8 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Category } from '@/types/category'
 import { DeleteCategoryButton } from '@/components/Category/ModalDeleteCategory'
-import { EditCategoryButton } from '@/components/Category/ButtonEdit'
-
+import { EditCategoryButton } from '@/components/Category/components/Button'
 export const categoryColumns: ColumnDef<Category>[] = [
   {
     accessorKey: 'icon_url',

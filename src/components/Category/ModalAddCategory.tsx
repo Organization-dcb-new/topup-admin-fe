@@ -135,9 +135,8 @@ export function CreateCategoryModal() {
             </div>
 
             {/* Description */}
-            <div className="space-y-1">
+            <div className="space-y-1 ">
               <Label>Description</Label>
-
               <Textarea
                 {...register('description', {
                   required: 'Description is required',
@@ -147,9 +146,9 @@ export function CreateCategoryModal() {
                   },
                 })}
                 placeholder="Description"
-                className={
+                className={`overflow-auto max-h-40 ${
                   errors.description ? 'border-destructive focus-visible:ring-destructive' : ''
-                }
+                }`}
                 aria-invalid={!!errors.description}
               />
 
