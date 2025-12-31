@@ -1,7 +1,8 @@
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
-import TableSkeleton from '@/components/loading'
-import { DataTable } from '@/components/table-data'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
+import TableSkeleton from '@/components/Layout/loading'
+import { DataTable } from '@/components/Layout/table-data'
+import ModalAddPaymentMethod from '@/components/PaymentMethod/ModalAddPaymentMethod'
 import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
 import { paymentMethodColumns } from '@/tables/table-payment-method'
 import { useEffect } from 'react'
@@ -12,15 +13,18 @@ export default function PaymentMethodPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Berhasil memuat Payment Method`)
+      toast.success(`Success Load Payment Method`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat Payment Method')
+      toast.error('Failed Load Payment Method')
     }
   }, [isSuccess, isError])
 
   return (
     <DashboardLayout>
+      <div className="flex mb-5 justify-end">
+        <ModalAddPaymentMethod />
+      </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Payment Method" />}
       {isSuccess && <DataTable columns={paymentMethodColumns} data={data?.data ?? []} />}

@@ -14,9 +14,9 @@ import { useState } from 'react'
 import { useCreateGame } from '@/hooks/useGame'
 import toast from 'react-hot-toast'
 import { useGetProvider } from '@/hooks/useProvider'
-import { useGetCategories } from '@/hooks/useCategory'
-import { ImageDropzone } from '../PreviewImage'
+import { ImageDropzone } from '../Layout/PreviewImage'
 import { api } from '@/api/axios'
+import { useGetCategories } from '@/hooks/useCategory'
 
 /* ================= TYPES ================= */
 

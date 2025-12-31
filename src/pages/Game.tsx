@@ -1,10 +1,10 @@
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
 import GameSearchInput from '@/components/Games/GameInput'
 import GameImageModal from '@/components/Games/GameModal'
-import Pagination from '@/components/Pagination'
-import TableSkeleton from '@/components/loading'
-import { DataTable } from '@/components/table-data'
+import Pagination from '@/components/Layout/Pagination'
+import TableSkeleton from '@/components/Layout/loading'
+import { DataTable } from '@/components/Layout/table-data'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetGames } from '@/hooks/useGame'
 import { gameColumns } from '@/tables/table-game'
@@ -47,10 +47,10 @@ export default function GamePage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Berhasil memuat Game`)
+      toast.success(`Success Load Game`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat Game')
+      toast.error('Failed Load Game')
     }
   }, [isSuccess, isError])
 

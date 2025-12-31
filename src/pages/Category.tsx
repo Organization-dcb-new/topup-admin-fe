@@ -1,10 +1,10 @@
 import CategoriesSearchInput from '@/components/Category/components/Search'
 import { CreateCategoryModal } from '@/components/Category/ModalAddCategory'
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
-import TableSkeleton from '@/components/loading'
-import Pagination from '@/components/Pagination'
-import { DataTable } from '@/components/table-data'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
+import TableSkeleton from '@/components/Layout/loading'
+import Pagination from '@/components/Layout/Pagination'
+import { DataTable } from '@/components/Layout/table-data'
 import { useGetCategories } from '@/hooks/useCategory'
 import { useDebounce } from '@/hooks/useDebounce'
 import { categoryColumns } from '@/tables/table-category'
@@ -29,10 +29,10 @@ export default function CategoryPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Berhasil memuat kategori`)
+      toast.success(`Success Load kategori`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat kategori')
+      toast.error('Failed Load kategori')
     }
   }, [isSuccess, isError])
 

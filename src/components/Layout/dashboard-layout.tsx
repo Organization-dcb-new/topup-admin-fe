@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+
+import { useAuth } from '@/lib/auth'
 import { Sidebar } from './sidebar'
 import { Topbar } from './topbar'
-import { useAuth } from '@/lib/auth'
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)

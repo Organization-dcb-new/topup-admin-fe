@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 import slugify from 'slugify'
 
 // Get All Categories
-export const useGetCategories = (page: number, limit: number, search: string) =>
+export const useGetCategories = (page?: number, limit?: number, search?: string) =>
   useQuery<CategoryResponse>({
     queryKey: ['categories', page, limit, search],
     queryFn: async () => {

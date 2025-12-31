@@ -1,14 +1,15 @@
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
-import TableSkeleton from '@/components/loading'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
+import TableSkeleton from '@/components/Layout/loading'
 import { ProviderModal } from '@/components/Provider/ProviderModal'
-import { DataTable } from '@/components/table-data'
+import { DataTable } from '@/components/Layout/table-data'
 import { Button } from '@/components/ui/button'
 import { useCreateProvider, useGetProvider, useUpdateProvider } from '@/hooks/useProvider'
 import { providerColumns } from '@/tables/table-provider'
 import type { Provider } from '@/types/provider'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+
 export default function ProviderPages() {
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProvider()
   const createMutation = useCreateProvider()
@@ -20,10 +21,10 @@ export default function ProviderPages() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success('Berhasil memuat Provider')
+      toast.success('Success Load Provider')
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat Provider')
+      toast.error('Failed Load Provider')
     }
   }, [isSuccess, isError, isFetchedAfterMount])
 

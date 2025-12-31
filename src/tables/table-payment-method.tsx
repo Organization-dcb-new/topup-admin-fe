@@ -4,7 +4,24 @@ import { Badge } from '@/components/ui/badge'
 
 export const paymentMethodColumns: ColumnDef<PaymentMethod>[] = [
   {
-    accessorKey: 'full_name',
+    accessorKey: 'icon_url',
+    header: 'Icon',
+    cell: ({ row }) => {
+      const src = row.original.icon_url || 'https://api.dicebear.com/9.x/lorelei/svg'
+      return (
+        <img
+          src={src}
+          alt={row.original.name || 'icon'}
+          className="w-10 h-10 rounded object-contain border"
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder.png'
+          }}
+        />
+      )
+    },
+  },
+  {
+    accessorKey: 'name',
     header: 'Name',
   },
   {

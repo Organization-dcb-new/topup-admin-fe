@@ -1,7 +1,7 @@
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
-import TableSkeleton from '@/components/loading'
-import { DataTable } from '@/components/table-data'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
+import TableSkeleton from '@/components/Layout/loading'
+import { DataTable } from '@/components/Layout/table-data'
 import { useGetTransactions } from '@/hooks/useTransaction'
 import { paymentColumns } from '@/tables/table-transaction'
 import { useEffect } from 'react'
@@ -12,10 +12,10 @@ export default function TransactionPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Berhasil memuat Transactions`)
+      toast.success(`Success Load Transactions`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat Transactions')
+      toast.error('Failed Load Transactions')
     }
   }, [isSuccess, isError])
   return (

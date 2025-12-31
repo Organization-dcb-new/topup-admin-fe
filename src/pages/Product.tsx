@@ -1,8 +1,8 @@
-import { DashboardLayout } from '@/components/dashboard-layout'
-import ErrorComponent from '@/components/error'
-import Pagination from '@/components/Pagination'
-import TableSkeleton from '@/components/loading'
-import { DataTable } from '@/components/table-data'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import ErrorComponent from '@/components/Layout/error'
+import Pagination from '@/components/Layout/Pagination'
+import TableSkeleton from '@/components/Layout/loading'
+import { DataTable } from '@/components/Layout/table-data'
 import { useGetProducts } from '@/hooks/useProduct'
 import { productColumns } from '@/tables/table-product'
 import { useEffect, useState } from 'react'
@@ -15,10 +15,10 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Berhasil memuat Products`)
+      toast.success(`Success Load  Products`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat Products')
+      toast.error('Failed Load  Products')
     }
   }, [isSuccess, isError])
   return (
