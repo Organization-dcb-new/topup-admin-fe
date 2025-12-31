@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Dialog,
   DialogContent,
@@ -13,45 +12,28 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import toast from 'react-hot-toast'
-import slugify from 'slugify'
+
 import { UploadCloud } from 'lucide-react'
-import type { Category } from '@/types/category'
-import { updateCategory, uploadFile } from '@/hooks/useCategory'
-
-type PropsEditModal = {
-  open: boolean
-  onClose: () => void
-  category: Category
-}
-
-type FormValuesEditModal = {
-  name: string
-  description: string
-  icon_url: string
-}
+import type { FormValuesCategory, PropsEditModal } from '@/types/category'
+import { useUpdateCategory } from '@/hooks/useCategory'
+import { handleFileAutoUpload } from './helpers/upload'
 
 export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
-  const queryClient = useQueryClient()
   const inputRef = useRef<HTMLInputElement>(null)
-
   const defaultPreview = useRef<string | null>(null)
-
   const [preview, setPreview] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const [progress, setProgress] = useState(0)
-
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesEditModal>()
+  } = useForm<FormValuesCategory>()
 
   useEffect(() => {
     if (!open || !category) return
-
     reset({
       name: category.name,
       description: category.description,
@@ -62,48 +44,17 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
     defaultPreview.current = category.icon_url
   }, [open, category, reset])
 
-  /* ---------- upload handler ---------- */
-  const handleFile = async (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files allowed')
-      return
-    }
-
-    const localPreview = URL.createObjectURL(file)
-    setPreview(localPreview)
-
-    try {
-      setUploading(true)
-      const res = await uploadFile(file, setProgress)
-      const url = res.data.url
-
-      setValue('icon_url', url, { shouldValidate: true })
-      setPreview(url)
-
-      toast.success('Image uploaded')
-    } catch {
-      toast.error('Upload failed')
-      setPreview(defaultPreview.current)
-    } finally {
-      setUploading(false)
-      setProgress(0)
-    }
+  const handleFile = (file: File) => {
+    handleFileAutoUpload({
+      file,
+      setPreview,
+      setIsUploading,
+      setUploadProgress,
+      setValue: setValue as any,
+      fieldName: 'icon_url',
+    })
   }
-
-  /* ---------- submit ---------- */
-  const mutation = useMutation({
-    mutationFn: (values: FormValuesEditModal) =>
-      updateCategory(category.id, {
-        ...values,
-        slug: slugify(values.name),
-      }),
-    onSuccess: () => {
-      toast.success('Category updated')
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-      onClose()
-    },
-    onError: () => toast.error('Failed to update category'),
-  })
+  const updateCategoryMutation = useUpdateCategory(category.id, onClose)
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -112,7 +63,7 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
           <DialogTitle>Edit Category</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
+        <form onSubmit={handleSubmit((v) => updateCategoryMutation.mutate(v))} className="space-y-4">
           {/* Name */}
           <div className="space-y-1">
             <Label>Name</Label>
@@ -160,7 +111,7 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
                 if (file) handleFile(file)
               }}
               className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition
-                ${uploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'}
+                ${isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'}
                 ${errors.icon_url ? 'border-destructive' : ''}
               `}
             >
@@ -177,9 +128,9 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
                 </div>
               )}
 
-              {uploading && (
+              {isUploading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white">
-                  <span className="text-sm font-medium">Uploading {progress}%</span>
+                  <span className="text-sm font-medium">Uploading {uploadProgress}%</span>
                 </div>
               )}
             </div>
@@ -200,7 +151,7 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
               }}
             />
 
-            {uploading && <Progress value={progress} />}
+            {isUploading && <Progress value={uploadProgress} />}
 
             {errors.icon_url && (
               <p className="text-xs text-destructive">{errors.icon_url.message}</p>
@@ -213,10 +164,10 @@ export function EditCategoryModal({ open, onClose, category }: PropsEditModal) {
             </Button>
             <Button
               type="submit"
-              disabled={mutation.isPending || uploading}
+              disabled={updateCategoryMutation.isPending || isUploading}
               className="cursor-pointer"
             >
-              {mutation.isPending ? 'Saving...' : 'Update'}
+              {updateCategoryMutation.isPending ? 'Saving...' : 'Update'}
             </Button>
           </DialogFooter>
         </form>

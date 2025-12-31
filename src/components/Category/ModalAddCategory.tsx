@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,91 +13,37 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { UploadCloud } from 'lucide-react'
-import { createCategory, uploadFile } from '@/hooks/useCategory'
-import toast from 'react-hot-toast'
-
-type FormValues = {
-  name: string
-  description: string
-  icon_url: string
-}
-
-const MAX_FILE_SIZE = 2 * 1024 * 1024
+import type { FormValuesCategory } from '@/types/category'
+import { handleFileAutoUpload } from '@/components/Category/helpers/upload'
+import { useCreateCategory } from '@/hooks/useCategory'
 
 export function CreateCategoryModal() {
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
-
   const inputRef = useRef<HTMLInputElement>(null)
-  const queryClient = useQueryClient()
-
   const {
     register,
     handleSubmit,
     setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValues>()
-
-  /* ---------------- validation ---------------- */
-  const validateFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files allowed')
-      return false
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error('Max image size 2MB')
-      return false
-    }
-    return true
-  }
-
-  /* ---------------- auto upload ---------------- */
-  const handleFile = async (file: File) => {
-    if (!validateFile(file)) return
-
-    const localPreview = URL.createObjectURL(file)
-    setPreview(localPreview)
-
-    try {
-      setIsUploading(true)
-      setUploadProgress(0)
-
-      const res = await uploadFile(file, setUploadProgress)
-      const url = res.data.url
-
-      setValue('icon_url', url)
-      toast.success('Upload success')
-    } catch {
-      toast.error('Upload failed')
-      setPreview(null)
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  /* ---------------- mutation ---------------- */
-  const mutation = useMutation({
-    mutationFn: createCategory,
-    onSuccess: () => {
-      toast.success('Category created successfully')
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-      reset()
-      setPreview(null)
-      setOpen(false)
-    },
-    onError: () => {
-      toast.error('Failed to create category')
-    },
-  })
-
-  const onSubmit = (values: FormValues) => {
+  } = useForm<FormValuesCategory>()
+  const mutation = useCreateCategory(reset, setPreview, setOpen)
+  const onSubmit = (values: FormValuesCategory) => {
     mutation.mutate(values)
   }
-
-  /* ---------------- cleanup preview ---------------- */
+  const handleFile = (file: File) => {
+    handleFileAutoUpload({
+      file,
+      setPreview,
+      setIsUploading,
+      setUploadProgress,
+      setValue: setValue as any,
+      fieldName: 'icon_url',
+    })
+  }
   useEffect(() => {
     return () => {
       if (preview?.startsWith('blob:')) {
@@ -109,7 +54,9 @@ export function CreateCategoryModal() {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>+ Create Category</Button>
+      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
+        + Create Category
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">

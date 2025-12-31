@@ -1,56 +1,94 @@
 import { api } from '@/api/axios'
-import type { CategoryResponse } from '@/types/category'
-import { useQuery } from '@tanstack/react-query'
+import type { CategoryPayload, CategoryResponse, FormValuesCategory } from '@/types/category'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
+import slugify from 'slugify'
 
 // Get All Categories
-export const useGetCategories = () =>
+export const useGetCategories = (page: number, limit: number, search: string) =>
   useQuery<CategoryResponse>({
-    queryKey: ['categories'],
+    queryKey: ['categories', page, limit, search],
     queryFn: async () => {
-      const res = await api.get('/categories')
+      const res = await api.get('/categories', {
+        params: {
+          page,
+          limit,
+          search,
+        },
+      })
       return res.data
     },
   })
 
-export const uploadFile = async (file: File, onProgress?: (progress: number) => void) => {
-  const formData = new FormData()
-  formData.append('file', file)
+// Create Category
+export const useCreateCategory = (
+  reset: () => void,
+  setPreview: (url: string | null) => void,
+  setOpen: (open: boolean) => void
+) => {
+  const queryClient = useQueryClient()
 
-  const res = await api.post('/upload/new', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-    onUploadProgress: (e) => {
-      if (!e.total) return
-      const percent = Math.round((e.loaded * 100) / e.total)
-      onProgress?.(percent)
+  const mutation = useMutation({
+    mutationFn: async (payload: CategoryPayload) => {
+      const res = await api.post('/categories', payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Category created successfully')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      reset()
+      setPreview(null)
+      setOpen(false)
+    },
+    onError: () => {
+      toast.error('Failed to create category')
     },
   })
 
-  return res.data
+  return mutation
 }
 
-export const createCategory = async (payload: {
-  name: string
-  icon_url: string
-  description: string
-}) => {
-  const res = await api.post('/categories', payload)
-  return res.data
+// Update Category
+export function useUpdateCategory(categoryId: string, onClose: () => void) {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (values: FormValuesCategory) => {
+      const payload = {
+        ...values,
+        slug: slugify(values.name),
+      }
+
+      const res = await api.put(`/categories/${categoryId}`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Category updated')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+      onClose()
+    },
+    onError: () => toast.error('Failed to update category'),
+  })
+
+  return mutation
 }
 
-export const deleteCategory = (id: string) => {
-  return api.delete(`/categories/${id}`)
-}
+export function useDeleteCategory(id: string) {
+  const queryClient = useQueryClient()
 
-export const updateCategory = async (
-  id: string,
-  payload: {
-    name: string
-    slug: string
-    icon_url: string
-    description?: string
-  }
-) => {
-  const res = await api.put(`/categories/${id}`, payload)
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = api.delete(`/categories/${id}`)
+      return res
+    },
+    onSuccess: () => {
+      toast.success('Category deleted')
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete category')
+    },
+  })
 
-  return res.data
+  return mutation
 }

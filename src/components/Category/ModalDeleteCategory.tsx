@@ -11,23 +11,10 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
-import { deleteCategory } from '@/hooks/useCategory'
+import { useDeleteCategory } from '@/hooks/useCategory'
 
 export function DeleteCategoryButton({ id }: { id: string }) {
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: () => deleteCategory(id),
-    onSuccess: () => {
-      toast.success('Category deleted')
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-    },
-    onError: () => {
-      toast.error('Failed to delete category')
-    },
-  })
+  const mutation = useDeleteCategory(id)
 
   return (
     <AlertDialog>
@@ -51,9 +38,9 @@ export function DeleteCategoryButton({ id }: { id: string }) {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90"
+            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
