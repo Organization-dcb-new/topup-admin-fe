@@ -48,3 +48,23 @@ export const useCreatePaymentMethodSubmit = ({ setOpen }: CreatePaymentMethodPro
     },
   })
 }
+
+export function useDeletePaymentMethod(id: string) {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const res = api.delete(`/payment-methods/${id}`)
+      return res
+    },
+    onSuccess: () => {
+      toast.success('Payment Method deleted')
+      queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete Payment Method')
+    },
+  })
+
+  return mutation
+}

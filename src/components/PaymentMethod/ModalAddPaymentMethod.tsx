@@ -64,17 +64,19 @@ export default function ModalAddPaymentMethod() {
 
   useEffect(() => {
     if (!open) {
-      reset() // reset semua form field
-      setPreview(null) // reset image preview
+      reset()
+      setPreview(null)
       setUploadProgress(0)
       setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = '' // reset file input
+      if (inputRef.current) inputRef.current.value = ''
     }
   }, [open, reset])
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>+ Add Payment Method</Button>
+      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
+        + Add Payment Method
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-3xl">
@@ -84,6 +86,7 @@ export default function ModalAddPaymentMethod() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">
             <div className="flex flex-row gap-5 w-full">
+              {/* Left */}
               <div className="w-full flex gap-3 flex-col">
                 {/* Name */}
                 <div className="space-y-1">
@@ -171,59 +174,113 @@ export default function ModalAddPaymentMethod() {
                   {isUploading && <Progress value={uploadProgress} />}
                 </div>
               </div>
+
+              {/* Right */}
               <div className="w-full flex gap-3 flex-col">
-                {/* Fee, Amount, Sort Order, Config */}
+                {/* Fee Percentage */}
                 <div className="space-y-1">
                   <Label>Fee Percentage</Label>
                   <Input
                     type="number"
-                    {...register('fee_percentage', { valueAsNumber: true, required: true })}
+                    {...register('fee_percentage', {
+                      valueAsNumber: true,
+                      required: 'Fee Percentage is required',
+                    })}
                   />
+                  {errors.fee_percentage && (
+                    <p className="text-xs text-destructive">{errors.fee_percentage.message}</p>
+                  )}
                 </div>
+
+                {/* Fee Fixed */}
                 <div className="space-y-1">
                   <Label>Fee Fixed</Label>
                   <Input
                     type="number"
-                    {...register('fee_fixed', { valueAsNumber: true, required: true })}
+                    {...register('fee_fixed', {
+                      valueAsNumber: true,
+                      required: 'Fee Fixed is required',
+                    })}
                   />
+                  {errors.fee_fixed && (
+                    <p className="text-xs text-destructive">{errors.fee_fixed.message}</p>
+                  )}
                 </div>
+
+                {/* Min Amount */}
                 <div className="space-y-1">
                   <Label>Min Amount</Label>
                   <Input
                     type="number"
-                    {...register('min_amount', { valueAsNumber: true, required: true })}
+                    {...register('min_amount', {
+                      valueAsNumber: true,
+                      required: 'Min Amount is required',
+                    })}
                   />
+                  {errors.min_amount && (
+                    <p className="text-xs text-destructive">{errors.min_amount.message}</p>
+                  )}
                 </div>
+
+                {/* Max Amount */}
                 <div className="space-y-1">
                   <Label>Max Amount</Label>
                   <Input
                     type="number"
-                    {...register('max_amount', { valueAsNumber: true, required: true })}
+                    {...register('max_amount', {
+                      valueAsNumber: true,
+                      required: 'Max Amount is required',
+                    })}
                   />
+                  {errors.max_amount && (
+                    <p className="text-xs text-destructive">{errors.max_amount.message}</p>
+                  )}
                 </div>
+
+                {/* Sort Order */}
                 <div className="space-y-1">
                   <Label>Sort Order</Label>
                   <Input
                     type="number"
-                    {...register('sort_order', { valueAsNumber: true, required: true })}
+                    {...register('sort_order', {
+                      valueAsNumber: true,
+                      required: 'Sort Order is required',
+                    })}
                   />
+                  {errors.sort_order && (
+                    <p className="text-xs text-destructive">{errors.sort_order.message}</p>
+                  )}
                 </div>
+
+                {/* Config */}
                 <div className="space-y-1">
                   <Label>Config (JSON)</Label>
                   <Textarea
-                    {...register('config', { required: true })}
+                    {...register('config', { required: 'Config is required' })}
                     placeholder='{"note":"..."}'
                     className="max-h-32"
                   />
+                  {errors.config && (
+                    <p className="text-xs text-destructive">{errors.config.message}</p>
+                  )}
                 </div>
               </div>
             </div>
 
             <DialogFooter>
-              <Button variant="outline" type="button" onClick={() => setOpen(false)}>
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                type="button"
+                onClick={() => setOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={mutation.isPending || isUploading}>
+              <Button
+                className="cursor-pointer"
+                type="submit"
+                disabled={mutation.isPending || isUploading}
+              >
                 {mutation.isPending ? 'Saving...' : 'Create'}
               </Button>
             </DialogFooter>

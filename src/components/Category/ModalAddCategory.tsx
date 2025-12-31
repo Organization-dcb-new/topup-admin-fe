@@ -34,6 +34,7 @@ export function CreateCategoryModal() {
   const onSubmit = (values: FormValuesCategory) => {
     mutation.mutate(values)
   }
+
   const handleFile = (file: File) => {
     handleFileAutoUpload({
       file,
@@ -44,13 +45,16 @@ export function CreateCategoryModal() {
       fieldName: 'icon_url',
     })
   }
+
   useEffect(() => {
-    return () => {
-      if (preview?.startsWith('blob:')) {
-        URL.revokeObjectURL(preview)
-      }
+    if (!open) {
+      reset()
+      setPreview(null)
+      setUploadProgress(0)
+      setIsUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
     }
-  }, [preview])
+  }, [open, reset])
 
   return (
     <>
@@ -155,6 +159,7 @@ export function CreateCategoryModal() {
             {/* Save */}
             <DialogFooter>
               <Button
+                className="cursor-pointer"
                 variant="outline"
                 type="button"
                 onClick={() => {
@@ -163,7 +168,11 @@ export function CreateCategoryModal() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isUploading || mutation.isPending}>
+              <Button
+                className="cursor-pointer"
+                type="submit"
+                disabled={isUploading || mutation.isPending}
+              >
                 {mutation.isPending ? 'Saving...' : 'Create'}
               </Button>
             </DialogFooter>

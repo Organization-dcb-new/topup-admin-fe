@@ -29,10 +29,10 @@ export default function CategoryPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success(`Success Load kategori`)
+      toast.success(`Success Load Categories`)
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Failed Load kategori')
+      toast.error('Failed Load Categories')
     }
   }, [isSuccess, isError])
 
