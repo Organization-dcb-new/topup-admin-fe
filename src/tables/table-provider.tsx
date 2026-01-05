@@ -1,13 +1,11 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import type { Provider } from '@/types/provider'
-import { Button } from '@/components/ui/button'
 
-export const providerColumns = ({
-  onEdit,
-}: {
-  onEdit: (provider: Provider) => void
-}): ColumnDef<Provider>[] => [
+import { DeleteProviderModal } from '@/components/Provider/ProviderModalDelete'
+import { EditProviderModal } from '@/components/Provider/ProviderModalEdit'
+
+export const providerColumns = (): ColumnDef<Provider>[] => [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -60,9 +58,11 @@ export const providerColumns = ({
     id: 'actions',
     header: '',
     cell: ({ row }) => (
-      <Button size="sm" variant="outline" onClick={() => onEdit(row.original)}>
-        Edit
-      </Button>
+      <div className="flex flex-row">
+        <EditProviderModal provider={row.original} />
+
+        <DeleteProviderModal id={row.original.id} />
+      </div>
     ),
   },
 ]
