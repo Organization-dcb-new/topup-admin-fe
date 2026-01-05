@@ -1,6 +1,6 @@
 import { uploadFile } from '@/hooks/useUpload'
-import { validateFileImage } from './validate'
 import toast from 'react-hot-toast'
+import { validateFileImage } from './validate'
 
 type HandleFileParams = {
   file: File

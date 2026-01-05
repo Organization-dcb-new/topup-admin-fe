@@ -131,37 +131,45 @@ export function CreateGameModal() {
           setOpen(false)
         }}
       >
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
             <DialogTitle>Create Game</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <GameInput
-              uploadingThumb={uploadingThumb}
-              uploadingBanner={uploadingBanner}
-              bannerFile={bannerFile}
-              categories={categories!}
-              providers={providers!}
-              register={register}
-              setBannerFile={setBannerFile}
-              setBannerUrl={setBannerUrl}
-              setThumbnailUrl={setThumbnailUrl}
-              setUploadingBanner={setUploadingBanner}
-              setUploadingThumb={setUploadingThumb}
-              setValue={setValue}
-              thumbnailFile={thumbnailFile}
-              uploadFileHandler={uploadFileHandler}
-            />
-            <GameInputForm
-              addInput={addInput}
-              inputs={inputs}
-              removeInput={removeInput}
-              updateInput={updateInput}
-            />
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
+            <div className="flex flex-row gap-4">
+              <div className="flex gap-4 flex-col w-full">
+                <GameInput
+                  uploadingThumb={uploadingThumb}
+                  uploadingBanner={uploadingBanner}
+                  bannerFile={bannerFile}
+                  categories={categories!}
+                  providers={providers!}
+                  register={register}
+                  setBannerFile={setBannerFile}
+                  setBannerUrl={setBannerUrl}
+                  setThumbnailUrl={setThumbnailUrl}
+                  setUploadingBanner={setUploadingBanner}
+                  setUploadingThumb={setUploadingThumb}
+                  setValue={setValue}
+                  thumbnailFile={thumbnailFile}
+                  uploadFileHandler={uploadFileHandler}
+                />
+              </div>
+              <div className="w-full">
+                <GameInputForm
+                  addInput={addInput}
+                  inputs={inputs}
+                  removeInput={removeInput}
+                  updateInput={updateInput}
+                />
+              </div>
+            </div>
+
             {/* Action */}
             <div className="flex justify-end gap-2">
               <Button
+                className="cursor-pointer"
                 type="button"
                 variant="ghost"
                 onClick={() => {
@@ -170,7 +178,7 @@ export function CreateGameModal() {
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending} className="cursor-pointer">
                 {isPending ? 'Saving...' : 'Save'}
               </Button>
             </div>

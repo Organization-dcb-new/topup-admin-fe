@@ -65,8 +65,8 @@ export function GameInput({
         <Input placeholder="Publisher" {...register('publisher')} />
       </div>
 
-      <Textarea placeholder="Description" {...register('description')} />
-      <Textarea placeholder="Instruction" {...register('instruction')} />
+      <Textarea className="max-h-32" placeholder="Description" {...register('description')} />
+      <Textarea className="max-h-32" placeholder="Instruction" {...register('instruction')} />
 
       {/* Images */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -94,64 +94,72 @@ export function GameInput({
 
 export function GameInputForm({ addInput, updateInput, removeInput, inputs }: GameInputFormProps) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full ">
       <div className="flex justify-between items-center">
         <h3 className="font-semibold">Game Inputs</h3>
-        <Button type="button" size="sm" onClick={addInput}>
+        <Button type="button" size="sm" onClick={addInput} className="cursor-pointer">
           + Add Input
         </Button>
       </div>
+      <div className=" flex flex-col gap-4 max-h-120 overflow-y-auto">
+        {inputs.map((item, idx) => (
+          <div key={idx} className="border rounded-lg p-3 space-y-2 ">
+            <div className="flex gap-2  ">
+              <Input
+                className="w-full"
+                placeholder="Key"
+                value={item.key}
+                onChange={(e) => updateInput(idx, 'key', e.target.value)}
+              />
+              <Input
+                className="w-full"
+                placeholder="Label"
+                value={item.label}
+                onChange={(e) => updateInput(idx, 'label', e.target.value)}
+              />
 
-      {inputs.map((item, idx) => (
-        <div key={idx} className="border rounded-lg p-3 space-y-2">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-            <Input
-              placeholder="Key"
-              value={item.key}
-              onChange={(e) => updateInput(idx, 'key', e.target.value)}
-            />
-            <Input
-              placeholder="Label"
-              value={item.label}
-              onChange={(e) => updateInput(idx, 'label', e.target.value)}
-            />
-
-            <Select
-              value={item.input_type}
-              onValueChange={(v) => updateInput(idx, 'input_type', v as 'text' | 'number')}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="text">Text</SelectItem>
-                <SelectItem value="number">Number</SelectItem>
-              </SelectContent>
-            </Select>
-
+              <Select
+                value={item.input_type}
+                onValueChange={(v) => updateInput(idx, 'input_type', v as 'text' | 'number')}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="text">Text</SelectItem>
+                  <SelectItem value="number">Number</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Input
               placeholder="Placeholder"
               value={item.placeholder}
               onChange={(e) => updateInput(idx, 'placeholder', e.target.value)}
             />
-          </div>
 
-          <div className="flex justify-between items-center">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={item.required}
-                onChange={(e) => updateInput(idx, 'required', e.target.checked)}
-              />
-              Required
-            </label>
+            <div className="flex justify-between items-center">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={item.required}
+                  onChange={(e) => updateInput(idx, 'required', e.target.checked)}
+                />
+                Required
+              </label>
 
-            <Button type="button" size="sm" variant="ghost" onClick={() => removeInput(idx)}>
-              Remove
-            </Button>
+              <Button
+                className="cursor-pointer"
+                type="button"
+                size="sm"
+                variant="destructive"
+                onClick={() => removeInput(idx)}
+              >
+                Remove
+              </Button>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   )
 }
