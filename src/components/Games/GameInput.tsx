@@ -2,25 +2,20 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 import { Textarea } from '../ui/textarea'
-import { ImageDropzone } from '../Layout/PreviewImage'
 import type { GameInputFormProps, GameInputProps } from '@/types/game'
+import ImageComponent from './PreviewImage'
+import { useState } from 'react'
 
-export function GameInput({
-  setValue,
-  register,
-  categories,
-  providers,
-  thumbnailFile,
-  bannerFile,
-  uploadFileHandler,
-  setBannerFile,
-  setThumbnailUrl,
-  setUploadingThumb,
-  uploadingThumb,
-  uploadingBanner,
-  setBannerUrl,
-  setUploadingBanner,
-}: GameInputProps) {
+export function GameInput({ setValue, register, categories, providers }: GameInputProps) {
+  // Thumbnail
+  const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null)
+  const [uploadProgressThumbnail, setUploadProgressThumbnail] = useState(0)
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false)
+  // Banner
+  const [previewBanner, setPreviewBanner] = useState<string | null>(null)
+  const [uploadProgressBanner, setUploadProgressBanner] = useState(0)
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+
   return (
     <>
       {/* Category & Provider */}
@@ -70,23 +65,33 @@ export function GameInput({
 
       {/* Images */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <ImageDropzone
-          label="Thumbnail"
-          file={thumbnailFile}
-          onChange={(file) => uploadFileHandler(file, setThumbnailUrl, setUploadingThumb)}
-        />
+        <div className="flex flex-col">
+          <ImageComponent
+            title="Thumbnail"
+            value="thumbnail_url"
+            isUploading={isUploadingThumbnail}
+            preview={previewThumbnail!}
+            setIsUploading={setIsUploadingThumbnail}
+            setPreview={setPreviewThumbnail}
+            setUploadProgress={setUploadProgressThumbnail}
+            setValue={setValue}
+            uploadProgress={uploadProgressThumbnail}
+          />
+        </div>
 
-        {uploadingThumb && <p className="text-sm text-muted-foreground">Uploading...</p>}
-
-        <ImageDropzone
-          label="Banner"
-          file={bannerFile}
-          onChange={(file) => {
-            setBannerFile(file)
-            uploadFileHandler(file, setBannerUrl, setUploadingBanner)
-          }}
-        />
-        {uploadingBanner && <p className="text-sm text-muted-foreground">Uploading...</p>}
+        <div className="flex flex-col">
+          <ImageComponent
+            title="Banner"
+            value="banner_url"
+            isUploading={isUploadingBanner}
+            preview={previewBanner!}
+            setIsUploading={setIsUploadingBanner}
+            setPreview={setPreviewBanner}
+            setUploadProgress={setUploadProgressBanner}
+            setValue={setValue}
+            uploadProgress={uploadProgressBanner}
+          />
+        </div>
       </div>
     </>
   )

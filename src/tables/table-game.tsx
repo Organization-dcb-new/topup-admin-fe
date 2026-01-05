@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Game } from '@/types/game'
 import { Badge } from '@/components/ui/badge'
+import { DeleteGameModal } from '@/components/Games/DeleteGameModal'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
@@ -54,5 +55,14 @@ export const gameColumns = (): ColumnDef<Game>[] => [
       ) : (
         <Badge variant="destructive">Inactive</Badge>
       ),
+  },
+  {
+    id: 'actions',
+    header: 'Action',
+    cell: ({ row }) => (
+      <div className="flex items-center gap-1">
+        <DeleteGameModal id={row.original.id} />
+      </div>
+    ),
   },
 ]

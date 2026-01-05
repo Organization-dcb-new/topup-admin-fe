@@ -9,7 +9,7 @@ import { useGetCategories } from '@/hooks/useCategory'
 import type { CreateGamePayload, GameInputPayload } from '@/types/game'
 import { GameInput, GameInputForm } from './GameInput'
 
-export function CreateGameModal() {
+export function EditGameModal() {
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, setValue, reset } = useForm<CreateGamePayload>()
   const [inputs, setInputs] = useState<GameInputPayload[]>([])

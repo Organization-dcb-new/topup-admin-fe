@@ -1,6 +1,6 @@
 import { api } from '@/api/axios'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 export function useGetGames(
   search: string,
@@ -38,12 +38,27 @@ export function useGetGameById(gameId: string) {
 }
 
 export const useCreateGame = () => {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (payload: FormData) => {
-      const res = await api.post('/games', payload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+    mutationFn: async (payload: any) => {
+      const res = await api.post('/games', payload)
       return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+    },
+  })
+}
+
+export const useDeleteGame = (id: string) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.delete(`/games/${id}`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['games'] })
     },
   })
 }

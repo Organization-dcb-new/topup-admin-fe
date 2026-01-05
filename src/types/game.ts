@@ -63,7 +63,6 @@ export type GameInputPayload = {
   label: string
   input_type: 'text' | 'number'
   required: boolean
-  sort_order: number
   placeholder?: string
 }
 
@@ -75,6 +74,8 @@ export type CreateGamePayload = {
   code: string
   description?: string
   instruction?: string
+  thumbnail_url: string
+  banner_url: string
   developer?: string
   publisher?: string
   inputs: GameInputPayload[]
@@ -92,16 +93,6 @@ export interface GameInputProps {
   register: UseFormRegister<CreateGamePayload>
   categories: CategoryResponse
   providers: ProviderResponse
-  thumbnailFile: File | null
-  bannerFile: File | null
-  uploadFileHandler: UploadFileHandler
-  setBannerFile: (file: File) => void
-  setThumbnailUrl: (url: string) => void
-  setUploadingThumb: (upload: boolean) => void
-  uploadingThumb: boolean
-  uploadingBanner: boolean
-  setBannerUrl: (url: string) => void
-  setUploadingBanner: (banner: boolean) => void
 }
 
 export type UpdateInputFn = <K extends keyof GameInputPayload>(
