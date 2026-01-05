@@ -14,8 +14,8 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { UploadCloud } from 'lucide-react'
 import type { FormValuesCategory } from '@/types/category'
-import { handleFileAutoUpload } from '@/components/Category/helpers/upload'
 import { useCreateCategory } from '@/hooks/useCategory'
+import { handleFileAutoUpload } from '@/helpers/upload'
 
 export function CreateCategoryModal() {
   const [open, setOpen] = useState(false)

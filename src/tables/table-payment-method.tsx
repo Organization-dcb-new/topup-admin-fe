@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { PaymentMethod } from '@/types/payment-method'
 import { Badge } from '@/components/ui/badge'
-import { DeletePaymentMethodButton } from '@/components/PaymentMethod/ModalDeletePaymentMethod'
+import { DeletePaymentMethodButton } from '@/components/PaymentMethod/DeletePaymentMethodModal'
 import { EditPaymentMethodButton } from '@/components/PaymentMethod/ButtonEdit'
 
 export const paymentMethodColumns: ColumnDef<PaymentMethod>[] = [

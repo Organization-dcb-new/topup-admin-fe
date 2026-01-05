@@ -30,7 +30,5 @@ export type CategoryPayload = {
 }
 
 export type PropsEditModal = {
-  open: boolean
-  onClose: () => void
   category: Category
 }

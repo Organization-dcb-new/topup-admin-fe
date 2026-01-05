@@ -1,5 +1,5 @@
-import CategoriesSearchInput from '@/components/Category/components/Search'
-import { CreateCategoryModal } from '@/components/Category/ModalAddCategory'
+import CategoriesSearchInput from '@/components/Category/SearchCategory'
+import { CreateCategoryModal } from '@/components/Category/CreateCategoryModal'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import TableSkeleton from '@/components/Layout/loading'
@@ -40,7 +40,6 @@ export default function CategoryPage() {
     <DashboardLayout>
       <div className="flex justify-between mb-4">
         <CategoriesSearchInput value={search} onChange={setSearch} />
-
         <CreateCategoryModal />
       </div>
       {isLoading && <TableSkeleton />}

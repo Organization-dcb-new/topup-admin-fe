@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import { UploadCloud } from 'lucide-react'
 import { useCreatePaymentMethodSubmit, type PaymentMethodPayload } from '@/hooks/usePaymentMethod'
-import { handleFileAutoUpload } from '../Category/helpers/upload'
+import { handleFileAutoUpload } from '@/helpers/upload'
 
 type FormValues = {
   name: string
@@ -75,13 +75,13 @@ export default function ModalAddPaymentMethod() {
   return (
     <>
       <Button className="cursor-pointer" onClick={() => setOpen(true)}>
-        + Add Payment Method
+        + Create Payment Method
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
-            <DialogTitle>Add Payment Method</DialogTitle>
+            <DialogTitle>Create Payment Method</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">

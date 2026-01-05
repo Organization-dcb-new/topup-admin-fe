@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Category } from '@/types/category'
-import { DeleteCategoryButton } from '@/components/Category/ModalDeleteCategory'
-import { EditCategoryButton } from '@/components/Category/components/Button'
+import { DeleteCategoryButton } from '@/components/Category/DeleteCategoryModal'
+import { EditCategoryModal } from '@/components/Category/EditCategoryModal'
 export const categoryColumns: ColumnDef<Category>[] = [
   {
     accessorKey: 'icon_url',
@@ -37,7 +37,7 @@ export const categoryColumns: ColumnDef<Category>[] = [
     header: 'Action',
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
-        <EditCategoryButton category={row.original} />
+        <EditCategoryModal category={row.original}   />
         <DeleteCategoryButton id={row.original.id} />
       </div>
     ),

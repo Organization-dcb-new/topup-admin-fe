@@ -55,3 +55,25 @@ export interface PaginationMeta {
   has_next: boolean
   has_prev: boolean
 }
+
+export type GameInputPayload = {
+  key: string
+  label: string
+  input_type: 'text' | 'number'
+  required: boolean
+  sort_order: number
+  placeholder?: string
+}
+
+export type CreateGamePayload = {
+  category_id: string
+  provider_id: string
+  name: string
+  slug: string
+  code: string
+  description?: string
+  instruction?: string
+  developer?: string
+  publisher?: string
+  inputs: GameInputPayload[]
+}

@@ -21,9 +21,7 @@ export type ProviderPayload = {
   api_url: string
   api_key_encrypted?: string
   priority?: number
-  config: {
-    timeout?: number
-  }
+  config: string
 }
 
 export type ProviderFormValues = {

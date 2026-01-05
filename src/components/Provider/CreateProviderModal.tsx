@@ -49,13 +49,13 @@ export function CreateProviderModal() {
   return (
     <div>
       <Button onClick={() => setOpen(true)} className="cursor-pointer">
-        + Add Provider
+        + Create Provider
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Add Provider</DialogTitle>
+            <DialogTitle>Create Provider</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
@@ -140,12 +140,12 @@ export function CreateProviderModal() {
               <Label>Config (JSON)</Label>
               <Textarea
                 rows={4}
-                className='max-h-32'
+                className="max-h-32"
                 {...register('config', {
                   required: 'Config is required',
                   validate: (v) => {
                     try {
-                      JSON.parse(v)
+                      JSON.parse(v as any)
                       return true
                     } catch {
                       return 'Invalid JSON format'

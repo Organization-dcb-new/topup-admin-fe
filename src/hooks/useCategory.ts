@@ -49,7 +49,7 @@ export const useCreateCategory = (
 }
 
 // Update Category
-export function useUpdateCategory(categoryId: string, onClose: () => void) {
+export function useUpdateCategory(categoryId: string, setOpen: (open: boolean) => void) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -65,7 +65,7 @@ export function useUpdateCategory(categoryId: string, onClose: () => void) {
     onSuccess: () => {
       toast.success('Category updated')
       queryClient.invalidateQueries({ queryKey: ['categories'] })
-      onClose()
+      setOpen(false)
     },
     onError: () => toast.error('Failed to update category'),
   })

@@ -2,8 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import type { Provider } from '@/types/provider'
 
-import { DeleteProviderModal } from '@/components/Provider/ProviderModalDelete'
-import { EditProviderModal } from '@/components/Provider/ProviderModalEdit'
+import { DeleteProviderModal } from '@/components/Provider/DeleteProviderModal'
+import { EditProviderModal } from '@/components/Provider/EditProviderModal'
 
 export const providerColumns = (): ColumnDef<Provider>[] => [
   {
