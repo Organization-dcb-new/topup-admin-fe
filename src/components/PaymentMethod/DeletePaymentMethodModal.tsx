@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { useDeletePaymentMethod } from '@/hooks/usePaymentMethod'
 
-export function DeletePaymentMethodButton({ id }: { id: string }) {
+export function DeletePaymentMethodModal({ id }: { id: string }) {
   const mutation = useDeletePaymentMethod(id)
 
   return (

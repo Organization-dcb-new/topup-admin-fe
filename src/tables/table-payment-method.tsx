@@ -1,8 +1,8 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { PaymentMethod } from '@/types/payment-method'
 import { Badge } from '@/components/ui/badge'
-import { DeletePaymentMethodButton } from '@/components/PaymentMethod/DeletePaymentMethodModal'
-import { EditPaymentMethodButton } from '@/components/PaymentMethod/ButtonEdit'
+import { DeletePaymentMethodModal } from '@/components/PaymentMethod/DeletePaymentMethodModal'
+import { EditPaymentMethodModal } from '@/components/PaymentMethod/EditPaymentMethodModal'
 
 export const paymentMethodColumns: ColumnDef<PaymentMethod>[] = [
   {
@@ -69,8 +69,8 @@ export const paymentMethodColumns: ColumnDef<PaymentMethod>[] = [
     header: 'Action',
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
-        <DeletePaymentMethodButton id={row.original.id} />
-        <EditPaymentMethodButton paymentMethod={row.original} />
+        <EditPaymentMethodModal paymentMethod={row.original} />
+        <DeletePaymentMethodModal id={row.original.id} />
       </div>
     ),
   },

@@ -12,27 +12,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Pencil, UploadCloud } from 'lucide-react'
-import type { PaymentMethod, PaymentMethodConfig } from '@/types/payment-method'
+import type { FormValuesPaymentMethod, PaymentMethod } from '@/types/payment-method'
 import { useEditPaymentMethod } from '@/hooks/usePaymentMethod'
 import { Textarea } from '../ui/textarea'
 import { handleFileAutoUpload } from '@/helpers/upload'
 
 export type PropsEditPaymentMethodModal = {
   paymentMethod: PaymentMethod
-}
-
-export type FormValuesPaymentMethod = {
-  name: string
-  code: string
-  type: string
-  provider: string
-  icon_url: string
-  fee_percentage: number
-  fee_fixed: number
-  min_amount: number
-  max_amount: number
-  sort_order: number
-  config: PaymentMethodConfig
 }
 
 export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethodModal) {

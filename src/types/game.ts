@@ -1,4 +1,6 @@
-import type { Category } from './category'
+import type { UseFormRegister, UseFormSetValue } from 'react-hook-form'
+import type { Category, CategoryResponse } from './category'
+import type { ProviderResponse } from './provider'
 
 export interface Game {
   id: string
@@ -75,5 +77,42 @@ export type CreateGamePayload = {
   instruction?: string
   developer?: string
   publisher?: string
+  inputs: GameInputPayload[]
+}
+
+export type UploadFileHandler = (
+  file: File,
+  setUrl: (url: string) => void,
+  setUploading: (b: boolean) => void,
+  setProgress?: (p: number) => void
+) => Promise<void>
+
+export interface GameInputProps {
+  setValue: UseFormSetValue<CreateGamePayload>
+  register: UseFormRegister<CreateGamePayload>
+  categories: CategoryResponse
+  providers: ProviderResponse
+  thumbnailFile: File | null
+  bannerFile: File | null
+  uploadFileHandler: UploadFileHandler
+  setBannerFile: (file: File) => void
+  setThumbnailUrl: (url: string) => void
+  setUploadingThumb: (upload: boolean) => void
+  uploadingThumb: boolean
+  uploadingBanner: boolean
+  setBannerUrl: (url: string) => void
+  setUploadingBanner: (banner: boolean) => void
+}
+
+export type UpdateInputFn = <K extends keyof GameInputPayload>(
+  index: number,
+  field: K,
+  value: GameInputPayload[K]
+) => void
+
+export interface GameInputFormProps {
+  addInput: () => void
+  updateInput: UpdateInputFn
+  removeInput: (index: number) => void
   inputs: GameInputPayload[]
 }
