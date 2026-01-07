@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { Game } from '@/types/game'
 import { Badge } from '@/components/ui/badge'
 import { DeleteGameModal } from '@/components/Games/DeleteGameModal'
+import { GameThumbnailCell } from '@/components/Games/UploadImageModal'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
@@ -9,22 +10,9 @@ export const gameColumns = (): ColumnDef<Game>[] => [
   {
     id: 'thumbnail',
     header: 'Image',
-    cell: ({ row }) => {
-      const image = row.original.thumbnail_url?.trim() || DEFAULT_GAME_IMAGE
-
-      return (
-        <img
-          src={image}
-          alt={row.original.name}
-          className="h-12 w-12 rounded-md object-contain border transition-opacity duration-200 group-hover:opacity-70"
-          loading="lazy"
-          onError={(e) => {
-            e.currentTarget.src = DEFAULT_GAME_IMAGE
-          }}
-        />
-      )
-    },
+    cell: ({ row }) => <GameThumbnailCell row={row} />,
   },
+
   {
     accessorKey: 'name',
     header: 'Game Name',
