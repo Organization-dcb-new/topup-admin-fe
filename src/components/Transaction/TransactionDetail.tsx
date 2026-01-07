@@ -1,6 +1,6 @@
 import { Button } from '../ui/button'
 import { DashboardLayout } from '../Layout/dashboard-layout'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import { format, isValid } from 'date-fns'
@@ -13,7 +13,7 @@ export interface PaymentDetail {
   amount: number
   status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED'
   payment_method_id: string
-  payment_channel: 'gopay' | 'va' | 'qris'
+  payment_channel: 'gopay' | 'va' | 'qris' | 'shopeepay'
   payment_url: string
   qr_code_url: string
   va_number: string
@@ -22,12 +22,13 @@ export interface PaymentDetail {
 
 type Props = {
   data: PaymentDetail
+  isLoading: boolean
 }
 
-export default function PaymentDetail({ data }: Props) {
+export default function PaymentDetail({ data, isLoading }: Props) {
   const navigate = useNavigate()
 
-  const createdAt = data.created_at
+  const createdAt = data?.created_at
   const date = createdAt ? new Date(createdAt) : null
 
   return (
@@ -73,14 +74,17 @@ export default function PaymentDetail({ data }: Props) {
 
           {/* RIGHT - Payment Action */}
           <div className="flex items-center justify-center">
-            {data.status === 'PENDING' && (
+            {isLoading && <PaymentActionSpinner />}
+
+            {!isLoading && data.status === 'PENDING' && (
               <>
                 {data.payment_channel === 'gopay' && <GopayPayment data={data} />}
                 {data.payment_channel === 'qris' && <QrisPayment data={data} />}
+                {data.payment_channel === 'shopeepay' && <ShopeepayPayment data={data} />}
               </>
             )}
 
-            {data.status === 'SUCCESS' && (
+            {!isLoading && data.status === 'SUCCESS' && (
               <div className="text-center space-y-2">
                 <p className="text-green-600 text-lg font-semibold">Payment Successful</p>
                 <p className="text-sm text-gray-500">Thank you for your payment</p>
@@ -114,6 +118,25 @@ function GopayPayment({ data }: { data: PaymentDetail }) {
     </div>
   )
 }
+function ShopeepayPayment({ data }: { data: PaymentDetail }) {
+  return (
+    <div className="flex flex-col items-center gap-4 text-center">
+      <p className="text-sm text-gray-600">
+        You will be redirected to ShopeePay app to complete the payment
+      </p>
+
+      <Button
+        className="w-full cursor-pointer"
+        onClick={() => window.open(data.payment_url, '_blank')}
+        disabled={!data.payment_url}
+      >
+        Open ShopeePay App
+      </Button>
+
+      <p className="text-xs text-yellow-600">Please complete the payment in Shopee app</p>
+    </div>
+  )
+}
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -142,6 +165,14 @@ function QrisPayment({ data }: { data: PaymentDetail }) {
       <img src={data.qr_code_url} alt="QRIS" className="w-64 h-64 mx-auto rounded-xl border" />
 
       <p className="text-xs text-yellow-600">Waiting for payment confirmation</p>
+    </div>
+  )
+}
+
+function PaymentActionSpinner() {
+  return (
+    <div className="flex flex-col items-center gap-3 text-muted-foreground">
+      <Loader2 className="h-8 w-8 animate-spin" />
     </div>
   )
 }
