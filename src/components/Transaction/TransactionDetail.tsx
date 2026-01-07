@@ -2,6 +2,8 @@ import { Button } from '../ui/button'
 import { DashboardLayout } from '../Layout/dashboard-layout'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { format, parse } from 'date-fns'
+import { id } from 'date-fns/locale'
 
 export interface PaymentDetail {
   id: string
@@ -24,6 +26,9 @@ type Props = {
 export default function PaymentDetail({ data }: Props) {
   const navigate = useNavigate()
 
+  const rawDate = data.created_at.replace(' WIB', '')
+
+  const parsedDate = parse(rawDate, 'yyyy-MM-dd HH:mm:ss.SSSSSS xxxx', new Date())
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
@@ -59,8 +64,8 @@ export default function PaymentDetail({ data }: Props) {
               <p className="text-2xl font-bold">Rp {data.amount.toLocaleString('id-ID')}</p>
             </div>
 
-            <p className="text-xs text-gray-400">
-              Created at {new Date(data.created_at).toLocaleString()}
+            <p className="text-gray-500">
+              Created at {format(parsedDate, 'dd MMM yyyy, HH:mm', { locale: id })}
             </p>
           </div>
 
@@ -97,7 +102,10 @@ function GopayPayment({ data }: { data: PaymentDetail }) {
       )}
 
       {data.payment_url && (
-        <Button className="w-full" onClick={() => window.open(data.payment_url, '_blank')}>
+        <Button
+          className="w-full cursor-pointer"
+          onClick={() => window.open(data.payment_url, '_blank')}
+        >
           Open GoPay App
         </Button>
       )}
