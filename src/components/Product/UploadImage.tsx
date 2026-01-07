@@ -12,21 +12,21 @@ import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { Pencil, UploadCloud } from 'lucide-react'
 
-import type { Game } from '@/types/game'
-import { useUpdateImageGame } from '@/hooks/useGame'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import type { Product } from '@/types/product'
+import { useUpdateImageProduct } from '@/hooks/useProduct'
 
-type PropsImageGame = {
-  game: Game
+type PropsImageProducts = {
+  product: Product
   image: string
 }
 
-export type FormValuesChangeImage = {
-  thumbnail_url: string
-  game_id: string
+export type FormValuesChangeImageProduct = {
+  image: string
+  product_id: string
 }
 
-export function ChangeImageModal({ game, image }: PropsImageGame) {
+export function ChangeImageModalProduct({ product, image }: PropsImageProducts) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
@@ -39,19 +39,19 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesChangeImage>()
+  } = useForm<FormValuesChangeImageProduct>()
 
-  const updateImageMutation = useUpdateImageGame(() => setOpen(false))
+  const updateImageMutation = useUpdateImageProduct(() => setOpen(false))
 
   useEffect(() => {
     if (!open) return
 
     reset({
-      thumbnail_url: game.thumbnail_url,
+      image: product.image,
     })
 
-    setPreview(game.thumbnail_url)
-  }, [open, game, reset])
+    setPreview(product.image)
+  }, [open, product, reset])
 
   const handleFile = (file: File) => {
     handleFileAutoUpload({
@@ -60,14 +60,14 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       setIsUploading,
       setUploadProgress,
       setValue: setValue as any,
-      fieldName: 'thumbnail_url',
+      fieldName: 'image',
     })
   }
 
-  const onSubmit = (values: FormValuesChangeImage) => {
+  const onSubmit = (values: FormValuesChangeImageProduct) => {
     updateImageMutation.mutate({
-      game_id: game.id,
-      thumbnail_url: values.thumbnail_url,
+      product_id: product.id,
+      image: values.image,
     })
   }
 
@@ -82,7 +82,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       >
         <img
           src={image}
-          alt={game.name}
+          alt={product.name}
           className="h-12 w-12 rounded-md border object-contain"
           loading="lazy"
         />
@@ -95,14 +95,14 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Change Game Image</DialogTitle>
+            <DialogTitle>Change Product Image</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Hidden Field */}
             <input
               type="hidden"
-              {...register('thumbnail_url', {
+              {...register('image', {
                 required: 'Image is required',
               })}
             />
@@ -119,7 +119,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                 }}
                 className={`relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition
                   ${isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'}
-                  ${errors.thumbnail_url ? 'border-destructive' : ''}
+                  ${errors.image ? 'border-destructive' : ''}
                 `}
               >
                 {preview ? (
@@ -141,6 +141,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                   </div>
                 )}
               </div>
+
               <Input
                 ref={inputRef}
                 type="file"
@@ -152,10 +153,10 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                   e.target.value = ''
                 }}
               />
+
               {isUploading && <Progress value={uploadProgress} />}
-              {errors.thumbnail_url && (
-                <p className="text-xs text-destructive">{errors.thumbnail_url.message}</p>
-              )}
+
+              {errors.image && <p className="text-xs text-destructive">{errors.image.message}</p>}
             </div>
 
             <DialogFooter>
