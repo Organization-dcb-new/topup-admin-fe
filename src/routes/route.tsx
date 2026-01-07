@@ -8,6 +8,7 @@ import CategoryPage from '@/pages/Category'
 import ProductPage from '@/pages/Product'
 import PaymentMethodPage from '@/pages/PaymentMethod'
 import ProviderPages from '@/pages/Provider'
+import PaymentDetailPage from '@/pages/TransactionDetail'
 
 export const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
       {
         path: 'transactions',
         element: <TransactionPage />,
+      },
+      {
+        path: 'transactions/:paymentId', 
+        element: <PaymentDetailPage />,
       },
       {
         path: 'games',

@@ -1,8 +1,21 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import type { Payment } from '@/types/transaction'
+import { Link } from 'react-router-dom'
 
 export const paymentColumns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: 'id',
+    header: 'Trx ID',
+    cell: ({ row }) => (
+      <Link
+        to={`/transactions/${row.original.id}`}
+        className="text-blue-600 hover:underline font-medium"
+      >
+        {row.original.id}
+      </Link>
+    ),
+  },
   {
     accessorKey: 'payment_number',
     header: 'Payment No',
