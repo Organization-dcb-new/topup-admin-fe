@@ -7,11 +7,27 @@ import { useGetProducts } from '@/hooks/useProduct'
 import { productColumns } from '@/tables/table-product'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import ProductsSearchInput from '@/components/Product/SearchProduct'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export default function ProductPage() {
+  const [search, setSearch] = useState('')
+  const [isActive, setIsActive] = useState(false)
+
+  const debouncedSearch = useDebounce(search, 500)
+
   const [page, setPage] = useState(1)
   const limit = 25
-  const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProducts(page, limit)
+  const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProducts(
+    page,
+    limit,
+    search,
+    isActive
+  )
+
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearch])
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
@@ -23,6 +39,14 @@ export default function ProductPage() {
   }, [isSuccess, isError])
   return (
     <DashboardLayout>
+      <div className="mb-4 flex justify-between">
+        <ProductsSearchInput
+          search={search}
+          isActive={isActive}
+          onSearchChange={setSearch}
+          onActiveChange={setIsActive}
+        />
+      </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Products" />}
       {isSuccess && (

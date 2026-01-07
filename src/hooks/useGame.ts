@@ -1,6 +1,8 @@
 import { api } from '@/api/axios'
+import type { FormValuesChangeImage } from '@/components/Games/UploadImageModal'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 export function useGetGames(
   search: string,
@@ -67,4 +69,27 @@ export const useUpdateGame = (id: string) => {
   return useMutation({
     mutationFn: (payload: any) => api.patch(`/games/${id}`, payload),
   })
+}
+
+export function useUpdateImageGame(setOpen: (open: boolean) => void) {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (values: FormValuesChangeImage) => {
+      const payload = {
+        ...values,
+      }
+
+      const res = await api.patch(`/games/image`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Image updated')
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+      setOpen(false)
+    },
+    onError: () => toast.error('Failed to update image Game'),
+  })
+
+  return mutation
 }
