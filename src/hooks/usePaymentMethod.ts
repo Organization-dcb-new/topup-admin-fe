@@ -1,6 +1,5 @@
 import { api } from '@/api/axios'
-import type { FormValuesPaymentMethod } from '@/components/PaymentMethod/EditPaymentMethodModal'
-import type { PaymentMethodResponse } from '@/types/payment-method'
+import type { FormValuesPaymentMethod, PaymentMethodResponse } from '@/types/payment-method'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
