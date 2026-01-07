@@ -2,6 +2,17 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import type { Payment } from '@/types/transaction'
 import { Link } from 'react-router-dom'
+import { format, isValid } from 'date-fns'
+import { id } from 'date-fns/locale'
+
+export function parseBackendDate(raw?: string): Date | null {
+  if (!raw) return null
+
+  const cleaned = raw.replace(' WIB', '').replace(/ /, 'T').replace(/ \+/, '+')
+
+  const date = new Date(cleaned)
+  return isValid(date) ? date : null
+}
 
 export const paymentColumns: ColumnDef<Payment>[] = [
   {
@@ -54,20 +65,9 @@ export const paymentColumns: ColumnDef<Payment>[] = [
     accessorKey: 'created_at',
     header: 'Created At',
     cell: ({ row }) => {
-      const raw = row.original.created_at
+      const date = parseBackendDate(row.original.created_at)
 
-      const iso = raw.replace(' WIB', '').replace(' ', 'T').replace(' +0700', '+07:00')
-
-      const date = new Date(iso)
-
-      return date.toLocaleString('id-ID', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-      })
+      return date ? format(date, 'dd MMM yyyy, HH:mm:ss', { locale: id }) : '-'
     },
   },
 ]
