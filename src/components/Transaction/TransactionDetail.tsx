@@ -2,7 +2,8 @@ import { Button } from '../ui/button'
 import { DashboardLayout } from '../Layout/dashboard-layout'
 import { ArrowLeft } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { format, parse } from 'date-fns'
+
+import { format, isValid } from 'date-fns'
 import { id } from 'date-fns/locale'
 
 export interface PaymentDetail {
@@ -26,9 +27,9 @@ type Props = {
 export default function PaymentDetail({ data }: Props) {
   const navigate = useNavigate()
 
-  const rawDate = data.created_at.replace(' WIB', '')
+  const createdAt = data.created_at
+  const date = createdAt ? new Date(createdAt) : null
 
-  const parsedDate = parse(rawDate, 'yyyy-MM-dd HH:mm:ss.SSSSSS xxxx', new Date())
   return (
     <DashboardLayout>
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
@@ -65,7 +66,8 @@ export default function PaymentDetail({ data }: Props) {
             </div>
 
             <p className="text-gray-500">
-              Created at {format(parsedDate, 'dd MMM yyyy, HH:mm', { locale: id })}
+              Created at{' '}
+              {date && isValid(date) ? format(date, 'dd MMM yyyy, HH:mm', { locale: id }) : '-'}
             </p>
           </div>
 
