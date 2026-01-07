@@ -32,7 +32,7 @@ export const paymentColumns: ColumnDef<Payment>[] = [
       const status = row.original.status
 
       const variant =
-        status === 'PAID' ? 'default' : status === 'PENDING' ? 'outline' : 'destructive'
+        status === 'SUCCESS' ? 'default' : status === 'PENDING' ? 'outline' : 'destructive'
 
       return <Badge variant={variant}>{status}</Badge>
     },
@@ -40,6 +40,21 @@ export const paymentColumns: ColumnDef<Payment>[] = [
   {
     accessorKey: 'created_at',
     header: 'Created At',
-    cell: ({ row }) => new Date(row.original.created_at).toLocaleString('id-ID'),
+    cell: ({ row }) => {
+      const raw = row.original.created_at
+
+      const iso = raw.replace(' WIB', '').replace(' ', 'T').replace(' +0700', '+07:00')
+
+      const date = new Date(iso)
+
+      return date.toLocaleString('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })
+    },
   },
 ]

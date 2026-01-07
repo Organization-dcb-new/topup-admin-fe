@@ -1,3 +1,5 @@
+import type { PaginationMeta } from './game'
+
 export interface PaymentGuide {
   en: string
   id: string
@@ -8,7 +10,7 @@ export interface Payment {
   payment_number: string
   order_id: string
   amount: number
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED'
   payment_method_id: string
   payment_channel: string
   payment_url: string
@@ -22,5 +24,6 @@ export interface Payment {
 export interface PaymentResponse {
   data: Payment[]
   message: string
+  meta: PaginationMeta
   status: string
 }

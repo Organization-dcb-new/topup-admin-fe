@@ -57,8 +57,6 @@ export function CreateGameModal() {
       inputs,
     }
 
-    console.log(payload)
-
     await mutateAsync(payload as any, {
       onSuccess: () => {
         toast.success('Game success added')

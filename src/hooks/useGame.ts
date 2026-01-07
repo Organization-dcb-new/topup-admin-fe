@@ -62,3 +62,9 @@ export const useDeleteGame = (id: string) => {
     },
   })
 }
+
+export const useUpdateGame = (id: string) => {
+  return useMutation({
+    mutationFn: (payload: any) => api.patch(`/games/${id}`, payload),
+  })
+}

@@ -62,6 +62,7 @@ export const gameColumns = (): ColumnDef<Game>[] => [
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
         <DeleteGameModal id={row.original.id} />
+        {/* <EditGameModal game={row.original} /> */}
       </div>
     ),
   },
