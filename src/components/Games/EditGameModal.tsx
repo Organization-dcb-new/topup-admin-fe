@@ -70,11 +70,20 @@ export default function EditGameModal({ game }: EditGameModalProps) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                className="cursor-pointer"
+              >
                 Cancel
               </Button>
 
-              <Button type="submit" disabled={updateGameMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={updateGameMutation.isPending}
+                className="cursor-pointer"
+              >
                 {updateGameMutation.isPending ? 'Saving...' : 'Save'}
               </Button>
             </DialogFooter>
