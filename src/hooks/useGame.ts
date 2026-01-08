@@ -1,4 +1,5 @@
 import { api } from '@/api/axios'
+import type { FormValuesEditGame } from '@/components/Games/EditGameModal'
 import type { FormValuesChangeImage } from '@/components/Games/UploadImageModal'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -65,12 +66,6 @@ export const useDeleteGame = (id: string) => {
   })
 }
 
-export const useUpdateGame = (id: string) => {
-  return useMutation({
-    mutationFn: (payload: any) => api.patch(`/games/${id}`, payload),
-  })
-}
-
 export function useUpdateImageGame(setOpen: (open: boolean) => void) {
   const queryClient = useQueryClient()
 
@@ -89,6 +84,29 @@ export function useUpdateImageGame(setOpen: (open: boolean) => void) {
       setOpen(false)
     },
     onError: () => toast.error('Failed to update image Game'),
+  })
+
+  return mutation
+}
+
+export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (values: FormValuesEditGame) => {
+      const payload = {
+        ...values,
+      }
+
+      const res = await api.put(`/games/${id}`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Game updated')
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+      setOpen(false)
+    },
+    onError: () => toast.error('Failed to update Game'),
   })
 
   return mutation
