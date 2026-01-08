@@ -159,11 +159,20 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setOpen(false)}
+                className="cursor-pointer"
+              >
                 Cancel
               </Button>
 
-              <Button type="submit" disabled={updateImageMutation.isPending || isUploading}>
+              <Button
+                type="submit"
+                disabled={updateImageMutation.isPending || isUploading}
+                className="cursor-pointer"
+              >
                 {updateImageMutation.isPending ? 'Saving...' : 'Update'}
               </Button>
             </DialogFooter>
