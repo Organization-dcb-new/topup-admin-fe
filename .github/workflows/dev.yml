@@ -37,7 +37,7 @@ jobs:
 
             IMAGE_NAME=topup-admin-fe
             CONTAINER_NAME=topup-admin-fe
-            HOST_PORT=3000
+            HOST_PORT=4173
             CONTAINER_PORT=4173
 
             echo "Stopping old container..."
