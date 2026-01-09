@@ -20,6 +20,7 @@ interface EditGameModalProps {
 
 export interface FormValuesEditGame {
   name: string
+  is_show: boolean
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
@@ -37,6 +38,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
     reset({
       name: game.name,
+      is_show: game.is_show,
     })
   }, [open, game, reset])
 
@@ -59,14 +61,33 @@ export default function EditGameModal({ game }: EditGameModalProps) {
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1">
-              <Label>Name</Label>
-              <Input
-                {...register('name', {
-                  required: 'Name is required',
-                })}
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+            <div className="space-y-4">
+              {/* Name Input */}
+              <div className="flex flex-col space-y-1">
+                <Label htmlFor="name" className="font-medium text-sm text-gray-700">
+                  Name
+                </Label>
+                <Input
+                  id="name"
+                  {...register('name', { required: 'Name is required' })}
+                  placeholder="Enter game name"
+                  className="w-full"
+                />
+                {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
+              </div>
+
+              {/* isShow Checkbox */}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  {...register('is_show')}
+                  id="isShow"
+                  className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+                <Label htmlFor="isShow" className="text-gray-700 font-medium cursor-pointer">
+                  Show Game
+                </Label>
+              </div>
             </div>
 
             <DialogFooter>

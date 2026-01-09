@@ -16,6 +16,7 @@ export interface Game {
   developer: string
   publisher: string
   is_featured: boolean
+  is_show: boolean
   is_active: boolean
   popularity_score: number
   created_at: string
