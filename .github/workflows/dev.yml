@@ -37,7 +37,8 @@ jobs:
 
             IMAGE_NAME=topup-admin-fe
             CONTAINER_NAME=topup-admin-fe
-            PORT=3000
+            HOST_PORT=3000
+            CONTAINER_PORT=4173
 
             echo "Stopping old container..."
             docker stop $CONTAINER_NAME || true
@@ -69,7 +70,7 @@ jobs:
             echo "Starting FE container..."
             docker run -d \
               --name $CONTAINER_NAME \
-              -p $PORT:80 \
+              -p $HOST_PORT:$CONTAINER_PORT \
               --restart unless-stopped \
               $IMAGE_NAME:latest || { echo 'Failed to start container'; exit 1; }
 
