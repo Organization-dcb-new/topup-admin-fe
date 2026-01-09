@@ -13,7 +13,6 @@ export default defineConfig({
   },
   preview: {
     host: true,
-    port: 3000,
-    allowedHosts: ['dev-dashboard.pakargaming.id', 'localhost'],
+    allowedHosts: ['all'],
   },
 })
