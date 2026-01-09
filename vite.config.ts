@@ -11,4 +11,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  preview: {
+    host: true,
+    port: 3000,
+    allowedHosts: ['dev-dashboard.pakargaming.id', 'localhost'],
+  },
 })
