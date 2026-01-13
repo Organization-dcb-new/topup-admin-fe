@@ -9,6 +9,7 @@ import ProductPage from '@/pages/Product'
 import PaymentMethodPage from '@/pages/PaymentMethod'
 import ProviderPages from '@/pages/Provider'
 import PaymentDetailPage from '@/pages/TransactionDetail'
+import BannerPage from '@/pages/Banner'
 
 export const router = createBrowserRouter([
   {
@@ -23,11 +24,16 @@ export const router = createBrowserRouter([
         element: <DashboardPage />,
       },
       {
+        path: 'banners',
+        element: <BannerPage />,
+      },
+      {
         path: 'transactions',
         element: <TransactionPage />,
       },
+
       {
-        path: 'transactions/:paymentId', 
+        path: 'transactions/:paymentId',
         element: <PaymentDetailPage />,
       },
       {

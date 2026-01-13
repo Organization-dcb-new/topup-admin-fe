@@ -1,5 +1,5 @@
 // sidebar-menu.ts
-import { Home, CreditCard, Boxes, Gamepad2, Wallet } from 'lucide-react'
+import { Home, CreditCard, Boxes, Gamepad2, Wallet, GalleryHorizontal } from 'lucide-react'
 import { MdOutlineCategory, MdCorporateFare } from 'react-icons/md'
 
 export type SidebarMenu = {
@@ -25,6 +25,11 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Transactions',
         icon: Wallet,
         path: '/transactions',
+      },
+      {
+        label: 'Banner',
+        icon: GalleryHorizontal,
+        path: '/banners',
       },
     ],
   },
