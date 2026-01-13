@@ -20,7 +20,7 @@ export interface CategoryResponse {
 export type FormValuesCategory = {
   name: string
   description: string
-  icon_url: string
+  icon_url?: string
 }
 
 export type CategoryPayload = {

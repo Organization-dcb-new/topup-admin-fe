@@ -105,12 +105,7 @@ export function EditCategoryModal({ category }: PropsEditModal) {
             </div>
 
             {/* Icon (register hidden) */}
-            <input
-              type="hidden"
-              {...register('icon_url', {
-                required: 'Icon is required',
-              })}
-            />
+            <input type="hidden" {...register('icon_url')} />
 
             {/* Drag Upload */}
             <div className="space-y-2">
@@ -166,10 +161,6 @@ export function EditCategoryModal({ category }: PropsEditModal) {
               />
 
               {isUploading && <Progress value={uploadProgress} />}
-
-              {errors.icon_url && (
-                <p className="text-xs text-destructive">{errors.icon_url.message}</p>
-              )}
             </div>
 
             <DialogFooter>
