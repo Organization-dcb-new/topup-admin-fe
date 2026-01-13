@@ -22,7 +22,7 @@ interface EditGameModalProps {
 export interface FormValuesEditGame {
   name: string
   is_show: boolean
-  category_id: string
+  category_id?: string
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
@@ -49,7 +49,10 @@ export default function EditGameModal({ game }: EditGameModalProps) {
   const updateGameMutation = useUpdateGame(setOpen, game.id)
 
   const onSubmit = (values: FormValuesEditGame) => {
-    updateGameMutation.mutate(values)
+    updateGameMutation.mutate({
+      ...values,
+      category_id: values.category_id || undefined,
+    })
   }
 
   return (
@@ -87,20 +90,16 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
                 <select
                   id="category_id"
-                  {...register('category_id', { required: 'Category is required' })}
+                  {...register('category_id')}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
-                  <option value="">-- Select Category --</option>
+                  <option value="">-- Optional Category --</option>
                   {data?.data?.map((category: any) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
                   ))}
                 </select>
-
-                {errors.category_id && (
-                  <p className="text-sm text-red-500 mt-1">{errors.category_id.message}</p>
-                )}
               </div>
 
               {/* isShow Checkbox */}
