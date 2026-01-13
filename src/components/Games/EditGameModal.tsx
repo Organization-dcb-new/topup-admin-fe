@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useGetCategories } from '@/hooks/useCategory'
 
 interface EditGameModalProps {
   game: Game
@@ -21,10 +22,12 @@ interface EditGameModalProps {
 export interface FormValuesEditGame {
   name: string
   is_show: boolean
+  category_id: string
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
   const [open, setOpen] = useState(false)
+  const { data } = useGetCategories()
 
   const {
     register,
@@ -39,6 +42,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
     reset({
       name: game.name,
       is_show: game.is_show,
+      category_id: game.category_id,
     })
   }, [open, game, reset])
 
@@ -74,6 +78,29 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                   className="w-full"
                 />
                 {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
+              </div>
+              {/* Category Select */}
+              <div className="flex flex-col space-y-1">
+                <Label htmlFor="category_id" className="font-medium text-sm text-gray-700">
+                  Category
+                </Label>
+
+                <select
+                  id="category_id"
+                  {...register('category_id', { required: 'Category is required' })}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">-- Select Category --</option>
+                  {data?.data?.map((category: any) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+
+                {errors.category_id && (
+                  <p className="text-sm text-red-500 mt-1">{errors.category_id.message}</p>
+                )}
               </div>
 
               {/* isShow Checkbox */}
