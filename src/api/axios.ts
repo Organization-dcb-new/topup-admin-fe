@@ -2,14 +2,14 @@ import { authStorage } from '@/lib/auth'
 import axios from 'axios'
 
 // Dev
-// export const api = axios.create({
-//   baseURL: 'https://dev-api.pakargaming.id/v1',
-// })
+export const api = axios.create({
+  baseURL: 'https://dev-api.pakargaming.id/v1',
+})
 
 //Local
-export const api = axios.create({
-  baseURL: 'http://127.0.0.1:4001/v1',
-})
+// export const api = axios.create({
+//   baseURL: 'http://127.0.0.1:4001/v1',
+// })
 
 function isTokenExpired(token: string) {
   try {
