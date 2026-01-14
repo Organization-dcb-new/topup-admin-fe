@@ -14,14 +14,14 @@ import { Pencil, UploadCloud } from 'lucide-react'
 
 import { handleFileAutoUpload } from '@/helpers/upload'
 import type { Product } from '@/types/product'
-import { useUpdateImageProduct } from '@/hooks/useProduct'
+import { useUpdateImageProductV2 } from '@/hooks/useProduct'
 
 type PropsImageProducts = {
   product: Product
   image: string
 }
 
-export type FormValuesChangeImageProduct = {
+export type FormValuesChangeImageProductV2 = {
   image: string
   product_id: string
 }
@@ -39,9 +39,9 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesChangeImageProduct>()
+  } = useForm<FormValuesChangeImageProductV2>()
 
-  const updateImageMutation = useUpdateImageProduct(() => setOpen(false))
+  const updateImageMutation = useUpdateImageProductV2(() => setOpen(false))
 
   useEffect(() => {
     if (!open) return
@@ -64,7 +64,7 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
     })
   }
 
-  const onSubmit = (values: FormValuesChangeImageProduct) => {
+  const onSubmit = (values: FormValuesChangeImageProductV2) => {
     updateImageMutation.mutate({
       product_id: product.id,
       image: values.image,

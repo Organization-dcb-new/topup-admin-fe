@@ -36,7 +36,7 @@ export type FormValuesCategory = {
 
 export type CategoryPayload = {
   name: string
-  icon_url: string
+  icon_url?: string
   description: string
 }
 

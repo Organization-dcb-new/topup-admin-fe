@@ -47,7 +47,7 @@ export default function ProductPage() {
           onSearchChange={setSearch}
           onActiveChange={setIsActive}
         />
-        <ChangeImageByGame product={data?.data} />
+        <ChangeImageByGame />
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Products" />}
