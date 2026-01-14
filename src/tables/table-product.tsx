@@ -23,6 +23,11 @@ export const productColumns: ColumnDef<Product>[] = [
     header: 'Name',
   },
   {
+    accessorFn: (row) => row.game?.name || '-', 
+    id: 'game_name', 
+    header: 'Game Name',
+  },
+  {
     accessorKey: 'sku',
     header: 'SKU',
   },

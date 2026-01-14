@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import ProductsSearchInput from '@/components/Product/SearchProduct'
 import { useDebounce } from '@/hooks/useDebounce'
+import { ChangeImageByGame } from '@/components/Product/ChangeImage'
 
 export default function ProductPage() {
   const [search, setSearch] = useState('')
@@ -46,6 +47,7 @@ export default function ProductPage() {
           onSearchChange={setSearch}
           onActiveChange={setIsActive}
         />
+        <ChangeImageByGame product={data?.data} />
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Products" />}

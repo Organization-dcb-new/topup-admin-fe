@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useGetCategories } from '@/hooks/useCategory'
+import { useGetCategoriesName } from '@/hooks/useCategory'
 
 interface EditGameModalProps {
   game: Game
@@ -27,7 +27,8 @@ export interface FormValuesEditGame {
 
 export default function EditGameModal({ game }: EditGameModalProps) {
   const [open, setOpen] = useState(false)
-  const { data } = useGetCategories()
+
+  const { data: DataCategory } = useGetCategoriesName()
 
   const {
     register,
@@ -94,25 +95,12 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">-- Optional Category --</option>
-                  {data?.data?.map((category: any) => (
+                  {DataCategory?.data?.map((category: any) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
                   ))}
                 </select>
-              </div>
-
-              {/* isShow Checkbox */}
-              <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  {...register('is_show')}
-                  id="isShow"
-                  className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                <Label htmlFor="isShow" className="text-gray-700 font-medium cursor-pointer">
-                  Show Game
-                </Label>
               </div>
             </div>
 

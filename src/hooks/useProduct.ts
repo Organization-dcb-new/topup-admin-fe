@@ -1,5 +1,5 @@
 import { api } from '@/api/axios'
-import type { FormValuesChangeImageProduct } from '@/components/Product/UploadImage'
+import type { FormValuesProductImage } from '@/components/Product/ChangeImage'
 import type { ProductResponse } from '@/types/product'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -25,12 +25,12 @@ export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: async (values: FormValuesChangeImageProduct) => {
+    mutationFn: async (values: FormValuesProductImage) => {
       const payload = {
         ...values,
       }
 
-      const res = await api.patch(`/products/image`, payload)
+      const res = await api.patch(`/products/by-game`, payload)
       return res.data
     },
     onSuccess: () => {

@@ -19,3 +19,5 @@ export type BannerPayload = {
   image: string
   redirect_link: string
 }
+
+

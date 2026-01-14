@@ -9,7 +9,6 @@ import { useGetGames } from '@/hooks/useGame'
 import { gameColumns } from '@/tables/table-game'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { CreateGameModal } from '@/components/Games/CreateGameModal'
 
 export default function GamePage() {
   const [search, setSearch] = useState('')
@@ -41,7 +40,7 @@ export default function GamePage() {
     <DashboardLayout>
       <div className="mb-4 flex justify-between">
         <GameSearchInput value={search} onChange={setSearch} />
-        <CreateGameModal />
+        {/* <CreateGameModal /> */}
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Games" />}

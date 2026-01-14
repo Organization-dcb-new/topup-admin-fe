@@ -10,6 +10,7 @@ import PaymentMethodPage from '@/pages/PaymentMethod'
 import ProviderPages from '@/pages/Provider'
 import PaymentDetailPage from '@/pages/TransactionDetail'
 import BannerPage from '@/pages/Banner'
+import ShowPage from '@/pages/Show'
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <DashboardPage />,
+      },
+      {
+        path: 'shows',
+        element: <ShowPage />,
       },
       {
         path: 'banners',

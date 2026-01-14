@@ -1,4 +1,4 @@
-import type { PaginationMeta } from './game'
+import type { Game, PaginationMeta } from './game'
 
 export interface ProductMetaData {
   min: number
@@ -22,6 +22,7 @@ export interface Product {
   sort_order: number
   created_at: string
   updated_at: string
+  game: Game
 }
 
 export interface ProductResponse {

@@ -111,3 +111,26 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
 
   return mutation
 }
+
+export function useGetGameNames() {
+  return useQuery({
+    queryKey: ['game-names'],
+    queryFn: async () => {
+      const res = await api.get('/games/names')
+      return res.data.data
+    },
+  })
+}
+
+export function useToggleGameShow(id: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (is_show: boolean) => api.put(`/games/${id}`, { is_show }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['shows'] })
+    },
+  })
+}

@@ -1,5 +1,5 @@
 import { api } from '@/api/axios'
-import type { CategoryPayload, CategoryResponse, FormValuesCategory } from '@/types/category'
+import type { CategoriesNameResponse, CategoryPayload, CategoryResponse, FormValuesCategory } from '@/types/category'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import slugify from 'slugify'
@@ -92,3 +92,12 @@ export function useDeleteCategory(id: string) {
 
   return mutation
 }
+
+export const useGetCategoriesName = () =>
+  useQuery<CategoriesNameResponse>({
+    queryKey: ['categories-names'],
+    queryFn: async () => {
+      const res = await api.get('/categories/names')
+      return res.data
+    },
+  })

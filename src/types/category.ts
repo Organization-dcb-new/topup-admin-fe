@@ -10,11 +10,22 @@ export interface Category {
   updated_at: string
 }
 
+export interface CategoryNames {
+  id: string
+  name: string
+}
+
 export interface CategoryResponse {
   data: Category[]
   message: string
   status: string
   meta: PaginationMeta
+}
+
+export interface CategoriesNameResponse {
+  data: CategoryNames[]
+  message: string
+  status: string
 }
 
 export type FormValuesCategory = {
