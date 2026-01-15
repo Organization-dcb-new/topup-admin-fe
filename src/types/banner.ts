@@ -12,6 +12,7 @@ export interface BannerResponse {
 
 export type FormValuesBanner = {
   image: string
+  
   redirect_link: string
 }
 
