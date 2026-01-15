@@ -1,0 +1,10 @@
+services:
+  fe-dashboard:
+    image: fe-dashboard:dev
+    container_name: fe-dashboard-dev
+    build:
+      context: .
+    ports:
+      - '4173:4173'
+
+    restart: unless-stopped

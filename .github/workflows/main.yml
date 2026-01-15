@@ -1,14 +1,14 @@
-name: Deploy Dev PakarGaming Dashboard
+name: Deploy Prod PakarGaming Dashboard
 
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
-    name: Deploy Dashboard (Dev)
-    runs-on: [self-hosted, dev]
+    name: Deploy Dashboard (Prod)
+    runs-on: [self-hosted, prod]
 
     steps:
       - name: Checkout repository
@@ -25,6 +25,6 @@ jobs:
           echo "Listing files"
           ls -la
 
-          docker compose -f docker-compose.dev.yml down || true
-          docker compose -f docker-compose.dev.yml build
-          docker compose -f docker-compose.dev.yml up -d
+          docker compose -f docker-compose.prod.yml down || true
+          docker compose -f docker-compose.prod.yml build
+          docker compose -f docker-compose.prod.yml up -d

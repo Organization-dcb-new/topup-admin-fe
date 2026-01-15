@@ -1,10 +1,15 @@
 import { authStorage } from '@/lib/auth'
 import axios from 'axios'
 
-// Dev
+// PROD
 export const api = axios.create({
-  baseURL: 'https://dev-api.pakargaming.id/v1',
+  baseURL: 'https://api.pakargaming.id/v1',
 })
+
+// Dev
+// export const api = axios.create({
+//   baseURL: 'https://dev-api.pakargaming.id/v1',
+// })
 
 //Local
 // export const api = axios.create({
