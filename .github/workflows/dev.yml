@@ -1,77 +1,37 @@
-name: Deploy TopUp FE Service (Dev)
+name: Deploy Dev PakarGaming Dashboard
 
 on:
   push:
-    branches: ['main']
+    branches:
+      - dev
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    name: Deploy Dashboard (Dev)
+    runs-on: self-hosted
 
     steps:
-      - name: Setup SSH
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy Dashboard
+        shell: bash
         run: |
-          mkdir -p ~/.ssh
-          printf "%s\n" "${{ secrets.DEV_PRIVKEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p 6623 -H ${{ secrets.DEV_HOST }} >> ~/.ssh/known_hosts
+          set -e
 
-      - name: Deploy to Remote Server
-        uses: appleboy/ssh-action@v1.1.0
-        with:
-          host: ${{ secrets.DEV_HOST }}
-          username: ${{ secrets.DEV_USER }}
-          key: ${{ secrets.DEV_PRIVKEY }}
-          port: ${{ secrets.DEV_PORT }}
-          script: |
-            echo "Navigating to FE directory..."
-            cd topup-admin-fe || { echo 'Directory not found'; exit 1; }
+          echo "Workspace: $GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
 
-            echo "Checking connectivity to GitHub..."
-            ping -c 1 -W 5 github.com >/dev/null 2>&1 || {
-              echo "GitHub not reachable"; exit 1;
-            }
+          echo "Listing files"
+          ls -la
 
-            echo "Pulling latest code..."
-            git pull origin main || { echo 'Git pull failed'; exit 1; }
+          echo "Stopping existing containers"
+          docker compose down || true
 
-            IMAGE_NAME=topup-admin-fe
-            CONTAINER_NAME=topup-admin-fe
-            HOST_PORT=4173
-            CONTAINER_PORT=4173
+          echo "Building image"
+          docker compose build
 
-            echo "Stopping old container..."
-            docker stop $CONTAINER_NAME || true
-            docker rm $CONTAINER_NAME || true
+          echo "Starting containers"
+          docker compose up -d
 
-            echo "Saving old image as backup..."
-            docker image inspect $IMAGE_NAME:latest >/dev/null 2>&1 \
-              && docker tag $IMAGE_NAME:latest $IMAGE_NAME:backup || true
-
-            echo "Removing old image..."
-            docker image rm -f $IMAGE_NAME:latest || true
-            docker image prune -f || true
-
-            echo "Building new FE image..."
-            if docker build -t $IMAGE_NAME:latest .; then
-              echo "Build success! Removing backup..."
-              docker image rm $IMAGE_NAME:backup || true
-            else
-              echo "Build failed! Rolling back..."
-              if docker image inspect $IMAGE_NAME:backup >/dev/null 2>&1; then
-                docker tag $IMAGE_NAME:backup $IMAGE_NAME:latest
-                docker image rm $IMAGE_NAME:backup || true
-              else
-                echo "No backup image available"
-                exit 1
-              fi
-            fi
-
-            echo "Starting FE container..."
-            docker run -d \
-              --name $CONTAINER_NAME \
-              -p $HOST_PORT:$CONTAINER_PORT \
-              --restart unless-stopped \
-              $IMAGE_NAME:latest || { echo 'Failed to start container'; exit 1; }
-
-            echo "Deploy FE Development Success!"
+          echo "Deploy Dev Dashboard SUCCESS"
