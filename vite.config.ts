@@ -13,6 +13,6 @@ export default defineConfig({
   },
   preview: {
     host: true,
-    allowedHosts: ['dev-dashboard.pakargaming.id'],
+    allowedHosts: ['dev-dashboard.pakargaming.id','dashboard.pakargaming.id'],
   },
 })
