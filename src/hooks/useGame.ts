@@ -22,8 +22,10 @@ export function useGetGames(
           image,
         },
       })
+
       return data
     },
+
     staleTime: 5000,
   })
 }

@@ -22,7 +22,7 @@ export const handleFileAutoUpload = async ({
   if (!validateFileImage(file)) return
   const localPreview = URL.createObjectURL(file)
   setPreview(localPreview)
-  try {
+  try { 
     setIsUploading(true)
     setUploadProgress(0)
 
