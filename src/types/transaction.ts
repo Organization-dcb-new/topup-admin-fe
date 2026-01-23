@@ -10,7 +10,7 @@ export interface Payment {
   payment_number: string
   order_id: string
   amount: number
-  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'EXPIRED'
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
   payment_method_id: string
   payment_channel: string
   payment_url: string

@@ -7,7 +7,7 @@ export const validateFileImage = (file: File) => {
     return false
   }
   if (file.size > MAX_FILE_SIZE) {
-    toast.error('Max image size 2MB')
+    toast.error('Max image size 10MB')
     return false
   }
   return true

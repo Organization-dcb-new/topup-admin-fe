@@ -56,7 +56,7 @@ export const paymentColumns: ColumnDef<Payment>[] = [
       const status = row.original.status
 
       const variant =
-        status === 'SUCCESS' ? 'default' : status === 'PENDING' ? 'outline' : 'destructive'
+        status === 'PAID' ? 'success' : status === 'PENDING' ? 'outline' : 'destructive'
 
       return <Badge variant={variant}>{status}</Badge>
     },

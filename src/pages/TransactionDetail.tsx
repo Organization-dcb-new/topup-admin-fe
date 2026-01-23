@@ -11,7 +11,7 @@ export default function PaymentDetailPage() {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['payment-detail', paymentId],
     queryFn: async () => {
-      const res = await api.get(`/payments/${paymentId}`)
+      const res = await api.get(`/transactions/detail/${paymentId}`)
       return res.data.data
     },
     enabled: !!paymentId,
