@@ -12,6 +12,7 @@ import PaymentDetailPage from '@/pages/TransactionDetail'
 import BannerPage from '@/pages/Banner'
 import ShowPage from '@/pages/Show'
 import InputPages from '@/pages/Input'
+import OrderPages from '@/pages/Order'
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +29,10 @@ export const router = createBrowserRouter([
       {
         path: 'shows',
         element: <ShowPage />,
+      },
+      {
+        path: 'orders',
+        element: <OrderPages />,
       },
       {
         path: 'banners',
