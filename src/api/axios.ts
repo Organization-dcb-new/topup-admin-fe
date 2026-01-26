@@ -2,9 +2,9 @@ import { authStorage } from '@/lib/auth'
 import axios from 'axios'
 
 // PROD
-// export const api = axios.create({
-//   baseURL: 'https://api.pakargaming.id/v1',
-// })
+export const api = axios.create({
+  baseURL: 'https://api.pakargaming.id/v1',
+})
 
 // Dev
 // export const api = axios.create({
@@ -12,9 +12,9 @@ import axios from 'axios'
 // })
 
 //Local
-export const api = axios.create({
-  baseURL: 'http://127.0.0.1:4001/v1',
-})
+// export const api = axios.create({
+//   baseURL: 'http://127.0.0.1:4001/v1',
+// })
 
 function isTokenExpired(token: string) {
   try {
