@@ -246,6 +246,23 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 </div>
 
                 {/* Config */}
+                <div className="space-y-1">
+                  <Label>Config (JSON)</Label>
+                  <Textarea
+                    rows={4}
+                    className="max-h-32"
+                    placeholder='{"channel":"BCA","expiry":3600}'
+                    {...register('config', {
+                      setValueAs: (v) => {
+                        try {
+                          return JSON.parse(v)
+                        } catch {
+                          return {}
+                        }
+                      },
+                    })}
+                  />
+                </div>
               </div>
             </div>
 
