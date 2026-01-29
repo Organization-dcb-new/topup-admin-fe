@@ -38,3 +38,16 @@ export type FormValuesPaymentMethod = {
   max_amount: number
   sort_order: number
 }
+
+export type FormValuesPaymentMethodEdit = {
+  name: string
+  code: string
+  type: string
+  provider: string
+  icon_url: string
+  fee_percentage: number
+  fee_fixed: number
+  min_amount: number
+  max_amount: number
+  sort_order: number
+}

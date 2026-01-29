@@ -1,5 +1,5 @@
 import { api } from '@/api/axios'
-import type { FormValuesPaymentMethod, PaymentMethodResponse } from '@/types/payment-method'
+import type { FormValuesPaymentMethodEdit, PaymentMethodResponse } from '@/types/payment-method'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
@@ -78,7 +78,7 @@ export function useEditPaymentMethod(paymentMethodId: string, setOpen: (open: bo
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: async (values: FormValuesPaymentMethod) => {
+    mutationFn: async (values: FormValuesPaymentMethodEdit) => {
       const payload = {
         ...values,
       }

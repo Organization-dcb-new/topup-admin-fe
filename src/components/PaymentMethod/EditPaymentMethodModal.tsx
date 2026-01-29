@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Pencil, UploadCloud } from 'lucide-react'
-import type { FormValuesPaymentMethod, PaymentMethod } from '@/types/payment-method'
+import type { FormValuesPaymentMethodEdit, PaymentMethod } from '@/types/payment-method'
 import { useEditPaymentMethod } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
 
@@ -35,7 +35,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormValuesPaymentMethod>()
+  } = useForm<FormValuesPaymentMethodEdit>()
 
   useEffect(() => {
     if (!open || !paymentMethod) return
