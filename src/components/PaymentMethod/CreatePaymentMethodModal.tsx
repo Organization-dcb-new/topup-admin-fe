@@ -14,7 +14,7 @@ import { Progress } from '@/components/ui/progress'
 import { UploadCloud } from 'lucide-react'
 import { useCreatePaymentMethodSubmit, type PaymentMethodPayload } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
-import type { FormValuesPaymentMethod } from '@/types/payment-method'
+import type { FormValuesPaymentMethodCreate } from '@/types/payment-method'
 
 export default function ModalAddPaymentMethod() {
   const [open, setOpen] = useState(false)
@@ -29,7 +29,7 @@ export default function ModalAddPaymentMethod() {
     setValue,
     formState: { errors },
     reset,
-  } = useForm<FormValuesPaymentMethod>()
+  } = useForm<FormValuesPaymentMethodCreate>()
 
   const mutation = useCreatePaymentMethodSubmit({ setOpen })
 
