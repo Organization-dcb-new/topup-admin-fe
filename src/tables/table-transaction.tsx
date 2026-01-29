@@ -32,6 +32,10 @@ export const paymentColumns: ColumnDef<Payment>[] = [
     header: 'Payment No',
   },
   {
+    accessorKey: 'app_name',
+    header: 'App',
+  },
+  {
     accessorKey: 'order_id',
     header: 'Order ID',
   },

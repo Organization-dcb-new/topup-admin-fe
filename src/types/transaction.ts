@@ -17,6 +17,7 @@ export interface Payment {
   qr_code_url: string
   qr_string: string
   va_number: string
+  app_name: string
   guide: PaymentGuide
   created_at: string
 }
