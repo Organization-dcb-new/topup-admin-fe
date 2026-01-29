@@ -10,13 +10,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
 import { UploadCloud } from 'lucide-react'
 import { useCreatePaymentMethodSubmit, type PaymentMethodPayload } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import type { FormValuesPaymentMethod } from '@/types/payment-method'
-
 
 export default function ModalAddPaymentMethod() {
   const [open, setOpen] = useState(false)
@@ -243,14 +241,6 @@ export default function ModalAddPaymentMethod() {
                 {/* Config */}
                 <div className="space-y-1">
                   <Label>Config (JSON)</Label>
-                  <Textarea
-                    {...register('config', { required: 'Config is required' })}
-                    placeholder='{"note":"..."}'
-                    className="max-h-32"
-                  />
-                  {errors.config && (
-                    <p className="text-xs text-destructive">{errors.config.message}</p>
-                  )}
                 </div>
               </div>
             </div>
