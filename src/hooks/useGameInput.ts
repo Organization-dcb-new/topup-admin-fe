@@ -24,10 +24,10 @@ export const useUpdateGameInput = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: { id: string; label: string }) => api.patch(`/game-inputs/label`, payload),
+    mutationFn: (payload: { id: string; label: string, placeholder : string}) => api.patch(`/game-inputs/label`, payload),
 
     onSuccess: () => {
-      toast.success('Label updated')
+      toast.success('Form updated')
       queryClient.invalidateQueries({ queryKey: ['game-inputs'] })
     },
 

@@ -6,6 +6,7 @@ import { Button } from '../ui/button'
 
 interface FormValuesGameInput {
   label: string
+  placeholder: string
 }
 
 export function SingleInputForm({
@@ -27,6 +28,7 @@ export function SingleInputForm({
     updateMutation.mutate({
       id: input.id,
       label: data.label,
+      placeholder: data.placeholder,
     })
   }
 
@@ -55,6 +57,14 @@ export function SingleInputForm({
           }}
         />
         {errors.label && <p className="text-xs text-destructive">{errors.label.message}</p>}
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor={`placeholder-${input.id}`}>Placeholder</Label>
+        <Input
+          id={`placeholder-${input.id}`}
+          {...register('placeholder')}
+          placeholder={input.placeholder}
+        />
       </div>
 
       <Button
