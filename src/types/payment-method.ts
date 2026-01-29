@@ -37,5 +37,4 @@ export type FormValuesPaymentMethod = {
   min_amount: number
   max_amount: number
   sort_order: number
-  config: string
 }
