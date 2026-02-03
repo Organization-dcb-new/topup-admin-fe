@@ -4,7 +4,8 @@ import { ArrowLeft, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { format, isValid } from 'date-fns'
 import { id } from 'date-fns/locale'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
 
 /* =======================
    TYPES
@@ -34,6 +35,7 @@ export interface OrderItem {
   quantity: number
   unit_price: number
   subtotal: number
+  voucher_code?: string
 }
 
 export interface Order {
@@ -54,6 +56,25 @@ type Props = {
   isLoading: boolean
 }
 
+const formatTime = (sec: number) => {
+  const minutes = Math.floor(sec / 60)
+  const seconds = sec % 60
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
+
+const parseWIBDate = (dateString: string) => {
+  if (!dateString) return null
+
+  // Buang timezone & WIB
+  const base = dateString.split(' +')[0] // 2026-02-03 10:56:37.825587
+
+  // Buang milidetik
+  const noMs = base.split('.')[0] // 2026-02-03 10:56:37
+
+  // Jadi ISO
+  return new Date(noMs.replace(' ', 'T')) // 2026-02-03T10:56:37
+}
+
 /* =======================
    MAIN COMPONENT
 ======================= */
@@ -61,7 +82,77 @@ type Props = {
 export default function PaymentDetail({ data, isLoading }: Props) {
   const navigate = useNavigate()
 
-  const date = data?.created_at ? new Date(data.created_at) : null
+  const [voucherCooldown, setVoucherCooldown] = useState(0)
+  const [emailCooldown, setEmailCooldown] = useState(0)
+
+  const VOUCHER_KEY = 'voucherCooldownExpire'
+  const EMAIL_KEY = 'emailCooldownExpire'
+
+  const { mutateAsync, isPending: isResendingVoucher } = useResendVoucherCode()
+  const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } = useResendEmail()
+
+  const date = parseWIBDate(data.created_at)
+
+  const handleResendVoucherCodeEmail = async (id: string) => {
+    await mutateAsync(id)
+
+    const expire = Date.now() + 10 * 60 * 1000
+    localStorage.setItem(VOUCHER_KEY, expire.toString())
+    setVoucherCooldown(Math.floor((expire - Date.now()) / 1000))
+  }
+
+  const handleResendPaymentEmail = async (id: string) => {
+    await resendEmailMutateAsync(id)
+
+    const expire = Date.now() + 10 * 60 * 1000
+    localStorage.setItem(EMAIL_KEY, expire.toString())
+    setEmailCooldown(Math.floor((expire - Date.now()) / 1000))
+  }
+
+  useEffect(() => {
+    const loadCooldown = (key: string, setter: (v: number) => void) => {
+      const saved = localStorage.getItem(key)
+      if (!saved) return
+
+      const diff = Math.floor((Number(saved) - Date.now()) / 1000)
+      if (diff > 0) setter(diff)
+      else localStorage.removeItem(key)
+    }
+
+    loadCooldown(VOUCHER_KEY, setVoucherCooldown)
+    loadCooldown(EMAIL_KEY, setEmailCooldown)
+  }, [])
+
+  useEffect(() => {
+    const startTimer = (
+      cooldown: number,
+      setCooldown: React.Dispatch<React.SetStateAction<number>>,
+      key: string
+    ) => {
+      if (cooldown <= 0) return
+
+      const timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem(key)
+            clearInterval(timer)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+
+      return () => clearInterval(timer)
+    }
+
+    const v = startTimer(voucherCooldown, setVoucherCooldown, VOUCHER_KEY)
+    const e = startTimer(emailCooldown, setEmailCooldown, EMAIL_KEY)
+
+    return () => {
+      v && v()
+      e && e()
+    }
+  }, [voucherCooldown, emailCooldown])
 
   const PaymentAction = data.status === 'PENDING' ? paymentComponentMap[data.payment_channel] : null
 
@@ -104,8 +195,9 @@ export default function PaymentDetail({ data, isLoading }: Props) {
             </div>
 
             <p className="text-gray-500">
-              Created at{' '}
-              {date && isValid(date) ? format(date, 'dd MMM yyyy, HH:mm', { locale: id }) : '-'}
+              <p>
+                {date && isValid(date) ? format(date, 'dd MMM yyyy, HH:mm', { locale: id }) : '-'}
+              </p>
             </p>
           </div>
 
@@ -119,6 +211,38 @@ export default function PaymentDetail({ data, isLoading }: Props) {
               <div className="text-center space-y-2">
                 <p className="text-green-600 text-lg font-semibold">Payment Successful</p>
                 <p className="text-sm text-gray-500">Thank you for your payment</p>
+              </div>
+            )}
+          </div>
+          {/* Voucher Section */}
+          <div className="flex flex-row w-full gap-5 ">
+            {!isLoading && data?.status === 'PAID' && data?.order_item?.voucher_code && (
+              <div className="md:col-span-2 pt-6 flex flex-col items-center gap-3">
+                <p className="text-sm text-gray-500">Resend Voucher Code</p>
+
+                <Button
+                  onClick={() => handleResendVoucherCodeEmail(data.id)}
+                  className="cursor-pointer"
+                  disabled={isResendingVoucher || voucherCooldown > 0}
+                >
+                  {voucherCooldown > 0
+                    ? `Wait ${formatTime(voucherCooldown)}`
+                    : 'Resend Voucher Code'}
+                </Button>
+              </div>
+            )}
+
+            {!isLoading && data?.status === 'PAID' && (
+              <div className="md:col-span-2  pt-6 flex flex-col items-center gap-3">
+                <p className="text-sm text-gray-500">Resend Email</p>
+
+                <Button
+                  onClick={() => handleResendPaymentEmail(data.id)}
+                  className="cursor-pointer"
+                  disabled={isResendingEmail || emailCooldown > 0}
+                >
+                  {emailCooldown > 0 ? `Wait ${formatTime(emailCooldown)}` : 'Resend Payment Email'}
+                </Button>
               </div>
             )}
           </div>

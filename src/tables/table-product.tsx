@@ -3,6 +3,7 @@ import type { Product } from '@/types/product'
 import { Badge } from '@/components/ui/badge'
 import { DEFAULT_GAME_IMAGE } from './table-game'
 import { ChangeImageModalProduct } from '@/components/Product/UploadImage'
+import UpdateProductPriceModal from '@/components/Product/UpdatePrice'
 
 export const productColumns: ColumnDef<Product>[] = [
   {
@@ -23,8 +24,8 @@ export const productColumns: ColumnDef<Product>[] = [
     header: 'Name',
   },
   {
-    accessorFn: (row) => row.game?.name || '-', 
-    id: 'game_name', 
+    accessorFn: (row) => row.game?.name || '-',
+    id: 'game_name',
     header: 'Game Name',
   },
   {
@@ -49,6 +50,18 @@ export const productColumns: ColumnDef<Product>[] = [
       <Badge variant={row.original.is_active ? 'default' : 'secondary'}>
         {row.original.is_active ? 'Active' : 'Inactive'}
       </Badge>
+    ),
+  },
+
+  {
+    accessorKey: 'is_active',
+    header: 'Status',
+    cell: ({ row }) => (
+      <UpdateProductPriceModal
+        basePrice={row.original.base_price}
+        productId={row.original.id}
+        productName={row.original.name}
+      />
     ),
   },
 ]
