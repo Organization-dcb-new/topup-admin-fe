@@ -4,6 +4,8 @@ services:
     container_name: fe-dashboard-dev
     build:
       context: .
+      args:
+        VITE_API_URL: https://api.pakargamin.id/v1
     ports:
       - '4173:4173'
 
