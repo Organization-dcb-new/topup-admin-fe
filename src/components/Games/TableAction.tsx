@@ -3,6 +3,7 @@ import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
 import EditGameModal from './EditGameModal'
 import { DeleteGameModal } from './DeleteGameModal'
+import UpdateBulkProductPriceModal from './EditBulkPriceModal'
 
 export function GameTableActions({ game }: { game: Game }) {
   const toggleMutation = useToggleGameShow(game.id)
@@ -18,6 +19,7 @@ export function GameTableActions({ game }: { game: Game }) {
       {/* Edit */}
       <EditGameModal game={game} />
       <DeleteGameModal id={game.id} />
+      <UpdateBulkProductPriceModal gameId={game.id} />
     </div>
   )
 }

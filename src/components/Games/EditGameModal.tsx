@@ -23,6 +23,7 @@ export interface FormValuesEditGame {
   name: string
   is_show: boolean
   category_id?: string
+  popularity_score?: number
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
@@ -44,6 +45,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
       name: game.name,
       is_show: game.is_show,
       category_id: game.category_id,
+      popularity_score: game.popularity_score,
     })
   }, [open, game, reset])
 
@@ -101,6 +103,23 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="flex flex-col space-y-1">
+                <Label htmlFor="popularity_score" className="font-medium text-sm text-gray-700">
+                  Popularity Score
+                </Label>
+                <Input
+                  id="popularity_score"
+                  {...register('popularity_score', {
+                    required: 'Popularity is required is required',
+                    valueAsNumber: true,
+                  })}
+                  placeholder="Popularity Score"
+                  className="w-full"
+                />
+                {errors.popularity_score && (
+                  <p className="text-sm text-red-500 mt-1">{errors?.popularity_score?.message}</p>
+                )}
               </div>
             </div>
 

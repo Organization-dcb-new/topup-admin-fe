@@ -1,6 +1,7 @@
 import type { UseFormRegister, UseFormSetValue } from 'react-hook-form'
 import type { Category, CategoryResponse } from './category'
 import type { ProviderResponse } from './provider'
+import type { Product } from './product'
 
 export interface Game {
   id: string
@@ -23,7 +24,7 @@ export interface Game {
   updated_at: string
   category: Category
   input: GameInput | null
-  product: unknown | null
+  product: Product[] | null
 }
 
 export type GameInput = {
