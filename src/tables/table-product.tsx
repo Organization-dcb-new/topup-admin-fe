@@ -35,7 +35,7 @@ export const productColumns: ColumnDef<Product>[] = [
   {
     accessorKey: 'selling_price',
     header: 'Price',
-    cell: ({ row }) => `Rp ${row.original.selling_price.toLocaleString('id-ID')}`,
+    cell: ({ row }) => `Rp ${row.original?.selling_price?.toLocaleString('id-ID')}`,
   },
   {
     accessorKey: 'stock_quantity',

@@ -169,11 +169,11 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
           <div className="rounded-lg bg-muted p-3 text-sm space-y-1">
             <div className="flex justify-between">
               <span>Base Price</span>
-              <span>Rp {basePrice.toLocaleString('id-ID')}</span>
+              <span>Rp {basePrice?.toLocaleString('id-ID')}</span>
             </div>
             <div className="flex justify-between font-semibold">
               <span>Selling Price</span>
-              <span>Rp {sellingPrice.toLocaleString('id-ID')}</span>
+              <span>Rp {sellingPrice?.toLocaleString('id-ID')}</span>
             </div>
           </div>
 
