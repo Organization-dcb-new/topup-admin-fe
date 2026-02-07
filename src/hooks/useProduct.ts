@@ -9,7 +9,7 @@ export const useGetProducts = (page: number, limit: number, search: string, isAc
   return useQuery({
     queryKey: ['products', page, limit, search, isActive],
     queryFn: async (): Promise<ProductResponse> => {
-      const res = await api.get('/products', {
+      const res = await api.get('/products/admin', {
         params: {
           page: page,
           limit: limit,

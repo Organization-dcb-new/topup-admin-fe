@@ -22,6 +22,8 @@ export interface Product {
   sort_order: number
   created_at: string
   updated_at: string
+  additional_fee: number
+  additional_percent: number
   game: Game
 }
 
