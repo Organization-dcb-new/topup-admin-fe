@@ -5,8 +5,21 @@ import type { SidebarProps } from '@/types/sidebar'
 import { NavLink } from 'react-router-dom'
 
 import { sidebarMenus } from '@/constants/sidebar-menu'
+import { useAuthUser } from '@/lib/auth'
 
 export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile }: SidebarProps) {
+  const NOC_ALLOWED = ['Dashboard', 'Transactions', 'Order']
+  const { role } = useAuthUser()
+
+  const filteredMenus =
+    role === 'noc'
+      ? sidebarMenus
+          .map((section) => ({
+            ...section,
+            menus: section.menus.filter((menu) => NOC_ALLOWED.includes(menu.label)),
+          }))
+          .filter((section) => section.menus.length > 0)
+      : sidebarMenus
   return (
     <>
       {/* Mobile Overlay */}
@@ -59,7 +72,7 @@ export function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onCloseMobile
 
         {/* Menu */}
         <nav className="flex-1 px-2 py-4 space-y-4">
-          {sidebarMenus.map((section, idx) => (
+          {filteredMenus.map((section, idx) => (
             <div key={idx}>
               {!collapsed && section.title && (
                 <p className="px-3 mb-2 text-xs font-semibold text-muted-foreground uppercase">

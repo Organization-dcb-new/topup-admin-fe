@@ -30,7 +30,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="rounded-md overflow-x-auto border">
-      <Table>
+      <Table className="min-w-max">
         <TableHeader className="bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
