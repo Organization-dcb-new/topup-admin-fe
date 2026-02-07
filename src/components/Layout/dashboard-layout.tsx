@@ -27,7 +27,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         onCloseMobile={() => setMobileOpen(false)}
       />
 
-      <div className="flex-1 min-h-screen bg-gray-50 md:ml-0">
+      <div className="flex-1 min-w-0 min-h-screen bg-gray-50 md:ml-0">
         <Topbar onOpenMobile={() => setMobileOpen(true)} />
         <main className="p-4 md:p-6">{children}</main>
       </div>
