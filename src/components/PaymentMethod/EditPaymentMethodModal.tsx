@@ -7,6 +7,8 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Switch } from '@/components/ui/switch'
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -33,6 +35,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
     register,
     handleSubmit,
     reset,
+    watch,
     setValue,
     formState: { errors },
   } = useForm<FormValuesPaymentMethodEdit>()
@@ -51,6 +54,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
       min_amount: paymentMethod.min_amount,
       max_amount: paymentMethod.max_amount,
       sort_order: paymentMethod.sort_order,
+      is_active: paymentMethod.is_active,
     })
 
     setPreview(paymentMethod.icon_url)
@@ -243,6 +247,27 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       valueAsNumber: true,
                     })}
                   />
+                </div>
+                {/* Status */}
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <input type="hidden" {...register('is_active')} />
+
+                  <div className="flex items-center justify-between rounded-lg border px-3 py-2">
+                    <span className="text-sm">{watch('is_active') ? 'Active' : 'Inactive'}</span>
+
+                    <Switch
+                      checked={watch('is_active')}
+                      onCheckedChange={(v) => setValue('is_active', v)}
+                      disabled={isUploading || updatePaymentMethodMutation.isPending}
+                    />
+                  </div>
+
+                  <p className="text-xs text-muted-foreground">
+                    {watch('is_active')
+                      ? 'Payment method is enabled and visible to users'
+                      : 'Payment method is disabled and hidden from users'}
+                  </p>
                 </div>
               </div>
             </div>
