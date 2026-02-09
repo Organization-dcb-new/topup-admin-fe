@@ -55,6 +55,6 @@ export const gameColumns = (): ColumnDef<Game>[] => [
   {
     id: 'actions',
     header: 'Action',
-    cell: ({ row }) => <GameTableActions game={row.original} />,
+    cell: ({ row }) => <GameTableActions game={row.original} product={row.original.product ?? []} />,
   },
 ]

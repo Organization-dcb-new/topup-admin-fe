@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
+import type { Product } from '@/types/product'
 
 interface FormValues {
   game_id: string
@@ -24,11 +25,14 @@ interface FormValues {
 
 interface Props {
   gameId: string
+  product: Product[]
 }
 
-export default function UpdateBulkProductPriceModal({ gameId }: Props) {
+export default function UpdateBulkProductPriceModal({ gameId, product }: Props) {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+
+  const firstAdditionalPercent = product?.[0]?.additional_percent ?? 0
 
   const {
     register,
@@ -70,7 +74,7 @@ export default function UpdateBulkProductPriceModal({ gameId }: Props) {
         if (state) {
           reset({
             game_id: gameId,
-            additional_percent: 0,
+            additional_percent: firstAdditionalPercent,
           })
         }
       }}

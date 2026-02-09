@@ -64,4 +64,5 @@ export type FormValuesPaymentMethodEdit = {
   min_amount: number
   max_amount: number
   sort_order: number
+  is_active: boolean
 }

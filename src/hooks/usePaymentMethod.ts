@@ -21,7 +21,7 @@ export const useGetPaymentMethods = (page: number, limit: number) => {
   return useQuery({
     queryKey: ['payment-methods', page, limit],
     queryFn: async (): Promise<PaymentMethodResponse> => {
-      const res = await api.get('/payment-methods', {
+      const res = await api.get('/payment-methods/admin', {
         params: {
           page,
           limit,
