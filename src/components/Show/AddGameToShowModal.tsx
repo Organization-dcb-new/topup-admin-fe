@@ -14,22 +14,27 @@ import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { useAddGamesToShow } from '@/hooks/useShow'
 import { useGetGameNames } from '@/hooks/useGame'
+import type { GameV2 } from '@/types/show'
 
 type GameName = {
   id: string
   name: string
 }
 
-export function AddGamesToShowButton({ showId }: { showId: string }) {
+export function AddGamesToShowButton({
+  showId,
+  existingGames,
+}: {
+  showId: string
+  existingGames?: GameV2[]
+}) {
   const [selected, setSelected] = useState<string[]>([])
 
   const { data: games } = useGetGameNames()
   const mutation = useAddGamesToShow(showId)
 
   const toggle = (id: string) => {
-    setSelected((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    )
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
   }
 
   const handleSubmit = () => {
@@ -37,9 +42,15 @@ export function AddGamesToShowButton({ showId }: { showId: string }) {
   }
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      onOpenChange={(open) => {
+        if (open && existingGames) {
+          setSelected(existingGames.map((g) => g.ID))
+        }
+      }}
+    >
       <AlertDialogTrigger asChild>
-        <Button className='cursor-pointer' variant="ghost" size="icon">
+        <Button className="cursor-pointer" variant="ghost" size="icon">
           <Plus className="h-4 w-4" />
         </Button>
       </AlertDialogTrigger>
@@ -55,10 +66,7 @@ export function AddGamesToShowButton({ showId }: { showId: string }) {
         {/* LIST GAME */}
         <div className="max-h-64 overflow-y-auto space-y-2">
           {games?.map((game: GameName) => (
-            <label
-              key={game.id}
-              className="flex items-center gap-2 cursor-pointer"
-            >
+            <label key={game.id} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={selected.includes(game.id)}
@@ -70,9 +78,7 @@ export function AddGamesToShowButton({ showId }: { showId: string }) {
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSubmit}
             disabled={!selected.length || mutation.isPending}

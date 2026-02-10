@@ -57,7 +57,7 @@ export const showColumns: ColumnDef<Show>[] = [
     header: 'Action',
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
-        <AddGamesToShowButton showId={row.original.ID} />
+        <AddGamesToShowButton showId={row.original.ID} existingGames={row.original.Games} />
         <DeleteShowButton id={row.original.ID} />
         <UpdateShowModal show={row.original} />
       </div>
