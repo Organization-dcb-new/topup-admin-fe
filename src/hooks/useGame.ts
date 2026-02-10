@@ -5,6 +5,12 @@ import type { GameByIDResponse, GamesResponse } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
+
+export interface GameNames {
+  id: string
+  name: string
+}
+
 export function useGetGames(
   search: string,
   page: number,
@@ -116,6 +122,16 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
 
 export function useGetGameNames() {
   return useQuery({
+    queryKey: ['game-names'],
+    queryFn: async () => {
+      const res = await api.get('/games/names')
+      return res.data.data
+    },
+  })
+}
+
+export function useGetGameNamesWithType() {
+  return useQuery<GameNames[]>({
     queryKey: ['game-names'],
     queryFn: async () => {
       const res = await api.get('/games/names')
