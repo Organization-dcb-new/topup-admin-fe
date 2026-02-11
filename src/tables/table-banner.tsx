@@ -1,4 +1,5 @@
 import { DeleteBannerButton } from '@/components/Banner/DeleteBannerModal'
+import { UpdateBanner } from '@/components/Banner/EditBannerModal'
 import type { Banner } from '@/types/banner'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -30,6 +31,7 @@ export const bannerColumns: ColumnDef<Banner>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-1">
         <DeleteBannerButton id={row.original.id} />
+        <UpdateBanner banner={row.original} />
       </div>
     ),
   },

@@ -3,6 +3,11 @@ import type { BannerPayload, BannerResponse } from '@/types/banner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
+type UpdateBannerPayload = {
+  image: string
+  redirect_link: string
+}
+
 export const useGetBanners = () =>
   useQuery<BannerResponse>({
     queryKey: ['banners'],
@@ -30,6 +35,24 @@ export function useDeleteBanner(id: string) {
   })
 
   return mutation
+}
+
+interface UpdateBannerProps {
+  id: string
+  setOpen?: (val: boolean) => void
+}
+
+export function useUpdateBanner({ id, setOpen }: UpdateBannerProps) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (payload: UpdateBannerPayload) => api.patch(`/banners/${id}`, payload),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['banners'] })
+      setOpen?.(false) // auto close modal
+    },
+  })
 }
 
 // Create Banner
