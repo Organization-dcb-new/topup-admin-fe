@@ -45,8 +45,6 @@ export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
   return mutation
 }
 
-
-
 export function useUpdateImageProductV2(setOpen: (open: boolean) => void) {
   const queryClient = useQueryClient()
 
@@ -68,4 +66,14 @@ export function useUpdateImageProductV2(setOpen: (open: boolean) => void) {
   })
 
   return mutation
+}
+
+export function useGetProductNames(id: string) {
+  return useQuery({
+    queryKey: ['product-names', id],
+    queryFn: async () => {
+      const res = await api.get(`/products/game/${id}`)
+      return res.data.data
+    },
+  })
 }

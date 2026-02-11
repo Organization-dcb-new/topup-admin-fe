@@ -13,6 +13,7 @@ import BannerPage from '@/pages/Banner'
 import ShowPage from '@/pages/Show'
 import InputPages from '@/pages/Input'
 import OrderPages from '@/pages/Order'
+import CategoryProduct from '@/pages/CategoryProduct'
 
 export const router = createBrowserRouter([
   {
@@ -55,7 +56,10 @@ export const router = createBrowserRouter([
         path: 'games',
         element: <GamePage />,
       },
-
+      {
+        path: 'category-product',
+        element: <CategoryProduct />,
+      },
       {
         path: 'categories',
         element: <CategoryPage />,

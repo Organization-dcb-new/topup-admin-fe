@@ -11,6 +11,8 @@ import {
 } from 'lucide-react'
 import { MdOutlineCategory, MdCorporateFare, MdFormatListBulleted } from 'react-icons/md'
 
+import { TbCategoryPlus } from 'react-icons/tb'
+
 export type SidebarMenu = {
   label: string
   icon: React.ElementType
@@ -65,6 +67,11 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Input',
         icon: MdFormatListBulleted,
         path: '/input',
+      },
+      {
+        label: 'Category Product',
+        icon: TbCategoryPlus,
+        path: '/category-product',
       },
       {
         label: 'Category',
