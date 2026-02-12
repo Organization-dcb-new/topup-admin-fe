@@ -14,8 +14,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: games } = await api.get<GetGamesResponse>("/v1/games");
 
   const gameUrls =
-    games.data?.flatMap((game) => {
-      return routing.locales.map((locale) => ({
+    games.data?.flatMap((game : any) => {
+      return routing.locales.map((locale : any) => ({
         url: `${baseUrl}/${locale}/games/${game.slug}`,
         lastModified: new Date(),
         changeFrequency: "daily" as const,
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
     }) ?? [];
 
-  const staticUrls = routing.locales.flatMap((locale) =>
+  const staticUrls = routing.locales.flatMap((locale : any) =>
     pages.map((page) => ({
       url: `${baseUrl}/${locale}${page ? `/${page}` : ""}`,
       lastModified: new Date(),

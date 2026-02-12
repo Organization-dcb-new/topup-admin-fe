@@ -25,6 +25,16 @@ jobs:
           echo "Listing files"
           ls -la
 
-          docker compose -f docker-compose.dev.yml down || true
-          docker compose -f docker-compose.dev.yml build
-          docker compose -f docker-compose.dev.yml up -d
+          echo "🔨 Building new image..."
+          if docker compose -f docker-compose.dev.yml build; then
+            echo "✅ Build success"
+
+            echo "🚀 Restarting container..."
+            docker compose -f docker-compose.dev.yml up -d
+
+            echo "🎉 Deploy success"
+          else
+            echo "❌ Build failed!"
+            echo "⚠️ Keeping previous running container"
+            exit 1
+          fi
