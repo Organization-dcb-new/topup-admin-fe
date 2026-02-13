@@ -1,5 +1,6 @@
 import { AddProductToCategoryProductButton } from '@/components/CategoryProduct/AddProduct'
 import { DeleteCategoryProductButton } from '@/components/CategoryProduct/DeleteCategoryProduct'
+import { UpdateCategoryProduct } from '@/components/CategoryProduct/UpdateCategoryProduct'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
 import type { ColumnDef } from '@tanstack/react-table'
 import { ChevronDown, ChevronRight } from 'lucide-react'
@@ -63,6 +64,7 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
           existingProduct={row.original.product}
         />
         <DeleteCategoryProductButton id={row.original.id} />
+        <UpdateCategoryProduct category={row.original} />
       </div>
     ),
   },

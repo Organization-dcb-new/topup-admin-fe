@@ -12,6 +12,9 @@ export type categoryProductPayload = {
   is_active: boolean
 }
 
+export type updateCategoryProductPayload = {
+  name: string
+}
 export type ProductResponseOnly = {
   id: string
   game_id: string
@@ -83,6 +86,32 @@ export const useCreateCategoryProduct = (
     },
     onError: () => {
       toast.error('Failed to Create Category Product ')
+    },
+  })
+
+  return mutation
+}
+
+export const useUpdateCategoryProduct = (
+  id: string,
+  reset: () => void,
+  setOpen: (open: boolean) => void
+) => {
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: async (payload: updateCategoryProductPayload) => {
+      const res = await api.patch(`/category-product/${id}`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Category Product Update successfully')
+      queryClient.invalidateQueries({ queryKey: ['categories-product'] })
+      reset()
+      setOpen(false)
+    },
+    onError: () => {
+      toast.error('Failed to Update Category Product ')
     },
   })
 
