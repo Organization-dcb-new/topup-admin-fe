@@ -1,66 +1,73 @@
-import type { Game } from '@/types/game'
-import { Button } from '../ui/button'
-import { Pencil } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useUpdateGame } from '@/hooks/useGame'
+import type { Game } from "@/types/game";
+import { Button } from "../ui/button";
+import { Pencil } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useUpdateGame } from "@/hooks/useGame";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useGetCategoriesName } from '@/hooks/useCategory'
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useGetCategoriesName } from "@/hooks/useCategory";
 
 interface EditGameModalProps {
-  game: Game
+  game: Game;
 }
 
 export interface FormValuesEditGame {
-  name: string
-  is_show: boolean
-  category_id?: string
-  popularity_score?: number
+  name: string;
+  description?: string;
+  is_show: boolean;
+  category_id?: string;
+  popularity_score?: number;
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const { data: DataCategory } = useGetCategoriesName()
+  const { data: DataCategory } = useGetCategoriesName();
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<FormValuesEditGame>()
+  } = useForm<FormValuesEditGame>();
 
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
 
     reset({
       name: game.name,
       is_show: game.is_show,
+      description: game.description,
       category_id: game.category_id,
       popularity_score: game.popularity_score,
-    })
-  }, [open, game, reset])
+    });
+  }, [open, game, reset]);
 
-  const updateGameMutation = useUpdateGame(setOpen, game.id)
+  const updateGameMutation = useUpdateGame(setOpen, game.id);
 
   const onSubmit = (values: FormValuesEditGame) => {
     updateGameMutation.mutate({
       ...values,
       category_id: values.category_id || undefined,
-    })
-  }
+    });
+  };
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="cursor-pointer">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="cursor-pointer"
+      >
         <Pencil className="h-4 w-4" />
       </Button>
 
@@ -74,26 +81,77 @@ export default function EditGameModal({ game }: EditGameModalProps) {
             <div className="space-y-4">
               {/* Name Input */}
               <div className="flex flex-col space-y-1">
-                <Label htmlFor="name" className="font-medium text-sm text-gray-700">
+                <Label
+                  htmlFor="name"
+                  className="font-medium text-sm text-gray-700"
+                >
                   Name
                 </Label>
                 <Input
                   id="name"
-                  {...register('name', { required: 'Name is required' })}
+                  {...register("name", { required: "Name is required" })}
                   placeholder="Enter game name"
                   className="w-full"
                 />
-                {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
+              {/* Description */}
+              <div className="flex flex-col space-y-1">
+                <Label
+                  htmlFor="description"
+                  className="font-medium text-sm text-gray-700"
+                >
+                  Description
+                </Label>
+
+                <textarea
+                  id="description"
+                  {...register("description", {
+                    required: "Description is required",
+                  })}
+                  placeholder="Enter game description"
+                  rows={4}
+                  className="
+    w-full
+    rounded-md
+    border border-gray-300
+    px-3 py-2
+    text-sm
+    focus:outline-none
+    focus:ring-2
+    focus:ring-purple-500/50
+    focus:border-purple-500
+    transition-all
+    duration-200
+
+    max-h-40
+    overflow-y-auto
+  "
+                />
+
+                {errors.description && (
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors.description.message}
+                  </p>
+                )}
+              </div>
+
               {/* Category Select */}
               <div className="flex flex-col space-y-1">
-                <Label htmlFor="category_id" className="font-medium text-sm text-gray-700">
+                <Label
+                  htmlFor="category_id"
+                  className="font-medium text-sm text-gray-700"
+                >
                   Category
                 </Label>
 
                 <select
                   id="category_id"
-                  {...register('category_id')}
+                  {...register("category_id")}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="">-- Optional Category --</option>
@@ -105,20 +163,25 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                 </select>
               </div>
               <div className="flex flex-col space-y-1">
-                <Label htmlFor="popularity_score" className="font-medium text-sm text-gray-700">
+                <Label
+                  htmlFor="popularity_score"
+                  className="font-medium text-sm text-gray-700"
+                >
                   Popularity Score
                 </Label>
                 <Input
                   id="popularity_score"
-                  {...register('popularity_score', {
-                    required: 'Popularity is required is required',
+                  {...register("popularity_score", {
+                    required: "Popularity is required is required",
                     valueAsNumber: true,
                   })}
                   placeholder="Popularity Score"
                   className="w-full"
                 />
                 {errors.popularity_score && (
-                  <p className="text-sm text-red-500 mt-1">{errors?.popularity_score?.message}</p>
+                  <p className="text-sm text-red-500 mt-1">
+                    {errors?.popularity_score?.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -138,12 +201,12 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                 disabled={updateGameMutation.isPending}
                 className="cursor-pointer"
               >
-                {updateGameMutation.isPending ? 'Saving...' : 'Save'}
+                {updateGameMutation.isPending ? "Saving..." : "Save"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
     </>
-  )
+  );
 }
