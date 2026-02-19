@@ -10,6 +10,7 @@ export interface PaymentMethod {
   fee_percentage: number
   fee_fixed: number
   min_amount: number
+  category_id: string
   max_amount: number
   full_name: string
   sort_order: number
