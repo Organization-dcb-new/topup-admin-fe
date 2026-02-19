@@ -14,7 +14,6 @@ import ShowPage from "@/pages/Show";
 import InputPages from "@/pages/Input";
 import OrderPages from "@/pages/Order";
 import CategoryProduct from "@/pages/CategoryProduct";
-import PaymentMethodCategory from "@/pages/PaymentMethodCategory";
 import PaymentMethodCategoryPages from "@/pages/PaymentMethodCategory";
 
 export const router = createBrowserRouter([
