@@ -15,7 +15,7 @@ import { UploadCloud } from "lucide-react";
 
 import { handleFileAutoUpload } from "@/helpers/upload";
 
-import { useCreatePaymentCategory } from "@/hooks/usePaymentMethodCategor";
+import { useCreatePaymentCategory } from "@/hooks/usePaymentMethodCategory";
 
 export type FormValuesPaymentCategory = {
   name: string;
