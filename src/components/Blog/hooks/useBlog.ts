@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { BlogFormValues } from '../types/blog'
 import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
+import type { Blog } from '@/tables/table-blog'
+import type { PaginationMeta } from '@/types/game'
 
 type ViewMode = 'list' | 'create'
 
@@ -94,37 +96,42 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     handlePublish: (status: 'draft' | 'published') => blogMutation.mutate({ ...formData, status }),
   }
 }
-export const useGetBlogs = () => {
-  const query = useQuery({
-    queryKey: ['blogs'],
+
+export interface BlogResponse {
+  data: Blog[]
+  meta: PaginationMeta
+  message: string
+  status: 'success' | 'error'
+}
+
+export const useGetBlogs = (page: number, limit: number) => {
+  const toastIdRef = useRef<string | number | null>(null)
+
+  const query = useQuery<BlogResponse>({
+    queryKey: ['blogs', page, limit],
     queryFn: async () => {
-      const res = await api.get('/blogs')
+      const res = await api.get('/blogs', {
+        params: { page, limit },
+      })
       return res.data
     },
     refetchOnWindowFocus: false,
   })
 
-  const toastIdRef = useRef<string | number | null>(null)
-
   useEffect(() => {
-    if (query.isFetching && !toastIdRef.current) {
+    if (query.isFetching && !query.isPlaceholderData && !toastIdRef.current) {
       toastIdRef.current = toast.loading('Fetching articles...')
     }
 
-    if (query.isSuccess && toastIdRef.current) {
-      toast.success('Articles loaded successfully', {
-        id: String(toastIdRef.current),
-      })
+    if (!query.isFetching && toastIdRef.current) {
+      if (query.isSuccess) {
+        toast.success('Articles loaded successfully', { id: String(toastIdRef.current) })
+      } else if (query.isError) {
+        toast.error('Failed to fetch articles', { id: String(toastIdRef.current) })
+      }
       toastIdRef.current = null
     }
-
-    if (query.isError && toastIdRef.current) {
-      toast.error('Failed to fetch articles', {
-        id: String(toastIdRef.current),
-      })
-      toastIdRef.current = null
-    }
-  }, [query.isFetching, query.isSuccess, query.isError])
+  }, [query.isFetching, query.isSuccess, query.isError, query.isPlaceholderData])
 
   return query
 }

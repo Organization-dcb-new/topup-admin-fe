@@ -5,6 +5,7 @@ import BlogList from '@/components/Blog/List/List'
 import ManageBlog from '@/components/Blog/Manage/Manage'
 
 export default function BlogPage() {
+ 
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedBlog, setSelectedBlog] = useState<any>(null)
 
@@ -25,7 +26,9 @@ export default function BlogPage() {
         {view === 'list' ? (
           <BlogList onEdit={handleEdit} />
         ) : (
-          <ManageBlog setView={setView} initialData={selectedBlog} isEdit={view === 'edit'} />
+          <>
+            <ManageBlog setView={setView} initialData={selectedBlog} isEdit={view === 'edit'} />
+          </>
         )}
       </div>
     </DashboardLayout>
