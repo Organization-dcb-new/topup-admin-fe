@@ -8,101 +8,81 @@ import {
   GalleryHorizontal,
   Images,
   ListOrdered,
+  Notebook,
   LucideWalletCards,
-} from "lucide-react";
-import {
-  MdOutlineCategory,
-  MdCorporateFare,
-  MdFormatListBulleted,
-} from "react-icons/md";
+} from 'lucide-react'
+import { MdOutlineCategory, MdCorporateFare, MdFormatListBulleted } from 'react-icons/md'
+import { HiCash } from 'react-icons/hi'
 
-import { TbCategoryPlus } from "react-icons/tb";
+import { TbCategoryPlus } from 'react-icons/tb'
 
 export type SidebarMenu = {
-  label: string;
-  icon: React.ElementType;
-  path?: string;
-};
+  label: string
+  icon: React.ElementType
+  path?: string
+  children?: SidebarMenu[]
+}
 
 export type SidebarSection = {
-  title?: string;
-  menus: SidebarMenu[];
-};
+  title?: string
+  menus: SidebarMenu[]
+}
 
 export const sidebarMenus: SidebarSection[] = [
   {
     menus: [
       {
-        label: "Dashboard",
+        label: 'Dashboard',
         icon: Home,
-        path: "/",
+        path: '/',
       },
-
       {
-        label: "Transactions",
+        label: 'Transactions',
         icon: Wallet,
-        path: "/transactions",
+        children: [
+          { label: 'Overview', path: '/transactions', icon: Wallet },
+          { label: 'Spending', path: '/spending', icon: HiCash },
+          { label: 'Order', path: '/orders', icon: ListOrdered },
+        ],
       },
       {
-        label: "Order",
-        icon: ListOrdered,
-        path: "/orders",
-      },
-      {
-        label: "Banner",
+        label: 'CMS',
         icon: GalleryHorizontal,
-        path: "/banners",
-      },
-      {
-        label: "Show",
-        icon: Images,
-        path: "/shows",
+        children: [
+          { label: 'Banners', path: '/banners', icon: GalleryHorizontal },
+          { label: 'Shows', path: '/shows', icon: Images },
+          { label: 'Articles', path: '/blog', icon: Notebook },
+        ],
       },
     ],
   },
   {
-    title: "Master Data",
+    title: 'Master Data',
     menus: [
       {
-        label: "Games",
-        icon: Gamepad2,
-        path: "/games",
-      },
-      {
-        label: "Input",
-        icon: MdFormatListBulleted,
-        path: "/input",
-      },
-      {
-        label: "Category Product",
-        icon: TbCategoryPlus,
-        path: "/category-product",
-      },
-      {
-        label: "Category",
-        icon: MdOutlineCategory,
-        path: "/categories",
-      },
-      {
-        label: "Product",
+        label: 'Inventory', 
         icon: Boxes,
-        path: "/products",
+        children: [
+          { label: 'Games', icon: Gamepad2, path: '/games' },
+          { label: 'Products', icon: Boxes, path: '/products' },
+          { label: 'Category Product', icon: TbCategoryPlus, path: '/category-product' },
+          { label: 'Category', icon: MdOutlineCategory, path: '/categories' },
+          { label: 'Input Fields', icon: MdFormatListBulleted, path: '/input' },
+        ],
       },
       {
-        label: "Payment Method",
+        label: 'Payments', 
         icon: CreditCard,
-        path: "/payment-methods",
+        children: [
+          { label: 'Methods', icon: CreditCard, path: '/payment-methods' },
+          { label: 'Categories', icon: LucideWalletCards, path: '/payment-methods-categories' },
+        ],
       },
       {
-        label: "Payment Method Categories",
-        icon: LucideWalletCards,
-        path: "/payment-methods-categories",
-      },
-      {
-        label: "Provider",
+        label: 'Providers', 
         icon: MdCorporateFare,
-        path: "/provider",
+        path: '/provider',
       },
     ],
   },
-];
+]
