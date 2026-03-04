@@ -1,7 +1,7 @@
 import { ArrowLeft, Plus } from 'lucide-react'
 import { Button } from '../../ui/button'
 
-type ViewMode = 'list' | 'create'
+type ViewMode = 'list' | 'create' | 'edit'
 
 interface HeaderBlogProps {
   view: ViewMode
@@ -11,7 +11,11 @@ interface HeaderBlogProps {
 export default function HeaderBlog({ view, setView }: HeaderBlogProps) {
   return (
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-xl font-bold">{view === 'list' ? 'Blogs' : 'Create Blog'}</h1>
+      <h1 className="text-xl font-bold">
+        {view === 'list' && 'Blogs'}
+        {view === 'create' && 'Create New Blog'}
+        {view === 'edit' && 'Edit Article'}
+      </h1>{' '}
       <div className="flex justify-between">
         {view === 'list' ? (
           <Button
