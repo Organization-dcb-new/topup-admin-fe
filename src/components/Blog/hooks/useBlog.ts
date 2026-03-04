@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { BlogFormValues } from '../types/blog'
 import { api } from '@/api/axios'
@@ -94,15 +94,39 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     handlePublish: (status: 'draft' | 'published') => blogMutation.mutate({ ...formData, status }),
   }
 }
-
 export const useGetBlogs = () => {
-  return useQuery({
+  const query = useQuery({
     queryKey: ['blogs'],
     queryFn: async () => {
       const res = await api.get('/blogs')
       return res.data
     },
+    refetchOnWindowFocus: false,
   })
+
+  const toastIdRef = useRef<string | number | null>(null)
+
+  useEffect(() => {
+    if (query.isFetching && !toastIdRef.current) {
+      toastIdRef.current = toast.loading('Fetching articles...')
+    }
+
+    if (query.isSuccess && toastIdRef.current) {
+      toast.success('Articles loaded successfully', {
+        id: String(toastIdRef.current),
+      })
+      toastIdRef.current = null
+    }
+
+    if (query.isError && toastIdRef.current) {
+      toast.error('Failed to fetch articles', {
+        id: String(toastIdRef.current),
+      })
+      toastIdRef.current = null
+    }
+  }, [query.isFetching, query.isSuccess, query.isError])
+
+  return query
 }
 
 export const useDeleteBlog = () => {

@@ -12,9 +12,9 @@ export default function HeaderBlog({ view, setView }: HeaderBlogProps) {
   return (
     <div className="flex justify-between items-center mb-6">
       <h1 className="text-xl font-bold">
-        {view === 'list' && 'Blogs'}
+        {view === 'list' && 'List Blog'}
         {view === 'create' && 'Create New Blog'}
-        {view === 'edit' && 'Edit Article'}
+        {view === 'edit' && 'Edit Blog'}
       </h1>{' '}
       <div className="flex justify-between">
         {view === 'list' ? (

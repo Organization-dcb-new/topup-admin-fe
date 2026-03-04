@@ -24,18 +24,19 @@ export function DeleteBlogDialog({ blogId }: { blogId: string }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus Artikel?</AlertDialogTitle>
+          <AlertDialogTitle>Delete Article?</AlertDialogTitle>
           <AlertDialogDescription>
-            Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server.
+            This action cannot be undone. The article will be permanently removed from the server.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => deleteMutation.mutate(blogId)}
             className="bg-red-500 hover:bg-red-600 cursor-pointer"
           >
-            {deleteMutation.isPending ? <Loader2 className="animate-spin" /> : 'Ya, Hapus'}
+            {deleteMutation.isPending ? <Loader2 className="animate-spin mr-2" /> : null}
+            {deleteMutation.isPending ? 'Deleting...' : 'Yes, Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

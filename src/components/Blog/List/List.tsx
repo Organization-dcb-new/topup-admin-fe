@@ -18,13 +18,13 @@ export default function BlogList({ onEdit }: BlogListProps) {
   }
 
   if (isError) {
-    return <ErrorComponent message="Gagal memuat daftar artikel. Silakan coba lagi nanti." />
+    return <ErrorComponent message="Failed to load the article list. Please try again later." />
   }
 
   if (!blogs || blogs.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-20 border-2 border-dashed rounded-3xl text-gray-400 bg-gray-50/50">
-        <p className="font-medium">Belum ada artikel yang dibuat.</p>
+        <p className="font-medium">No articles have been created yet..</p>
       </div>
     )
   }

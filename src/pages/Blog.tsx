@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import CreateBlog from '@/components/Blog/Create/Create'
 import HeaderBlog from '@/components/Blog/Header/Header'
 import BlogList from '@/components/Blog/List/List'
+import ManageBlog from '@/components/Blog/Manage/Manage'
 
 export default function BlogPage() {
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
@@ -20,15 +20,13 @@ export default function BlogPage() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
-        <HeaderBlog setView={(v) => (v === 'create' ? handleCreate() : setView(v))} view={view} />
-        <div className="mt-6">
-          {view === 'list' ? (
-            <BlogList onEdit={handleEdit} />
-          ) : (
-            <CreateBlog setView={setView} initialData={selectedBlog} isEdit={view === 'edit'} />
-          )}
-        </div>
+      <HeaderBlog setView={(v) => (v === 'create' ? handleCreate() : setView(v))} view={view} />
+      <div className="mt-6">
+        {view === 'list' ? (
+          <BlogList onEdit={handleEdit} />
+        ) : (
+          <ManageBlog setView={setView} initialData={selectedBlog} isEdit={view === 'edit'} />
+        )}
       </div>
     </DashboardLayout>
   )

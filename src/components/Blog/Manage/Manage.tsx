@@ -3,19 +3,19 @@ import 'react-markdown-editor-lite/lib/index.css'
 
 import { useBlogForm } from '../hooks/useBlog'
 import { useGetGameNames } from '@/hooks/useGame'
-import ButtonCreate from './ButtonCreate'
 import Thubmnail from './Thumbnail'
 import Category from './Category'
 import Field from './Field'
 import { Textarea } from '@/components/ui/textarea'
+import ButtonManage from './Button'
 
-interface CreateProps {
+interface ManageProps {
   setView: (view: 'list' | 'create' | 'edit') => void
   initialData?: any
   isEdit?: boolean
 }
 
-export default function CreateBlog({ setView, initialData, isEdit = false }: CreateProps) {
+export default function ManageBlog({ setView, initialData, isEdit = false }: ManageProps) {
   const {
     formData,
     setFormData,
@@ -56,6 +56,8 @@ export default function CreateBlog({ setView, initialData, isEdit = false }: Cre
           updateField={updateField}
         />
 
+        <Category formData={formData} listCategory={listCategory} updateField={updateField} />
+
         <div className="space-y-2 bg-white p-4 rounded-xl border border-gray-100">
           <label className="text-xs font-bold uppercase text-gray-400">Excerpt / Ringkasan</label>
           <Textarea
@@ -69,16 +71,36 @@ export default function CreateBlog({ setView, initialData, isEdit = false }: Cre
       </div>
 
       <div className="space-y-6">
-        <ButtonCreate
+        {isEdit && (
+          <div
+            className={`p-4 rounded-2xl border flex items-center justify-between shadow-sm ${
+              formData.status === 'published'
+                ? 'bg-green-50 border-green-100'
+                : 'bg-orange-50 border-orange-100'
+            }`}
+          >
+            <span className="text-[10px] font-black uppercase text-gray-400">Status</span>
+            <span
+              className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                formData.status === 'published'
+                  ? 'bg-green-500 text-white'
+                  : 'bg-orange-500 text-white'
+              }`}
+            >
+              {formData.status}
+            </span>
+          </div>
+        )}
+        <ButtonManage
           isEdit={isEdit}
           blogMutation={blogMutation}
           handlePublish={handlePublish}
+          currentStatusValue={formData.status}
           isFormValid={isFormValid}
+          onStatusChange={(status) => updateField('status', status)}
         />
 
         <Thubmnail formData={formData} uploadMutation={uploadMutation} />
-
-        <Category formData={formData} listCategory={listCategory} updateField={updateField} />
 
         {isEdit && (
           <div className="p-4 bg-purple-50 rounded-xl border border-purple-100">

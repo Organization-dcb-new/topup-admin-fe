@@ -71,7 +71,7 @@ export const blogColumns = (onEdit: (blog: Blog) => void): ColumnDef<Blog>[] => 
       <div className="flex items-center gap-1">
         <button
           onClick={() => onEdit(row.original)}
-          className="p-2 hover:bg-gray-100 text-gray-600 rounded-md transition-colors"
+          className="p-2 hover:bg-gray-100 cursor-pointer text-gray-600 rounded-md transition-colors"
         >
           <Edit3 size={16} />
         </button>
