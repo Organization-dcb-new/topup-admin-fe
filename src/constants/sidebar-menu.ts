@@ -8,6 +8,7 @@ import {
   GalleryHorizontal,
   Images,
   ListOrdered,
+  Notebook,
   LucideWalletCards,
 } from 'lucide-react'
 import { MdOutlineCategory, MdCorporateFare, MdFormatListBulleted } from 'react-icons/md'
@@ -38,6 +39,11 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Spending',
         icon: HiCash,
         path: '/spending',
+      },
+      {
+        label: 'Blog',
+        icon: Notebook,
+        path: '/blog',
       },
 
       {

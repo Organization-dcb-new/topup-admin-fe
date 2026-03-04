@@ -16,6 +16,7 @@ import OrderPages from '@/pages/Order'
 import CategoryProduct from '@/pages/CategoryProduct'
 import PaymentMethodCategoryPages from '@/pages/PaymentMethodCategory'
 import SpendingPages from '@/pages/Spending'
+import BlogPage from '@/pages/Blog'
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path: 'spending',
         element: <SpendingPages />,
+      },
+      {
+        path: 'blog',
+        element: <BlogPage />,
       },
       {
         path: 'shows',
