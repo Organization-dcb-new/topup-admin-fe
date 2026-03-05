@@ -21,6 +21,7 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     category: '',
     content_markdown: '',
     excerpt: '',
+    tags: [],
     thumbnail: '',
     status: 'draft',
   }
@@ -110,7 +111,7 @@ export const useGetBlogs = (page: number, limit: number) => {
   const query = useQuery<BlogResponse>({
     queryKey: ['blogs', page, limit],
     queryFn: async () => {
-      const res = await api.get('/blogs', {
+      const res = await api.get('/blogs/admin/private', {
         params: { page, limit },
       })
       return res.data

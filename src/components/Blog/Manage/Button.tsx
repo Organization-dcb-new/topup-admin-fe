@@ -79,7 +79,7 @@ export default function ButtonManage({
         type="button"
         disabled={isDisabled}
         onClick={() => handlePublish(currentStatusValue)}
-        className={`w-full h-10 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-md ${
+        className={`w-full h-10 cursor-pointer text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-md ${
           isDisabled
             ? 'bg-gray-200 text-gray-400'
             : 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-200'

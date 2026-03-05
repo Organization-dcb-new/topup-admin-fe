@@ -9,6 +9,7 @@ export type Blog = {
   title: string
   slug: string
   category: string
+  tags: string[]
   thumbnail: string
   status: 'draft' | 'published'
   created_at: string
@@ -46,6 +47,29 @@ export const blogColumns = (onEdit: (blog: Blog) => void): ColumnDef<Blog>[] => 
         {row.original.category || 'N/A'}
       </Badge>
     ),
+  },
+  {
+    accessorKey: 'tags',
+    header: 'Tags',
+    cell: ({ row }) => {
+      const tags = row.original.tags || []
+      return (
+        <div className="flex flex-wrap gap-1 max-w-50">
+          {tags.length > 0 ? (
+            tags.map((tag, index) => (
+              <span
+                key={index}
+                className="text-[9px] bg-purple-50 text-purple-600 border border-purple-100 px-1.5 py-0.5 rounded font-bold uppercase"
+              >
+                #{tag}
+              </span>
+            ))
+          ) : (
+            <span className="text-[9px] text-gray-300 italic">No tags</span>
+          )}
+        </div>
+      )
+    },
   },
   {
     accessorKey: 'status',

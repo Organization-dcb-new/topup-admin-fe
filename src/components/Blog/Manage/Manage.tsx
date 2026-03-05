@@ -43,6 +43,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
         excerpt: initialData.excerpt || '',
         thumbnail: initialData.thumbnail || '',
         status: initialData.status || 'draft',
+        tags: initialData?.tags || [],
       })
     }
   }, [isEdit, initialData, setFormData])

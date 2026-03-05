@@ -3,6 +3,7 @@ export interface BlogFormValues {
   category: string
   content_markdown: string
   excerpt: string
+  tags: string[]
   thumbnail: string
   status: 'draft' | 'published'
 }
