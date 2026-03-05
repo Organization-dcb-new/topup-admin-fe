@@ -5,7 +5,6 @@ import BlogList from '@/components/Blog/List/List'
 import ManageBlog from '@/components/Blog/Manage/Manage'
 
 export default function BlogPage() {
- 
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedBlog, setSelectedBlog] = useState<any>(null)
 
