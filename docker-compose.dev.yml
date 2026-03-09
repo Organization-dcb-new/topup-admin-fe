@@ -8,6 +8,13 @@ services:
       args:
         VITE_API_URL: http://topup-be:4001/v1
     ports:
-      - '4173:4173'
+      - "4173:4173"
+
+    networks:
+      - pakargaming-dev-network
 
     restart: unless-stopped
+
+networks:
+  pakargaming-dev-network:
+    external: true
