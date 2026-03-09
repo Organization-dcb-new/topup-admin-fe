@@ -1,23 +1,28 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
-import { useAuth } from '@/lib/auth'
-import { Sidebar } from './sidebar'
-import { Topbar } from './topbar'
+import { useAuthUser } from "@/lib/auth";
+import { Sidebar } from "./sidebar";
+import { Topbar } from "./topbar";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false)
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { isAuthenticated } = useAuth()
+  const { token, isMfaRequired } = useAuthUser();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      window.location.href = '/login'
+    if (!token) {
+      window.location.href = "/login";
+      return;
     }
-  }, [isAuthenticated])
 
-  if (!isAuthenticated) return null
+    if (isMfaRequired) {
+      window.location.href = "/verify-otp";
+      return;
+    }
+  }, [token, isMfaRequired]);
 
+  if (!token || isMfaRequired) return null;
   return (
     <div className="flex">
       <Sidebar
@@ -32,5 +37,5 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <main className="p-4 md:p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }
