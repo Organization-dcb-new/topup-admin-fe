@@ -10,79 +10,104 @@ import {
   ListOrdered,
   Notebook,
   LucideWalletCards,
-} from 'lucide-react'
-import { MdOutlineCategory, MdCorporateFare, MdFormatListBulleted } from 'react-icons/md'
-import { HiCash } from 'react-icons/hi'
+  Lock,
+} from "lucide-react";
+import {
+  MdOutlineCategory,
+  MdCorporateFare,
+  MdFormatListBulleted,
+} from "react-icons/md";
+import { HiCash } from "react-icons/hi";
 
-import { TbCategoryPlus } from 'react-icons/tb'
+import { TbCategoryPlus } from "react-icons/tb";
 
 export type SidebarMenu = {
-  label: string
-  icon: React.ElementType
-  path?: string
-  children?: SidebarMenu[]
-}
+  label: string;
+  icon: React.ElementType;
+  path?: string;
+  children?: SidebarMenu[];
+};
 
 export type SidebarSection = {
-  title?: string
-  menus: SidebarMenu[]
-}
+  title?: string;
+  menus: SidebarMenu[];
+};
 
 export const sidebarMenus: SidebarSection[] = [
   {
     menus: [
       {
-        label: 'Dashboard',
+        label: "Dashboard",
         icon: Home,
-        path: '/',
+        path: "/",
       },
       {
-        label: 'Transactions',
+        label: "Transactions",
         icon: Wallet,
         children: [
-          { label: 'Overview', path: '/transactions', icon: Wallet },
-          { label: 'Spending', path: '/spending', icon: HiCash },
-          { label: 'Order', path: '/orders', icon: ListOrdered },
+          { label: "Overview", path: "/transactions", icon: Wallet },
+          { label: "Spending", path: "/spending", icon: HiCash },
+          { label: "Order", path: "/orders", icon: ListOrdered },
         ],
       },
       {
-        label: 'CMS',
+        label: "CMS",
         icon: GalleryHorizontal,
         children: [
-          { label: 'Banners', path: '/banners', icon: GalleryHorizontal },
-          { label: 'Shows', path: '/shows', icon: Images },
-          { label: 'Articles', path: '/blog', icon: Notebook },
+          { label: "Banners", path: "/banners", icon: GalleryHorizontal },
+          { label: "Shows", path: "/shows", icon: Images },
+          { label: "Articles", path: "/blog", icon: Notebook },
         ],
       },
     ],
   },
   {
-    title: 'Master Data',
+    title: "Master Data",
     menus: [
       {
-        label: 'Inventory', 
+        label: "Inventory",
         icon: Boxes,
         children: [
-          { label: 'Games', icon: Gamepad2, path: '/games' },
-          { label: 'Products', icon: Boxes, path: '/products' },
-          { label: 'Category Product', icon: TbCategoryPlus, path: '/category-product' },
-          { label: 'Category', icon: MdOutlineCategory, path: '/categories' },
-          { label: 'Input Fields', icon: MdFormatListBulleted, path: '/input' },
+          { label: "Games", icon: Gamepad2, path: "/games" },
+          { label: "Products", icon: Boxes, path: "/products" },
+          {
+            label: "Category Product",
+            icon: TbCategoryPlus,
+            path: "/category-product",
+          },
+          { label: "Category", icon: MdOutlineCategory, path: "/categories" },
+          { label: "Input Fields", icon: MdFormatListBulleted, path: "/input" },
         ],
       },
       {
-        label: 'Payments', 
+        label: "Payments",
         icon: CreditCard,
         children: [
-          { label: 'Methods', icon: CreditCard, path: '/payment-methods' },
-          { label: 'Categories', icon: LucideWalletCards, path: '/payment-methods-categories' },
+          { label: "Methods", icon: CreditCard, path: "/payment-methods" },
+          {
+            label: "Categories",
+            icon: LucideWalletCards,
+            path: "/payment-methods-categories",
+          },
         ],
       },
       {
-        label: 'Providers', 
+        label: "Providers",
         icon: MdCorporateFare,
-        path: '/provider',
+        path: "/provider",
+      },
+
+      {
+        label: "Security",
+        icon: Lock,
+        children: [
+          {
+            label: "2FA",
+            icon: Lock,
+            path: "/2fa-setup",
+          },
+        ],
       },
     ],
   },
-]
+];

@@ -1,39 +1,66 @@
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useLogin, useLoginForm } from '@/hooks/useLogin'
-import { isAuthenticated } from '@/lib/auth'
-import { useEffect } from 'react'
-import toast from 'react-hot-toast'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useLogin, useLoginForm } from "@/hooks/useLogin";
+import { decodeJwt, useAuthUser, type JwtPayload } from "@/lib/auth";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const form = useLoginForm()
-  const { mutate: loginMutate, isPending } = useLogin()
+  const form = useLoginForm();
+  const { mutate: loginMutate, isPending } = useLogin();
+  const { token, isAuthenticated, isMfaRequired } = useAuthUser();
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      window.location.href = '/'
+    if (token) {
+      if (isMfaRequired) {
+        window.location.href = "/verify-otp";
+      } else if (isAuthenticated) {
+        window.location.href = "/";
+      }
     }
-  }, [])
+  }, [token, isAuthenticated, isMfaRequired]);
 
-  const onSubmit = (values: { email_or_username: string; password: string }) => {
+  const onSubmit = (values: {
+    email_or_username: string;
+    password: string;
+  }) => {
     loginMutate(values, {
-      onSuccess: () => {
-        toast.success('Login berhasil')
-        window.location.href = '/'
+      onSuccess: (res: any) => {
+        const token = res?.data?.token || res?.token;
+
+        if (token) {
+          const payload = decodeJwt<JwtPayload>(token);
+
+          toast.success("Login berhasil");
+
+          if (payload?.status === "mfa_pending") {
+            window.location.href = "/verify-otp";
+          } else {
+            window.location.href = "/";
+          }
+        }
       },
       onError: (err: any) => {
-        toast.error(err?.response?.data?.message || 'Login gagal')
+        toast.error(err?.response?.data?.message || "Login gagal");
       },
-    })
-  }
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-indigo-300/20">
       <Card className="w-96 rounded-2xl shadow-xl">
         <CardHeader className="text-center space-y-1">
-          <CardTitle className="text-2xl font-bold">Dashboard Redigame</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Dashboard Redigame
+          </CardTitle>
           <CardDescription>Login untuk melanjutkan</CardDescription>
         </CardHeader>
 
@@ -43,7 +70,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <Label>Email / Username</Label>
               <Input
-                {...form.register('email_or_username')}
+                {...form.register("email_or_username")}
                 placeholder="admin / email@example.com"
               />
               {form.formState.errors.email_or_username && (
@@ -56,18 +83,28 @@ export default function LoginPage() {
             {/* Password */}
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input type="password" {...form.register('password')} placeholder="••••••••" />
+              <Input
+                type="password"
+                {...form.register("password")}
+                placeholder="••••••••"
+              />
               {form.formState.errors.password && (
-                <p className="text-sm text-red-500">{form.formState.errors.password.message}</p>
+                <p className="text-sm text-red-500">
+                  {form.formState.errors.password.message}
+                </p>
               )}
             </div>
 
-            <Button type="submit" className="w-full rounded-xl cursor-pointer" disabled={isPending}>
-              {isPending ? 'Logging in...' : 'Masuk'}
+            <Button
+              type="submit"
+              className="w-full rounded-xl cursor-pointer"
+              disabled={isPending}
+            >
+              {isPending ? "Logging in..." : "Masuk"}
             </Button>
           </form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
