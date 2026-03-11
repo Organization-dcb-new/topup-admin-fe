@@ -33,8 +33,8 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const data = new FormData()
-      data.append('file', file)
-      const res = await api.post('/upload/new', data)
+      data.append('image', file)
+      const res = await api.post('/upload', data)
       return res.data.data.url
     },
     onSuccess: (url) => {
