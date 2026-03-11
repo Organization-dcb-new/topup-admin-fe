@@ -15,7 +15,7 @@ import InputPages from "@/pages/Input";
 import OrderPages from "@/pages/Order";
 import CategoryProduct from "@/pages/CategoryProduct";
 import PaymentMethodCategoryPages from "@/pages/PaymentMethodCategory";
-import SpendingPages from "@/pages/Spending";
+import SpendingPages from "@/pages/Summary";
 import BlogPage from "@/pages/Blog";
 import VerifyOtpPage from "@/pages/VerifyOTP";
 import Setup2FAPage from "@/pages/SetupAuth";
@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
         element: <DashboardPage />,
       },
       {
-        path: "spending",
+        path: "summary",
         element: <SpendingPages />,
       },
       {

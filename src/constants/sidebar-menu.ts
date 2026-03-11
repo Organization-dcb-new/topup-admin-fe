@@ -46,7 +46,7 @@ export const sidebarMenus: SidebarSection[] = [
         icon: Wallet,
         children: [
           { label: "Overview", path: "/transactions", icon: Wallet },
-          { label: "Spending", path: "/spending", icon: HiCash },
+          { label: "Summary", path: "/summary", icon: HiCash },
           { label: "Order", path: "/orders", icon: ListOrdered },
         ],
       },
