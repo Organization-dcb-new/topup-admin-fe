@@ -19,6 +19,8 @@ import SpendingPages from "@/pages/Summary";
 import BlogPage from "@/pages/Blog";
 import VerifyOtpPage from "@/pages/VerifyOTP";
 import Setup2FAPage from "@/pages/SetupAuth";
+import RateLimitPage from "@/pages/RateLimit";
+import AdminManagementPage from "@/pages/Admin";
 
 export const router = createBrowserRouter([
   {
@@ -100,6 +102,14 @@ export const router = createBrowserRouter([
       {
         path: "2fa-setup",
         element: <Setup2FAPage />,
+      },
+      {
+        path: "rate-limit",
+        element: <RateLimitPage />,
+      },
+      {
+        path: "admin",
+        element: <AdminManagementPage />,
       },
     ],
   },
