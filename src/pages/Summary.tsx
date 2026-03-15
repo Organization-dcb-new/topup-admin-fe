@@ -1,6 +1,6 @@
 import { SummaryFilter } from "@/components/Summary/SummaryFilter";
 import type { DateRange } from "react-day-picker";
-import { format, subDays } from "date-fns";
+import { format } from "date-fns";
 import { useState } from "react";
 import { useGetSummary } from "@/hooks/useSummary";
 import { DashboardLayout } from "@/components/Layout/dashboard-layout";
@@ -14,7 +14,7 @@ export default function SummaryPage() {
   const [page, setPage] = useState(1);
   const [groupBy, setGroupBy] = useState("hour");
   const [date, setDate] = useState<DateRange | undefined>({
-    from: subDays(new Date(), 7), // Default 7 hari terakhir
+    from: new Date(),
     to: new Date(),
   });
 
