@@ -7,7 +7,7 @@ export const useAdminData = (page: number, limit: number) => {
   return useQuery({
     queryKey: ["admin-users", page, limit],
     queryFn: async () => {
-      const { data } = await api.get<AdminResponse>("/admin/users/get-all", {
+      const { data } = await api.get<AdminResponse>("/admin/users/", {
         params: { page, limit },
       });
       return data;
@@ -20,7 +20,7 @@ export const useAdminMutation = () => {
 
   const updateRole = useMutation({
     mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      return api.patch(`/admin/users/${id}/role`, { role });
+      return api.patch(`/admin/users/${id}`, { role });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
