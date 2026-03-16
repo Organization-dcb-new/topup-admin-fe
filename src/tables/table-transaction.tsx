@@ -47,7 +47,7 @@ export const paymentColumns: ColumnDef<Payment>[] = [
   {
     accessorKey: "margin",
     header: "Margin",
-    cell: ({ row }) => `Rp ${row.original.margin.toLocaleString("id-ID")}`,
+    cell: ({ row }) => `Rp ${row.original.margin?.toLocaleString("id-ID")}`,
   },
   {
     accessorKey: "payment_channel",
