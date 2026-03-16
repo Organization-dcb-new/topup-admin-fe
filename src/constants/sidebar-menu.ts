@@ -106,6 +106,16 @@ export const sidebarMenus: SidebarSection[] = [
             icon: Lock,
             path: "/2fa-setup",
           },
+          {
+            label: "Rate Limiter",
+            icon: Lock,
+            path: "/rate-limit",
+          },
+          {
+            label: "Users",
+            icon: Lock,
+            path: "/admin",
+          },
         ],
       },
     ],

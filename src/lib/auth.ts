@@ -29,7 +29,7 @@ export function useAuth() {
 export type JwtPayload = {
   admin_id: string;
   email: string;
-  role: "admin" | "noc";
+  role: "admin" | "noc" | "dev";
   status: "full" | "mfa_pending";
   exp: number;
   iat: number;
