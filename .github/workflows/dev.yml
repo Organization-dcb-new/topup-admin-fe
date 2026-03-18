@@ -91,7 +91,6 @@ jobs:
 
           NEW_TAG="dev-${{ needs.build-and-push.outputs.new_tag }}"
 
-
           echo "Current: ${CURRENT_TAG:-none}"
           echo "New: $NEW_TAG"
 
