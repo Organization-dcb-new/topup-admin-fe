@@ -1,40 +1,115 @@
-name: Deploy Dev PakarGaming Dashboard
+name: Deploy Dev Frontend Dashboard
 
 on:
   push:
     branches:
       - dev
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
-  deploy:
-    name: Deploy Dashboard (Dev)
-    runs-on: [self-hosted, dev]
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.bump.outputs.new_tag }}
+      repo_lower: ${{ steps.repo_lower.outputs.repo }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Deploy Dashboard
-        shell: bash
+      - name: Lowercase Repo
+        id: repo_lower
+        run: echo "repo=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version Bump
+        id: bump
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          CLEAN_TAG=${LATEST_TAG#dev-}
+
+          IFS='.' read -r major minor patch <<< "$CLEAN_TAG"
+
+          if [ "$patch" -eq 9 ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            patch=$((patch + 1))
+          fi
+
+          NEW_TAG="$major.$minor.$patch"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          
+          tags: |
+            ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-latest
+            ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-${{ steps.bump.outputs.new_tag }}
+
+      - name: Create Git Tag
+        run: |
+          TAG="dev-${{ steps.bump.outputs.new_tag }}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            git tag $TAG
+            git push origin $TAG
+          fi
+
+  deploy:
+    needs: build-and-push
+    runs-on: [ self-hosted, dev ]
+
+    steps:
+      - name: Deploy 
         run: |
           set -e
 
-          echo "Workspace: $GITHUB_WORKSPACE"
-          cd "$GITHUB_WORKSPACE"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-          echo "Listing files"
-          ls -la
+          cd /opt/dev-deploy/fe-dashboard-dev
 
-          echo "🔨 Building new image..."
-          if docker compose -f docker-compose.dev.yml build; then
-            echo "✅ Build success"
+          CURRENT_IMAGE=$(docker inspect --format='{{.Config.Image}}' fe-dashboard 2>/dev/null || echo "")
+          CURRENT_TAG=$(echo $CURRENT_IMAGE | awk -F: '{print $2}')
 
-            echo "🚀 Restarting container..."
-            docker compose -f docker-compose.dev.yml up -d
+          NEW_TAG="dev-${{ needs.build-and-push.outputs.new_tag }}"
 
-            echo "🎉 Deploy success"
-          else
-            echo "❌ Build failed!"
-            echo "⚠️ Keeping previous running container"
+
+          echo "Current: ${CURRENT_TAG:-none}"
+          echo "New: $NEW_TAG"
+
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+          if [ $? -ne 0 ]; then
+            echo "Deploy failed ❌"
+
+            if [ -n "$CURRENT_TAG" ]; then
+              echo "Rolling back..."
+              export IMAGE_TAG=$CURRENT_TAG
+              docker compose up -d --remove-orphans
+              echo "Rollback done 🔄"
+            fi
+
             exit 1
           fi
+
+          docker image prune -f
+
+          echo "Deploy Success 🚀"
