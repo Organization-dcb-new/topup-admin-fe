@@ -22,7 +22,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Lowercase Repo
+      - name: Lowercase Repo 
         id: repo_lower
         run: echo "repo=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
 
