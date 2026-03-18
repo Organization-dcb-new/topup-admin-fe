@@ -1,0 +1,115 @@
+name: Deploy Production Frontend Dashboard
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.bump.outputs.new_tag }}
+      repo_lower: ${{ steps.repo_lower.outputs.repo }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Lowercase Repo
+        id: repo_lower
+        run: echo "repo=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+
+      - name: Login GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Version Bump
+        id: bump
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
+          CLEAN_TAG=${LATEST_TAG#prod-}
+
+          IFS='.' read -r major minor patch <<< "$CLEAN_TAG"
+
+          if [ "$patch" -eq 9 ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            patch=$((patch + 1))
+          fi
+
+          NEW_TAG="$major.$minor.$patch"
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Build & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}
+          tags: |
+            ghcr.io/${{ steps.repo_lower.outputs.repo }}:prod-latest
+            ghcr.io/${{ steps.repo_lower.outputs.repo }}:prod-${{ steps.bump.outputs.new_tag }}
+
+      - name: Create Git Tag
+        run: |
+          TAG="prod-${{ steps.bump.outputs.new_tag }}"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            git tag $TAG
+            git push origin $TAG
+          fi
+
+  deploy:
+    needs: build-and-push
+    runs-on: [ self-hosted, prod ]
+
+    steps:
+      - name: Deploy 
+        run: |
+          set -e
+
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+          cd /data/prod-deploy/fe-dashboard-prod
+
+          CURRENT_IMAGE=$(docker inspect --format='{{.Config.Image}}' fe-dashboard 2>/dev/null || echo "")
+          CURRENT_TAG=$(echo $CURRENT_IMAGE | awk -F: '{print $2}')
+
+          NEW_TAG="prod-${{ needs.build-and-push.outputs.new_tag }}"
+
+          echo "Current: ${CURRENT_TAG:-none}"
+          echo "New: $NEW_TAG"
+
+          docker compose pull
+          docker compose up -d --remove-orphans
+
+          if [ $? -ne 0 ]; then
+            echo "Deploy failed ❌"
+
+            if [ -n "$CURRENT_TAG" ]; then
+              echo "Rolling back..."
+              export IMAGE_TAG=$CURRENT_TAG
+              docker compose up -d --remove-orphans
+              echo "Rollback done 🔄"
+            fi
+
+            exit 1
+          fi
+
+          docker image prune -f
+
+          echo "Deploy Success 🚀"
