@@ -56,7 +56,8 @@ jobs:
         with:
           context: .
           push: true
-          
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL_DEV }}
           tags: |
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-latest
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-${{ steps.bump.outputs.new_tag }}
