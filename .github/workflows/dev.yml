@@ -36,11 +36,15 @@ jobs:
       - name: Version Bump
         id: bump
         run: |
+        
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
-          CLEAN_TAG=${LATEST_TAG#dev-}
+         
+          CLEAN_TAG=$(echo $LATEST_TAG | sed 's/^[^0-9]*//')
 
+       
           IFS='.' read -r major minor patch <<< "$CLEAN_TAG"
 
+         
           if [ "$patch" -eq 9 ]; then
             minor=$((minor + 1))
             patch=0
@@ -48,9 +52,11 @@ jobs:
             patch=$((patch + 1))
           fi
 
+          
           NEW_TAG="$major.$minor.$patch"
           echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-
+          echo "🚀 New Dev Version: $NEW_TAG"
+          
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
