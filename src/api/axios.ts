@@ -1,34 +1,31 @@
-import { authStorage } from '@/lib/auth'
-import axios from 'axios'
+import { authStorage } from "@/lib/auth";
+import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL
-
-//Local
 export const api = axios.create({
-  baseURL: apiUrl,
-})
+  baseURL: "/api",
+});
 
 function isTokenExpired(token: string) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]))
-    return Date.now() >= payload.exp * 1000
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return Date.now() >= payload.exp * 1000;
   } catch {
-    return true
+    return true;
   }
 }
 
 api.interceptors.request.use((config) => {
-  const token = authStorage.getToken()
+  const token = authStorage.getToken();
 
   if (token) {
     if (isTokenExpired(token)) {
-      authStorage.clearToken()
-      window.location.href = '/login'
-      return Promise.reject(new Error('Token expired'))
+      authStorage.clearToken();
+      window.location.href = "/login";
+      return Promise.reject(new Error("Token expired"));
     }
 
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
 
-  return config
-})
+  return config;
+});

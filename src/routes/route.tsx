@@ -15,6 +15,14 @@ import InputPages from "@/pages/Input";
 import OrderPages from "@/pages/Order";
 import CategoryProduct from "@/pages/CategoryProduct";
 import PaymentMethodCategoryPages from "@/pages/PaymentMethodCategory";
+import SpendingPages from "@/pages/Summary";
+import BlogPage from "@/pages/Blog";
+import VerifyOtpPage from "@/pages/VerifyOTP";
+import Setup2FAPage from "@/pages/SetupAuth";
+import RateLimitPage from "@/pages/RateLimit";
+import AdminManagementPage from "@/pages/Admin";
+import { RoleGuard } from "@/components/Auth/RoleGuard";
+import UnauthorizedPage from "@/pages/Unauthorized";
 
 export const router = createBrowserRouter([
   {
@@ -22,64 +30,170 @@ export const router = createBrowserRouter([
     element: <LoginPage />,
   },
   {
+    path: "/verify-otp",
+    element: <VerifyOtpPage />,
+  },
+  {
     path: "/",
     children: [
       {
         index: true,
-        element: <DashboardPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+            <DashboardPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "summary",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <SpendingPages />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "blog",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <BlogPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "shows",
-        element: <ShowPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <ShowPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "orders",
-        element: <OrderPages />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+            <OrderPages />
+          </RoleGuard>
+        ),
       },
       {
         path: "banners",
-        element: <BannerPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <BannerPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "transactions",
-        element: <TransactionPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+            <TransactionPage />
+          </RoleGuard>
+        ),
       },
 
       {
         path: "transactions/:paymentId",
-        element: <PaymentDetailPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+            <PaymentDetailPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "input",
-        element: <InputPages />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <InputPages />
+          </RoleGuard>
+        ),
       },
       {
         path: "games",
-        element: <GamePage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <GamePage />
+          </RoleGuard>
+        ),
       },
       {
         path: "category-product",
-        element: <CategoryProduct />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <CategoryProduct />
+          </RoleGuard>
+        ),
       },
       {
         path: "categories",
-        element: <CategoryPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <CategoryPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "products",
-        element: <ProductPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <ProductPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "payment-methods",
-        element: <PaymentMethodPage />,
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <PaymentMethodPage />
+          </RoleGuard>
+        ),
       },
       {
         path: "payment-methods-categories",
-        element: <PaymentMethodCategoryPages />,
+
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <PaymentMethodCategoryPages />
+          </RoleGuard>
+        ),
       },
       {
         path: "provider",
-        element: <ProviderPages />,
+
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <ProviderPages />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "2fa-setup",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <Setup2FAPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "rate-limit",
+        element: (
+          <RoleGuard allowedRoles={["dev"]}>
+            <RateLimitPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "admin",
+        element: (
+          <RoleGuard allowedRoles={["dev"]}>
+            <AdminManagementPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "unauthorized",
+        element: <UnauthorizedPage />,
       },
     ],
   },

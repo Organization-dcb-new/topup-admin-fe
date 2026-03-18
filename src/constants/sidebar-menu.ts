@@ -8,13 +8,16 @@ import {
   GalleryHorizontal,
   Images,
   ListOrdered,
+  Notebook,
   LucideWalletCards,
+  Lock,
 } from "lucide-react";
 import {
   MdOutlineCategory,
   MdCorporateFare,
   MdFormatListBulleted,
 } from "react-icons/md";
+import { HiCash } from "react-icons/hi";
 
 import { TbCategoryPlus } from "react-icons/tb";
 
@@ -22,6 +25,7 @@ export type SidebarMenu = {
   label: string;
   icon: React.ElementType;
   path?: string;
+  children?: SidebarMenu[];
 };
 
 export type SidebarSection = {
@@ -37,26 +41,23 @@ export const sidebarMenus: SidebarSection[] = [
         icon: Home,
         path: "/",
       },
-
       {
         label: "Transactions",
         icon: Wallet,
-        path: "/transactions",
+        children: [
+          { label: "Overview", path: "/transactions", icon: Wallet },
+          { label: "Summary", path: "/summary", icon: HiCash },
+          { label: "Order", path: "/orders", icon: ListOrdered },
+        ],
       },
       {
-        label: "Order",
-        icon: ListOrdered,
-        path: "/orders",
-      },
-      {
-        label: "Banner",
+        label: "CMS",
         icon: GalleryHorizontal,
-        path: "/banners",
-      },
-      {
-        label: "Show",
-        icon: Images,
-        path: "/shows",
+        children: [
+          { label: "Banners", path: "/banners", icon: GalleryHorizontal },
+          { label: "Shows", path: "/shows", icon: Images },
+          { label: "Articles", path: "/blog", icon: Notebook },
+        ],
       },
     ],
   },
@@ -64,44 +65,58 @@ export const sidebarMenus: SidebarSection[] = [
     title: "Master Data",
     menus: [
       {
-        label: "Games",
-        icon: Gamepad2,
-        path: "/games",
-      },
-      {
-        label: "Input",
-        icon: MdFormatListBulleted,
-        path: "/input",
-      },
-      {
-        label: "Category Product",
-        icon: TbCategoryPlus,
-        path: "/category-product",
-      },
-      {
-        label: "Category",
-        icon: MdOutlineCategory,
-        path: "/categories",
-      },
-      {
-        label: "Product",
+        label: "Inventory",
         icon: Boxes,
-        path: "/products",
+        children: [
+          { label: "Games", icon: Gamepad2, path: "/games" },
+          { label: "Products", icon: Boxes, path: "/products" },
+          {
+            label: "Category Product",
+            icon: TbCategoryPlus,
+            path: "/category-product",
+          },
+          { label: "Category", icon: MdOutlineCategory, path: "/categories" },
+          { label: "Input Fields", icon: MdFormatListBulleted, path: "/input" },
+        ],
       },
       {
-        label: "Payment Method",
+        label: "Payments",
         icon: CreditCard,
-        path: "/payment-methods",
+        children: [
+          { label: "Methods", icon: CreditCard, path: "/payment-methods" },
+          {
+            label: "Categories",
+            icon: LucideWalletCards,
+            path: "/payment-methods-categories",
+          },
+        ],
       },
       {
-        label: "Payment Method Categories",
-        icon: LucideWalletCards,
-        path: "/payment-methods-categories",
-      },
-      {
-        label: "Provider",
+        label: "Providers",
         icon: MdCorporateFare,
         path: "/provider",
+      },
+
+      {
+        label: "Security",
+        icon: Lock,
+        children: [
+          {
+            label: "2FA",
+            icon: Lock,
+            path: "/2fa-setup",
+          },
+          {
+            label: "Rate Limiter",
+            icon: Lock,
+            path: "/rate-limit",
+          },
+          {
+            label: "Users",
+            icon: Lock,
+            path: "/admin",
+          },
+        ],
       },
     ],
   },

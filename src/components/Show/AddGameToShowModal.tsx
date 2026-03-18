@@ -15,11 +15,7 @@ import { useState } from 'react'
 import { useAddGamesToShow } from '@/hooks/useShow'
 import { useGetGameNames } from '@/hooks/useGame'
 import type { GameV2 } from '@/types/show'
-
-type GameName = {
-  id: string
-  name: string
-}
+import type { GameName } from '../Blog/types/blog'
 
 export function AddGamesToShowButton({
   showId,

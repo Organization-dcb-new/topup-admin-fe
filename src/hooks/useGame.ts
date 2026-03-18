@@ -5,7 +5,6 @@ import type { GameByIDResponse, GamesResponse } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
-
 export interface GameNames {
   id: string
   name: string
