@@ -1,79 +1,88 @@
-import { api } from '@/api/axios'
-import type { FormValuesProductImage } from '@/components/Product/ChangeImage'
-import type { FormValuesChangeImageProductV2 } from '@/components/Product/UploadImage'
-import type { ProductResponse } from '@/types/product'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
+import { api } from "@/api/axios";
+import type { FormValuesProductImage } from "@/components/Product/Filter/ChangeImage";
+import type { FormValuesChangeImageProductV2 } from "@/components/Product/Filter/UploadImage";
+import type { ProductResponse } from "@/types/product";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
-export const useGetProducts = (page: number, limit: number, search: string, isActive: boolean) => {
+export const useGetProducts = (
+  page: number,
+  limit: number,
+  search: string,
+  isActive: boolean,
+  sku: string,
+  game_name: string,
+) => {
   return useQuery({
-    queryKey: ['products', page, limit, search, isActive],
+    queryKey: ["products", page, limit, search, isActive, sku, game_name],
     queryFn: async (): Promise<ProductResponse> => {
-      const res = await api.get('/products/admin', {
+      const res = await api.get("/products/admin", {
         params: {
           page: page,
           limit: limit,
           search: search,
           is_active: isActive ? true : undefined,
+          sku,
+          game_name,
         },
-      })
-      return res.data
+      });
+      return res.data;
     },
-  })
-}
+  });
+};
 
 export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async (values: FormValuesProductImage) => {
       const payload = {
         ...values,
-      }
+      };
 
-      const res = await api.patch(`/products/by-game`, payload)
-      return res.data
+      const res = await api.patch(`/products/by-game`, payload);
+      return res.data;
     },
     onSuccess: () => {
-      toast.success('Product updated')
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      setOpen(false)
+      toast.success("Product updated");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setOpen(false);
     },
-    onError: () => toast.error('Failed to update image Products'),
-  })
+    onError: () => toast.error("Failed to update image Products"),
+  });
 
-  return mutation
+  return mutation;
 }
 
 export function useUpdateImageProductV2(setOpen: (open: boolean) => void) {
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: async (values: FormValuesChangeImageProductV2) => {
       const payload = {
         ...values,
-      }
+      };
 
-      const res = await api.patch(`/products/by-game`, payload)
-      return res.data
+      const res = await api.patch(`/products/by-game`, payload);
+      return res.data;
     },
     onSuccess: () => {
-      toast.success('Product updated')
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      setOpen(false)
+      toast.success("Product updated");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setOpen(false);
     },
-    onError: () => toast.error('Failed to update image Products'),
-  })
+    onError: () => toast.error("Failed to update image Products"),
+  });
 
-  return mutation
+  return mutation;
 }
 
 export function useGetProductNames(id: string) {
   return useQuery({
-    queryKey: ['product-names', id],
+    queryKey: ["product-names", id],
     queryFn: async () => {
-      const res = await api.get(`/products/game/${id}`)
-      return res.data.data
+      const res = await api.get(`/products/game/${id}`);
+      return res.data.data;
     },
-  })
+  });
 }
