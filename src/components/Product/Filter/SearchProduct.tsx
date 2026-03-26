@@ -1,7 +1,7 @@
 import { Search } from 'lucide-react'
-import { Input } from '../ui/input'
-import { Checkbox } from '../ui/checkbox'
-import { Label } from '../ui/label'
+import { Input } from '../../ui/input'
+import { Checkbox } from '../../ui/checkbox'
+import { Label } from '../../ui/label'
 
 interface ProductInputProps {
   search: string
