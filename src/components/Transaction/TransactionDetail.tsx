@@ -23,6 +23,7 @@ export interface PaymentDetail {
   qr_code_url: string;
   va_number: string;
   created_at: string;
+  email: string;
   margin: number;
   order: Order;
   order_item: OrderItem;
@@ -196,6 +197,10 @@ export default function PaymentDetail({ data, isLoading }: Props) {
             <InfoRow
               label="Status"
               value={<StatusBadge status={data.status} />}
+            />
+            <InfoRow
+              label="Email"
+              value={<StatusBadge status={data.email} />}
             />
             <InfoRow label="Order No" value={data.order.order_number} />
             <InfoRow label="Product" value={data.order_item.product_name} />
