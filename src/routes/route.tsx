@@ -23,6 +23,7 @@ import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
+import AnomalyProduct from "@/pages/AnomalyProduct";
 
 export const router = createBrowserRouter([
   {
@@ -138,6 +139,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={["dev", "admin"]}>
             <ProductPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "anomaly",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <AnomalyProduct />
           </RoleGuard>
         ),
       },

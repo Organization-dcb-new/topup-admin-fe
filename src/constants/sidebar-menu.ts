@@ -75,6 +75,7 @@ export const sidebarMenus: SidebarSection[] = [
             icon: TbCategoryPlus,
             path: "/category-product",
           },
+          { label: "Anomaly Product", icon: Boxes, path: "/anomaly" },
           { label: "Category", icon: MdOutlineCategory, path: "/categories" },
           { label: "Input Fields", icon: MdFormatListBulleted, path: "/input" },
         ],

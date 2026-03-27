@@ -86,3 +86,18 @@ export function useGetProductNames(id: string) {
     },
   });
 }
+
+export function useGetProductAnomaly(page: number, limit: number) {
+  return useQuery({
+    queryKey: ["product-anomaly", page, limit],
+    queryFn: async () => {
+      const res = await api.get("/products/anomaly", {
+        params: {
+          page,
+          limit,
+        },
+      });
+      return res.data;
+    },
+  });
+}
