@@ -36,15 +36,17 @@ jobs:
       - name: Version Bump
         id: bump
         run: |
+          LATEST_TAG=$(git tag -l 'prod-*' --sort=-v:refname | sed -n '1p')
+          if [ -z "$LATEST_TAG" ]; then
+            LATEST_TAG="prod-0.0.0"
+          fi
 
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")
-
-
-          CLEAN_TAG=$(echo $LATEST_TAG | sed 's/^[^0-9]*//')
-
+          CLEAN_TAG="${LATEST_TAG#prod-}"
 
           IFS='.' read -r major minor patch <<< "$CLEAN_TAG"
-
+          major=${major:-0}
+          minor=${minor:-0}
+          patch=${patch:-0}
 
           if [ "$patch" -eq 9 ]; then
             minor=$((minor + 1))
