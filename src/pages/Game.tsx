@@ -1,5 +1,6 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
+import BulkUpdateGameStatus from '@/components/Games/BulkUpdateGameStatus'
 import GameSearchInput from '@/components/Games/SearchGame'
 import Pagination from '@/components/Layout/Pagination'
 import TableSkeleton from '@/components/Layout/loading'
@@ -40,7 +41,7 @@ export default function GamePage() {
     <DashboardLayout>
       <div className="mb-4 flex justify-between">
         <GameSearchInput value={search} onChange={setSearch} />
-        {/* <CreateGameModal /> */}
+        <BulkUpdateGameStatus />
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message="Failed to load Games" />}

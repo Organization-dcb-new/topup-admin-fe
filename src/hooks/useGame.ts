@@ -151,3 +151,29 @@ export function useToggleGameShow(id: string) {
     },
   })
 }
+
+export function useToggleGameStatus(id: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (is_active: boolean) => api.patch(`/games/status/${id}`, { is_active }),
+    onSuccess: () => {
+      toast.success('Game status updated')
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+    },
+    onError: () => toast.error('Failed to update game status'),
+  })
+}
+
+export function useBulkUpdateGameStatus() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (is_active: boolean) => api.patch('/games/bulk-status', { is_active }),
+    onSuccess: () => {
+      toast.success('All game statuses updated')
+      queryClient.invalidateQueries({ queryKey: ['games'] })
+    },
+    onError: () => toast.error('Failed to update all game statuses'),
+  })
+}
