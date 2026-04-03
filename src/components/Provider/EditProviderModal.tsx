@@ -1,20 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Eye, EyeOff, Pencil } from 'lucide-react'
-
-import type { Provider, ProviderFormValues } from '@/types/provider'
+import { Textarea } from '@/components/ui/textarea'
 import { useUpdateProvider } from '@/hooks/useProvider'
+import type { Provider, ProviderFormValues } from '@/types/provider'
+import { Eye, EyeOff, Loader2, Pencil } from 'lucide-react'
 
 type Props = {
   provider: Provider
@@ -22,7 +22,14 @@ type Props = {
 
 export function EditProviderModal({ provider }: Props) {
   const [showApiKey, setShowApiKey] = useState(false)
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = useState(false)
+
+  const nameId = useId()
+  const codeId = useId()
+  const apiUrlId = useId()
+  const apiKeyId = useId()
+  const priorityId = useId()
+  const configId = useId()
 
   const {
     register,
@@ -43,18 +50,16 @@ export function EditProviderModal({ provider }: Props) {
         priority: provider.priority,
         config: JSON.stringify(provider.config, null, 2),
       })
+    } else if (!open) {
+      reset()
+      /* eslint-disable react-hooks/set-state-in-effect -- reset tampilan kunci API saat dialog ditutup */
+      setShowApiKey(false)
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open, provider, reset])
 
-  useEffect(() => {
-    if (!open) {
-      reset()
-      setShowApiKey(false)
-    }
-  }, [open, reset])
-
   const onSubmit = (v: ProviderFormValues) => {
-    const payload: any = { ...v, config: v.config }
+    const payload: Record<string, unknown> = { ...v, config: v.config }
 
     if (!v.api_key_encrypted) {
       delete payload.api_key_encrypted
@@ -62,113 +67,167 @@ export function EditProviderModal({ provider }: Props) {
 
     mutation.mutate({
       id: provider.id,
-      payload,
+      payload: payload as Provider,
     })
   }
 
   return (
-    <div>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="cursor-pointer">
-        <Pencil className="h-4 w-4" />
+    <>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="cursor-pointer"
+        aria-label={`Ubah penyedia ${provider.name}`}
+      >
+        <Pencil className="h-4 w-4" aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit Provider</DialogTitle>
+        <DialogContent className="rounded-xl sm:max-w-lg">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah penyedia</DialogTitle>
+            <DialogDescription>
+              Kode penyedia tidak dapat diubah. Kosongkan kunci API jika tidak ingin mengganti nilai di
+              server.
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
-            <div className="space-y-1">
-              <Label>Name</Label>
-              <Input {...register('name', { required: 'Name is required' })} />
+            <div className="space-y-2">
+              <Label htmlFor={nameId} className="text-sm font-medium">
+                Nama
+              </Label>
+              <Input
+                id={nameId}
+                autoComplete="off"
+                className="rounded-lg"
+                aria-invalid={!!errors.name}
+                {...register('name', { required: 'Nama wajib diisi' })}
+              />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
-            {/* Code (readonly) */}
-            <div className="space-y-1">
-              <Label>Code</Label>
-              <Input disabled {...register('code')} />
+            <div className="space-y-2">
+              <Label htmlFor={codeId} className="text-sm font-medium">
+                Kode
+              </Label>
+              <Input id={codeId} disabled className="rounded-lg bg-muted/50 font-mono text-sm" {...register('code')} />
+              <p className="text-xs text-muted-foreground">Kode bersifat tetap setelah dibuat.</p>
             </div>
 
-            {/* API URL */}
-            <div className="space-y-1">
-              <Label>API URL</Label>
+            <div className="space-y-2">
+              <Label htmlFor={apiUrlId} className="text-sm font-medium">
+                URL API
+              </Label>
               <Input
+                id={apiUrlId}
+                autoComplete="off"
+                className="rounded-lg"
+                aria-invalid={!!errors.api_url}
                 {...register('api_url', {
-                  required: 'API URL is required',
+                  required: 'URL API wajib diisi',
+                  pattern: {
+                    value: /^https?:\/\//,
+                    message: 'Gunakan URL yang diawali http:// atau https://',
+                  },
                 })}
               />
+              {errors.api_url && (
+                <p className="text-xs text-destructive">{errors.api_url.message}</p>
+              )}
             </div>
 
-            {/* API KEY */}
-            <div className="space-y-1">
-              <Label>API Key (leave empty if unchanged)</Label>
-
+            <div className="space-y-2">
+              <Label htmlFor={apiKeyId} className="text-sm font-medium">
+                Kunci API
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                Biarkan kosong untuk mempertahankan kunci yang tersimpan di server.
+              </p>
               <div className="relative">
                 <Input
+                  id={apiKeyId}
                   type={showApiKey ? 'text' : 'password'}
+                  autoComplete="off"
+                  className="rounded-lg pr-10"
+                  placeholder="••••••••"
                   {...register('api_key_encrypted')}
-                  className="pr-10"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowApiKey((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowApiKey((prev) => !prev)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label={showApiKey ? 'Sembunyikan kunci API' : 'Tampilkan kunci API'}
                 >
-                  {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Priority */}
-            <div className="space-y-1">
-              <Label>Priority</Label>
-              <Input type="number" {...register('priority', { valueAsNumber: true })} />
+            <div className="space-y-2">
+              <Label htmlFor={priorityId} className="text-sm font-medium">
+                Prioritas
+              </Label>
+              <Input
+                id={priorityId}
+                type="number"
+                min={0}
+                className="rounded-lg"
+                {...register('priority', { valueAsNumber: true })}
+              />
             </div>
 
-            {/* Config */}
-            <div className="space-y-1">
-              <Label>Config (JSON)</Label>
+            <div className="space-y-2">
+              <Label htmlFor={configId} className="text-sm font-medium">
+                Konfigurasi (JSON)
+              </Label>
               <Textarea
+                id={configId}
                 rows={4}
+                className="max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm"
+                aria-invalid={!!errors.config}
                 {...register('config', {
-                  required: 'Config is required',
-                  validate: (v) => {
+                  required: 'Konfigurasi wajib diisi',
+                  validate: (value) => {
+                    const s = typeof value === 'string' ? value : String(value ?? '')
                     try {
-                      JSON.parse(v as any)
-                      console.log(v)
+                      JSON.parse(s)
                       return true
                     } catch {
-                      return 'Invalid JSON format'
+                      return 'Format JSON tidak valid'
                     }
                   },
                 })}
               />
               {errors.config?.message && (
-                <p className="text-xs text-destructive">{errors.config?.message}</p>
+                <p className="text-xs text-destructive">{errors.config.message}</p>
               )}
             </div>
 
-            <DialogFooter>
-              <Button
-                className="cursor-pointer"
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setOpen(false)
-                }}
-              >
-                Cancel
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setOpen(false)}>
+                Batal
               </Button>
-              <Button className="cursor-pointer" type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? 'Updating...' : 'Update'}
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="inline-flex items-center gap-2 rounded-xl"
+              >
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    Menyimpan…
+                  </>
+                ) : (
+                  'Simpan'
+                )}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }

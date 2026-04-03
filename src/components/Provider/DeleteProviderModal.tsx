@@ -10,8 +10,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
 import { useDeleteProvider } from '@/hooks/useProvider'
+import { Loader2, Trash2 } from 'lucide-react'
 
 export function DeleteProviderModal({ id }: { id: string }) {
   const mutation = useDeleteProvider(id)
@@ -20,31 +20,41 @@ export function DeleteProviderModal({ id }: { id: string }) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           size="icon"
-          className="text-destructive hover:bg-destructive/10 cursor-pointer"
+          className="cursor-pointer text-destructive hover:bg-destructive/10"
           disabled={mutation.isPending}
+          aria-label="Hapus penyedia"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Provider</AlertDialogTitle>
+          <AlertDialogTitle>Hapus penyedia?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. Are you sure you want to delete this Provider?
+            Tindakan ini tidak dapat dibatalkan. Integrasi yang memakai penyedia ini dapat terpengaruh.
+            Pastikan tidak ada ketergantungan aktif sebelum melanjutkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">Batal</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-destructive hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Deleting...' : 'Delete'}
+            {mutation.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                Menghapus…
+              </>
+            ) : (
+              'Hapus'
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
