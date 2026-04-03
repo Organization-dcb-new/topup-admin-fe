@@ -27,7 +27,7 @@ export type ProductResponseOnly = {
   stock_quantity: number
   is_unlimited_stock: boolean
   is_active: boolean
-  meta_data: any
+  meta_data: Record<string, unknown>
   sort_order: number
   created_at: string
   updated_at: string
@@ -78,14 +78,14 @@ export const useCreateCategoryProduct = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Category Product created successfully')
+      toast.success('Kategori produk berhasil dibuat')
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
       reset()
       setPreview(null)
       setOpen(false)
     },
     onError: () => {
-      toast.error('Failed to Create Category Product ')
+      toast.error('Gagal membuat kategori produk')
     },
   })
 
@@ -105,13 +105,13 @@ export const useUpdateCategoryProduct = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Category Product Update successfully')
+      toast.success('Kategori produk berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
       reset()
       setOpen(false)
     },
     onError: () => {
-      toast.error('Failed to Update Category Product ')
+      toast.error('Gagal memperbarui kategori produk')
     },
   })
 
@@ -127,11 +127,11 @@ export function useDeleteCategoryProduct(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Category Product deleted')
+      toast.success('Kategori produk berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
     },
     onError: () => {
-      toast.error('Failed to delete categories product')
+      toast.error('Gagal menghapus kategori produk')
     },
   })
 
@@ -147,7 +147,11 @@ export function useAddProductToCategoryProduct(categoryProduct: string) {
         product_ids: product_ids,
       }),
     onSuccess: () => {
+      toast.success('Daftar produk di kategori berhasil disimpan')
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan daftar produk di kategori')
     },
   })
 }
