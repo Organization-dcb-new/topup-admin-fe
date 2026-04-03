@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
 import { format, startOfDay } from 'date-fns'
 import { CalendarIcon, FilterX } from 'lucide-react'
 import type { ChangeEvent } from 'react'
@@ -93,20 +94,28 @@ export default function TransactionDateFilter({
       <Popover>
         <PopoverTrigger asChild>
           <Button
+            type="button"
             variant="outline"
-            className={`min-w-[200px] max-w-full justify-start text-left text-xs font-normal sm:min-w-[320px] sm:text-sm ${!date?.from && 'text-muted-foreground'}`}
+            aria-label="Pilih rentang tanggal dan waktu transaksi"
+            className={cn(
+              'h-10 min-w-[200px] max-w-full shrink-0 justify-start text-left text-xs font-normal shadow-xs sm:min-w-[320px] sm:max-w-md sm:text-sm',
+              !date?.from && 'text-muted-foreground',
+            )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+            <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
             {rangeLabel ? (
-              <span className="truncate" title={rangeLabel}>
+              <span className="truncate tabular-nums" title={rangeLabel}>
                 {rangeLabel}
               </span>
             ) : (
-              <span>Start & end date</span>
+              <span>Rentang tanggal & waktu</span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent
+          className="w-auto overflow-hidden rounded-xl border p-0 shadow-md ring-1 ring-gray-900/5"
+          align="start"
+        >
           <Calendar
             initialFocus
             mode="range"
@@ -115,27 +124,35 @@ export default function TransactionDateFilter({
             numberOfMonths={2}
           />
           {date?.from && (
-            <div className="grid gap-3 border-t p-3 sm:grid-cols-2">
+            <div className="grid gap-3 border-t border-border/80 bg-muted/20 p-3 sm:grid-cols-2">
               <div className="grid gap-1.5">
-                <Label htmlFor="tx-filter-start-time" className="text-muted-foreground">
+                <Label
+                  htmlFor="tx-filter-start-time"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Jam mulai
                 </Label>
                 <Input
                   id="tx-filter-start-time"
                   type="time"
                   step={1}
+                  className="h-10 bg-background"
                   value={timeInputValue(date.from)}
                   onChange={handleStartTimeChange}
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="tx-filter-end-time" className="text-muted-foreground">
+                <Label
+                  htmlFor="tx-filter-end-time"
+                  className="text-xs font-medium text-muted-foreground"
+                >
                   Jam selesai
                 </Label>
                 <Input
                   id="tx-filter-end-time"
                   type="time"
                   step={1}
+                  className="h-10 bg-background"
                   value={timeInputValue(date.to ?? date.from)}
                   onChange={handleEndTimeChange}
                 />
@@ -149,11 +166,11 @@ export default function TransactionDateFilter({
           type="button"
           variant="ghost"
           size="icon"
-          className="text-muted-foreground shrink-0"
+          className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => onChange(undefined)}
-          aria-label="Clear date range"
+          aria-label="Hapus filter tanggal"
         >
-          <FilterX className="h-4 w-4" />
+          <FilterX className="h-4 w-4" aria-hidden />
         </Button>
       )}
     </div>

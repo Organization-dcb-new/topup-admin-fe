@@ -5,19 +5,25 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Fragment } from 'react'
+import { cn } from '@/lib/utils'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   renderSubRow?: (row: TData) => React.ReactNode
+  emptyMessage?: React.ReactNode
+  /** Header kolom tetap di atas saat kontainer induk di-scroll vertikal (satu scrollport dengan tbody). */
+  stickyHeader?: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   renderSubRow,
+  emptyMessage = 'No data',
+  stickyHeader = false,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -29,9 +35,15 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="rounded-md overflow-x-auto border">
-      <Table className="min-w-max">
-        <TableHeader className="bg-white">
+    <div className={cn('rounded-md border', !stickyHeader && 'overflow-x-auto')}>
+      <Table className="min-w-max" scrollContainer={!stickyHeader}>
+        <TableHeader
+          className={cn(
+            'bg-white',
+            stickyHeader &&
+              '[&_th]:sticky [&_th]:top-0 [&_th]:z-20 [&_th]:border-b [&_th]:bg-background',
+          )}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -68,8 +80,11 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No data
+              <TableCell
+                colSpan={columns.length}
+                className="h-28 px-4 text-center text-sm text-muted-foreground"
+              >
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}

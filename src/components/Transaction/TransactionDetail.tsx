@@ -1,429 +1,451 @@
-import { Button } from "../ui/button";
-import { DashboardLayout } from "../Layout/dashboard-layout";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { format, isValid } from "date-fns";
-import { id } from "date-fns/locale";
-import React, { useEffect, useState } from "react";
-import { useResendEmail, useResendVoucherCode } from "@/hooks/useEmail";
-
-/* =======================
-   TYPES
-======================= */
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
+import { format, isValid } from 'date-fns'
+import { id } from 'date-fns/locale'
+import { ArrowLeft, Loader2, Receipt } from 'lucide-react'
+import {
+  type Dispatch,
+  type FC,
+  type ReactNode,
+  type SetStateAction,
+  useEffect,
+  useState,
+} from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export interface PaymentDetail {
-  id: string;
-  payment_number: string;
-  order_id: string;
-  amount: number;
-  status: "PENDING" | "PAID" | "FAILED" | "EXPIRED";
-  payment_method_id: string;
-  payment_channel: "gopay" | "va" | "qris" | "shopeepay";
-  payment_url: string;
-  qr_code_url: string;
-  va_number: string;
-  created_at: string;
-  email: string;
-  margin: number;
-  order: Order;
-  order_item: OrderItem;
+  id: string
+  payment_number: string
+  order_id: string
+  amount: number
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
+  payment_method_id: string
+  payment_channel: 'gopay' | 'va' | 'qris' | 'shopeepay'
+  payment_url: string
+  qr_code_url: string
+  va_number: string
+  created_at: string
+  email: string
+  margin: number
+  order: Order
+  order_item: OrderItem
 }
 
 export interface OrderItem {
-  id: string;
-  product_id: string;
-  product_name: string;
-  product_sku: string;
-  quantity: number;
-  unit_price: number;
-  subtotal: number;
-  voucher_code?: string;
+  id: string
+  product_id: string
+  product_name: string
+  product_sku: string
+  quantity: number
+  unit_price: number
+  subtotal: number
+  voucher_code?: string
 }
 
 export interface Order {
-  id: string;
-  order_number: string;
-  status: string;
-  subtotal: number;
-  discount_amount: number;
-  loyalty_discount: number;
-  tax_amount: number;
-  total_amount: number;
-  payment_method: string;
-  created_at: string;
+  id: string
+  order_number: string
+  status: string
+  subtotal: number
+  discount_amount: number
+  loyalty_discount: number
+  tax_amount: number
+  total_amount: number
+  payment_method: string
+  created_at: string
 }
 
 type Props = {
-  data: PaymentDetail;
-  isLoading: boolean;
-};
+  data: PaymentDetail
+  isLoading: boolean
+}
+
+function formatIdr(value: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
 
 const formatTime = (sec: number) => {
-  const minutes = Math.floor(sec / 60);
-  const seconds = sec % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-};
+  const minutes = Math.floor(sec / 60)
+  const seconds = sec % 60
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+}
 
 const parseWIBDate = (dateString: string) => {
-  if (!dateString) return null;
+  if (!dateString) return null
+  const base = dateString.split(' +')[0]
+  const noMs = base.split('.')[0]
+  return new Date(noMs.replace(' ', 'T'))
+}
 
-  // Buang timezone & WIB
-  const base = dateString.split(" +")[0]; // 2026-02-03 10:56:37.825587
-
-  // Buang milidetik
-  const noMs = base.split(".")[0]; // 2026-02-03 10:56:37
-
-  // Jadi ISO
-  return new Date(noMs.replace(" ", "T")); // 2026-02-03T10:56:37
-};
-
-/* =======================
-   MAIN COMPONENT
-======================= */
+const paymentStatusLabel: Record<PaymentDetail['status'], string> = {
+  PAID: 'Lunas',
+  PENDING: 'Menunggu',
+  FAILED: 'Gagal',
+  EXPIRED: 'Kadaluarsa',
+}
 
 export default function PaymentDetail({ data, isLoading }: Props) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const [voucherCooldown, setVoucherCooldown] = useState(0)
+  const [emailCooldown, setEmailCooldown] = useState(0)
 
-  const [voucherCooldown, setVoucherCooldown] = useState(0);
-  const [emailCooldown, setEmailCooldown] = useState(0);
+  const VOUCHER_KEY = 'voucherCooldownExpire'
+  const EMAIL_KEY = 'emailCooldownExpire'
 
-  const VOUCHER_KEY = "voucherCooldownExpire";
-  const EMAIL_KEY = "emailCooldownExpire";
+  const { mutateAsync, isPending: isResendingVoucher } = useResendVoucherCode()
+  const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } = useResendEmail()
 
-  const { mutateAsync, isPending: isResendingVoucher } = useResendVoucherCode();
-  const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } =
-    useResendEmail();
+  const date = parseWIBDate(data.created_at)
 
-  const date = parseWIBDate(data.created_at);
+  const handleResendVoucherCodeEmail = async (paymentId: string) => {
+    await mutateAsync(paymentId)
+    const expire = Date.now() + 10 * 60 * 1000
+    localStorage.setItem(VOUCHER_KEY, expire.toString())
+    setVoucherCooldown(Math.floor((expire - Date.now()) / 1000))
+  }
 
-  const handleResendVoucherCodeEmail = async (id: string) => {
-    await mutateAsync(id);
-
-    const expire = Date.now() + 10 * 60 * 1000;
-    localStorage.setItem(VOUCHER_KEY, expire.toString());
-    setVoucherCooldown(Math.floor((expire - Date.now()) / 1000));
-  };
-
-  const handleResendPaymentEmail = async (id: string) => {
-    await resendEmailMutateAsync(id);
-
-    const expire = Date.now() + 10 * 60 * 1000;
-    localStorage.setItem(EMAIL_KEY, expire.toString());
-    setEmailCooldown(Math.floor((expire - Date.now()) / 1000));
-  };
+  const handleResendPaymentEmail = async (paymentId: string) => {
+    await resendEmailMutateAsync(paymentId)
+    const expire = Date.now() + 10 * 60 * 1000
+    localStorage.setItem(EMAIL_KEY, expire.toString())
+    setEmailCooldown(Math.floor((expire - Date.now()) / 1000))
+  }
 
   useEffect(() => {
     const loadCooldown = (key: string, setter: (v: number) => void) => {
-      const saved = localStorage.getItem(key);
-      if (!saved) return;
-
-      const diff = Math.floor((Number(saved) - Date.now()) / 1000);
-      if (diff > 0) setter(diff);
-      else localStorage.removeItem(key);
-    };
-
-    loadCooldown(VOUCHER_KEY, setVoucherCooldown);
-    loadCooldown(EMAIL_KEY, setEmailCooldown);
-  }, []);
+      const saved = localStorage.getItem(key)
+      if (!saved) return
+      const diff = Math.floor((Number(saved) - Date.now()) / 1000)
+      if (diff > 0) setter(diff)
+      else localStorage.removeItem(key)
+    }
+    loadCooldown(VOUCHER_KEY, setVoucherCooldown)
+    loadCooldown(EMAIL_KEY, setEmailCooldown)
+  }, [])
 
   useEffect(() => {
     const startTimer = (
       cooldown: number,
-      setCooldown: React.Dispatch<React.SetStateAction<number>>,
+      setCooldown: Dispatch<SetStateAction<number>>,
       key: string,
     ) => {
-      if (cooldown <= 0) return;
-
+      if (cooldown <= 0) return
       const timer = setInterval(() => {
         setCooldown((prev) => {
           if (prev <= 1) {
-            localStorage.removeItem(key);
-            clearInterval(timer);
-            return 0;
+            localStorage.removeItem(key)
+            clearInterval(timer)
+            return 0
           }
-          return prev - 1;
-        });
-      }, 1000);
+          return prev - 1
+        })
+      }, 1000)
+      return () => clearInterval(timer)
+    }
 
-      return () => clearInterval(timer);
-    };
-
-    const v = startTimer(voucherCooldown, setVoucherCooldown, VOUCHER_KEY);
-    const e = startTimer(emailCooldown, setEmailCooldown, EMAIL_KEY);
-
+    const v = startTimer(voucherCooldown, setVoucherCooldown, VOUCHER_KEY)
+    const e = startTimer(emailCooldown, setEmailCooldown, EMAIL_KEY)
     return () => {
-      v && v();
-      e && e();
-    };
-  }, [voucherCooldown, emailCooldown]);
+      v?.()
+      e?.()
+    }
+  }, [voucherCooldown, emailCooldown])
 
   const PaymentAction =
-    data.status === "PENDING"
-      ? paymentComponentMap[data.payment_channel]
-      : null;
+    data.status === 'PENDING' ? paymentComponentMap[data.payment_channel] : null
 
   return (
     <DashboardLayout>
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate(-1)}
-            className="rounded-full cursor-pointer"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-
-          <div>
-            <h1 className="text-2xl font-semibold">Payment Detail</h1>
-            <p className="text-sm text-gray-500">
-              Complete your payment before it expires
-            </p>
+      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="mt-0.5 shrink-0 rounded-full"
+              aria-label="Kembali"
+            >
+              <ArrowLeft className="h-5 w-5" aria-hidden />
+            </Button>
+            <div className="flex min-w-0 gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Receipt className="h-5 w-5" aria-hidden />
+              </div>
+              <div className="min-w-0 space-y-1">
+                <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                  Detail transaksi
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {data.status === 'PENDING'
+                    ? 'Selesaikan pembayaran sebelum kedaluwarsa.'
+                    : 'Informasi pembayaran dan pesanan.'}
+                </p>
+                <p className="font-mono text-xs text-muted-foreground tabular-nums">{data.id}</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Main Panel */}
-        <div className="rounded-xl border bg-white shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* LEFT */}
-          <div className="space-y-3 text-sm">
-            <InfoRow label="Payment No" value={data.payment_number} />
-            <InfoRow label="Order ID" value={data.order_id} />
-            <InfoRow
-              label="Method"
-              value={data.payment_channel.toUpperCase()}
-            />
-            <InfoRow
-              label="Status"
-              value={<StatusBadge status={data.status} />}
-            />
-            <InfoRow
-              label="Email"
-              value={<StatusBadge status={data.email} />}
-            />
-            <InfoRow label="Order No" value={data.order.order_number} />
-            <InfoRow label="Product" value={data.order_item.product_name} />
-            <InfoRow
-              label="Quantity"
-              value={`${data.order_item.quantity} item`}
-            />
-            <InfoRow
-              label="Order Status"
-              value={<StatusBadge status={data.order.status} />}
-            />
+        <div className="overflow-hidden rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-900/5 sm:p-6">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-10">
+            <div className="space-y-3 text-sm">
+              <InfoRow label="Nomor bayar" value={data.payment_number} mono />
+              <InfoRow label="ID pesanan" value={data.order_id} mono muted />
+              <InfoRow label="Kanal" value={data.payment_channel.toUpperCase()} />
+              <InfoRow
+                label="Status pembayaran"
+                value={<PaymentStatusBadge status={data.status} />}
+              />
+              <InfoRow
+                label="Email"
+                value={
+                  <span className="max-w-[14rem] break-all text-right text-sm">{data.email}</span>
+                }
+              />
+              <InfoRow label="Nomor pesanan" value={data.order.order_number} mono />
+              <InfoRow label="Produk" value={data.order_item.product_name} />
+              <InfoRow label="Jumlah" value={`${data.order_item.quantity} item`} />
+              <InfoRow
+                label="Status pesanan"
+                value={<OrderStatusBadge status={data.order.status} />}
+              />
+              <InfoRow label="Margin" value={formatIdr(data.margin)} mono />
 
-            <div className="pt-4 border-t">
-              <p className="text-xs text-gray-500">Total Amount</p>
-              <p className="text-2xl font-bold">
-                Rp {data.amount.toLocaleString("id-ID")}
-              </p>
-            </div>
-
-            <p className="text-gray-500">
-              <p>
-                {date && isValid(date)
-                  ? format(date, "dd MMM yyyy, HH:mm", { locale: id })
-                  : "-"}
-              </p>
-            </p>
-          </div>
-
-          {/* RIGHT */}
-          <div className="flex items-center justify-center">
-            {isLoading && <PaymentActionSpinner />}
-
-            {!isLoading && PaymentAction && <PaymentAction data={data} />}
-
-            {!isLoading && data.status === "PAID" && (
-              <div className="text-center space-y-2">
-                <p className="text-green-600 text-lg font-semibold">
-                  Payment Successful
-                </p>
-                <p className="text-sm text-gray-500">
-                  Thank you for your payment
+              <div className="border-t border-border/80 pt-4">
+                <p className="text-xs font-medium text-muted-foreground">Total bayar</p>
+                <p className="text-2xl font-bold tabular-nums text-foreground">
+                  {formatIdr(data.amount)}
                 </p>
               </div>
-            )}
-          </div>
-          {/* Voucher Section */}
-          <div className="flex flex-row w-full gap-5 ">
-            {!isLoading &&
-              data?.status === "PAID" &&
-              data?.order_item?.voucher_code && (
-                <div className="md:col-span-2 pt-6 flex flex-col items-center gap-3">
-                  <p className="text-sm text-gray-500">Resend Voucher Code</p>
 
-                  <Button
-                    onClick={() => handleResendVoucherCodeEmail(data.id)}
-                    className="cursor-pointer"
-                    disabled={isResendingVoucher || voucherCooldown > 0}
-                  >
-                    {voucherCooldown > 0
-                      ? `Wait ${formatTime(voucherCooldown)}`
-                      : "Resend Voucher Code"}
-                  </Button>
+              <div className="text-sm text-muted-foreground">
+                <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Dibuat
+                </span>
+                <p className="mt-0.5 tabular-nums">
+                  {date && isValid(date)
+                    ? format(date, 'dd MMM yyyy, HH:mm', { locale: id })
+                    : '—'}{' '}
+                  <span className="text-xs">(WIB)</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex min-h-[12rem] flex-col items-center justify-center rounded-lg border border-dashed border-border/80 bg-muted/15 p-4">
+              {isLoading && <PaymentActionSpinner />}
+
+              {!isLoading && PaymentAction && <PaymentAction data={data} />}
+
+              {!isLoading && data.status === 'PAID' && !PaymentAction && (
+                <div className="space-y-2 text-center">
+                  <p className="text-lg font-semibold text-emerald-600">Pembayaran berhasil</p>
+                  <p className="text-sm text-muted-foreground">Terima kasih, pembayaran telah diterima.</p>
                 </div>
               )}
 
-            {!isLoading && data?.status === "PAID" && (
-              <div className="md:col-span-2  pt-6 flex flex-col items-center gap-3">
-                <p className="text-sm text-gray-500">Resend Email</p>
+              {!isLoading && data.status === 'FAILED' && (
+                <p className="text-center text-sm font-medium text-destructive">Pembayaran gagal</p>
+              )}
 
-                <Button
-                  onClick={() => handleResendPaymentEmail(data.id)}
-                  className="cursor-pointer"
-                  disabled={isResendingEmail || emailCooldown > 0}
-                >
-                  {emailCooldown > 0
-                    ? `Wait ${formatTime(emailCooldown)}`
-                    : "Resend Payment Email"}
-                </Button>
-              </div>
-            )}
+              {!isLoading && data.status === 'EXPIRED' && (
+                <p className="text-center text-sm font-medium text-muted-foreground">
+                  Pembayaran kedaluwarsa
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-6 border-t border-border/80 pt-6 md:col-span-2 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-8">
+              {!isLoading &&
+                data.status === 'PAID' &&
+                data.order_item?.voucher_code && (
+                  <div className="flex flex-col items-center gap-2">
+                    <p className="text-sm text-muted-foreground">Kirim ulang kode voucher</p>
+                    <Button
+                      type="button"
+                      onClick={() => handleResendVoucherCodeEmail(data.id)}
+                      disabled={isResendingVoucher || voucherCooldown > 0}
+                      variant="secondary"
+                    >
+                      {voucherCooldown > 0
+                        ? `Tunggu ${formatTime(voucherCooldown)}`
+                        : 'Kirim ulang voucher'}
+                    </Button>
+                  </div>
+                )}
+
+              {!isLoading && data.status === 'PAID' && (
+                <div className="flex flex-col items-center gap-2">
+                  <p className="text-sm text-muted-foreground">Kirim ulang email pembayaran</p>
+                  <Button
+                    type="button"
+                    onClick={() => handleResendPaymentEmail(data.id)}
+                    disabled={isResendingEmail || emailCooldown > 0}
+                    variant="secondary"
+                  >
+                    {emailCooldown > 0
+                      ? `Tunggu ${formatTime(emailCooldown)}`
+                      : 'Kirim ulang email'}
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </DashboardLayout>
-  );
+  )
 }
 
-/* =======================
-   PAYMENT COMPONENT MAP
-======================= */
+type PaymentChannel = PaymentDetail['payment_channel']
 
-type PaymentChannel = PaymentDetail["payment_channel"];
-
-const paymentComponentMap: Record<
-  PaymentChannel,
-  React.FC<{ data: PaymentDetail }>
-> = {
+const paymentComponentMap: Record<PaymentChannel, FC<{ data: PaymentDetail }>> = {
   gopay: GopayPayment,
   qris: QrisPayment,
   shopeepay: ShopeepayPayment,
   va: VaPayment,
-};
-
-/* =======================
-   PAYMENT UI
-======================= */
+}
 
 function GopayPayment({ data }: { data: PaymentDetail }) {
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-sm space-y-4">
       {data.qr_code_url && (
         <div className="flex flex-col items-center gap-2">
-          <img src={data.qr_code_url} alt="GoPay QR" className="w-48 h-48" />
-          <p className="text-sm text-gray-500">Scan QR using GoPay app</p>
+          <img
+            src={data.qr_code_url}
+            alt="QR GoPay"
+            className="h-48 w-48 rounded-lg border object-contain"
+          />
+          <p className="text-center text-sm text-muted-foreground">Pindai QR dengan aplikasi GoPay</p>
         </div>
       )}
-
       {data.payment_url && (
         <Button
-          className="w-full cursor-pointer"
-          onClick={() => window.open(data.payment_url, "_blank")}
+          type="button"
+          className="w-full"
+          onClick={() => window.open(data.payment_url, '_blank')}
         >
-          Open GoPay App
+          Buka GoPay
         </Button>
       )}
     </div>
-  );
+  )
 }
 
 function ShopeepayPayment({ data }: { data: PaymentDetail }) {
   return (
-    <div className="flex flex-col items-center gap-4 text-center">
-      <p className="text-sm text-gray-600">
-        You will be redirected to ShopeePay app
-      </p>
-
+    <div className="w-full max-w-sm space-y-4 text-center">
+      <p className="text-sm text-muted-foreground">Anda akan diarahkan ke aplikasi ShopeePay</p>
       <Button
-        className="w-full cursor-pointer"
-        onClick={() => window.open(data.payment_url, "_blank")}
+        type="button"
+        className="w-full"
+        onClick={() => window.open(data.payment_url, '_blank')}
         disabled={!data.payment_url}
       >
-        Open ShopeePay App
+        Buka ShopeePay
       </Button>
-
-      <p className="text-xs text-yellow-600">
-        Please complete the payment in Shopee app
+      <p className="text-xs text-amber-600 dark:text-amber-500">
+        Selesaikan pembayaran di aplikasi Shopee
       </p>
     </div>
-  );
+  )
 }
 
 function QrisPayment({ data }: { data: PaymentDetail }) {
   return (
-    <div className="text-center space-y-4">
-      <p className="text-sm text-gray-600">
-        Scan QR Code using mobile banking or e-wallet
+    <div className="w-full max-w-sm space-y-4 text-center">
+      <p className="text-sm text-muted-foreground">
+        Pindai QR dengan mobile banking atau dompet digital
       </p>
-
       <img
         src={data.qr_code_url}
         alt="QRIS"
-        className="w-64 h-64 mx-auto rounded-xl border"
+        className="mx-auto h-64 w-64 rounded-xl border object-contain"
       />
-
-      <p className="text-xs text-yellow-600">
-        Waiting for payment confirmation
-      </p>
+      <p className="text-xs text-amber-600 dark:text-amber-500">Menunggu konfirmasi pembayaran</p>
     </div>
-  );
+  )
 }
 
 function VaPayment({ data }: { data: PaymentDetail }) {
   return (
-    <div className="space-y-3 text-center">
-      <p className="text-sm text-gray-600">Virtual Account Number</p>
-
-      <div className="p-4 border rounded-lg text-lg font-mono">
-        {data.va_number || "-"}
+    <div className="w-full max-w-sm space-y-3 text-center">
+      <p className="text-sm text-muted-foreground">Nomor virtual account</p>
+      <div className="rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-lg tabular-nums">
+        {data.va_number || '—'}
       </div>
-
-      <p className="text-xs text-yellow-600">
-        Complete payment before expiration
+      <p className="text-xs text-amber-600 dark:text-amber-500">
+        Selesaikan transfer sebelum batas waktu
       </p>
     </div>
-  );
+  )
 }
 
-/* =======================
-   SHARED UI
-======================= */
-
-function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+function InfoRow({
+  label,
+  value,
+  mono,
+  muted,
+}: {
+  label: string
+  value: ReactNode
+  mono?: boolean
+  muted?: boolean
+}) {
   return (
-    <div className="flex justify-between gap-4">
-      <span className="text-gray-500">{label}</span>
-      <span className="font-medium text-right">{value}</span>
+    <div className="flex justify-between gap-4 border-b border-border/40 py-2 last:border-0">
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span
+        className={cn(
+          'min-w-0 text-right font-medium',
+          mono && 'font-mono text-sm tabular-nums',
+          muted && 'text-muted-foreground',
+        )}
+      >
+        {value}
+      </span>
     </div>
-  );
+  )
 }
 
-const statusStyleMap: Record<string, string> = {
-  PAID: "bg-green-100 text-green-700",
-  PENDING: "bg-yellow-100 text-yellow-700",
-  FAILED: "bg-red-100 text-red-700",
-  EXPIRED: "bg-gray-100 text-gray-600",
-};
-
-function StatusBadge({ status }: { status: string }) {
+function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
+  const variant =
+    status === 'PAID'
+      ? 'success'
+      : status === 'PENDING'
+        ? 'outline'
+        : 'destructive'
   return (
-    <span
-      className={`px-2 py-1 rounded text-xs font-medium ${
-        statusStyleMap[status] ?? "bg-gray-100 text-gray-600"
-      }`}
+    <Badge
+      variant={variant}
+      className={cn(status === 'PAID' && 'border-transparent bg-emerald-600 hover:bg-emerald-600')}
     >
+      {paymentStatusLabel[status]}
+    </Badge>
+  )
+}
+
+function OrderStatusBadge({ status }: { status: string }) {
+  return (
+    <Badge variant="secondary" className="max-w-[12rem] truncate font-normal">
       {status}
-    </span>
-  );
+    </Badge>
+  )
 }
 
 function PaymentActionSpinner() {
   return (
     <div className="flex flex-col items-center gap-3 text-muted-foreground">
-      <Loader2 className="h-8 w-8 animate-spin" />
+      <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+      <p className="text-sm">Memuat…</p>
     </div>
-  );
+  )
 }
