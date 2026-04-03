@@ -1,47 +1,46 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Show } from '@/types/show'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-import { DeleteShowButton } from '@/components/Show/DeleteShowModal'
-import { AddGamesToShowButton } from '@/components/Show/AddGameToShowModal'
-import { UpdateShowModal } from '@/components/Show/EditShowModal'
+import { Button } from '@/components/ui/button'
+import { ShowActionsHeader, ShowRowActions } from '@/components/Show/ShowRowActions'
 
 export const showColumns: ColumnDef<Show>[] = [
   {
     id: 'expand',
-    header: 'List Game',
-    cell: ({ row }) =>
-      row.original.Games?.length ? (
-        <button onClick={row.getToggleExpandedHandler()}>
-          {row.getIsExpanded() ? (
-            <ChevronDown className="w-4 h-4" />
-          ) : (
-            <ChevronRight className="w-4 h-4" />
-          )}
-        </button>
-      ) : null,
-    size: 30,
-  },
-  {
-    accessorKey: 'Image',
-    header: 'Image',
+    header: () => (
+      <span className="block min-w-[2.75rem] text-xs font-medium text-muted-foreground">
+        Daftar game
+      </span>
+    ),
     cell: ({ row }) => {
-      const src = row.original.Image || 'https://api.dicebear.com/9.x/lorelei/svg'
-
+      const count = row.original.Games?.length ?? 0
+      if (!count) {
+        return <span className="text-xs text-muted-foreground">—</span>
+      }
       return (
-        <img
-          src={src}
-          alt="show"
-          className="h-12 w-auto border rounded"
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.png'
-          }}
-        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+          onClick={row.getToggleExpandedHandler()}
+          aria-expanded={row.getIsExpanded()}
+          aria-label={row.getIsExpanded() ? 'Tutup daftar game' : 'Buka daftar game'}
+        >
+          {row.getIsExpanded() ? (
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          ) : (
+            <ChevronRight className="h-4 w-4" aria-hidden />
+          )}
+        </Button>
       )
     },
+    size: 40,
   },
+
   {
     accessorKey: 'Name',
-    header: 'Name',
+    header: 'Nama',
   },
   {
     accessorKey: 'Alias',
@@ -49,18 +48,19 @@ export const showColumns: ColumnDef<Show>[] = [
   },
   {
     accessorKey: 'Games',
-    header: 'Total Games',
-    cell: ({ row }) => row.original.Games?.length ?? 0,
+    header: 'Jumlah game',
+    cell: ({ row }) => {
+      const n = row.original.Games?.length ?? 0
+      return (
+        <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium tabular-nums text-foreground">
+          {n}
+        </span>
+      )
+    },
   },
   {
     id: 'actions',
-    header: 'Action',
-    cell: ({ row }) => (
-      <div className="flex items-center gap-1">
-        <AddGamesToShowButton showId={row.original.ID} existingGames={row.original.Games} />
-        <DeleteShowButton id={row.original.ID} />
-        <UpdateShowModal show={row.original} />
-      </div>
-    ),
+    header: () => <ShowActionsHeader />,
+    cell: ({ row }) => <ShowRowActions show={row.original} />,
   },
 ]
