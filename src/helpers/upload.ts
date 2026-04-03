@@ -7,7 +7,7 @@ type HandleFileParams = {
   setPreview: (url: string | null) => void
   setIsUploading: (status: boolean) => void
   setUploadProgress: (progress: number) => void
-  setValue: (name: string, value: any, options?: { shouldValidate?: boolean }) => void
+  setValue: (name: string, value: string, options?: { shouldValidate?: boolean }) => void
   fieldName?: string
 }
 
