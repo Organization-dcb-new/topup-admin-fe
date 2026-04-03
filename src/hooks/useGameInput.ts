@@ -27,10 +27,10 @@ export const useUpdateGameInput = () => {
     mutationFn: (payload: { id: string; label: string, placeholder : string}) => api.patch(`/game-inputs/label`, payload),
 
     onSuccess: () => {
-      toast.success('Form updated')
+      toast.success('Input berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['game-inputs'] })
     },
 
-    onError: () => toast.error('Update failed'),
+    onError: () => toast.error('Gagal memperbarui input'),
   })
 }
