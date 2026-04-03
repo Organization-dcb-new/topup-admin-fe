@@ -12,7 +12,6 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   renderSubRow?: (row: TData) => React.ReactNode
-  /** Tampilan sel kosong bila `data` tidak ada baris (default: "No data") */
   emptyMessage?: React.ReactNode
 }
 
@@ -71,7 +70,10 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-28 px-4 text-center text-sm text-muted-foreground">
+              <TableCell
+                colSpan={columns.length}
+                className="h-28 px-4 text-center text-sm text-muted-foreground"
+              >
                 {emptyMessage}
               </TableCell>
             </TableRow>
