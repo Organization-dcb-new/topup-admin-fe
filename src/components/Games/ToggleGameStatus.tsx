@@ -15,8 +15,15 @@ export default function ToggleGameStatus({ game }: ToggleGameStatusProps) {
         checked={game.is_active}
         onCheckedChange={(v) => toggleStatusMutation.mutate(v)}
         disabled={toggleStatusMutation.isPending}
+        aria-label={
+          game.is_active
+            ? `Nonaktifkan game ${game.name}`
+            : `Aktifkan game ${game.name}`
+        }
       />
-      <span className="text-sm">{game.is_active ? 'Active' : 'Inactive'}</span>
+      <span className="text-sm font-medium text-foreground">
+        {game.is_active ? 'Aktif' : 'Nonaktif'}
+      </span>
     </div>
   )
 }
