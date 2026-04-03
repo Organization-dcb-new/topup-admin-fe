@@ -4,11 +4,10 @@ import { DataTable } from '@/components/Layout/table-data'
 import { blogColumns } from '@/tables/table-blog'
 import { useGetBlogs } from '@/components/Blog/hooks/useBlog'
 import ErrorComponent from '@/components/Layout/error'
-import TableSkeleton from '@/components/Layout/loading'
 import { useState } from 'react'
 import Pagination from '@/components/Layout/Pagination'
 import type { Blog } from '@/tables/table-blog'
-import { FileText } from 'lucide-react'
+import { FileText, Loader2 } from 'lucide-react'
 
 interface BlogListProps {
   onEdit: (blog: Blog) => void
@@ -20,7 +19,20 @@ export default function BlogList({ onEdit }: BlogListProps) {
   const { data: blogs, isPending, isError } = useGetBlogs(page, limit)
 
   if (isPending) {
-    return <TableSkeleton />
+    return (
+      <div
+        className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12"
+        role="status"
+        aria-live="polite"
+        aria-busy="true"
+      >
+        <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
+        <div className="text-center">
+          <p className="text-sm font-medium text-foreground">Memuat daftar artikel…</p>
+          <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+        </div>
+      </div>
+    )
   }
 
   if (isError) {
