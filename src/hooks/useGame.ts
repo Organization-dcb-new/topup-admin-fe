@@ -50,7 +50,7 @@ export function useGetGameById(gameId: string) {
 export const useCreateGame = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: Record<string, unknown>) => {
       const res = await api.post('/games', payload)
       return res.data
     },
@@ -68,8 +68,10 @@ export const useDeleteGame = (id: string) => {
       return res.data
     },
     onSuccess: () => {
+      toast.success('Game berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
+    onError: () => toast.error('Gagal menghapus game'),
   })
 }
 
@@ -109,11 +111,11 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Game updated')
+      toast.success('Game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
       setOpen(false)
     },
-    onError: () => toast.error('Failed to update Game'),
+    onError: () => toast.error('Gagal memperbarui game'),
   })
 
   return mutation
@@ -171,9 +173,9 @@ export function useBulkUpdateGameStatus() {
   return useMutation({
     mutationFn: (is_active: boolean) => api.patch('/games/bulk-status', { is_active }),
     onSuccess: () => {
-      toast.success('All game statuses updated')
+      toast.success('Status semua game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
-    onError: () => toast.error('Failed to update all game statuses'),
+    onError: () => toast.error('Gagal memperbarui status semua game'),
   })
 }
