@@ -15,23 +15,38 @@ export default function EditGameInputModalForm({ inputs }: EditGameInputModalPro
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
-        <Pencil className="h-4 w-4" />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+        aria-label="Ubah field input game"
+      >
+        <Pencil className="h-4 w-4" aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="sm:max-w-lg max-h-[80vh] overflow-y-auto"
+          className="max-h-[min(80vh,36rem)] overflow-y-auto rounded-xl sm:max-w-lg"
           onPointerDownOutside={(e) => e.preventDefault()}
         >
-          <DialogHeader>
-            <DialogTitle>Edit Game Inputs</DialogTitle>
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah input game</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Setiap blok di bawah adalah satu field. Simpan perubahan lewat tombol Simpan pada masing-masing
+              form. Klik di luar dialog dinonaktifkan agar tidak kehilangan isian tanpa sengaja.
+            </p>
           </DialogHeader>
 
-          <div className="space-y-4">
-            {inputs.map((input) => (
-              <SingleInputFormWrapper key={input.id} input={input} />
-            ))}
+          <div className="space-y-4 pt-1">
+            {inputs.length === 0 ? (
+              <p className="rounded-lg border border-dashed border-border/80 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+                Game ini belum memiliki field input.
+              </p>
+            ) : (
+              inputs.map((input) => <SingleInputFormWrapper key={input.id} input={input} />)
+            )}
           </div>
         </DialogContent>
       </Dialog>
