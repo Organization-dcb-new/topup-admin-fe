@@ -1,124 +1,125 @@
-// sidebar-menu.ts
+import type { ElementType } from 'react'
 import {
-  Home,
-  CreditCard,
+  AlertTriangle,
+  Banknote,
   Boxes,
+  Building2,
+  CreditCard,
+  FileText,
+  FolderTree,
+  FormInput,
   Gamepad2,
-  Wallet,
-  GalleryHorizontal,
-  Images,
+  Gauge,
+  ImageIcon,
+  KeyRound,
+  LayoutDashboard,
   ListOrdered,
-  Notebook,
-  LucideWalletCards,
-  Lock,
-} from "lucide-react";
-import {
-  MdOutlineCategory,
-  MdCorporateFare,
-  MdFormatListBulleted,
-} from "react-icons/md";
-import { HiCash } from "react-icons/hi";
-
-import { TbCategoryPlus } from "react-icons/tb";
+  Package,
+  Shield,
+  Tags,
+  Tv,
+  Users,
+  Wallet,
+  WalletCards,
+} from 'lucide-react'
 
 export type SidebarMenu = {
-  label: string;
-  icon: React.ElementType;
-  path?: string;
-  children?: SidebarMenu[];
-};
+  label: string
+  icon: ElementType
+  path?: string
+  children?: SidebarMenu[]
+}
 
 export type SidebarSection = {
-  title?: string;
-  menus: SidebarMenu[];
-};
+  title?: string
+  menus: SidebarMenu[]
+}
 
 export const sidebarMenus: SidebarSection[] = [
   {
     menus: [
       {
-        label: "Dashboard",
-        icon: Home,
-        path: "/",
+        label: 'Dasbor',
+        icon: LayoutDashboard,
+        path: '/',
       },
       {
-        label: "Transactions",
+        label: 'Transaksi',
         icon: Wallet,
         children: [
-          { label: "Overview", path: "/transactions", icon: Wallet },
-          { label: "Summary", path: "/summary", icon: HiCash },
-          { label: "Order", path: "/orders", icon: ListOrdered },
+          { label: 'Ikhtisar', path: '/transactions', icon: LayoutDashboard },
+          { label: 'Rekap', path: '/summary', icon: Banknote },
+          { label: 'Pesanan', path: '/orders', icon: ListOrdered },
         ],
       },
       {
-        label: "CMS",
-        icon: GalleryHorizontal,
+        label: 'Konten',
+        icon: ImageIcon,
         children: [
-          { label: "Banners", path: "/banners", icon: GalleryHorizontal },
-          { label: "Shows", path: "/shows", icon: Images },
-          { label: "Articles", path: "/blog", icon: Notebook },
+          { label: 'Banner', path: '/banners', icon: ImageIcon },
+          { label: 'Acara', path: '/shows', icon: Tv },
+          { label: 'Artikel', path: '/blog', icon: FileText },
         ],
       },
     ],
   },
   {
-    title: "Master Data",
+    title: 'Data master',
     menus: [
       {
-        label: "Inventory",
-        icon: Boxes,
+        label: 'Inventaris',
+        icon: Package,
         children: [
-          { label: "Games", icon: Gamepad2, path: "/games" },
-          { label: "Products", icon: Boxes, path: "/products" },
+          { label: 'Game', icon: Gamepad2, path: '/games' },
+          { label: 'Produk', icon: Boxes, path: '/products' },
           {
-            label: "Category Product",
-            icon: TbCategoryPlus,
-            path: "/category-product",
+            label: 'Kategori produk',
+            icon: Tags,
+            path: '/category-product',
           },
-          { label: "Anomaly Product", icon: Boxes, path: "/anomaly" },
-          { label: "Category", icon: MdOutlineCategory, path: "/categories" },
-          { label: "Input Fields", icon: MdFormatListBulleted, path: "/input" },
+          { label: 'Produk anomali', icon: AlertTriangle, path: '/anomaly' },
+          { label: 'Kategori', icon: FolderTree, path: '/categories' },
+          { label: 'Field input', icon: FormInput, path: '/input' },
         ],
       },
       {
-        label: "Payments",
+        label: 'Pembayaran',
         icon: CreditCard,
         children: [
-          { label: "Methods", icon: CreditCard, path: "/payment-methods" },
+          { label: 'Metode', icon: CreditCard, path: '/payment-methods' },
           {
-            label: "Categories",
-            icon: LucideWalletCards,
-            path: "/payment-methods-categories",
+            label: 'Kategori pembayaran',
+            icon: WalletCards,
+            path: '/payment-methods-categories',
           },
         ],
       },
       {
-        label: "Providers",
-        icon: MdCorporateFare,
-        path: "/provider",
+        label: 'Penyedia',
+        icon: Building2,
+        path: '/provider',
       },
-
       {
-        label: "Security",
-        icon: Lock,
+        label: 'Keamanan',
+        icon: Shield,
         children: [
           {
-            label: "2FA",
-            icon: Lock,
-            path: "/2fa-setup",
+            label: '2FA',
+            icon: KeyRound,
+            path: '/2fa-setup',
           },
           {
-            label: "Rate Limiter",
-            icon: Lock,
-            path: "/rate-limit",
+            label: 'Pembatas laju',
+            icon: Gauge,
+            path: '/rate-limit',
           },
           {
-            label: "Users",
-            icon: Lock,
-            path: "/admin",
+            label: 'Pengguna',
+            icon: Users,
+            path: '/admin',
           },
         ],
       },
     ],
   },
-];
+]
