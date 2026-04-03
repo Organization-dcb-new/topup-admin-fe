@@ -93,7 +93,7 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     return Object.values(checks).every(Boolean)
   }, [formData])
 
-  const updateField = (field: keyof BlogFormValues, value: string) => {
+  const updateField = <K extends keyof BlogFormValues>(field: K, value: BlogFormValues[K]) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -110,6 +110,9 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     handlePublish: (status: 'draft' | 'published') => blogMutation.mutate({ ...formData, status }),
   }
 }
+
+/** Tipe `blogMutation` dari hook — selaras inferensi `useMutation` (hindari mismatch generik Error vs unknown). */
+export type BlogFormBlogMutationResult = ReturnType<typeof useBlogForm>['blogMutation']
 
 export interface BlogResponse {
   data: Blog[]
