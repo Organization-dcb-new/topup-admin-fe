@@ -12,12 +12,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   renderSubRow?: (row: TData) => React.ReactNode
+  emptyMessage?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   renderSubRow,
+  emptyMessage = 'No data',
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -68,8 +70,11 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No data
+              <TableCell
+                colSpan={columns.length}
+                className="h-28 px-4 text-center text-sm text-muted-foreground"
+              >
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}
