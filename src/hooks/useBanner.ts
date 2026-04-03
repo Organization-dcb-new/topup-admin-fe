@@ -49,8 +49,12 @@ export function useUpdateBanner({ id, setOpen }: UpdateBannerProps) {
     mutationFn: (payload: UpdateBannerPayload) => api.patch(`/banners/${id}`, payload),
 
     onSuccess: () => {
+      toast.success('Banner diperbarui')
       queryClient.invalidateQueries({ queryKey: ['banners'] })
-      setOpen?.(false) // auto close modal
+      setOpen?.(false)
+    },
+    onError: () => {
+      toast.error('Gagal memperbarui banner')
     },
   })
 }

@@ -1,5 +1,4 @@
-import { DeleteBannerButton } from '@/components/Banner/DeleteBannerModal'
-import { UpdateBanner } from '@/components/Banner/EditBannerModal'
+import { BannerActionsHeader, BannerRowActions } from '@/components/Banner/BannerRowActions'
 import type { Banner } from '@/types/banner'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -27,12 +26,7 @@ export const bannerColumns: ColumnDef<Banner>[] = [
   },
   {
     id: 'actions',
-    header: 'Action',
-    cell: ({ row }) => (
-      <div className="flex items-center gap-1">
-        <DeleteBannerButton id={row.original.id} />
-        <UpdateBanner banner={row.original} />
-      </div>
-    ),
+    header: () => <BannerActionsHeader />,
+    cell: ({ row }) => <BannerRowActions banner={row.original} />,
   },
 ]
