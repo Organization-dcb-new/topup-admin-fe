@@ -10,21 +10,29 @@ export interface GameNames {
   name: string
 }
 
-export function useGetGames(
-  search: string,
-  page: number,
-  limit: number,
-  image: 'all' | 'no_image' = 'all'
-) {
+export type GetGamesParams = {
+  search?: string
+  image?: 'all' | 'no_image'
+  /** Backend: filter `is_active` (true = aktif, false = nonaktif); omit = semua */
+  is_active?: boolean
+  /** Backend: filter per `game_id` */
+  game_id?: string
+}
+
+export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
+  const { search = '', image = 'all', is_active, game_id } = params
+
   return useQuery<GamesResponse>({
-    queryKey: ['games', search, page, limit, image],
+    queryKey: ['games', page, limit, search, image, is_active ?? 'all', game_id ?? ''],
     queryFn: async () => {
       const { data } = await api.get('/games/pagination', {
         params: {
-          search,
           page,
           limit,
           image,
+          ...(search.trim() !== '' && { search: search.trim() }),
+          ...(is_active !== undefined && { is_active }),
+          ...(game_id && { game_id }),
         },
       })
 

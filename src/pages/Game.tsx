@@ -1,33 +1,41 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import BulkUpdateGameStatus from '@/components/Games/BulkUpdateGameStatus'
-import GameSearchInput from '@/components/Games/SearchGame'
+import { GameActiveFilter, type GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
+import { GamePickerSelect } from '@/components/Games/GamePickerSelect'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
-import { useDebounce } from '@/hooks/useDebounce'
 import { useGetGames } from '@/hooks/useGame'
 import { gameColumns } from '@/tables/table-game'
 import { AlertCircle, CheckCircle2, Gamepad2, Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export default function GamePage() {
-  const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>('all')
+  const [gameId, setGameId] = useState('')
 
   const limit = 20
-  const debouncedSearch = useDebounce(search, 500)
+
+  const listParams = useMemo(() => {
+    const is_active =
+      activeFilter === 'active' ? true : activeFilter === 'inactive' ? false : undefined
+    return {
+      is_active,
+      ...(gameId && { game_id: gameId }),
+    }
+  }, [activeFilter, gameId])
 
   useEffect(() => {
-    // Reset ke halaman 1 saat kata kunci pencarian (debounced) berubah
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter pencarian
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter
     setPage(1)
-  }, [debouncedSearch])
+  }, [activeFilter, gameId])
 
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetGames(
-    debouncedSearch,
     page,
     limit,
+    listParams,
   )
 
   useEffect(() => {
@@ -52,8 +60,8 @@ export default function GamePage() {
             <div className="min-w-0 space-y-1">
               <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Game</h1>
               <p className="text-sm text-muted-foreground">
-                Cari game di toolbar di bawah. Pembaruan status massal lewat tombol di kanan. Ubah
-                detail per game lewat kolom aksi pada tabel.
+                Pilih game dari daftar, saring status, atau pembaruan massal lewat tombol di kanan.
+                Ubah detail per game lewat kolom aksi pada tabel.
               </p>
             </div>
           </div>
@@ -86,14 +94,15 @@ export default function GamePage() {
             <div className="min-w-0 space-y-0.5">
               <h2 className="text-sm font-semibold text-gray-900">Daftar game</h2>
               <p className="text-xs text-muted-foreground">
-                Pencarian menunggu 500 ms setelah berhenti mengetik. {limit} game per halaman.
+                Filter status dan pilih game dari dropdown. {limit} game per halaman.
               </p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0 flex-1">
-                <GameSearchInput value={search} onChange={setSearch} />
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-end">
+                <GamePickerSelect value={gameId} onChange={setGameId} />
+                <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
               </div>
-              <div className="shrink-0 sm:pl-2">
+              <div className="shrink-0 lg:pl-2">
                 <BulkUpdateGameStatus />
               </div>
             </div>
