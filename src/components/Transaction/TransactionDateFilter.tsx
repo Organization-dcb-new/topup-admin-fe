@@ -90,18 +90,19 @@ export default function TransactionDateFilter({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            aria-label="Pilih rentang tanggal dan waktu transaksi"
-            className={cn(
-              'h-10 min-w-[200px] max-w-full shrink-0 justify-start text-left text-xs font-normal shadow-xs sm:min-w-[320px] sm:max-w-md sm:text-sm',
-              !date?.from && 'text-muted-foreground',
-            )}
-          >
+    <div className="flex w-full min-w-0 items-center gap-2">
+      <div className="min-w-0 flex-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              aria-label="Pilih rentang tanggal dan waktu transaksi"
+              className={cn(
+                'h-10 w-full min-w-0 justify-start text-left text-xs font-normal shadow-xs sm:text-sm',
+                !date?.from && 'text-muted-foreground',
+              )}
+            >
             <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
             {rangeLabel ? (
               <span className="truncate tabular-nums" title={rangeLabel}>
@@ -160,7 +161,8 @@ export default function TransactionDateFilter({
             </div>
           )}
         </PopoverContent>
-      </Popover>
+        </Popover>
+      </div>
       {date?.from && (
         <Button
           type="button"

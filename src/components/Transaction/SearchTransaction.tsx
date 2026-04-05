@@ -4,16 +4,18 @@ import { Search } from 'lucide-react'
 interface TransactionInputProps {
   value: string
   onChange: (value: string) => void
+  id?: string
 }
 
-export default function TransactionSearchInput({ value, onChange }: TransactionInputProps) {
+export default function TransactionSearchInput({ value, onChange, id }: TransactionInputProps) {
   return (
-    <div className="relative w-full min-w-[12rem] max-w-md shrink-0">
+    <div className="relative w-full min-w-0">
       <Search
         className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
         aria-hidden
       />
       <Input
+        id={id}
         type="search"
         enterKeyHint="search"
         autoComplete="off"

@@ -6,7 +6,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { Fragment } from 'react'
-import { cn } from '@/lib/utils'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 interface DataTableProps<TData, TValue> {
@@ -14,8 +13,6 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   renderSubRow?: (row: TData) => React.ReactNode
   emptyMessage?: React.ReactNode
-  /** Header kolom tetap di atas saat kontainer induk di-scroll vertikal (satu scrollport dengan tbody). */
-  stickyHeader?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -23,7 +20,6 @@ export function DataTable<TData, TValue>({
   data,
   renderSubRow,
   emptyMessage = 'No data',
-  stickyHeader = false,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -35,15 +31,12 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className={cn('rounded-md border', !stickyHeader && 'overflow-x-auto')}>
-      <Table className="min-w-max" scrollContainer={!stickyHeader}>
-        <TableHeader
-          className={cn(
-            'bg-white',
-            stickyHeader &&
-              '[&_th]:sticky [&_th]:top-0 [&_th]:z-20 [&_th]:border-b [&_th]:bg-background',
-          )}
-        >
+    <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80">
+      <Table
+        className="min-w-max [&_td]:border-x-0 [&_th]:border-x-0"
+        scrollContainer={false}
+      >
+        <TableHeader className="bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
