@@ -1,22 +1,23 @@
-'use client'
-
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Pencil, UploadCloud } from 'lucide-react'
+import { Loader2, Pencil, UploadCloud } from 'lucide-react'
 
 import type { Game } from '@/types/game'
 import { useUpdateImageGame } from '@/hooks/useGame'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { cn } from '@/lib/utils'
 
 type PropsImageGame = {
   game: Game
@@ -35,23 +36,22 @@ type UploadState = {
   progress: number
 }
 
+const emptyUploadState = (): UploadState => ({
+  preview: null,
+  uploading: false,
+  progress: 0,
+})
+
 export function ChangeImageModal({ game, image }: PropsImageGame) {
   const inputThumbnailRef = useRef<HTMLInputElement>(null)
   const inputBannerRef = useRef<HTMLInputElement>(null)
+  const thumbnailLabelId = useId()
+  const bannerLabelId = useId()
 
   const [open, setOpen] = useState(false)
 
-  const [thumbnail, setThumbnail] = useState<UploadState>({
-    preview: null,
-    uploading: false,
-    progress: 0,
-  })
-
-  const [banner, setBanner] = useState<UploadState>({
-    preview: null,
-    uploading: false,
-    progress: 0,
-  })
+  const [thumbnail, setThumbnail] = useState<UploadState>(emptyUploadState)
+  const [banner, setBanner] = useState<UploadState>(emptyUploadState)
 
   const {
     register,
@@ -61,7 +61,17 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
     formState: { errors },
   } = useForm<FormValuesChangeImage>()
 
-  const updateImageMutation = useUpdateImageGame(() => setOpen(false))
+  const applyOpen = (next: boolean) => {
+    setOpen(next)
+    if (!next) {
+      setThumbnail(emptyUploadState())
+      setBanner(emptyUploadState())
+      if (inputThumbnailRef.current) inputThumbnailRef.current.value = ''
+      if (inputBannerRef.current) inputBannerRef.current.value = ''
+    }
+  }
+
+  const updateImageMutation = useUpdateImageGame(() => applyOpen(false))
 
   useEffect(() => {
     if (!open) return
@@ -97,22 +107,37 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
   }
 
   const renderUploadBox = ({
+    labelId,
     label,
+    requiredMessage,
     state,
     inputRef,
     field,
   }: {
+    labelId: string
     label: string
+    requiredMessage: string
     state: UploadState
     inputRef: React.RefObject<HTMLInputElement | null>
     field: 'thumbnail_url' | 'banner_url'
   }) => (
     <div className="space-y-2">
-      <p>{label}</p>
+      <Label id={labelId} className="text-sm font-medium">
+        {label}
+      </Label>
 
-      <input type="hidden" {...register(field, { required: 'Image is required' })} />
+      <input type="hidden" {...register(field, { required: requiredMessage })} />
 
       <div
+        aria-labelledby={labelId}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            inputRef.current?.click()
+          }
+        }}
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
@@ -120,27 +145,24 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
           const file = e.dataTransfer.files[0]
           if (file) handleFile(file, field)
         }}
-        className={`relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition
-          ${state.uploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'}
-          ${errors[field] ? 'border-destructive' : ''}
-        `}
+        className={cn(
+          'relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition',
+          state.uploading ? 'pointer-events-none opacity-60' : 'hover:border-primary',
+          errors[field] ? 'border-destructive' : 'border-border/80',
+        )}
       >
         {state.preview ? (
-          <img
-            src={state.preview}
-            alt="preview"
-            className="h-full w-full rounded-lg object-contain"
-          />
+          <img src={state.preview} alt="" className="h-full w-full rounded-lg object-contain" />
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <UploadCloud className="h-6 w-6" />
-            <span className="text-sm">Click or drop image</span>
+            <UploadCloud className="h-6 w-6" aria-hidden />
+            <span className="text-sm">Klik atau letakkan gambar di sini</span>
           </div>
         )}
 
         {state.uploading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white">
-            Uploading {state.progress}%
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+            Mengunggah {state.progress}%
           </div>
         )}
       </div>
@@ -164,58 +186,90 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
 
   return (
     <>
-      {/* Trigger */}
       <div
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            e.stopPropagation()
+            applyOpen(true)
+          }
+        }}
         onClick={(e) => {
           e.stopPropagation()
-          setOpen(true)
+          applyOpen(true)
         }}
-        className="group relative h-12 w-12 cursor-pointer"
+        className="group relative h-10 w-10 shrink-0 cursor-pointer rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={`Ubah gambar game ${game.name}`}
       >
         <img
           src={image}
-          alt={game.name}
-          className="h-12 w-12 rounded-md border object-contain"
+          alt=""
+          className="h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = '/placeholder.png'
+          }}
         />
 
-        <div className="absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100">
-          <Pencil className="h-4 w-4 text-white" />
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
+          <Pencil className="h-4 w-4 text-white" aria-hidden />
         </div>
       </div>
 
-      {/* Modal */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={open} onOpenChange={applyOpen}>
+        <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Change Game Image</DialogTitle>
+            <DialogTitle>Ubah gambar game</DialogTitle>
+            <DialogDescription>
+              Game: <span className="font-medium text-foreground">{game.name}</span>. Perbarui miniatur
+              (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung gambar atau SVG.
+            </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {renderUploadBox({
-              label: 'Thumbnail',
+              labelId: thumbnailLabelId,
+              label: 'Miniatur (thumbnail)',
+              requiredMessage: 'Miniatur wajib diunggah',
               state: thumbnail,
               inputRef: inputThumbnailRef,
               field: 'thumbnail_url',
             })}
 
             {renderUploadBox({
+              labelId: bannerLabelId,
               label: 'Banner',
+              requiredMessage: 'Banner wajib diunggah',
               state: banner,
               inputRef: inputBannerRef,
               field: 'banner_url',
             })}
 
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                Cancel
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => applyOpen(false)}
+                disabled={updateImageMutation.isPending}
+                className="cursor-pointer rounded-xl"
+              >
+                Batal
               </Button>
-
               <Button
                 type="submit"
                 disabled={updateImageMutation.isPending || thumbnail.uploading || banner.uploading}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
               >
-                {updateImageMutation.isPending ? 'Saving...' : 'Update'}
+                {updateImageMutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    Menyimpan…
+                  </>
+                ) : (
+                  'Simpan'
+                )}
               </Button>
             </DialogFooter>
           </form>
