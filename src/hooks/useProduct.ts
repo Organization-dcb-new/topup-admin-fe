@@ -5,25 +5,73 @@ import type { ProductResponse } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
+/** Query list produk admin — selaraskan nama field dengan DTO backend bila perlu. */
+export type GetProductsParams = {
+  /** Pencarian nama produk (query `search`) */
+  search: string;
+  sku: string;
+  game_name: string;
+  /** `true` = aktif, `false` = nonaktif, `undefined` = semua */
+  is_active?: boolean;
+  additional_fee_above?: string;
+  additional_fee_below?: string;
+  additional_percent_above?: string;
+  additional_percent_below?: string;
+  base_price_above?: string;
+  base_price_below?: string;
+  /** Harga dasar tepat (=) */
+  base_price?: string;
+  selling_price_above?: string;
+  selling_price_below?: string;
+  /** Harga jual tepat (=) */
+  selling_price?: string;
+};
+
+function pickNonEmpty(params: Record<string, string | undefined>) {
+  return Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
+  );
+}
+
 export const useGetProducts = (
   page: number,
   limit: number,
-  search: string,
-  isActive: boolean,
-  sku: string,
-  game_name: string,
+  filters: GetProductsParams,
 ) => {
+  const numeric = pickNonEmpty({
+    additional_fee_above: filters.additional_fee_above,
+    additional_fee_below: filters.additional_fee_below,
+    additional_percent_above: filters.additional_percent_above,
+    additional_percent_below: filters.additional_percent_below,
+    base_price_above: filters.base_price_above,
+    base_price_below: filters.base_price_below,
+    base_price: filters.base_price,
+    selling_price_above: filters.selling_price_above,
+    selling_price_below: filters.selling_price_below,
+    selling_price: filters.selling_price,
+  });
+
   return useQuery({
-    queryKey: ["products", page, limit, search, isActive, sku, game_name],
+    queryKey: [
+      "products",
+      page,
+      limit,
+      filters.search,
+      filters.sku,
+      filters.game_name,
+      filters.is_active,
+      numeric,
+    ],
     queryFn: async (): Promise<ProductResponse> => {
       const res = await api.get("/products/admin", {
         params: {
-          page: page,
-          limit: limit,
-          search: search,
-          is_active: isActive ? true : undefined,
-          sku,
-          game_name,
+          page,
+          limit,
+          search: filters.search || undefined,
+          sku: filters.sku || undefined,
+          game_name: filters.game_name || undefined,
+          ...(filters.is_active !== undefined && { is_active: filters.is_active }),
+          ...numeric,
         },
       });
       return res.data;
@@ -44,17 +92,17 @@ export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Product updated");
+      toast.success("Gambar produk berhasil diperbarui");
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setOpen(false);
     },
-    onError: () => toast.error("Failed to update image Products"),
+    onError: () => toast.error("Gagal memperbarui gambar produk"),
   });
 
   return mutation;
 }
 
-export function useUpdateImageProductV2(setOpen: (open: boolean) => void) {
+export function useUpdateImageProductV2(onClose: () => void) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -67,11 +115,11 @@ export function useUpdateImageProductV2(setOpen: (open: boolean) => void) {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Product updated");
+      toast.success("Gambar produk berhasil diperbarui");
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      setOpen(false);
+      onClose();
     },
-    onError: () => toast.error("Failed to update image Products"),
+    onError: () => toast.error("Gagal memperbarui gambar produk"),
   });
 
   return mutation;

@@ -33,28 +33,36 @@ export function ProductSkuGameFilter({
   const selectedGameLabel = games?.find((g: GameNames) => g.name === gameName)?.name
 
   return (
-    <>
-      <Input
-        placeholder="Cari SKU…"
-        className="h-10 min-w-[10rem] max-w-xs"
-        value={sku}
-        onChange={(e) => onSkuChange(e.target.value)}
-        aria-label="Cari SKU"
-      />
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            className="h-10 min-w-[12rem] max-w-[16rem] justify-between font-normal"
+    <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:items-end">
+      <div className="grid min-w-0 gap-1.5">
+        <span className="text-xs text-muted-foreground">SKU</span>
+        <Input
+          placeholder="Filter SKU…"
+          className="h-10 w-full min-w-0 shadow-sm"
+          value={sku}
+          onChange={(e) => onSkuChange(e.target.value)}
+          aria-label="Filter SKU"
+        />
+      </div>
+      <div className="grid min-w-0 gap-1.5">
+        <span className="text-xs text-muted-foreground">Game</span>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="h-10 w-full min-w-0 justify-between font-normal shadow-sm"
+            >
+              <span className="truncate">{selectedGameLabel || 'Pilih game…'}</span>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0"
+            align="start"
           >
-            <span className="truncate">{selectedGameLabel || 'Pilih game…'}</span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[min(100vw-2rem,20rem)] p-0" align="start">
           <Command>
             <CommandInput placeholder="Cari game…" />
             <CommandList>
@@ -96,7 +104,8 @@ export function ProductSkuGameFilter({
             </CommandList>
           </Command>
         </PopoverContent>
-      </Popover>
-    </>
+        </Popover>
+      </div>
+    </div>
   )
 }

@@ -15,16 +15,18 @@ export function ProductSkuGameImageRow({
   onGameNameChange,
 }: ProductSkuGameImageRowProps) {
   return (
-    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-      <ProductSkuGameFilter
-        sku={sku}
-        onSkuChange={onSkuChange}
-        gameName={gameName}
-        onGameNameChange={onGameNameChange}
-      />
-     
+    <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+      <div className="min-w-0 flex-1">
+        <ProductSkuGameFilter
+          sku={sku}
+          onSkuChange={onSkuChange}
+          gameName={gameName}
+          onGameNameChange={onGameNameChange}
+        />
+      </div>
+      <div className="flex shrink-0 justify-stretch sm:justify-start">
         <ChangeImageByGame />
-     
+      </div>
     </div>
   )
 }
