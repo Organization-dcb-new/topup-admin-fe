@@ -83,7 +83,7 @@ export const useDeleteGame = (id: string) => {
   })
 }
 
-export function useUpdateImageGame(setOpen: (open: boolean) => void) {
+export function useUpdateImageGame(onClose: () => void) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -96,11 +96,11 @@ export function useUpdateImageGame(setOpen: (open: boolean) => void) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Image updated')
+      toast.success('Gambar game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
-      setOpen(false)
+      onClose()
     },
-    onError: () => toast.error('Failed to update image Game'),
+    onError: () => toast.error('Gagal memperbarui gambar game'),
   })
 
   return mutation
