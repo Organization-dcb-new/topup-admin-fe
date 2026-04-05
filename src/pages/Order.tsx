@@ -32,7 +32,7 @@ export default function OrderPages() {
 
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto min-w-0 max-w-7xl space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -79,7 +79,7 @@ export default function OrderPages() {
             </div>
           </div>
 
-          <div className="p-3 sm:p-4">
+          <div className="min-w-0 p-3 sm:p-4">
             {isLoading && (
               <div
                 className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12"
@@ -101,12 +101,11 @@ export default function OrderPages() {
 
             {isSuccess && (
               <>
-                <div className="max-h-[min(70vh,40rem)] overflow-auto overscroll-contain">
+                <div className="max-h-[min(70vh,40rem)] min-w-0 w-full overflow-auto overscroll-contain">
                   <DataTable
                     columns={orderItemColumns}
                     data={rows}
                     emptyMessage="Tidak ada item pesanan pada halaman ini."
-                    stickyHeader
                   />
                 </div>
                 <div className="mt-4">

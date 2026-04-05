@@ -4,8 +4,59 @@ import ErrorComponent from '@/components/Layout/error'
 import PaymentDetail from '@/components/Transaction/TransactionDetail'
 import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
-import { Loader2, Receipt } from 'lucide-react'
+import { ArrowLeft, Loader2, Receipt } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
+
+const detailPageCardClass =
+  'overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'
+
+function DetailPageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <DashboardLayout>
+      <div className="min-w-0 -mx-4 -mt-4 flex w-full flex-col bg-muted/30 md:-mx-6 md:-mt-6">
+        <div className="w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-8">{children}</div>
+      </div>
+    </DashboardLayout>
+  )
+}
+
+function DetailPageHeader({
+  title,
+  subtitle,
+  backTo = '/transactions',
+}: {
+  title: string
+  subtitle: string
+  backTo?: string
+}) {
+  return (
+    <header className="border-b border-border/70 px-4 py-5 sm:px-6 md:px-8">
+      <div className="flex min-w-0 items-start gap-3">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="mt-0.5 shrink-0 rounded-full"
+          aria-label="Kembali ke daftar transaksi"
+          asChild
+        >
+          <Link to={backTo}>
+            <ArrowLeft className="h-5 w-5" aria-hidden />
+          </Link>
+        </Button>
+        <div className="flex min-w-0 gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Receipt className="h-5 w-5" aria-hidden />
+          </div>
+          <div className="min-w-0 space-y-1">
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
+          </div>
+        </div>
+      </div>
+    </header>
+  )
+}
 
 export default function PaymentDetailPage() {
   const { paymentId } = useParams<{ paymentId: string }>()
@@ -19,83 +70,91 @@ export default function PaymentDetailPage() {
     enabled: !!paymentId,
   })
 
-  const fallbackShell = (children: React.ReactNode) => (
-    <DashboardLayout>
-      <div className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6">{children}</div>
-    </DashboardLayout>
-  )
-
   if (!paymentId) {
-    return fallbackShell(
-      <div className="overflow-hidden rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 sm:p-8">
-        <ErrorComponent message="ID transaksi tidak ditemukan di URL." />
-        <div className="mt-6 flex justify-center">
-          <Button variant="outline" asChild>
-            <Link to="/transactions">Kembali ke daftar transaksi</Link>
-          </Button>
+    return (
+      <DetailPageShell>
+        <div className={detailPageCardClass}>
+          <DetailPageHeader
+            title="Detail transaksi"
+            subtitle="ID transaksi tidak ada di URL."
+          />
+          <section className="px-4 py-10 sm:px-6 md:px-8">
+            <div className="space-y-6">
+              <ErrorComponent message="ID transaksi tidak ditemukan di URL." />
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" asChild>
+                  <Link to="/transactions">Kembali ke daftar transaksi</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>,
+      </DetailPageShell>
     )
   }
 
   if (isLoading) {
-    return fallbackShell(
-      <>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Receipt className="h-5 w-5" aria-hidden />
-            </div>
-            <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Detail transaksi</h1>
-              <p className="text-sm text-muted-foreground">Memuat data pembayaran…</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
-          <div className="p-3 sm:p-4">
-            <div
-              className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12"
-              role="status"
-              aria-live="polite"
-              aria-busy="true"
-            >
-              <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
-              <div className="text-center">
-                <p className="text-sm font-medium text-foreground">Memuat detail transaksi…</p>
-                <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
-              </div>
+    return (
+      <DetailPageShell>
+        <div className={detailPageCardClass}>
+          <DetailPageHeader title="Detail transaksi" subtitle="Memuat data pembayaran…" />
+          <div
+            className="flex min-h-[min(60vh,28rem)] flex-col items-center justify-center gap-4 bg-muted/20 px-4 py-16 sm:px-6 md:px-8"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            <Loader2 className="h-11 w-11 shrink-0 animate-spin text-primary" aria-hidden />
+            <div className="text-center">
+              <p className="text-sm font-medium text-foreground">Memuat detail transaksi…</p>
+              <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
             </div>
           </div>
         </div>
-      </>,
+      </DetailPageShell>
     )
   }
 
   if (isError) {
-    return fallbackShell(
-      <div className="overflow-hidden rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 sm:p-8">
-        <ErrorComponent message="Gagal memuat detail transaksi. Periksa koneksi atau coba muat ulang halaman." />
-        <div className="mt-6 flex justify-center">
-          <Button variant="outline" asChild>
-            <Link to="/transactions">Kembali ke daftar transaksi</Link>
-          </Button>
+    return (
+      <DetailPageShell>
+        <div className={detailPageCardClass}>
+          <DetailPageHeader
+            title="Detail transaksi"
+            subtitle="Tidak dapat memuat data."
+          />
+          <section className="px-4 py-10 sm:px-6 md:px-8">
+            <div className="space-y-6">
+              <ErrorComponent message="Gagal memuat detail transaksi. Periksa koneksi atau coba muat ulang halaman." />
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" asChild>
+                  <Link to="/transactions">Kembali ke daftar transaksi</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>,
+      </DetailPageShell>
     )
   }
 
   if (isSuccess && !data) {
-    return fallbackShell(
-      <div className="overflow-hidden rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-900/5 sm:p-8">
-        <ErrorComponent message="Data transaksi tidak ditemukan." />
-        <div className="mt-6 flex justify-center">
-          <Button variant="outline" asChild>
-            <Link to="/transactions">Kembali ke daftar transaksi</Link>
-          </Button>
+    return (
+      <DetailPageShell>
+        <div className={detailPageCardClass}>
+          <DetailPageHeader title="Detail transaksi" subtitle="Data tidak ditemukan." />
+          <section className="px-4 py-10 sm:px-6 md:px-8">
+            <div className="space-y-6">
+              <ErrorComponent message="Data transaksi tidak ditemukan." />
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" asChild>
+                  <Link to="/transactions">Kembali ke daftar transaksi</Link>
+                </Button>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>,
+      </DetailPageShell>
     )
   }
 
