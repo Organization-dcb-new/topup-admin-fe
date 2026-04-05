@@ -1,88 +1,147 @@
-import type { ColumnDef } from "@tanstack/react-table";
-import type { Product } from "@/types/product";
-import { Badge } from "@/components/ui/badge";
-import { DEFAULT_GAME_IMAGE } from "./table-game";
-import { ChangeImageModalProduct } from "@/components/Product/Filter/UploadImage";
-import UpdateProductPriceModal from "@/components/Product/Filter/UpdatePrice";
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Product } from '@/types/product'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import { DEFAULT_GAME_IMAGE } from './table-game'
+import { ChangeImageModalProduct } from '@/components/Product/Filter/UploadImage'
+import UpdateProductPriceModal from '@/components/Product/Filter/UpdatePrice'
+
+function formatRp(value: number | undefined | null) {
+  const n = value ?? 0
+  return `Rp ${n.toLocaleString('id-ID')}`
+}
 
 export const productColumns: ColumnDef<Product>[] = [
   {
-    id: "image",
-    header: "Image",
+    id: 'image',
+    header: 'Gambar',
     cell: ({ row }: { row: { original: Product } }) => {
-      const image = row.original.image?.trim() || DEFAULT_GAME_IMAGE;
+      const image = row.original.image?.trim() || DEFAULT_GAME_IMAGE
 
       return (
         <div className="flex items-center">
           <ChangeImageModalProduct product={row.original} image={image} />
         </div>
-      );
+      )
     },
   },
   {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorFn: (row) => row.game?.name || "-",
-    id: "game_name",
-    header: "Game Name",
-  },
-  {
-    accessorKey: "sku",
-    header: "SKU",
-  },
-  {
-    accessorKey: "additional_fee",
-    header: "Additional Fee",
-    cell: ({ row }) =>
-      `Rp ${row.original?.additional_fee?.toLocaleString("id-ID")}`,
-  },
-  {
-    accessorKey: "additional_percent",
-    header: "Additional Percent",
-    cell: ({ row }) => `${row.original?.additional_percent} %`,
-  },
-
-  {
-    accessorKey: "base_price",
-    header: "Base Price",
-    cell: ({ row }) =>
-      `Rp ${row.original?.base_price?.toLocaleString("id-ID")}`,
-  },
-  {
-    accessorKey: "selling_price",
-    header: "Selling Price",
-    cell: ({ row }) =>
-      `Rp ${row.original?.selling_price?.toLocaleString("id-ID")}`,
-  },
-
-  {
-    accessorKey: "stock_quantity",
-    header: "Stock",
-    cell: ({ row }) =>
-      row.original.is_unlimited_stock
-        ? "Unlimited"
-        : row.original.stock_quantity,
-  },
-  {
-    accessorKey: "is_active",
-    header: "Status",
+    accessorKey: 'name',
+    header: 'Nama',
     cell: ({ row }) => (
-      <Badge variant={row.original.is_active ? "default" : "secondary"}>
-        {row.original.is_active ? "Active" : "Inactive"}
+      <div
+        className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs"
+        title={row.original.name}
+      >
+        {row.original.name}
+      </div>
+    ),
+  },
+  {
+    accessorFn: (row) => row.game?.name || '-',
+    id: 'game_name',
+    header: 'Game',
+    cell: ({ row }) => {
+      const name = row.original.game?.name
+      return (
+        <span
+          className={cn(
+            'max-w-[10rem] truncate text-sm sm:max-w-[12rem]',
+            name ? 'text-foreground' : 'text-muted-foreground',
+          )}
+          title={name ?? undefined}
+        >
+          {name ?? '—'}
+        </span>
+      )
+    },
+  },
+  {
+    accessorKey: 'sku',
+    header: 'SKU',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">{row.original.sku}</span>
+    ),
+  },
+  {
+    accessorKey: 'additional_fee',
+    header: 'Biaya tambahan',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">
+        {formatRp(row.original.additional_fee)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'additional_percent',
+    header: 'Persen',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">
+        {row.original.additional_percent} %
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'base_price',
+    header: 'Harga dasar',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">
+        {formatRp(row.original.base_price)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'selling_price',
+    header: 'Harga jual',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">
+        {formatRp(row.original.selling_price)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'stock_quantity',
+    header: 'Stok',
+    cell: ({ row }) =>
+      row.original.is_unlimited_stock ? (
+        <Badge variant="outline" className="font-normal text-sm">
+          Tanpa batas
+        </Badge>
+      ) : (
+        <span className="tabular-nums text-sm font-medium text-foreground">
+          {row.original.stock_quantity}
+        </span>
+      ),
+  },
+  {
+    accessorKey: 'is_active',
+    header: 'Status',
+    cell: ({ row }) => (
+      <Badge
+        variant={row.original.is_active ? 'success' : 'secondary'}
+        className="font-normal text-sm"
+      >
+        {row.original.is_active ? 'Aktif' : 'Nonaktif'}
       </Badge>
     ),
   },
-
   {
-    header: "Actions",
+    id: 'actions',
+    header: 'Aksi',
     cell: ({ row }) => (
-      <UpdateProductPriceModal
-        basePrice={row.original.base_price}
-        productId={row.original.id}
-        productName={row.original.name}
-      />
+      <div className="flex min-w-0 items-center">
+        <div
+          className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
+          role="group"
+          aria-label={`Aksi untuk produk ${row.original.name}`}
+        >
+          <UpdateProductPriceModal
+            basePrice={row.original.base_price}
+            productId={row.original.id}
+            productName={row.original.name}
+          />
+        </div>
+      </div>
     ),
   },
-];
+]
