@@ -5,8 +5,8 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Fragment } from 'react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -32,8 +32,11 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="rounded-md overflow-x-auto border">
-      <Table className="min-w-max">
+    <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80">
+      <Table
+        className="min-w-max [&_td]:border-x-0 [&_th]:border-x-0"
+        scrollContainer={false}
+      >
         <TableHeader className="bg-white">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
