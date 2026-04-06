@@ -2,7 +2,6 @@ import { useToggleGameShow } from '@/hooks/useGame'
 import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
 import EditGameModal from './EditGameModal'
-import { DeleteGameModal } from './DeleteGameModal'
 import UpdateBulkProductPriceModal from './EditBulkPriceModal'
 import type { Product } from '@/types/product'
 
