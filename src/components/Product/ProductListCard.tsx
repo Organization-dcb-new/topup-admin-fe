@@ -5,6 +5,10 @@ import {
 import { ProductNameSearchInput } from '@/components/Product/Filter/ProductNameSearchInput'
 import { ProductSkuGameImageRow } from '@/components/Product/Filter/ProductSkuGameImageRow'
 import {
+  ProductProviderStatusFilter,
+  type ProductProviderStatusFilterValue,
+} from '@/components/Product/Filter/ProductProviderStatusFilter'
+import {
   ProductStatusFilter,
   type ProductStatusFilterValue,
 } from '@/components/Product/Filter/ProductStatusFilter'
@@ -18,6 +22,8 @@ export type ProductListCardProps = {
   onProductNameSearchChange: (value: string) => void
   productStatus: ProductStatusFilterValue
   onProductStatusChange: (value: ProductStatusFilterValue) => void
+  providerStatus: ProductProviderStatusFilterValue
+  onProviderStatusChange: (value: ProductProviderStatusFilterValue) => void
   sku: string
   onSkuChange: (value: string) => void
   gameName: string
@@ -34,6 +40,8 @@ export function ProductListCard({
   onProductNameSearchChange,
   productStatus,
   onProductStatusChange,
+  providerStatus,
+  onProviderStatusChange,
   sku,
   onSkuChange,
   gameName,
@@ -69,7 +77,7 @@ export function ProductListCard({
               <span className="block text-sm font-semibold text-gray-900">Filter</span>
               <span className="block text-xs text-muted-foreground">
                 {filtersOpen
-                  ? 'Nama produk, status, SKU, game, nominal. Klik untuk menutup.'
+                  ? 'Nama produk, status, status provider, SKU, game, nominal. Klik untuk menutup.'
                   : 'Filter disembunyikan — klik untuk membuka lagi.'}
               </span>
             </span>
@@ -106,7 +114,13 @@ export function ProductListCard({
               <div className="min-w-0 lg:col-span-3">
                 <ProductStatusFilter value={productStatus} onChange={onProductStatusChange} />
               </div>
-              <div className="min-w-0 lg:col-span-9">
+              <div className="min-w-0 lg:col-span-3">
+                <ProductProviderStatusFilter
+                  value={providerStatus}
+                  onChange={onProviderStatusChange}
+                />
+              </div>
+              <div className="min-w-0 lg:col-span-6">
                 <ProductSkuGameImageRow
                   sku={sku}
                   onSkuChange={onSkuChange}

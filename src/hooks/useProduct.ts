@@ -13,6 +13,8 @@ export type GetProductsParams = {
   game_name: string;
   /** `true` = aktif, `false` = nonaktif, `undefined` = semua */
   is_active?: boolean;
+  /** Query `provider_status` — umumnya `available` / `empty` (BE: TrimSpace). */
+  provider_status?: string;
   additional_fee_above?: string;
   additional_fee_below?: string;
   additional_percent_above?: string;
@@ -38,6 +40,8 @@ export const useGetProducts = (
   limit: number,
   filters: GetProductsParams,
 ) => {
+  const providerStatus = filters.provider_status?.trim() ?? "";
+
   const numeric = pickNonEmpty({
     additional_fee_above: filters.additional_fee_above,
     additional_fee_below: filters.additional_fee_below,
@@ -60,6 +64,7 @@ export const useGetProducts = (
       filters.sku,
       filters.game_name,
       filters.is_active,
+      providerStatus,
       numeric,
     ],
     queryFn: async (): Promise<ProductResponse> => {
@@ -71,6 +76,7 @@ export const useGetProducts = (
           sku: filters.sku || undefined,
           game_name: filters.game_name || undefined,
           ...(filters.is_active !== undefined && { is_active: filters.is_active }),
+          ...(providerStatus && { provider_status: providerStatus }),
           ...numeric,
         },
       });
