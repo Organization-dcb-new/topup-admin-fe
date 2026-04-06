@@ -1,19 +1,29 @@
-'use client'
-
-import type { UseMutationResult } from '@tanstack/react-query'
-import type { AxiosResponse } from 'axios'
-import type { BlogFormValues } from '../types/blog'
-import { Loader2, Send, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import type { BlogFormBlogMutationResult } from '../hooks/useBlog'
+import { Loader2, Save, Send } from 'lucide-react'
 
 interface ButtonManageProps {
   handlePublish: (status: 'draft' | 'published') => void
-  blogMutation: UseMutationResult<AxiosResponse, Error, BlogFormValues>
+  blogMutation: BlogFormBlogMutationResult
   isFormValid: boolean
   isEdit?: boolean
   currentStatusValue: 'draft' | 'published'
   onStatusChange: (status: 'draft' | 'published') => void
 }
+
+const statusOptions = [
+  {
+    id: 'published' as const,
+    label: 'Terbit',
+    desc: 'Terlihat di halaman publik',
+  },
+  {
+    id: 'draft' as const,
+    label: 'Draf',
+    desc: 'Hanya di panel admin',
+  },
+]
 
 export default function ButtonManage({
   blogMutation,
@@ -27,73 +37,77 @@ export default function ButtonManage({
   const isDisabled = isPending || !isFormValid
 
   return (
-    <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">
-        Publication Status
-      </label>
+    <div className="space-y-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Status publikasi
+      </p>
 
-      {/* RADIO BUTTON GROUP */}
-      <div className="space-y-2">
-        {[
-          { id: 'published', label: 'Published', desc: 'Visible to everyone' },
-          { id: 'draft', label: 'Draft', desc: 'Only visible to admin' },
-        ].map((item) => (
-          <div
-            key={item.id}
-            onClick={() => onStatusChange(item.id as 'draft' | 'published')}
-            className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-              currentStatusValue === item.id
-                ? 'border-purple-500 bg-purple-50/50'
-                : 'border-gray-50 bg-gray-50/30 hover:border-gray-200'
-            }`}
-          >
-            {/* Bulatan Radio */}
-            <div
-              className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
-                currentStatusValue === item.id
-                  ? 'border-purple-500 bg-purple-500'
-                  : 'border-gray-300 bg-white'
-              }`}
-            >
-              {currentStatusValue === item.id && (
-                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+      <div className="space-y-2" role="radiogroup" aria-label="Status publikasi">
+        {statusOptions.map((item) => {
+          const selected = currentStatusValue === item.id
+          return (
+            <button
+              key={item.id}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => onStatusChange(item.id)}
+              className={cn(
+                'flex w-full cursor-pointer items-center gap-3 rounded-xl border-2 p-3 text-left transition-colors',
+                selected
+                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                  : 'border-border/60 bg-muted/20 hover:border-border hover:bg-muted/40',
               )}
-            </div>
-
-            <div className="flex flex-col">
+            >
               <span
-                className={`text-xs font-bold ${currentStatusValue === item.id ? 'text-purple-700' : 'text-gray-600'}`}
+                className={cn(
+                  'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2',
+                  selected ? 'border-primary bg-primary' : 'border-muted-foreground/40 bg-background',
+                )}
               >
-                {item.label}
+                {selected && <span className="h-1.5 w-1.5 rounded-full bg-background" />}
               </span>
-              <span className="text-[9px] text-gray-400 font-medium">{item.desc}</span>
-            </div>
-          </div>
-        ))}
+              <span className="min-w-0">
+                <span
+                  className={cn(
+                    'block text-xs font-semibold',
+                    selected ? 'text-foreground' : 'text-muted-foreground',
+                  )}
+                >
+                  {item.label}
+                </span>
+                <span className="block text-[10px] text-muted-foreground">{item.desc}</span>
+              </span>
+            </button>
+          )
+        })}
       </div>
 
-      <hr className="border-gray-50" />
-
-      {/* ACTION BUTTON */}
-      <Button
-        type="button"
-        disabled={isDisabled}
-        onClick={() => handlePublish(currentStatusValue)}
-        className={`w-full h-10 cursor-pointer text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-md ${
-          isDisabled
-            ? 'bg-gray-200 text-gray-400'
-            : 'bg-purple-600 hover:bg-purple-700 text-white shadow-purple-200'
-        }`}
-      >
-        {isPending ? (
-          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-        ) : isEdit ? (
-          <Save className="mr-2 h-3 w-3" />
-        ) : (
-          <Send className="mr-2 h-3 w-3" />
-        )}
-        {isPending ? 'Processing...' : isEdit ? 'Update Changes' : 'Publish Article'}
-      </Button>
+      <div className="border-t border-border/60 pt-4">
+        <Button
+          type="button"
+          disabled={isDisabled}
+          className="h-11 w-full text-xs font-semibold uppercase tracking-wide"
+          onClick={() => handlePublish(currentStatusValue)}
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+              Memproses…
+            </>
+          ) : isEdit ? (
+            <>
+              <Save className="mr-2 h-4 w-4" aria-hidden />
+              Simpan perubahan
+            </>
+          ) : (
+            <>
+              <Send className="mr-2 h-4 w-4" aria-hidden />
+              {currentStatusValue === 'published' ? 'Publikasikan' : 'Simpan draf'}
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   )
 }
