@@ -10,21 +10,29 @@ export interface GameNames {
   name: string
 }
 
-export function useGetGames(
-  search: string,
-  page: number,
-  limit: number,
-  image: 'all' | 'no_image' = 'all'
-) {
+export type GetGamesParams = {
+  search?: string
+  image?: 'all' | 'no_image'
+  /** Backend: filter `is_active` (true = aktif, false = nonaktif); omit = semua */
+  is_active?: boolean
+  /** Backend: filter per `game_id` */
+  game_id?: string
+}
+
+export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
+  const { search = '', image = 'all', is_active, game_id } = params
+
   return useQuery<GamesResponse>({
-    queryKey: ['games', search, page, limit, image],
+    queryKey: ['games', page, limit, search, image, is_active ?? 'all', game_id ?? ''],
     queryFn: async () => {
       const { data } = await api.get('/games/pagination', {
         params: {
-          search,
           page,
           limit,
           image,
+          ...(search.trim() !== '' && { search: search.trim() }),
+          ...(is_active !== undefined && { is_active }),
+          ...(game_id && { game_id }),
         },
       })
 
@@ -50,7 +58,7 @@ export function useGetGameById(gameId: string) {
 export const useCreateGame = () => {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (payload: any) => {
+    mutationFn: async (payload: Record<string, unknown>) => {
       const res = await api.post('/games', payload)
       return res.data
     },
@@ -68,12 +76,14 @@ export const useDeleteGame = (id: string) => {
       return res.data
     },
     onSuccess: () => {
+      toast.success('Game berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
+    onError: () => toast.error('Gagal menghapus game'),
   })
 }
 
-export function useUpdateImageGame(setOpen: (open: boolean) => void) {
+export function useUpdateImageGame(onClose: () => void) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -86,11 +96,11 @@ export function useUpdateImageGame(setOpen: (open: boolean) => void) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Image updated')
+      toast.success('Gambar game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
-      setOpen(false)
+      onClose()
     },
-    onError: () => toast.error('Failed to update image Game'),
+    onError: () => toast.error('Gagal memperbarui gambar game'),
   })
 
   return mutation
@@ -109,11 +119,11 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Game updated')
+      toast.success('Game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
       setOpen(false)
     },
-    onError: () => toast.error('Failed to update Game'),
+    onError: () => toast.error('Gagal memperbarui game'),
   })
 
   return mutation
@@ -171,9 +181,9 @@ export function useBulkUpdateGameStatus() {
   return useMutation({
     mutationFn: (is_active: boolean) => api.patch('/games/bulk-status', { is_active }),
     onSuccess: () => {
-      toast.success('All game statuses updated')
+      toast.success('Status semua game berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
-    onError: () => toast.error('Failed to update all game statuses'),
+    onError: () => toast.error('Gagal memperbarui status semua game'),
   })
 }
