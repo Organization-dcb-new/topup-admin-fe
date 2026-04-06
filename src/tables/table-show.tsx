@@ -13,7 +13,7 @@ export const showColumns: ColumnDef<Show>[] = [
       </span>
     ),
     cell: ({ row }) => {
-      const count = row.original.Games?.length ?? 0
+      const count = row.original.games?.length ?? 0
       if (!count) {
         return <span className="text-xs text-muted-foreground">—</span>
       }
@@ -39,18 +39,18 @@ export const showColumns: ColumnDef<Show>[] = [
   },
 
   {
-    accessorKey: 'Name',
+    accessorKey: 'name',
     header: 'Nama',
   },
   {
-    accessorKey: 'Alias',
+    accessorKey: 'alias',
     header: 'Alias',
   },
   {
-    accessorKey: 'Games',
+    accessorKey: 'games',
     header: 'Jumlah game',
     cell: ({ row }) => {
-      const n = row.original.Games?.length ?? 0
+      const n = row.original.games?.length ?? 0
       return (
         <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium tabular-nums text-foreground">
           {n}

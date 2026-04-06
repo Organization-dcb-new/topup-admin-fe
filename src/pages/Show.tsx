@@ -85,15 +85,15 @@ export default function ShowPage() {
                 renderSubRow={(row) => (
                   <div className="rounded-lg border border-border/70 bg-muted/25 px-4 py-3">
                     <p className="mb-2 text-sm font-semibold text-foreground">Game dalam show ini</p>
-                    {row.Games?.length ? (
+                    {row.games?.length ? (
                       <ul className="grid gap-2 text-sm sm:grid-cols-2 sm:gap-x-6">
-                        {row.Games.map((g) => (
-                          <li key={g.ID} className="flex items-center gap-2 text-muted-foreground">
+                        {row.games.map((g) => (
+                          <li key={g.id} className="flex items-center gap-2 text-muted-foreground">
                             <span
                               className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary"
                               aria-hidden
                             />
-                            <span className="text-foreground">{g.Name}</span>
+                            <span className="text-foreground">{g.name}</span>
                           </li>
                         ))}
                       </ul>
