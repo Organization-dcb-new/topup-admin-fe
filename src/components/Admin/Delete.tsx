@@ -1,5 +1,5 @@
-import { Trash2, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Loader2, Trash2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,17 +10,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useAdminMutation } from "@/hooks/useAdmin";
+} from '@/components/ui/alert-dialog'
+import { useAdminMutation } from '@/hooks/useAdmin'
 
 export const DeleteAdminButton = ({
   id,
   email,
 }: {
-  id: string;
-  email: string;
+  id: string
+  email: string
 }) => {
-  const { deleteAdmin } = useAdminMutation();
+  const { deleteAdmin } = useAdminMutation()
 
   return (
     <AlertDialog>
@@ -28,35 +28,36 @@ export const DeleteAdminButton = ({
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 text-slate-400 hover:text-red-600 hover:bg-red-50"
+          className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          aria-label={`Hapus admin ${email}`}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="rounded-2xl">
+      <AlertDialogContent className="rounded-xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Admin Account?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete{" "}
-            <span className="font-bold text-slate-900">{email}</span>? This
-            action cannot be undone.
+          <AlertDialogTitle className="text-lg font-semibold">Hapus akun admin?</AlertDialogTitle>
+          <AlertDialogDescription className="text-sm text-muted-foreground">
+            Yakin ingin menghapus{' '}
+            <span className="font-semibold text-foreground">{email}</span>? Tindakan ini tidak dapat
+            dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="gap-2 sm:gap-0">
+          <AlertDialogCancel className="rounded-lg">Batal</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => deleteAdmin.mutate(id)}
             disabled={deleteAdmin.isPending}
-            className="bg-red-600 hover:bg-red-700 rounded-xl"
+            className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             {deleteAdmin.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
             ) : (
-              "Delete"
+              'Hapus'
             )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  );
-};
+  )
+}
