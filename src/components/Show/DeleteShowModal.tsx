@@ -12,39 +12,66 @@ import {
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { useDeleteShow } from '@/hooks/useShow'
+import { cn } from '@/lib/utils'
 
-export function DeleteShowButton({ id }: { id: string }) {
+export function DeleteShowButton({
+  id,
+  triggerClassName,
+}: {
+  id: string
+  triggerClassName?: string
+}) {
   const mutation = useDeleteShow(id)
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className="text-destructive hover:bg-destructive/10 cursor-pointer"
+          variant="outline"
+          size="sm"
+          className={cn(
+            'cursor-pointer gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive',
+            triggerClassName,
+          )}
           disabled={mutation.isPending}
+          aria-label="Hapus show"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 shrink-0" aria-hidden />
+          <span className="hidden sm:inline">Hapus</span>
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Show</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. Are you sure you want to delete this show?
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+      <AlertDialogContent className="gap-0 overflow-hidden p-0 sm:max-w-lg">
+        <div className="border-b border-border bg-muted/30 px-6 py-5">
+          <AlertDialogHeader className="gap-1.5 text-left">
+            <div className="flex items-center gap-2">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
+                <Trash2 className="h-4 w-4" aria-hidden />
+              </span>
+              <AlertDialogTitle className="text-xl font-semibold tracking-tight">
+                Hapus show?
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-left">
+              Tindakan ini tidak bisa dibatalkan. Show beserta pengaturan game di dalamnya akan
+              dihapus dari daftar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </div>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="gap-2 border-t border-border px-6 py-5 sm:pt-5">
+          <AlertDialogCancel
+            className="cursor-pointer sm:min-w-[5.5rem]"
+            disabled={mutation.isPending}
+          >
+            Batal
+          </AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Deleting...' : 'Delete'}
+            {mutation.isPending ? 'Menghapus…' : 'Hapus'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
