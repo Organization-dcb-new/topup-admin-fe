@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { api } from '@/api/axios'
 import type { ShowPayload } from '@/components/Show/CreateShowModal'
 import type { ShowResponse } from '@/types/show'
@@ -14,14 +15,35 @@ type UpdateShowPayload = {
   is_show: boolean
 }
 
-export const useGetShows = () =>
-  useQuery<ShowResponse>({
+export const useGetShows = () => {
+  const query = useQuery<ShowResponse>({
     queryKey: ['shows'],
     queryFn: async () => {
       const res = await api.get('/shows')
       return res.data
     },
   })
+
+  useEffect(() => {
+    if (!query.isPending) return
+    const id = toast.loading('Sedang memuat…')
+    return () => {
+      toast.dismiss(id)
+    }
+  }, [query.isPending])
+
+  useEffect(() => {
+    if (!query.isFetchedAfterMount) return
+    if (query.isSuccess) {
+      toast.success('Berhasil memuat data show')
+    }
+    if (query.isError) {
+      toast.error('Gagal memuat data show')
+    }
+  }, [query.isSuccess, query.isError, query.isFetchedAfterMount])
+
+  return query
+}
 
 export const useCreateShow = (
   reset: () => void,
@@ -36,14 +58,14 @@ export const useCreateShow = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Show created successfully')
+      toast.success('Show berhasil dibuat')
       queryClient.invalidateQueries({ queryKey: ['shows'] })
       reset()
       setPreview(null)
       setOpen(false)
     },
     onError: () => {
-      toast.error('Failed to Show category')
+      toast.error('Gagal membuat show')
     },
   })
 
@@ -59,11 +81,11 @@ export function useDeleteShow(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Show deleted')
+      toast.success('Show berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['shows'] })
     },
     onError: () => {
-      toast.error('Failed to delete show')
+      toast.error('Gagal menghapus show')
     },
   })
 
@@ -79,7 +101,11 @@ export function useAddGamesToShow(showId: string) {
         game_ids: gameIds,
       }),
     onSuccess: () => {
+      toast.success('Daftar game pada show berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['shows'] })
+    },
+    onError: () => {
+      toast.error('Gagal memperbarui game pada show')
     },
   })
 }
@@ -96,8 +122,12 @@ export function useUpdateShow({ id, setOpen }: UpdateShowProps) {
     mutationFn: (payload: UpdateShowPayload) => api.put(`/shows/${id}`, payload),
 
     onSuccess: () => {
+      toast.success('Show berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['shows'] })
-      setOpen?.(false) // auto close modal
+      setOpen?.(false)
+    },
+    onError: () => {
+      toast.error('Gagal memperbarui show')
     },
   })
 }
