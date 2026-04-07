@@ -1,19 +1,12 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-
-import { authStorage, useAuthUser } from "@/lib/auth";
-import { api } from "@/api/axios";
-import { Button } from "@/components/ui/button";
+import { api } from '@/api/axios'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -21,35 +14,42 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSlot,
   InputOTPSeparator,
-} from "@/components/ui/input-otp";
-import { Input } from "@/components/ui/input";
+  InputOTPSlot,
+} from '@/components/ui/input-otp'
+import { authStorage, useAuthUser } from '@/lib/auth'
+import { useMutation } from '@tanstack/react-query'
+import { Loader2, ShieldCheck } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const VerifyOtpPage = () => {
-  const navigate = useNavigate();
-  const { isMfaRequired, token } = useAuthUser();
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const navigate = useNavigate()
+  const { isMfaRequired, token } = useAuthUser()
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!token || !isMfaRequired) {
-      navigate("/login");
+      navigate('/login')
     }
-  }, [token, isMfaRequired, navigate]);
+  }, [token, isMfaRequired, navigate])
 
   const form = useForm({
     defaultValues: {
-      code: "",
+      code: '',
     },
-  });
+  })
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (code: string) => {
-      const endpoint = isRecoveryMode ? "/admin/recover" : "/admin/verify-otp";
+      const endpoint = isRecoveryMode ? '/admin/recover' : '/admin/verify-otp'
       const res = await api.post(
         endpoint,
         { code },
@@ -58,43 +58,54 @@ const VerifyOtpPage = () => {
             Authorization: `Bearer ${authStorage.getToken()}`,
           },
         },
-      );
-      return res.data;
+      )
+      return res.data
     },
     onSuccess: (data) => {
       if (isRecoveryMode) {
-        toast.success("Pemulihan berhasil. Silakan login kembali.");
-        authStorage.clearToken();
-        window.location.href = "/login";
+        toast.success('Pemulihan berhasil. Silakan login kembali.')
+        authStorage.clearToken()
+        window.location.href = '/login'
       } else {
-        toast.success("Verifikasi berhasil");
-        authStorage.setToken(data.token);
-        window.location.href = "/";
+        toast.success('Verifikasi berhasil')
+        authStorage.setToken(data.token)
+        window.location.href = '/'
       }
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Kode salah atau expired");
-      form.reset();
+    onError: (err: unknown) => {
+      const e = err as { response?: { data?: { message?: string } } }
+      toast.error(e?.response?.data?.message || 'Kode salah atau expired')
+      form.reset()
     },
-  });
+  })
+
   const onSubmit = (values: { code: string }) => {
-    mutate(values.code);
-  };
+    mutate(values.code)
+  }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-linear-to-br from-indigo-300/20 px-4">
-      <Card className="w-full max-w-md shadow-lg border-none">
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold tracking-tight text-slate-800">
-            {isRecoveryMode ? "Recovery Akun" : "Otentikasi Dua Faktor"}
-          </CardTitle>
-          <CardDescription>
-            {isRecoveryMode
-              ? "Masukkan kode pemulihan (recovery code) Anda."
-              : "Masukkan 6 digit kode keamanan dari aplikasi authenticator Anda."}
-          </CardDescription>
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.12),transparent)]"
+        aria-hidden
+      />
+      <Card className="relative w-full max-w-md rounded-2xl border border-border/80 bg-card/95 shadow-lg shadow-gray-900/5 ring-1 ring-gray-900/5 backdrop-blur-sm">
+        <CardHeader className="space-y-4 pb-2 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <ShieldCheck className="h-6 w-6" aria-hidden />
+          </div>
+          <div className="space-y-1.5">
+            <CardTitle className="text-2xl font-semibold tracking-tight text-gray-900">
+              {isRecoveryMode ? 'Pemulihan akun' : 'Otentikasi dua faktor'}
+            </CardTitle>
+            <CardDescription className="text-base text-muted-foreground">
+              {isRecoveryMode
+                ? 'Masukkan kode pemulihan (recovery code) Anda.'
+                : 'Masukkan 6 digit kode dari aplikasi authenticator Anda.'}
+            </CardDescription>
+          </div>
         </CardHeader>
-        <CardContent className="grid gap-6">
+        <CardContent className="grid gap-6 pb-8">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -104,19 +115,18 @@ const VerifyOtpPage = () => {
                 control={form.control}
                 name="code"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col items-center w-full">
+                  <FormItem className="flex w-full flex-col items-center">
                     <FormLabel className="sr-only">Kode OTP</FormLabel>
                     <FormControl>
                       {isRecoveryMode ? (
-                        /* Tampilan Input Recovery Code */
                         <Input
                           {...field}
-                          className="h-12 text-center font-mono font-bold uppercase tracking-widest"
+                          className="h-12 rounded-lg text-center font-mono text-base font-semibold uppercase tracking-widest"
                           placeholder="KODE-RECOVERY"
+                          autoComplete="one-time-code"
                           autoFocus
                         />
                       ) : (
-                        /* Tampilan OTP Asli Kamu */
                         <InputOTP
                           maxLength={6}
                           disabled={isPending}
@@ -126,30 +136,30 @@ const VerifyOtpPage = () => {
                           <InputOTPGroup className="gap-2">
                             <InputOTPSlot
                               index={0}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                             <InputOTPSlot
                               index={1}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                             <InputOTPSlot
                               index={2}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                           </InputOTPGroup>
                           <InputOTPSeparator />
                           <InputOTPGroup className="gap-2">
                             <InputOTPSlot
                               index={3}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                             <InputOTPSlot
                               index={4}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                             <InputOTPSlot
                               index={5}
-                              className="h-12 w-12 text-lg font-bold"
+                              className="h-12 w-12 rounded-lg text-lg font-semibold"
                             />
                           </InputOTPGroup>
                         </InputOTP>
@@ -159,47 +169,56 @@ const VerifyOtpPage = () => {
                   </FormItem>
                 )}
               />
-              {/* Tombol submit muncul jika mode recovery atau loading */}
               {isRecoveryMode && (
                 <Button
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold"
+                  type="submit"
+                  className="h-11 w-full rounded-xl text-base font-medium"
                   disabled={isPending}
                 >
-                  {isPending ? "Memproses..." : "Verifikasi Recovery"}
+                  {isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                      Memproses…
+                    </>
+                  ) : (
+                    'Verifikasi recovery'
+                  )}
                 </Button>
               )}
             </form>
           </Form>
 
-          <div className="flex flex-col gap-2 text-center text-sm text-muted-foreground border-t pt-4">
+          <div className="flex flex-col gap-3 border-t border-border/60 pt-4 text-center text-sm text-muted-foreground">
             <button
+              type="button"
               onClick={() => {
-                setIsRecoveryMode(!isRecoveryMode);
-                form.reset();
+                setIsRecoveryMode(!isRecoveryMode)
+                form.reset()
               }}
-              className="text-indigo-600 hover:underline cursor-pointer"
+              className="font-medium text-primary hover:underline"
             >
-              {isRecoveryMode ? "Gunakan OTP" : "Gunakan Kode Recovery"}
+              {isRecoveryMode ? 'Gunakan OTP' : 'Gunakan kode recovery'}
             </button>
 
             <div>
-              Terjadi masalah?{" "}
+              Terjadi masalah?{' '}
               <Button
+                type="button"
                 variant="link"
-                className="h-auto p-0 cursor-pointer text-indigo-600 hover:text-indigo-500"
+                className="h-auto p-0 font-medium text-primary"
                 onClick={() => {
-                  authStorage.clearToken();
-                  navigate("/login");
+                  authStorage.clearToken()
+                  navigate('/login')
                 }}
               >
-                Kembali ke Login
+                Kembali ke login
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  );
-};
+  )
+}
 
-export default VerifyOtpPage;
+export default VerifyOtpPage
