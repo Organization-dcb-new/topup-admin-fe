@@ -24,6 +24,7 @@ import AdminManagementPage from "@/pages/Admin";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
+import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -203,6 +204,10 @@ export const router = createBrowserRouter([
       {
         path: "unauthorized",
         element: <UnauthorizedPage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

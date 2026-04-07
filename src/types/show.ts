@@ -1,51 +1,26 @@
-export type GameV2 = {
-  ID: string
-  CategoryID: string
-  ProviderID: string
-
-  Name: string
-  Slug: string
-  Code: string
-
-  ThumbnailURL: string
-  BannerURL: string
-
-  Description: string
-  Instruction: string
-  Developer: string
-  Publisher: string
-
-  IsFeatured: boolean
-  IsActive: boolean
-  IsCheckId: boolean
-  IsShow: boolean
-
-  PopularityScore: number
-
-  CreatedAt: string
-  UpdatedAt: string
-
-  Inputs: any[] | null
-
-  Category: any | null
-  Provider: any | null
-
-  ShowID: string | null
-  Show: Show
+/** Game dalam respons GET /shows/admin (nested di tiap show). */
+export type ShowGame = {
+  id: string
+  name: string
+  slug: string
+  code: string
+  thumbnail_url: string
+  banner_url: string
+  popularity_score: number
+  is_active: boolean
+  is_featured: boolean
 }
 
 export type Show = {
-  ID: string
-  Name: string
-  Alias: string
-  Image: string
-
-  IsHot: boolean
-  IsNew: boolean
-  IsPopular: boolean
-  IsShow: boolean
-
-  Games: GameV2[]
+  id: string
+  name: string
+  alias: string
+  image: string
+  is_hot: boolean
+  is_new: boolean
+  is_popular: boolean
+  is_show: boolean
+  games?: ShowGame[]
 }
 
 export interface ShowResponse {

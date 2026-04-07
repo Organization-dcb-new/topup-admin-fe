@@ -24,10 +24,12 @@ export const useAdminMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Role updated successfully");
+      toast.success("Peran berhasil diperbarui");
     },
-    onError: (err: any) =>
-      toast.error(err.response?.data?.message || "Failed to update role"),
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || "Gagal memperbarui peran");
+    },
   });
 
   const deleteAdmin = useMutation({
@@ -36,10 +38,12 @@ export const useAdminMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Admin deleted successfully");
+      toast.success("Admin berhasil dihapus");
     },
-    onError: (err: any) =>
-      toast.error(err.response?.data?.message || "Failed to delete admin"),
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || "Gagal menghapus admin");
+    },
   });
 
   return { updateRole, deleteAdmin };
