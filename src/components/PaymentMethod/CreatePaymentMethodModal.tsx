@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { UploadCloud } from 'lucide-react'
+import { Plus, UploadCloud } from 'lucide-react'
 import { useCreatePaymentMethodSubmit, type PaymentMethodPayload } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import type { FormValuesPaymentMethodCreate } from '@/types/payment-method'
@@ -31,7 +31,18 @@ export default function ModalAddPaymentMethod() {
     reset,
   } = useForm<FormValuesPaymentMethodCreate>()
 
-  const mutation = useCreatePaymentMethodSubmit({ setOpen })
+  const applyOpen = (next: boolean) => {
+    setOpen(next)
+    if (!next) {
+      reset()
+      setPreview(null)
+      setUploadProgress(0)
+      setIsUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  const mutation = useCreatePaymentMethodSubmit({ setOpen: applyOpen })
 
   const onSubmit = (payload: PaymentMethodPayload) => {
     mutation.mutate(payload)
@@ -43,31 +54,31 @@ export default function ModalAddPaymentMethod() {
       setPreview,
       setIsUploading,
       setUploadProgress,
-      setValue: setValue as any,
+      setValue,
       fieldName: 'icon_url',
     })
   }
 
-  useEffect(() => {
-    if (!open) {
-      reset()
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
-  }, [open, reset])
-
   return (
     <>
-      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
-        + Create Payment Method
+      <Button
+        type="button"
+        className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto"
+        onClick={() => applyOpen(true)}
+      >
+        <Plus className="h-4 w-4 shrink-0" aria-hidden />
+        Tambah metode pembayaran
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Create Payment Method</DialogTitle>
+      <Dialog open={open} onOpenChange={applyOpen}>
+        <DialogContent className="rounded-xl sm:max-w-3xl">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              Tambah metode pembayaran
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Lengkapi formulir di bawah. Ikon akan diunggah otomatis setelah file dipilih.
+            </p>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 ">

@@ -46,10 +46,10 @@ export const useCreatePaymentMethodSubmit = ({ setOpen }: CreatePaymentMethodPro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
       setOpen(false)
-      toast.success('Payment Method created')
+      toast.success('Metode pembayaran berhasil dibuat')
     },
     onError: () => {
-      toast.error('Failed to create Payment Method')
+      toast.error('Gagal membuat metode pembayaran')
     },
   })
 }
@@ -63,11 +63,11 @@ export function useDeletePaymentMethod(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Payment Method deleted')
+      toast.success('Metode pembayaran berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
     },
     onError: () => {
-      toast.error('Failed to delete Payment Method')
+      toast.error('Gagal menghapus metode pembayaran')
     },
   })
 
@@ -87,11 +87,11 @@ export function useEditPaymentMethod(paymentMethodId: string, setOpen: (open: bo
       return res.data
     },
     onSuccess: () => {
-      toast.success('Payment Method updated')
+      toast.success('Metode pembayaran berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
       setOpen(false)
     },
-    onError: () => toast.error('Failed to update Payment Method'),
+    onError: () => toast.error('Gagal memperbarui metode pembayaran'),
   })
 
   return mutation

@@ -17,7 +17,7 @@ export const useCreatePaymentCategory = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Payment Category created successfully')
+      toast.success('Kategori berhasil dibuat')
       queryClient.invalidateQueries({
         queryKey: ['payment-methods-categories'],
       })
@@ -26,7 +26,7 @@ export const useCreatePaymentCategory = (
       setOpen(false)
     },
     onError: () => {
-      toast.error('Failed to Create Payment Category ')
+      toast.error('Gagal membuat kategori')
     },
   })
 
@@ -51,11 +51,11 @@ export function useDeletePaymentCategory(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Payment Category deleted')
+      toast.success('Kategori berhasil dihapus')
       queryClient.invalidateQueries({ queryKey: ['payment-methods-categories'] })
     },
     onError: () => {
-      toast.error('Failed to delete Payment Category')
+      toast.error('Gagal menghapus kategori')
     },
   })
 
@@ -74,7 +74,7 @@ export function useAssignPaymentMethods(categoryId: string) {
     },
 
     onSuccess: () => {
-      toast.success('Success Payment Method Assign')
+      toast.success('Metode pembayaran berhasil ditautkan ke kategori')
 
       queryClient.invalidateQueries({
         queryKey: ['payment-methods'],
@@ -85,7 +85,7 @@ export function useAssignPaymentMethods(categoryId: string) {
       })
     },
     onError: () => {
-      toast.error('Failed to Assign Payment Method')
+      toast.error('Gagal menautkan metode pembayaran')
     },
   })
 }

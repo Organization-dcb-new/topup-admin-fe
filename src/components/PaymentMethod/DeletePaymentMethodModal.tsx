@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { useDeletePaymentMethod } from '@/hooks/usePaymentMethod'
 
 export function DeletePaymentMethodModal({ id }: { id: string }) {
@@ -22,29 +22,37 @@ export function DeletePaymentMethodModal({ id }: { id: string }) {
         <Button
           variant="ghost"
           size="icon"
-          className="text-destructive hover:bg-destructive/10 cursor-pointer"
+          className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           disabled={mutation.isPending}
+          aria-label="Hapus metode pembayaran"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Payment Method</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. Are you sure you want to delete this Payment Method?
+          <AlertDialogTitle className="text-lg font-semibold">Hapus metode pembayaran?</AlertDialogTitle>
+          <AlertDialogDescription className="text-sm text-muted-foreground">
+            Tindakan ini tidak dapat dibatalkan. Metode pembayaran akan dihapus permanen dari sistem.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="gap-2 sm:gap-0">
+          <AlertDialogCancel className="rounded-lg">Batal</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Deleting...' : 'Delete'}
+            {mutation.isPending ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Menghapus…
+              </span>
+            ) : (
+              'Hapus'
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
