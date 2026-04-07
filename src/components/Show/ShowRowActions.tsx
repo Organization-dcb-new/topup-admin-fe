@@ -21,12 +21,12 @@ export function ShowRowActions({ show }: { show: Show }) {
         aria-label="Aksi untuk show ini"
       >
         <AddGamesToShowButton
-          showId={show.ID}
-          existingGames={show.Games}
+          showId={show.id}
+          existingGames={show.games}
           triggerClassName={toolbarBtn}
         />
         <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
-        <DeleteShowButton id={show.ID} triggerClassName={toolbarBtn} />
+        <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
       </div>
     </div>
   )

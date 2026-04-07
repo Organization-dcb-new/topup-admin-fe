@@ -19,7 +19,7 @@ export const useGetShows = () => {
   const query = useQuery<ShowResponse>({
     queryKey: ['shows'],
     queryFn: async () => {
-      const res = await api.get('/shows')
+      const res = await api.get('/shows/admin')
       return res.data
     },
   })
