@@ -13,6 +13,7 @@ export interface Product {
   image: string
   description: string
   product_type: string
+  provider_status: string
   base_price: number
   selling_price: number
   stock_quantity: number
