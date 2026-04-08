@@ -17,6 +17,7 @@ import { useGetGameNames } from '@/hooks/useGame'
 import { useUpdateImageProduct } from '@/hooks/useProduct'
 import { cn } from '@/lib/utils'
 import { ImagePlus, Loader2, UploadCloud } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export type FormValuesProductImage = {
   image: string
@@ -24,6 +25,7 @@ export type FormValuesProductImage = {
 }
 
 export function ChangeImageByGame() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -82,30 +84,29 @@ export function ChangeImageByGame() {
         onClick={() => setOpen(true)}
       >
         <ImagePlus className="h-4 w-4 text-primary" aria-hidden />
-        Ubah gambar per game
+        {t('productFilters.changeImageByGame')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Ubah gambar produk per game
+              {t('productGameImageModal.title')}
             </DialogTitle>
             <DialogDescription>
-              Pilih game lalu unggah satu gambar. Semua produk untuk game tersebut akan memakai gambar
-              baru setelah disimpan.
+              {t('productGameImageModal.description')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="change-img-game" className="text-sm font-medium">
-                Game
+                {t('productGameImageModal.gameLabel')}
               </Label>
               <select
                 id="change-img-game"
                 {...register('game_id', {
-                  required: 'Pilih game terlebih dahulu',
+                  required: t('productGameImageModal.gameRequired'),
                 })}
                 className={cn(
                   'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs',
@@ -115,7 +116,7 @@ export function ChangeImageByGame() {
                 aria-invalid={!!errors.game_id}
               >
                 <option value="" disabled>
-                  — Pilih game —
+                  {t('productGameImageModal.selectGame')}
                 </option>
                 {dataGameNames?.map((game: GameNames) => (
                   <option key={game.id} value={game.id}>
@@ -129,9 +130,9 @@ export function ChangeImageByGame() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Gambar produk</Label>
+              <Label className="text-sm font-medium">{t('productGameImageModal.imageLabel')}</Label>
               <p className="text-xs text-muted-foreground">
-                PNG, JPG, WebP, atau SVG. File diunggah otomatis setelah dipilih.
+                {t('productGameImageModal.imageHint')}
               </p>
 
               <div
@@ -156,19 +157,19 @@ export function ChangeImageByGame() {
                     ? 'pointer-events-none opacity-70'
                     : 'hover:border-primary/60 hover:bg-muted/25',
                 )}
-                aria-label="Unggah gambar: klik atau seret file ke sini"
+                aria-label={t('productGameImageModal.uploadAria')}
               >
                 {preview ? (
                   <img
                     src={preview}
-                    alt="Pratinjau gambar yang dipilih"
+                    alt={t('productGameImageModal.previewAlt')}
                     className="max-h-full max-w-full rounded-lg object-contain p-2"
                   />
                 ) : (
                   <div className="flex flex-col items-center gap-2 px-4 text-center text-muted-foreground">
                     <UploadCloud className="h-8 w-8 opacity-80" aria-hidden />
-                    <span className="text-sm font-medium text-foreground">Klik atau jatuhkan gambar</span>
-                    <span className="text-xs">Maks. sesuai kebijakan unggah server</span>
+                    <span className="text-sm font-medium text-foreground">{t('productGameImageModal.dropHint')}</span>
+                    <span className="text-xs">{t('productGameImageModal.maxHint')}</span>
                   </div>
                 )}
 
@@ -176,7 +177,7 @@ export function ChangeImageByGame() {
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
                     <span className="text-sm font-medium text-foreground">
-                      Mengunggah… {uploadProgress}%
+                      {t('productGameImageModal.uploading', { percent: uploadProgress })}
                     </span>
                   </div>
                 )}
@@ -204,7 +205,7 @@ export function ChangeImageByGame() {
                 className="rounded-xl"
                 onClick={() => setOpen(false)}
               >
-                Batal
+                {t('productGameImageModal.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -214,10 +215,10 @@ export function ChangeImageByGame() {
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('productGameImageModal.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('productGameImageModal.save')
                 )}
               </Button>
             </DialogFooter>

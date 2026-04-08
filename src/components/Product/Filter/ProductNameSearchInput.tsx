@@ -1,6 +1,7 @@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   value: string
@@ -8,10 +9,11 @@ type Props = {
 }
 
 export function ProductNameSearchInput({ value, onChange }: Props) {
+  const { t } = useTranslation('common')
   return (
     <div className="grid min-w-0 gap-1.5">
       <Label htmlFor="product-name-search" className="text-xs text-muted-foreground">
-        Nama produk
+        {t('productFilters.nameLabel')}
       </Label>
       <div className="relative">
         <Search
@@ -20,11 +22,11 @@ export function ProductNameSearchInput({ value, onChange }: Props) {
         />
         <Input
           id="product-name-search"
-          placeholder="Cari nama produk…"
+          placeholder={t('productFilters.namePlaceholder')}
           className="h-10 w-full min-w-0 pl-9 shadow-sm"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-label="Cari nama produk"
+          aria-label={t('productFilters.nameAria')}
         />
       </div>
     </div>

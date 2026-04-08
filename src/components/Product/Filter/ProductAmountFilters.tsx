@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { ChevronDown } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /** Nilai preset rupiah (string angka) */
 const IDR_PRESET_VALUES = [
@@ -29,15 +30,17 @@ function idrPresetLabel(v: string) {
 function PresetChipRow({
   kind,
   onPick,
+  presetLabel,
 }: {
   kind: 'idr' | 'percent'
   onPick: (value: string) => void
+  presetLabel: string
 }) {
   const list = kind === 'idr' ? IDR_PRESET_VALUES : PERCENT_PRESET_VALUES
   return (
     <div className="grid gap-1.5 sm:grid-cols-[minmax(0,9.5rem)_1fr] sm:items-start sm:gap-3">
       <span className="hidden pt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:block">
-        Preset
+        {presetLabel}
       </span>
       <div className="flex min-w-0 flex-wrap gap-1.5">
         {list.map((val) => (
@@ -148,6 +151,7 @@ type Props = {
 }
 
 export function ProductAmountFilters({ value, onChange }: Props) {
+  const { t } = useTranslation('common')
   const [nominalOpen, setNominalOpen] = useState(false)
   const p = (key: keyof ProductAmountFiltersState) => (v: string) => onChange({ [key]: v })
 
@@ -170,12 +174,12 @@ export function ProductAmountFilters({ value, onChange }: Props) {
         />
         <span className="min-w-0 flex-1 space-y-0.5">
           <span className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Filter nominal
+            {t('productFilters.nominalTitle')}
           </span>
           <span className="block text-xs text-muted-foreground">
             {nominalOpen
-              ? 'Biaya, persen, harga dasar & jual — klik untuk menutup.'
-              : 'Biaya tambahan, persen, harga dasar & jual. Klik untuk membuka.'}
+              ? t('productFilters.nominalOpenHint')
+              : t('productFilters.nominalClosedHint')}
           </span>
         </span>
       </button>
@@ -188,78 +192,109 @@ export function ProductAmountFilters({ value, onChange }: Props) {
           className="mt-3 space-y-4"
         >
           <p className="text-xs text-muted-foreground">
-            Isi manual atau pakai preset di bawah setiap baris ≥ / ≤. Nilai di-debounce sebelum dikirim ke
-            server.
+            {t('productFilters.nominalHelp')}
           </p>
 
           <div className="grid gap-4 lg:grid-cols-2">
         <FilterCard
-          title="Biaya tambahan"
-          description="Di atas (≥) dan di bawah (≤), dalam rupiah."
+          title={t('productFilters.additionalFeeTitle')}
+          description={t('productFilters.additionalFeeDesc')}
         >
           <FilterRow
-            label="Di atas (≥)"
+            label={t('productFilters.above')}
             value={value.additionalFeeAbove}
             onChange={p('additionalFeeAbove')}
           />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ additionalFeeAbove: v })} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ additionalFeeAbove: v })}
+            presetLabel={t('productFilters.preset')}
+          />
           <FilterRow
-            label="Di bawah (≤)"
+            label={t('productFilters.below')}
             value={value.additionalFeeBelow}
             onChange={p('additionalFeeBelow')}
           />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ additionalFeeBelow: v })} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ additionalFeeBelow: v })}
+            presetLabel={t('productFilters.preset')}
+          />
         </FilterCard>
 
         <FilterCard
-          title="Persen tambahan"
-          description="Di atas (≥) dan di bawah (≤). Boleh desimal."
+          title={t('productFilters.additionalPercentTitle')}
+          description={t('productFilters.additionalPercentDesc')}
         >
           <FilterRow
-            label="Di atas (≥)"
+            label={t('productFilters.above')}
             value={value.additionalPercentAbove}
             onChange={p('additionalPercentAbove')}
             allowDecimal
           />
-          <PresetChipRow kind="percent" onPick={(v) => onChange({ additionalPercentAbove: v })} />
+          <PresetChipRow
+            kind="percent"
+            onPick={(v) => onChange({ additionalPercentAbove: v })}
+            presetLabel={t('productFilters.preset')}
+          />
           <FilterRow
-            label="Di bawah (≤)"
+            label={t('productFilters.below')}
             value={value.additionalPercentBelow}
             onChange={p('additionalPercentBelow')}
             allowDecimal
           />
-          <PresetChipRow kind="percent" onPick={(v) => onChange({ additionalPercentBelow: v })} />
+          <PresetChipRow
+            kind="percent"
+            onPick={(v) => onChange({ additionalPercentBelow: v })}
+            presetLabel={t('productFilters.preset')}
+          />
         </FilterCard>
 
         <FilterCard
-          title="Harga dasar"
-          description="Rentang (≥ / ≤) atau nilai tepat (=), rupiah."
+          title={t('productFilters.basePriceTitle')}
+          description={t('productFilters.basePriceDesc')}
         >
-          <FilterRow label="Di atas (≥)" value={value.basePriceAbove} onChange={p('basePriceAbove')} />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ basePriceAbove: v })} />
-          <FilterRow label="Di bawah (≤)" value={value.basePriceBelow} onChange={p('basePriceBelow')} />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ basePriceBelow: v })} />
-          <FilterRow label="Tepat (=)" value={value.basePriceExact} onChange={p('basePriceExact')} />
+          <FilterRow label={t('productFilters.above')} value={value.basePriceAbove} onChange={p('basePriceAbove')} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ basePriceAbove: v })}
+            presetLabel={t('productFilters.preset')}
+          />
+          <FilterRow label={t('productFilters.below')} value={value.basePriceBelow} onChange={p('basePriceBelow')} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ basePriceBelow: v })}
+            presetLabel={t('productFilters.preset')}
+          />
+          <FilterRow label={t('productFilters.exact')} value={value.basePriceExact} onChange={p('basePriceExact')} />
         </FilterCard>
 
         <FilterCard
-          title="Harga jual"
-          description="Rentang (≥ / ≤) atau nilai tepat (=), rupiah."
+          title={t('productFilters.sellingPriceTitle')}
+          description={t('productFilters.sellingPriceDesc')}
         >
           <FilterRow
-            label="Di atas (≥)"
+            label={t('productFilters.above')}
             value={value.sellingPriceAbove}
             onChange={p('sellingPriceAbove')}
           />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ sellingPriceAbove: v })} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ sellingPriceAbove: v })}
+            presetLabel={t('productFilters.preset')}
+          />
           <FilterRow
-            label="Di bawah (≤)"
+            label={t('productFilters.below')}
             value={value.sellingPriceBelow}
             onChange={p('sellingPriceBelow')}
           />
-          <PresetChipRow kind="idr" onPick={(v) => onChange({ sellingPriceBelow: v })} />
+          <PresetChipRow
+            kind="idr"
+            onPick={(v) => onChange({ sellingPriceBelow: v })}
+            presetLabel={t('productFilters.preset')}
+          />
           <FilterRow
-            label="Tepat (=)"
+            label={t('productFilters.exact')}
             value={value.sellingPriceExact}
             onChange={p('sellingPriceExact')}
           />

@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import type { TFunction } from 'i18next'
 import type { Product } from '@/types/product'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -11,10 +12,10 @@ function formatRp(value: number | undefined | null) {
   return `Rp ${n.toLocaleString('id-ID')}`
 }
 
-export const productColumns: ColumnDef<Product>[] = [
+export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
   {
     id: 'image',
-    header: 'Gambar',
+    header: t('productTable.colImage'),
     cell: ({ row }: { row: { original: Product } }) => {
       const image = row.original.image?.trim() || DEFAULT_GAME_IMAGE
 
@@ -27,7 +28,7 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Nama',
+    header: t('productTable.colName'),
     cell: ({ row }) => (
       <div
         className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs"
@@ -40,7 +41,7 @@ export const productColumns: ColumnDef<Product>[] = [
   {
     accessorFn: (row) => row.game?.name || '-',
     id: 'game_name',
-    header: 'Game',
+    header: t('productTable.colGame'),
     cell: ({ row }) => {
       const name = row.original.game?.name
       return (
@@ -58,14 +59,14 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'sku',
-    header: 'SKU',
+    header: t('productTable.colSku'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">{row.original.sku}</span>
     ),
   },
   {
     accessorKey: 'additional_fee',
-    header: 'Biaya tambahan',
+    header: t('productTable.colAdditionalFee'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">
         {formatRp(row.original.additional_fee)}
@@ -74,7 +75,7 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'additional_percent',
-    header: 'Persen',
+    header: t('productTable.colPercent'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">
         {row.original.additional_percent} %
@@ -83,7 +84,7 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'base_price',
-    header: 'Harga dasar',
+    header: t('productTable.colBasePrice'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">
         {formatRp(row.original.base_price)}
@@ -92,7 +93,7 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'selling_price',
-    header: 'Harga jual',
+    header: t('productTable.colSellingPrice'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">
         {formatRp(row.original.selling_price)}
@@ -101,11 +102,11 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'stock_quantity',
-    header: 'Stok',
+    header: t('productTable.colStock'),
     cell: ({ row }) =>
       row.original.is_unlimited_stock ? (
         <Badge variant="outline" className="font-normal text-sm">
-          Tanpa batas
+          {t('productTable.stockUnlimited')}
         </Badge>
       ) : (
         <span className="tabular-nums text-sm font-medium text-foreground">
@@ -115,25 +116,29 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'is_active',
-    header: 'Status',
+    header: t('productTable.colStatus'),
     cell: ({ row }) => (
       <Badge
         variant={row.original.is_active ? 'success' : 'secondary'}
         className="font-normal text-sm"
       >
-        {row.original.is_active ? 'Aktif' : 'Nonaktif'}
+        {row.original.is_active ? t('productFilters.active') : t('productFilters.inactive')}
       </Badge>
     ),
   },
   {
     accessorKey: 'provider_status',
-    header: 'Status provider',
+    header: t('productTable.providerStatus'),
     cell: ({ row }) => {
       const raw = row.original.provider_status?.trim()
       const lower = raw?.toLowerCase()
       const isAvailable = lower === 'available'
       const isEmpty = lower === 'empty' || raw === ''
-      const label = isAvailable ? 'Tersedia' : isEmpty ? 'Kosong' : raw || '—'
+      const label = isAvailable
+        ? t('productTable.providerAvailable')
+        : isEmpty
+          ? t('productTable.providerEmpty')
+          : raw || '—'
       return (
         <Badge
           variant={isAvailable ? 'success' : isEmpty ? 'secondary' : 'outline'}
@@ -147,13 +152,13 @@ export const productColumns: ColumnDef<Product>[] = [
   },
   {
     id: 'actions',
-    header: 'Aksi',
+    header: t('productTable.colActions'),
     cell: ({ row }) => (
       <div className="flex min-w-0 items-center">
         <div
           className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
           role="group"
-          aria-label={`Aksi untuk produk ${row.original.name}`}
+          aria-label={t('productTable.rowActionsAria', { name: row.original.name })}
         >
           <UpdateProductPriceModal
             basePrice={row.original.base_price}

@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronDown, RotateCcw } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export type ProductListCardProps = {
   productNameSearch: string
@@ -52,6 +53,7 @@ export function ProductListCard({
   onResetFilters,
   children,
 }: ProductListCardProps) {
+  const { t } = useTranslation('common')
   const [filtersOpen, setFiltersOpen] = useState(true)
 
   return (
@@ -74,11 +76,11 @@ export function ProductListCard({
               aria-hidden
             />
             <span className="min-w-0 space-y-0.5">
-              <span className="block text-sm font-semibold text-gray-900">Filter</span>
+              <span className="block text-sm font-semibold text-gray-900">{t('productPage.filtersTitle')}</span>
               <span className="block text-xs text-muted-foreground">
                 {filtersOpen
-                  ? 'Nama produk, status, status provider, SKU, game, nominal. Klik untuk menutup.'
-                  : 'Filter disembunyikan — klik untuk membuka lagi.'}
+                  ? t('productPage.filtersOpenHint')
+                  : t('productPage.filtersClosedHint')}
               </span>
             </span>
           </button>
@@ -94,7 +96,7 @@ export function ProductListCard({
             }}
           >
             <RotateCcw className="h-4 w-4" aria-hidden />
-            Reset filter
+            {t('productPage.resetFilters')}
           </Button>
         </div>
 
