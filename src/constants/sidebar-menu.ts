@@ -4,6 +4,7 @@ import {
   Banknote,
   Boxes,
   Building2,
+  Construction,
   CreditCard,
   FileText,
   FolderTree,
@@ -112,6 +113,11 @@ export const sidebarMenus: SidebarSection[] = [
             label: 'Pembatas laju',
             icon: Gauge,
             path: '/rate-limit',
+          },
+          {
+            label: 'Pemeliharaan',
+            icon: Construction,
+            path: '/maintenances',
           },
           {
             label: 'Pengguna',
