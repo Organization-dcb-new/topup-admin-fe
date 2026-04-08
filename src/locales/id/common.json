@@ -215,7 +215,8 @@
     },
     "copy": {
       "ariaCopied": "Disalin",
-      "ariaCopy": "Salin ke papan klip"
+      "ariaCopy": "Salin ke papan klip",
+      "failed": "Tidak bisa menyalin. Coba lagi atau salin manual."
     },
     "itemCount": "{{count}} item"
   },

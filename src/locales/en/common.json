@@ -215,7 +215,8 @@
     },
     "copy": {
       "ariaCopied": "Copied",
-      "ariaCopy": "Copy to clipboard"
+      "ariaCopy": "Copy to clipboard",
+      "failed": "Could not copy. Try again or copy manually."
     },
     "itemCount": "{{count}} item"
   },
