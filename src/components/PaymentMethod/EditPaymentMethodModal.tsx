@@ -17,12 +17,14 @@ import { Loader2, Pencil, UploadCloud } from 'lucide-react'
 import type { FormValuesPaymentMethodEdit, PaymentMethod } from '@/types/payment-method'
 import { useEditPaymentMethod } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { useTranslation } from 'react-i18next'
 
 export type PropsEditPaymentMethodModal = {
   paymentMethod: PaymentMethod
 }
 
 export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethodModal) {
+  const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
   const defaultPreview = useRef<string | null>(null)
   const [open, setOpen] = useState(false)
@@ -84,16 +86,16 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
         type="button"
         onClick={() => setOpen(true)}
         className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label={`Ubah metode pembayaran ${paymentMethod.name}`}
+        aria-label={t('paymentMethodEdit.triggerAria', { name: paymentMethod.name })}
       >
         <Pencil className="h-4 w-4" aria-hidden />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-3xl">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah metode pembayaran</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">{t('paymentMethodEdit.title')}</DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Perbarui detail dan status tampilan untuk pelanggan.
+              {t('paymentMethodEdit.description')}
             </p>
           </DialogHeader>
 
@@ -101,46 +103,46 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
             onSubmit={handleSubmit((v) => updatePaymentMethodMutation.mutate(v))}
             className="space-y-4"
           >
-            <input type="hidden" {...register('icon_url', { required: 'Ikon wajib diisi' })} />
+            <input type="hidden" {...register('icon_url', { required: t('paymentMethodEdit.iconRequired') })} />
 
             <div className="flex w-full flex-col gap-5 md:flex-row">
               <div className="flex w-full flex-col gap-3">
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-name-${paymentMethod.id}`}>Nama</Label>
+                  <Label htmlFor={`pm-edit-name-${paymentMethod.id}`}>{t('paymentMethodEdit.nameLabel')}</Label>
                   <Input
                     id={`pm-edit-name-${paymentMethod.id}`}
-                    {...register('name', { required: 'Nama wajib diisi' })}
+                    {...register('name', { required: t('paymentMethodEdit.nameRequired') })}
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-code-${paymentMethod.id}`}>Kode</Label>
+                  <Label htmlFor={`pm-edit-code-${paymentMethod.id}`}>{t('paymentMethodEdit.codeLabel')}</Label>
                   <Input
                     id={`pm-edit-code-${paymentMethod.id}`}
-                    {...register('code', { required: 'Kode wajib diisi' })}
+                    {...register('code', { required: t('paymentMethodEdit.codeRequired') })}
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-type-${paymentMethod.id}`}>Tipe</Label>
+                  <Label htmlFor={`pm-edit-type-${paymentMethod.id}`}>{t('paymentMethodEdit.typeLabel')}</Label>
                   <Input
                     id={`pm-edit-type-${paymentMethod.id}`}
-                    {...register('type', { required: 'Tipe wajib diisi' })}
-                    placeholder="ewallet / va / qris"
+                    {...register('type', { required: t('paymentMethodEdit.typeRequired') })}
+                    placeholder={t('paymentMethodEdit.typePlaceholder')}
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-provider-${paymentMethod.id}`}>Penyedia</Label>
+                  <Label htmlFor={`pm-edit-provider-${paymentMethod.id}`}>{t('paymentMethodEdit.providerLabel')}</Label>
                   <Input
                     id={`pm-edit-provider-${paymentMethod.id}`}
-                    {...register('provider', { required: 'Penyedia wajib diisi' })}
-                    placeholder="midtrans / xendit"
+                    {...register('provider', { required: t('paymentMethodEdit.providerRequired') })}
+                    placeholder={t('paymentMethodEdit.providerPlaceholder')}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Ikon</Label>
+                  <Label>{t('paymentMethodEdit.iconLabel')}</Label>
 
                   <div
                     role="button"
@@ -171,13 +173,13 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <UploadCloud className="h-6 w-6" aria-hidden />
-                        <span className="text-sm">Klik atau letakkan gambar di sini</span>
+                        <span className="text-sm">{t('paymentMethodEdit.iconDropHint')}</span>
                       </div>
                     )}
 
                     {isUploading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white">
-                        Mengunggah {uploadProgress}%
+                        {t('paymentMethodEdit.uploading', { percent: uploadProgress })}
                       </div>
                     )}
                   </div>
@@ -208,7 +210,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
 
               <div className="flex w-full flex-col gap-3">
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-fee-pct-${paymentMethod.id}`}>Biaya persentase (%)</Label>
+                  <Label htmlFor={`pm-edit-fee-pct-${paymentMethod.id}`}>{t('paymentMethodEdit.feePercentLabel')}</Label>
                   <Input
                     id={`pm-edit-fee-pct-${paymentMethod.id}`}
                     type="number"
@@ -221,7 +223,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-fee-fixed-${paymentMethod.id}`}>Biaya tetap (Rp)</Label>
+                  <Label htmlFor={`pm-edit-fee-fixed-${paymentMethod.id}`}>{t('paymentMethodEdit.feeFixedLabel')}</Label>
                   <Input
                     id={`pm-edit-fee-fixed-${paymentMethod.id}`}
                     type="number"
@@ -233,7 +235,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-min-${paymentMethod.id}`}>Jumlah minimum (Rp)</Label>
+                  <Label htmlFor={`pm-edit-min-${paymentMethod.id}`}>{t('paymentMethodEdit.minAmountLabel')}</Label>
                   <Input
                     id={`pm-edit-min-${paymentMethod.id}`}
                     type="number"
@@ -245,19 +247,19 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-max-${paymentMethod.id}`}>Jumlah maksimum (Rp)</Label>
+                  <Label htmlFor={`pm-edit-max-${paymentMethod.id}`}>{t('paymentMethodEdit.maxAmountLabel')}</Label>
                   <Input
                     id={`pm-edit-max-${paymentMethod.id}`}
                     type="number"
                     {...register('max_amount', {
                       valueAsNumber: true,
-                      validate: (v, f) => v >= f.min_amount || 'Maks harus lebih besar atau sama dengan min',
+                      validate: (v, f) => v >= f.min_amount || t('paymentMethodEdit.maxMinValidation'),
                     })}
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <Label htmlFor={`pm-edit-sort-${paymentMethod.id}`}>Urutan tampil</Label>
+                  <Label htmlFor={`pm-edit-sort-${paymentMethod.id}`}>{t('paymentMethodEdit.sortOrderLabel')}</Label>
                   <Input
                     id={`pm-edit-sort-${paymentMethod.id}`}
                     type="number"
@@ -268,12 +270,12 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label>{t('paymentMethodEdit.statusLabel')}</Label>
                   <input type="hidden" {...register('is_active')} />
 
                   <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
                     <span className="text-sm font-medium">
-                      {watch('is_active') ? 'Aktif' : 'Nonaktif'}
+                      {watch('is_active') ? t('paymentMethodEdit.statusActive') : t('paymentMethodEdit.statusInactive')}
                     </span>
 
                     <Switch
@@ -285,8 +287,8 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
 
                   <p className="text-xs text-muted-foreground">
                     {watch('is_active')
-                      ? 'Metode ditampilkan dan dapat dipilih pelanggan.'
-                      : 'Metode disembunyikan dari pelanggan.'}
+                      ? t('paymentMethodEdit.statusActiveHint')
+                      : t('paymentMethodEdit.statusInactiveHint')}
                   </p>
                 </div>
               </div>
@@ -294,7 +296,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
 
             <DialogFooter className="gap-2 sm:gap-0">
               <Button type="button" variant="outline" className="rounded-lg" onClick={() => setOpen(false)}>
-                Batal
+                {t('paymentMethodEdit.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -304,10 +306,10 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                 {updatePaymentMethodMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('paymentMethodEdit.saving')}
                   </span>
                 ) : (
-                  'Simpan perubahan'
+                  t('paymentMethodEdit.save')
                 )}
               </Button>
             </DialogFooter>

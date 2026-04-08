@@ -5,12 +5,15 @@ import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import { useGetCategoryProduct } from '@/hooks/useCategoryProduct'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
-import { categoryProductColumn } from '@/tables/table-category-product'
+import { getCategoryProductColumns } from '@/tables/table-category-product'
+import i18n from '@/i18n'
 import { AlertCircle, CheckCircle2, Package, Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export default function CategoryProduct() {
+  const { t } = useTranslation('common')
   const limit = 10
   const [page, setPage] = useState(1)
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetCategoryProduct(
@@ -20,19 +23,20 @@ export default function CategoryProduct() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success('Berhasil memuat kategori produk')
+      toast.success(t('categoryProductPage.toastSuccess'))
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat kategori produk')
+      toast.error(t('categoryProductPage.toastError'))
     }
-  }, [isSuccess, isError, isFetchedAfterMount])
+  }, [isSuccess, isError, isFetchedAfterMount, t])
 
   const rows = data?.data ?? []
+  const categoryProductColumn = useMemo(() => getCategoryProductColumns(t), [t])
 
   const renderSubRow = (row: CategoryProduct) => (
     <div className="px-4 py-3 sm:pl-8">
       <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Produk
+        {t('categoryProductPage.subRowTitle')}
       </p>
       {row.product?.length ? (
         <ul className="list-disc space-y-1 pl-4 text-sm text-foreground">
@@ -41,7 +45,7 @@ export default function CategoryProduct() {
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-muted-foreground">Belum ada produk untuk kategori ini.</p>
+        <p className="text-sm text-muted-foreground">{t('categoryProductPage.subRowEmpty')}</p>
       )}
     </div>
   )
@@ -55,31 +59,32 @@ export default function CategoryProduct() {
               <Package className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Kategori produk</h1>
-              <p className="text-sm text-muted-foreground">
-                Kelola kategori yang mengelompokkan produk per game. Tambah lewat tombol di bawah;
-                perluas baris untuk melihat daftar produk. Ubah atau hapus lewat kolom Aksi.
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('categoryProductPage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('categoryProductPage.subtitle')}</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 sm:text-right">
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('categoryProductPage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('categoryProductPage.loadFailedShort')}
               </p>
             )}
             {isSuccess && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} kategori
+                  {t('categoryProductPage.totalCategories', {
+                    count: (data?.meta?.total_data ?? 0).toLocaleString(
+                      i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+                    ),
+                  })}
                 </span>
               </p>
             )}
@@ -89,9 +94,9 @@ export default function CategoryProduct() {
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
           <div className="flex flex-col gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900">Daftar kategori produk</h2>
+              <h2 className="text-sm font-semibold text-gray-900">{t('categoryProductPage.listTitle')}</h2>
               <p className="text-xs text-muted-foreground">
-                {limit} item per halaman. Gunakan ikon expand pada baris untuk melihat produk.
+                {t('categoryProductPage.listHint', { limit })}
               </p>
             </div>
             <CreateCategoryProductModal />
@@ -107,14 +112,14 @@ export default function CategoryProduct() {
               >
                 <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Memuat kategori produk…</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                  <p className="text-sm font-medium text-foreground">{t('categoryProductPage.tableLoadingTitle')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('categoryProductPage.tableLoadingHint')}</p>
                 </div>
               </div>
             )}
 
             {isError && (
-              <ErrorComponent message="Gagal memuat kategori produk. Periksa koneksi atau coba muat ulang halaman." />
+              <ErrorComponent message={t('categoryProductPage.loadErrorDetail')} />
             )}
 
             {isSuccess && (
@@ -124,7 +129,7 @@ export default function CategoryProduct() {
                     renderSubRow={renderSubRow}
                     columns={categoryProductColumn}
                     data={rows}
-                    emptyMessage="Belum ada kategori produk. Tambahkan lewat tombol di atas."
+                    emptyMessage={t('categoryProductPage.emptyPage')}
                   />
                 </div>
                 <div className="mt-4">

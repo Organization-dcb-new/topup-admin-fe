@@ -3,11 +3,12 @@ import { DeleteCategoryProductButton } from '@/components/CategoryProduct/Delete
 import { UpdateCategoryProduct } from '@/components/CategoryProduct/UpdateCategoryProduct'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { TFunction } from 'i18next'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
-export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
+export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProduct>[] => [
   {
     id: 'expand',
     header: '',
@@ -20,8 +21,8 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
           aria-expanded={row.getIsExpanded()}
           aria-label={
             row.getIsExpanded()
-              ? 'Sembunyikan daftar produk'
-              : 'Tampilkan daftar produk di baris ini'
+              ? t('categoryProductTable.collapseProductsAria')
+              : t('categoryProductTable.expandProductsAria')
           }
         >
           {row.getIsExpanded() ? (
@@ -38,13 +39,17 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
   {
     id: 'icon',
     accessorKey: 'icon_url',
-    header: 'Ikon',
+    header: t('categoryProductTable.colIcon'),
     cell: ({ row }) => {
       const src = row.original.icon_url?.trim() || FALLBACK_ICON
       return (
         <img
           src={src}
-          alt={row.original.name ? `Ikon ${row.original.name}` : 'Ikon kategori'}
+          alt={
+            row.original.name
+              ? t('categoryProductTable.iconAltName', { name: row.original.name })
+              : t('categoryProductTable.iconAltFallback')
+          }
           className="h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5"
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
@@ -55,14 +60,14 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
   },
   {
     accessorKey: 'name',
-    header: 'Nama kategori',
+    header: t('categoryProductTable.colCategoryName'),
     cell: ({ row }) => (
       <div className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
     ),
   },
   {
     accessorKey: 'game_name',
-    header: 'Game',
+    header: t('categoryProductTable.colGame'),
     cell: ({ row }) => (
       <span className="max-w-[10rem] truncate text-sm text-foreground sm:max-w-[12rem]">
         {row.original.game_name}
@@ -72,7 +77,7 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
   {
     id: 'product_count',
     accessorKey: 'product',
-    header: 'Jumlah produk',
+    header: t('categoryProductTable.colProductCount'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm font-medium text-foreground">
         {row.original.product?.length ?? 0}
@@ -81,13 +86,13 @@ export const categoryProductColumn: ColumnDef<CategoryProduct>[] = [
   },
   {
     id: 'actions',
-    header: 'Aksi',
+    header: t('categoryProductTable.colActions'),
     cell: ({ row }) => (
       <div className="flex min-w-0 items-center">
         <div
           className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
           role="group"
-          aria-label={`Aksi untuk kategori ${row.original.name}`}
+          aria-label={t('categoryProductTable.rowActionsAria', { name: row.original.name })}
         >
           <AddProductToCategoryProductButton
             id={row.original.id}

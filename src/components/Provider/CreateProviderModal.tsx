@@ -15,8 +15,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { useCreateProvider } from '@/hooks/useProvider'
 import type { ProviderPayload } from '@/types/provider'
 import { Eye, EyeOff, Loader2, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function CreateProviderModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const mutation = useCreateProvider({ setOpen })
   const [showApiKey, setShowApiKey] = useState(false)
@@ -57,16 +59,15 @@ export function CreateProviderModal() {
         onClick={() => setOpen(true)}
       >
         <Plus className="h-4 w-4" aria-hidden />
-        Tambah penyedia
+        {t('providerCreate.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Tambah penyedia</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">{t('providerCreate.title')}</DialogTitle>
             <DialogDescription>
-              Isi data integrasi: nama, kode unik, URL API, kunci API, prioritas, dan konfigurasi JSON (mis.
-              timeout).
+              {t('providerCreate.description')}
             </DialogDescription>
           </DialogHeader>
 
@@ -79,49 +80,49 @@ export function CreateProviderModal() {
 
             <div className="space-y-2">
               <Label htmlFor={nameId} className="text-sm font-medium">
-                Nama
+                {t('providerCreate.nameLabel')}
               </Label>
               <Input
                 id={nameId}
                 autoComplete="off"
-                placeholder="Contoh: Provider utama"
+                placeholder={t('providerCreate.namePlaceholder')}
                 className="rounded-lg"
                 aria-invalid={!!errors.name}
-                {...register('name', { required: 'Nama wajib diisi' })}
+                {...register('name', { required: t('providerCreate.nameRequired') })}
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor={codeId} className="text-sm font-medium">
-                Kode
+                {t('providerCreate.codeLabel')}
               </Label>
               <Input
                 id={codeId}
                 autoComplete="off"
-                placeholder="contoh_provider"
+                placeholder={t('providerCreate.codePlaceholder')}
                 className="rounded-lg font-mono text-sm"
                 aria-invalid={!!errors.code}
-                {...register('code', { required: 'Kode wajib diisi' })}
+                {...register('code', { required: t('providerCreate.codeRequired') })}
               />
               {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor={apiUrlId} className="text-sm font-medium">
-                URL API
+                {t('providerCreate.apiUrlLabel')}
               </Label>
               <Input
                 id={apiUrlId}
                 autoComplete="off"
-                placeholder="https://api.contoh.com"
+                placeholder={t('providerCreate.apiUrlPlaceholder')}
                 className="rounded-lg"
                 aria-invalid={!!errors.api_url}
                 {...register('api_url', {
-                  required: 'URL API wajib diisi',
+                  required: t('providerCreate.apiUrlRequired'),
                   pattern: {
                     value: /^https?:\/\//,
-                    message: 'Gunakan URL yang diawali http:// atau https://',
+                    message: t('providerCreate.apiUrlInvalid'),
                   },
                 })}
               />
@@ -132,10 +133,10 @@ export function CreateProviderModal() {
 
             <div className="space-y-2">
               <Label htmlFor={apiKeyId} className="text-sm font-medium">
-                Kunci API
+                {t('providerCreate.apiKeyLabel')}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Disimpan sesuai kebijakan keamanan backend (enkripsi di server).
+                {t('providerCreate.apiKeyHint')}
               </p>
               <div className="relative">
                 <Input
@@ -145,14 +146,14 @@ export function CreateProviderModal() {
                   className="rounded-lg pr-10"
                   aria-invalid={!!errors.api_key_encrypted}
                   {...register('api_key_encrypted', {
-                    required: 'Kunci API wajib diisi',
+                    required: t('providerCreate.apiKeyRequired'),
                   })}
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey((v) => !v)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  aria-label={showApiKey ? 'Sembunyikan kunci API' : 'Tampilkan kunci API'}
+                  aria-label={showApiKey ? t('providerCreate.hideApiKey') : t('providerCreate.showApiKey')}
                 >
                   {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -164,7 +165,7 @@ export function CreateProviderModal() {
 
             <div className="space-y-2">
               <Label htmlFor={priorityId} className="text-sm font-medium">
-                Prioritas
+                {t('providerCreate.priorityLabel')}
               </Label>
               <Input
                 id={priorityId}
@@ -173,28 +174,28 @@ export function CreateProviderModal() {
                 className="rounded-lg"
                 {...register('priority', { valueAsNumber: true })}
               />
-              <p className="text-xs text-muted-foreground">Angka lebih kecil biasanya diproses lebih dulu.</p>
+              <p className="text-xs text-muted-foreground">{t('providerCreate.priorityHint')}</p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor={configId} className="text-sm font-medium">
-                Konfigurasi (JSON)
+                {t('providerCreate.configLabel')}
               </Label>
               <Textarea
                 id={configId}
                 rows={4}
                 className="max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm"
-                placeholder='{"timeout":5000}'
+                placeholder={t('providerCreate.configPlaceholder')}
                 aria-invalid={!!errors.config}
                 {...register('config', {
-                  required: 'Konfigurasi wajib diisi',
+                  required: t('providerCreate.configRequired'),
                   validate: (v) => {
                     const s = typeof v === 'string' ? v : String(v ?? '')
                     try {
                       JSON.parse(s)
                       return true
                     } catch {
-                      return 'Format JSON tidak valid'
+                      return t('providerCreate.configInvalid')
                     }
                   },
                 })}
@@ -209,7 +210,7 @@ export function CreateProviderModal() {
                 className="rounded-xl"
                 onClick={() => setOpen(false)}
               >
-                Batal
+                {t('providerCreate.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -219,10 +220,10 @@ export function CreateProviderModal() {
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('providerCreate.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('providerCreate.save')
                 )}
               </Button>
             </DialogFooter>

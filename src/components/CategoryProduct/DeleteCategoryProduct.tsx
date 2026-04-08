@@ -12,8 +12,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useDeleteCategoryProduct } from '@/hooks/useCategoryProduct'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteCategoryProductButton({ id }: { id: string }) {
+  const { t } = useTranslation('common')
   const mutation = useDeleteCategoryProduct(id)
 
   return (
@@ -25,7 +27,7 @@ export function DeleteCategoryProductButton({ id }: { id: string }) {
           size="icon"
           className="cursor-pointer text-destructive hover:bg-destructive/10"
           disabled={mutation.isPending}
-          aria-label="Hapus kategori produk"
+          aria-label={t('categoryProductDelete.triggerAria')}
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
@@ -33,15 +35,14 @@ export function DeleteCategoryProductButton({ id }: { id: string }) {
 
       <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus kategori produk?</AlertDialogTitle>
+          <AlertDialogTitle>{t('categoryProductDelete.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Tindakan ini tidak dapat dibatalkan. Kategori produk akan dihapus dari daftar. Pastikan tidak ada
-            ketergantungan yang masih diperlukan sebelum melanjutkan.
+            {t('categoryProductDelete.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer rounded-xl">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">{t('categoryProductDelete.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-destructive hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
@@ -50,10 +51,10 @@ export function DeleteCategoryProductButton({ id }: { id: string }) {
             {mutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Menghapus…
+                {t('categoryProductDelete.deleting')}
               </>
             ) : (
-              'Hapus'
+              t('categoryProductDelete.confirmDelete')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>
