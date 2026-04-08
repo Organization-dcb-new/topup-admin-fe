@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
 import type { Product } from '@/types/product'
+import { useTranslation } from 'react-i18next'
 
 interface FormValues {
   game_id: string
@@ -27,7 +28,10 @@ interface Props {
   product: Product[]
 }
 
+const BULK_MAX_PERCENT = 40
+
 export default function UpdateBulkProductPriceModal({ gameId, product }: Props) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
 
@@ -48,7 +52,7 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
   })
 
   const percent = Number(watch('additional_percent')) || 0
-  const isOverLimit = percent > 40
+  const isOverLimit = percent > BULK_MAX_PERCENT
 
   const mutation = useMutation({
     mutationFn: (data: FormValues) =>
@@ -57,12 +61,12 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
         type: 'percent',
       }),
     onSuccess: () => {
-      toast.success('Harga produk berhasil diperbarui')
+      toast.success(t('gameToasts.bulkPriceSuccess'))
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['games'] })
       setOpen(false)
     },
-    onError: () => toast.error('Gagal memperbarui harga'),
+    onError: () => toast.error(t('gameToasts.bulkPriceError')),
   })
 
   const onSubmit = (data: FormValues) => {
@@ -90,9 +94,7 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
           className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
           disabled={!hasProducts || mutation.isPending}
           aria-label={
-            hasProducts
-              ? 'Perbarui harga produk (persentase massal)'
-              : 'Tidak ada produk untuk diperbarui'
+            hasProducts ? t('bulkPriceModal.triggerAria') : t('bulkPriceModal.triggerAriaNoProducts')
           }
         >
           <DollarSign className="h-4 w-4" aria-hidden />
@@ -102,11 +104,10 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
       <DialogContent className="rounded-xl sm:max-w-md">
         <DialogHeader className="space-y-1 text-left">
           <DialogTitle className="text-lg font-semibold tracking-tight">
-            Harga massal (persentase)
+            {t('bulkPriceModal.title')}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Tambahan persentase diterapkan ke produk game ini. Maksimal{' '}
-            <span className="font-medium text-foreground">40%</span>.
+            {t('bulkPriceModal.description', { max: String(BULK_MAX_PERCENT) })}
           </p>
         </DialogHeader>
 
@@ -115,24 +116,24 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
 
           {!hasProducts ? (
             <p className="rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-4 text-center text-sm text-muted-foreground">
-              Game ini belum memiliki produk. Tambahkan produk terlebih dahulu.
+              {t('bulkPriceModal.emptyProducts')}
             </p>
           ) : (
             <div className="space-y-2">
               <Label htmlFor={`bulk-price-pct-${gameId}`} className="text-sm font-medium">
-                Tambahan persentase (%)
+                {t('bulkPriceModal.percentLabel')}
               </Label>
               <Input
                 id={`bulk-price-pct-${gameId}`}
                 type="number"
                 step="0.01"
                 min={0}
-                max={40}
+                max={BULK_MAX_PERCENT}
                 className="rounded-lg"
                 {...register('additional_percent', {
-                  required: 'Persentase wajib diisi',
-                  min: { value: 0, message: 'Minimal 0%' },
-                  max: { value: 40, message: 'Maksimal 40%' },
+                  required: t('bulkPriceModal.percentRequired'),
+                  min: { value: 0, message: t('bulkPriceModal.percentMin') },
+                  max: { value: BULK_MAX_PERCENT, message: t('bulkPriceModal.percentMax') },
                   valueAsNumber: true,
                 })}
               />
@@ -140,10 +141,10 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
                 <p className="text-xs text-destructive">{errors.additional_percent.message}</p>
               )}
               {isOverLimit && !errors.additional_percent && (
-                <p className="text-xs text-amber-700">Nilai di atas 40% tidak diizinkan.</p>
+                <p className="text-xs text-amber-700">{t('bulkPriceModal.overLimit')}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                {product.length} produk untuk game ini.
+                {t('bulkPriceModal.productCount', { count: product.length })}
               </p>
             </div>
           )}
@@ -156,7 +157,7 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
               onClick={() => setOpen(false)}
               disabled={mutation.isPending}
             >
-              Batal
+              {t('bulkPriceModal.cancel')}
             </Button>
             <Button
               type="submit"
@@ -166,10 +167,10 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
               {mutation.isPending ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                  Memperbarui…
+                  {t('bulkPriceModal.updating')}
                 </span>
               ) : (
-                'Terapkan ke semua produk'
+                t('bulkPriceModal.applyAll')
               )}
             </Button>
           </DialogFooter>

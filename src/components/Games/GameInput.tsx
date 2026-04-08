@@ -5,8 +5,10 @@ import { Textarea } from '../ui/textarea'
 import type { GameInputFormProps, GameInputProps } from '@/types/game'
 import ImageComponent from './PreviewImage'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function GameInput({ setValue, register, categories, providers }: GameInputProps) {
+  const { t } = useTranslation('common')
   // Thumbnail
   const [previewThumbnail, setPreviewThumbnail] = useState<string | null>(null)
   const [uploadProgressThumbnail, setUploadProgressThumbnail] = useState(0)
@@ -22,7 +24,7 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select onValueChange={(v) => setValue('category_id', v)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select Category" />
+            <SelectValue placeholder={t('gameCreateForm.selectCategory')} />
           </SelectTrigger>
           <SelectContent>
             {categories?.data?.map((c) => (
@@ -35,7 +37,7 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
 
         <Select onValueChange={(v) => setValue('provider_id', v)}>
           <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select Provider" />
+            <SelectValue placeholder={t('gameCreateForm.selectProvider')} />
           </SelectTrigger>
           <SelectContent>
             {providers?.data?.map((p) => (
@@ -49,25 +51,25 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
 
       {/* Basic Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input placeholder="Name" {...register('name')} />
-        <Input placeholder="Code" {...register('code')} />
+        <Input placeholder={t('gameCreateForm.name')} {...register('name')} />
+        <Input placeholder={t('gameCreateForm.code')} {...register('code')} />
       </div>
 
-      <Input placeholder="Slug" {...register('slug')} />
+      <Input placeholder={t('gameCreateForm.slug')} {...register('slug')} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Input placeholder="Developer" {...register('developer')} />
-        <Input placeholder="Publisher" {...register('publisher')} />
+        <Input placeholder={t('gameCreateForm.developer')} {...register('developer')} />
+        <Input placeholder={t('gameCreateForm.publisher')} {...register('publisher')} />
       </div>
 
-      <Textarea className="max-h-32" placeholder="Description" {...register('description')} />
-      <Textarea className="max-h-32" placeholder="Instruction" {...register('instruction')} />
+      <Textarea className="max-h-32" placeholder={t('gameCreateForm.description')} {...register('description')} />
+      <Textarea className="max-h-32" placeholder={t('gameCreateForm.instruction')} {...register('instruction')} />
 
       {/* Images */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col">
           <ImageComponent
-            title="Thumbnail"
+            title={t('gameCreateForm.thumbnail')}
             value="thumbnail_url"
             isUploading={isUploadingThumbnail}
             preview={previewThumbnail!}
@@ -81,7 +83,7 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
 
         <div className="flex flex-col">
           <ImageComponent
-            title="Banner"
+            title={t('gameCreateForm.banner')}
             value="banner_url"
             isUploading={isUploadingBanner}
             preview={previewBanner!}
@@ -98,12 +100,14 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
 }
 
 export function GameInputForm({ addInput, updateInput, removeInput, inputs }: GameInputFormProps) {
+  const { t } = useTranslation('common')
+
   return (
     <div className="space-y-3 w-full ">
       <div className="flex justify-between items-center">
-        <h3 className="font-semibold">Game Inputs</h3>
+        <h3 className="font-semibold">{t('gameCreateForm.inputsTitle')}</h3>
         <Button type="button" size="sm" onClick={addInput} className="cursor-pointer">
-          + Add Input
+          {t('gameCreateForm.addInput')}
         </Button>
       </div>
       <div className=" flex flex-col gap-4 max-h-120 overflow-y-auto">
@@ -112,13 +116,13 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
             <div className="flex gap-2  ">
               <Input
                 className="w-full"
-                placeholder="Key"
+                placeholder={t('gameCreateForm.key')}
                 value={item.key}
                 onChange={(e) => updateInput(idx, 'key', e.target.value)}
               />
               <Input
                 className="w-full"
-                placeholder="Label"
+                placeholder={t('gameCreateForm.label')}
                 value={item.label}
                 onChange={(e) => updateInput(idx, 'label', e.target.value)}
               />
@@ -131,13 +135,13 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="text">Text</SelectItem>
-                  <SelectItem value="number">Number</SelectItem>
+                  <SelectItem value="text">{t('gameCreateForm.typeText')}</SelectItem>
+                  <SelectItem value="number">{t('gameCreateForm.typeNumber')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <Input
-              placeholder="Placeholder"
+              placeholder={t('gameCreateForm.placeholder')}
               value={item.placeholder}
               onChange={(e) => updateInput(idx, 'placeholder', e.target.value)}
             />
@@ -149,7 +153,7 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
                   checked={item.required}
                   onChange={(e) => updateInput(idx, 'required', e.target.checked)}
                 />
-                Required
+                {t('gameCreateForm.required')}
               </label>
 
               <Button
@@ -159,7 +163,7 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
                 variant="destructive"
                 onClick={() => removeInput(idx)}
               >
-                Remove
+                {t('gameCreateForm.remove')}
               </Button>
             </div>
           </div>

@@ -12,8 +12,10 @@ import { Button } from '@/components/ui/button'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useDeleteGame } from '@/hooks/useGame'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteGameModal({ id }: { id: string }) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const mutation = useDeleteGame(id)
 
@@ -32,7 +34,7 @@ export function DeleteGameModal({ id }: { id: string }) {
           type="button"
           className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           disabled={mutation.isPending}
-          aria-label="Hapus game"
+          aria-label={t('deleteGameModal.triggerAria')}
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
@@ -40,9 +42,9 @@ export function DeleteGameModal({ id }: { id: string }) {
 
       <AlertDialogContent className="rounded-xl">
         <AlertDialogHeader className="space-y-1 text-left">
-          <AlertDialogTitle className="text-lg font-semibold">Hapus game?</AlertDialogTitle>
+          <AlertDialogTitle className="text-lg font-semibold">{t('deleteGameModal.title')}</AlertDialogTitle>
           <AlertDialogDescription className="text-sm text-muted-foreground">
-            Game beserta data terkait dapat terpengaruh. Tindakan ini tidak dapat dibatalkan.
+            {t('deleteGameModal.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -52,7 +54,7 @@ export function DeleteGameModal({ id }: { id: string }) {
             className="h-10 rounded-lg px-5"
             disabled={mutation.isPending}
           >
-            Batal
+            {t('deleteGameModal.cancel')}
           </AlertDialogCancel>
           <Button
             type="button"
@@ -64,10 +66,10 @@ export function DeleteGameModal({ id }: { id: string }) {
             {mutation.isPending ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Menghapus…
+                {t('deleteGameModal.deleting')}
               </span>
             ) : (
-              'Hapus'
+              t('deleteGameModal.confirmDelete')
             )}
           </Button>
         </AlertDialogFooter>

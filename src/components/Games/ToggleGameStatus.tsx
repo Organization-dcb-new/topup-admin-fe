@@ -1,12 +1,14 @@
 import { useToggleGameStatus } from '@/hooks/useGame'
 import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
+import { useTranslation } from 'react-i18next'
 
 interface ToggleGameStatusProps {
   game: Game
 }
 
 export default function ToggleGameStatus({ game }: ToggleGameStatusProps) {
+  const { t } = useTranslation('common')
   const toggleStatusMutation = useToggleGameStatus(game.id)
 
   return (
@@ -17,12 +19,12 @@ export default function ToggleGameStatus({ game }: ToggleGameStatusProps) {
         disabled={toggleStatusMutation.isPending}
         aria-label={
           game.is_active
-            ? `Nonaktifkan game ${game.name}`
-            : `Aktifkan game ${game.name}`
+            ? t('gameToggleLabels.deactivateAria', { name: game.name })
+            : t('gameToggleLabels.activateAria', { name: game.name })
         }
       />
       <span className="text-sm font-medium text-foreground">
-        {game.is_active ? 'Aktif' : 'Nonaktif'}
+        {game.is_active ? t('gameToggleLabels.active') : t('gameToggleLabels.inactive')}
       </span>
     </div>
   )
