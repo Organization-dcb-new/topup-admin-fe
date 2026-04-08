@@ -9,11 +9,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
 import type { SidebarProps } from '@/types/sidebar'
 import { logout, useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
 
 function useIsMdUp() {
@@ -36,9 +38,11 @@ export function Sidebar({
 }: SidebarProps) {
   const { pathname } = useLocation()
   const { role } = useAuthUser()
+  const { t, i18n } = useTranslation('common')
   const [openLogoutModal, setOpenLogoutModal] = useState(false)
   const isMdUp = useIsMdUp()
   const railCollapsed = collapsed && isMdUp
+  const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
 
   const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Pesanan', 'Ikhtisar']
   const DEV_ONLY_LABELS = ['Pembatas laju', 'Pengguna']
@@ -163,9 +167,42 @@ export function Sidebar({
         <div
           className={cn(
             'shrink-0 border-t border-gray-100',
-            railCollapsed ? 'p-1.5 md:px-1 md:py-2' : 'p-2',
+            railCollapsed ? 'space-y-1.5 p-1.5 md:px-1 md:py-2' : 'space-y-2 p-2',
           )}
         >
+          <div
+            className={cn(
+              'flex rounded-lg border border-input bg-background shadow-sm',
+              railCollapsed
+                ? 'mx-auto w-full max-w-[4.5rem] flex-col items-center gap-1 px-2 py-2'
+                : 'h-10 w-full items-center justify-center gap-3 px-2',
+            )}
+            title={railCollapsed ? t('sidebar.languageToggleAria') : undefined}
+          >
+            <span
+              className={cn(
+                'select-none tabular-nums text-xs',
+                isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
+              )}
+            >
+              ID
+            </span>
+            <Switch
+              checked={!isIdLocale}
+              onCheckedChange={(checked) => {
+                void i18n.changeLanguage(checked ? 'en' : 'id')
+              }}
+              aria-label={t('sidebar.languageToggleAria')}
+            />
+            <span
+              className={cn(
+                'select-none tabular-nums text-xs',
+                !isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
+              )}
+            >
+              EN
+            </span>
+          </div>
           <Button
             type="button"
             variant="outline"
