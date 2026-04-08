@@ -10,7 +10,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Trash2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { useDeleteCategoryProduct } from '@/hooks/useCategoryProduct'
 
 export function DeleteCategoryProductButton({ id }: { id: string }) {
@@ -20,31 +20,41 @@ export function DeleteCategoryProductButton({ id }: { id: string }) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           size="icon"
-          className="text-destructive hover:bg-destructive/10 cursor-pointer"
+          className="cursor-pointer text-destructive hover:bg-destructive/10"
           disabled={mutation.isPending}
+          aria-label="Hapus kategori produk"
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Category Product</AlertDialogTitle>
+          <AlertDialogTitle>Hapus kategori produk?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. Are you sure you want to delete this Category Product?
+            Tindakan ini tidak dapat dibatalkan. Kategori produk akan dihapus dari daftar. Pastikan tidak ada
+            ketergantungan yang masih diperlukan sebelum melanjutkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">Batal</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-destructive hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Deleting...' : 'Delete'}
+            {mutation.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                Menghapus…
+              </>
+            ) : (
+              'Hapus'
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

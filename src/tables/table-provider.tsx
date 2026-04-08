@@ -1,25 +1,40 @@
-import type { ColumnDef } from '@tanstack/react-table'
-import { Badge } from '@/components/ui/badge'
-import type { Provider } from '@/types/provider'
-
 import { DeleteProviderModal } from '@/components/Provider/DeleteProviderModal'
 import { EditProviderModal } from '@/components/Provider/EditProviderModal'
+import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
+import type { Provider } from '@/types/provider'
+import type { ColumnDef } from '@tanstack/react-table'
+
+function formatConfigPreview(config: Provider['config']) {
+  if (config == null || (typeof config === 'object' && Object.keys(config).length === 0)) {
+    return '—'
+  }
+  return JSON.stringify(config)
+}
 
 export const providerColumns = (): ColumnDef<Provider>[] => [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: 'Nama',
+    cell: ({ row }) => (
+      <div className="max-w-[10rem] font-medium text-gray-900 sm:max-w-[14rem]">{row.original.name}</div>
+    ),
   },
   {
     accessorKey: 'code',
-    header: 'Code',
-    cell: ({ row }) => <span className="font-mono text-sm">{row.original.code}</span>,
+    header: 'Kode',
+    cell: ({ row }) => (
+      <span className="font-mono text-xs text-foreground tabular-nums">{row.original.code}</span>
+    ),
   },
   {
     accessorKey: 'api_url',
-    header: 'API URL',
+    header: 'URL API',
     cell: ({ row }) => (
-      <span className="text-xs text-muted-foreground truncate max-w-55 block">
+      <span
+        className="block max-w-[12rem] truncate text-xs text-muted-foreground sm:max-w-[16rem]"
+        title={row.original.api_url}
+      >
         {row.original.api_url}
       </span>
     ),
@@ -27,41 +42,59 @@ export const providerColumns = (): ColumnDef<Provider>[] => [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant={row.original.status === 'ACTIVE' ? 'default' : 'secondary'}>
-        {row.original.status}
-      </Badge>
-    ),
+    cell: ({ row }) => {
+      const active = row.original.status === 'ACTIVE'
+      return (
+        <Badge
+          variant={active ? 'default' : 'secondary'}
+          className={cn(
+            'font-medium',
+            active && 'bg-emerald-600 hover:bg-emerald-600/90',
+          )}
+        >
+          {active ? 'Aktif' : 'Nonaktif'}
+        </Badge>
+      )
+    },
   },
   {
     accessorKey: 'balance',
-    header: 'Balance',
+    header: 'Saldo',
     cell: ({ row }) => (
-      <span className="font-medium">Rp {row.original.balance.toLocaleString('id-ID')}</span>
+      <span className="text-sm font-medium tabular-nums text-foreground">
+        Rp {row.original.balance.toLocaleString('id-ID')}
+      </span>
     ),
   },
   {
     accessorKey: 'priority',
-    header: 'Priority',
-    cell: ({ row }) => row.original.priority,
+    header: 'Prioritas',
+    cell: ({ row }) => (
+      <span className="tabular-nums text-sm font-medium text-foreground">{row.original.priority}</span>
+    ),
   },
   {
     accessorKey: 'config',
-    header: 'Config',
+    header: 'Konfigurasi',
     cell: ({ row }) => (
-      <code className="text-xs bg-muted px-2 py-1 rounded">
-        {JSON.stringify(row.original.config)}
+      <code className="inline-block max-w-[10rem] truncate rounded-md bg-muted/80 px-2 py-1 font-mono text-xs text-foreground sm:max-w-[12rem]">
+        {formatConfigPreview(row.original.config)}
       </code>
     ),
   },
   {
     id: 'actions',
-    header: '',
+    header: 'Aksi',
     cell: ({ row }) => (
-      <div className="flex flex-row">
-        <EditProviderModal provider={row.original} />
-
-        <DeleteProviderModal id={row.original.id} />
+      <div className="flex min-w-0 items-center">
+        <div
+          className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
+          role="group"
+          aria-label={`Aksi untuk penyedia ${row.original.name}`}
+        >
+          <EditProviderModal provider={row.original} />
+          <DeleteProviderModal id={row.original.id} />
+        </div>
       </div>
     ),
   },

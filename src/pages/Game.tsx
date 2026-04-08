@@ -1,6 +1,5 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
-import BulkUpdateGameStatus from '@/components/Games/BulkUpdateGameStatus'
 import { GameActiveFilter, type GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
 import { GamePickerSelect } from '@/components/Games/GamePickerSelect'
 import Pagination from '@/components/Layout/Pagination'
@@ -102,9 +101,7 @@ export default function GamePage() {
                 <GamePickerSelect value={gameId} onChange={setGameId} />
                 <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
               </div>
-              <div className="shrink-0 lg:pl-2">
-                <BulkUpdateGameStatus />
-              </div>
+              
             </div>
           </div>
 

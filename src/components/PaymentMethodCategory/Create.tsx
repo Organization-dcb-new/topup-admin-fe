@@ -1,52 +1,66 @@
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { UploadCloud } from "lucide-react";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { Loader2, Plus, UploadCloud } from 'lucide-react'
 
-import { handleFileAutoUpload } from "@/helpers/upload";
+import { handleFileAutoUpload } from '@/helpers/upload'
 
-import { useCreatePaymentCategory } from "@/hooks/usePaymentMethodCategory";
+import { useCreatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
 
 export type FormValuesPaymentCategory = {
-  name: string;
-  slug: string;
-  icon_url: string;
-};
+  name: string
+  slug: string
+  icon_url: string
+}
 
 export type PaymentCategoryPayload = {
-  name: string;
-  slug: string;
-  icon_url: string;
-};
+  name: string
+  slug: string
+  icon_url: string
+}
 
 export function CreatePaymentCategoryModal() {
-  const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const {
     register,
     handleSubmit,
     setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValuesPaymentCategory>();
+  } = useForm<FormValuesPaymentCategory>({
+    defaultValues: { name: '', slug: '', icon_url: '' },
+  })
 
-  const mutation = useCreatePaymentCategory(reset, setPreview, setOpen);
+  const applyOpen = (next: boolean) => {
+    setOpen(next)
+    if (!next) {
+      reset()
+      setPreview(null)
+      setUploadProgress(0)
+      setIsUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  const mutation = useCreatePaymentCategory(reset, setPreview, applyOpen)
+
   const onSubmit = (values: FormValuesPaymentCategory) => {
-    mutation.mutate(values);
-  };
+    mutation.mutate(values)
+  }
 
   const handleFile = (file: File) => {
     handleFileAutoUpload({
@@ -54,147 +68,138 @@ export function CreatePaymentCategoryModal() {
       setPreview,
       setIsUploading,
       setUploadProgress,
-      setValue: setValue as any,
-      fieldName: "icon_url",
-    });
-  };
-
-  useEffect(() => {
-    if (!open) {
-      reset();
-      setPreview(null);
-      setUploadProgress(0);
-      setIsUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  }, [open, reset]);
+      setValue: (_field, value, options) => {
+        setValue('icon_url', value, options)
+      },
+      fieldName: 'icon_url',
+    })
+  }
 
   return (
     <>
-      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
-        + Create Payment Category
+      <Button
+        type="button"
+        className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto"
+        onClick={() => applyOpen(true)}
+      >
+        <Plus className="h-4 w-4 shrink-0" aria-hidden />
+        Tambah kategori
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create Payment Category</DialogTitle>
+      <Dialog open={open} onOpenChange={applyOpen}>
+        <DialogContent className="rounded-xl sm:max-w-md">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">Tambah kategori</DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              Nama, slug, dan ikon digunakan untuk menampilkan grup metode pembayaran.
+            </p>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
+            <input type="hidden" {...register('icon_url')} />
             <div className="space-y-2">
-              <Label>Name</Label>
+              <Label htmlFor="pmc-name">Nama</Label>
               <div className="space-y-1">
                 <Input
-                  {...register("name", {
-                    required: "Name is required",
-                  })}
-                  placeholder="Name"
+                  id="pmc-name"
+                  {...register('name', { required: 'Nama wajib diisi' })}
+                  placeholder="Contoh: E-wallet"
                   aria-invalid={!!errors.name}
                 />
 
-                {errors.name && (
-                  <p className="text-xs text-destructive">
-                    {errors.name.message}
-                  </p>
-                )}
+                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
               </div>
             </div>
-            {/* Alias */}
+
             <div className="space-y-2">
-              <Label>Slug</Label>
+              <Label htmlFor="pmc-slug">Slug</Label>
               <div className="space-y-1">
                 <Input
-                  {...register("slug", {
-                    required: "Slug is required",
-                  })}
-                  placeholder="Slug"
+                  id="pmc-slug"
+                  {...register('slug', { required: 'Slug wajib diisi' })}
+                  placeholder="ewallet"
                   aria-invalid={!!errors.slug}
                 />
 
-                {errors.slug && (
-                  <p className="text-xs text-destructive">
-                    {errors.slug.message}
-                  </p>
-                )}
+                {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
               </div>
             </div>
 
-            {/* Drag & Drop Zone */}
             <div className="space-y-2">
-              <Label>Icon</Label>
+              <Label>Ikon</Label>
 
               <div
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    inputRef.current?.click()
+                  }
+                }}
                 onClick={() => inputRef.current?.click()}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleFile(file);
+                  e.preventDefault()
+                  const file = e.dataTransfer.files[0]
+                  if (file) handleFile(file)
                 }}
-                className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition
-                  ${isUploading ? "pointer-events-none opacity-60" : "hover:border-primary"}
-                `}
+                className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition ${
+                  isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'
+                } border-border/80`}
               >
                 {preview ? (
-                  <img
-                    src={preview}
-                    className="h-full w-full rounded-lg object-contain"
-                  />
+                  <img src={preview} alt="" className="h-full w-full rounded-lg object-contain" />
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" />
-                    <span className="text-sm">Click or Drop image</span>
+                    <UploadCloud className="h-6 w-6" aria-hidden />
+                    <span className="text-sm">Klik atau letakkan gambar di sini</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-                    <span className="text-sm">Uploading {uploadProgress}%</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+                    Mengunggah {uploadProgress}%
                   </div>
                 )}
               </div>
 
-              {/* Progress */}
               {isUploading && <Progress value={uploadProgress} />}
             </div>
 
-            {/* Hidden Input */}
             <input
               ref={inputRef}
               type="file"
               accept="image/*,.svg"
               className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFile(file);
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
               }}
             />
 
-            {/* Save */}
-            <DialogFooter>
-              <Button
-                className="cursor-pointer"
-                variant="outline"
-                type="button"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                Cancel
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button type="button" variant="outline" className="rounded-lg" onClick={() => applyOpen(false)}>
+                Batal
               </Button>
               <Button
-                className="cursor-pointer"
                 type="submit"
+                className="rounded-lg font-semibold"
                 disabled={isUploading || mutation.isPending}
               >
-                {mutation.isPending ? "Saving..." : "Create"}
+                {mutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    Menyimpan…
+                  </span>
+                ) : (
+                  'Simpan'
+                )}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

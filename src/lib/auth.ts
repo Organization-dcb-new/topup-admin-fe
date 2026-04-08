@@ -1,4 +1,6 @@
-const TOKEN_KEY = "access_token";
+import toast from 'react-hot-toast'
+
+const TOKEN_KEY = 'access_token'
 
 export const authStorage = {
   getToken(): string | null {
@@ -10,9 +12,20 @@ export const authStorage = {
   },
 
   clearToken() {
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY)
   },
-};
+}
+
+export async function logout(): Promise<void> {
+  try {
+    authStorage.clearToken()
+    toast.success('Berhasil logout')
+    window.location.href = '/login'
+  } catch (error) {
+    console.error(error)
+    toast.error('Gagal logout, coba lagi!')
+  }
+}
 
 export function isAuthenticated(): boolean {
   return !!authStorage.getToken();
@@ -35,7 +48,7 @@ export type JwtPayload = {
   iat: number;
 };
 
-export function decodeJwt<T = any>(token: string): T | null {
+export function decodeJwt<T = Record<string, unknown>>(token: string): T | null {
   try {
     const payload = token.split(".")[1];
     const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));

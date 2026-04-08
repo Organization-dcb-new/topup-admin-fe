@@ -1,18 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Pencil } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 
-import { useUpdateCategoryProduct, type CategoryProduct } from '@/hooks/useCategoryProduct'
+import { type CategoryProduct, useUpdateCategoryProduct } from '@/hooks/useCategoryProduct'
 
 type FormValues = {
   name: string
@@ -20,6 +21,7 @@ type FormValues = {
 
 export function UpdateCategoryProduct({ category }: { category: CategoryProduct }) {
   const [open, setOpen] = useState(false)
+  const nameId = useId()
 
   const { register, handleSubmit, reset } = useForm<FormValues>()
 
@@ -35,34 +37,55 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="cursor-pointer">
-        <Pencil className="h-4 w-4" />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="cursor-pointer"
+        aria-label={`Ubah kategori ${category.name}`}
+      >
+        <Pencil className="h-4 w-4" aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Update Category Product</DialogTitle>
+            <DialogTitle>Ubah kategori produk</DialogTitle>
+            <DialogDescription>
+              Perbarui nama kategori yang tampil di admin dan dapat dipakai pengguna saat memilih produk.
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-            <div className="space-y-1">
-              <Label>Name</Label>
-              <Input {...register('name', { required: true })} />
+            <div className="space-y-2">
+              <Label htmlFor={nameId}>Nama kategori</Label>
+              <Input id={nameId} autoComplete="off" {...register('name', { required: true })} />
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="gap-2 sm:gap-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                className="cursor-pointer"
+                className="cursor-pointer rounded-xl"
               >
-                Cancel
+                Batal
               </Button>
 
-              <Button type="submit" disabled={mutation.isPending} className="cursor-pointer">
-                {mutation.isPending ? 'Saving...' : 'Update'}
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+              >
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    Menyimpan…
+                  </>
+                ) : (
+                  'Simpan'
+                )}
               </Button>
             </DialogFooter>
           </form>
