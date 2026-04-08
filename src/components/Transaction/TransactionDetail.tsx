@@ -487,11 +487,13 @@ function CopyInlineButton({ text }: { text: string }) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
     } catch {
       /* clipboard denied or unavailable */
+      return
     }
+    // Outside clipboard try/catch: if setState/timers throw, do not treat as copy failure.
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2000)
   }
 
   return (
