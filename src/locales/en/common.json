@@ -255,5 +255,30 @@
     "colTotalPg": "Total in (PG)",
     "colModalProvider": "Cost (provider)",
     "colGrossProfit": "Gross profit"
+  },
+  "orderPage": {
+    "toastSuccess": "Order items loaded",
+    "toastError": "Failed to load order items",
+    "title": "Orders",
+    "subtitle": "Order item list with {{limit}} rows per page.",
+    "loadingShort": "Loading…",
+    "loadFailedShort": "Failed to load",
+    "totalItems": "Total {{count}} items",
+    "listTitle": "Order items",
+    "listHint": "Use pagination below to change page.",
+    "tableLoadingTitle": "Loading order items…",
+    "tableLoadingHint": "Please wait a moment.",
+    "loadErrorDetail": "Failed to load order items. Check your connection or try reloading the page.",
+    "emptyPage": "No order items on this page."
+  },
+  "orderTable": {
+    "colId": "ID",
+    "colProductId": "Product ID",
+    "colProductName": "Product name",
+    "colProductSku": "Product SKU",
+    "colQuantity": "Quantity",
+    "colProviderStatus": "Provider status",
+    "colTotal": "Total",
+    "colUnitPrice": "Unit price"
   }
 }

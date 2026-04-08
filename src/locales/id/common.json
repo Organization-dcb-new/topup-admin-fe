@@ -255,5 +255,30 @@
     "colTotalPg": "Total masuk (PG)",
     "colModalProvider": "Modal (provider)",
     "colGrossProfit": "Laba kotor"
+  },
+  "orderPage": {
+    "toastSuccess": "Berhasil memuat item pesanan",
+    "toastError": "Gagal memuat item pesanan",
+    "title": "Pesanan",
+    "subtitle": "Daftar item pesanan dengan paginasi {{limit}} baris per halaman.",
+    "loadingShort": "Memuat…",
+    "loadFailedShort": "Gagal memuat",
+    "totalItems": "Total {{count}} item",
+    "listTitle": "Daftar item pesanan",
+    "listHint": "Gunakan paginasi di bawah untuk pindah halaman.",
+    "tableLoadingTitle": "Memuat item pesanan…",
+    "tableLoadingHint": "Mohon tunggu sebentar.",
+    "loadErrorDetail": "Gagal memuat item pesanan. Periksa koneksi atau coba muat ulang halaman.",
+    "emptyPage": "Tidak ada item pesanan pada halaman ini."
+  },
+  "orderTable": {
+    "colId": "ID",
+    "colProductId": "ID produk",
+    "colProductName": "Nama produk",
+    "colProductSku": "SKU produk",
+    "colQuantity": "Jumlah",
+    "colProviderStatus": "Status provider",
+    "colTotal": "Total",
+    "colUnitPrice": "Harga satuan"
   }
 }
