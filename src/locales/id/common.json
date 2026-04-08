@@ -280,5 +280,70 @@
     "colProviderStatus": "Status provider",
     "colTotal": "Total",
     "colUnitPrice": "Harga satuan"
+  },
+  "bannerPage": {
+    "title": "Banner",
+    "subtitle": "Tambah banner dari toolbar di bawah. Untuk mengubah gambar atau link redirect, dan menghapus banner, gunakan tombol di kolom Aksi pada setiap baris.",
+    "loadingShort": "Memuat…",
+    "loadFailedShort": "Gagal memuat",
+    "totalBanners": "Total {{count}} banner",
+    "listTitle": "Daftar banner",
+    "listHint": "Buat baru di sini; ubah dan hapus lewat kolom Aksi.",
+    "tableLoadingTitle": "Memuat data banner…",
+    "tableLoadingHint": "Mohon tunggu sebentar.",
+    "loadErrorDetail": "Gagal memuat daftar banner. Periksa koneksi atau coba muat ulang halaman.",
+    "emptyPage": "Belum ada banner. Tambahkan lewat tombol Tambah banner di atas."
+  },
+  "bannerTable": {
+    "colImage": "Gambar",
+    "colRedirectLink": "Link redirect",
+    "imageAlt": "Banner",
+    "actionsHeader": "Aksi",
+    "rowActionsAria": "Aksi untuk banner ini"
+  },
+  "bannerToasts": {
+    "loadingList": "Sedang memuat daftar banner…",
+    "loadError": "Gagal memuat daftar banner",
+    "emptyList": "Belum ada banner",
+    "loadSuccess": "Berhasil memuat daftar banner",
+    "deleteSuccess": "Banner berhasil dihapus",
+    "deleteError": "Gagal menghapus banner",
+    "updateSuccess": "Banner diperbarui",
+    "updateError": "Gagal memperbarui banner",
+    "createSuccess": "Banner berhasil dibuat",
+    "createError": "Gagal membuat banner"
+  },
+  "createBannerModal": {
+    "trigger": "Tambah banner",
+    "title": "Tambah banner",
+    "description": "Unggah gambar dan tentukan URL tujuan saat pengguna mengetuk banner di aplikasi.",
+    "redirectLabel": "Link redirect",
+    "redirectRequired": "Link redirect wajib diisi",
+    "redirectHint": "URL lengkap (termasuk https://) untuk halaman promo atau produk.",
+    "imageLabel": "Gambar banner",
+    "imageHint": "PNG, JPG, atau SVG. Seret file ke area ini atau ketuk untuk memilih.",
+    "uploadAria": "Unggah gambar banner",
+    "previewAlt": "Pratinjau banner",
+    "changeImage": "Ganti gambar",
+    "uploadTitle": "Unggah gambar",
+    "uploadDropHint": "Klik atau letakkan file di sini",
+    "uploading": "Mengunggah… {{percent}}%",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…"
+  },
+  "editBannerModal": {
+    "triggerShort": "Ubah",
+    "triggerAria": "Ubah banner",
+    "title": "Ubah banner",
+    "description": "Perbarui gambar atau link redirect. Perubahan akan terlihat setelah disimpan."
+  },
+  "deleteBannerModal": {
+    "triggerAria": "Hapus banner",
+    "triggerLabel": "Hapus",
+    "title": "Hapus banner?",
+    "description": "Tindakan ini tidak bisa dibatalkan. Banner akan dihapus dari daftar dan tidak lagi tampil di aplikasi.",
+    "deleting": "Menghapus…",
+    "confirmDelete": "Hapus"
   }
 }

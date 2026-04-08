@@ -280,5 +280,70 @@
     "colProviderStatus": "Provider status",
     "colTotal": "Total",
     "colUnitPrice": "Unit price"
+  },
+  "bannerPage": {
+    "title": "Banners",
+    "subtitle": "Add a banner from the toolbar below. To change the image or redirect link, and to remove a banner, use the buttons in the Actions column on each row.",
+    "loadingShort": "Loading…",
+    "loadFailedShort": "Failed to load",
+    "totalBanners": "Total {{count}} banners",
+    "listTitle": "Banner list",
+    "listHint": "Create new here; edit and delete via the Actions column.",
+    "tableLoadingTitle": "Loading banners…",
+    "tableLoadingHint": "Please wait a moment.",
+    "loadErrorDetail": "Failed to load banners. Check your connection or try reloading the page.",
+    "emptyPage": "No banners yet. Add one with the Add banner button above."
+  },
+  "bannerTable": {
+    "colImage": "Image",
+    "colRedirectLink": "Redirect link",
+    "imageAlt": "Banner",
+    "actionsHeader": "Actions",
+    "rowActionsAria": "Actions for this banner"
+  },
+  "bannerToasts": {
+    "loadingList": "Loading banner list…",
+    "loadError": "Failed to load banner list",
+    "emptyList": "No banners yet",
+    "loadSuccess": "Banner list loaded",
+    "deleteSuccess": "Banner deleted",
+    "deleteError": "Failed to delete banner",
+    "updateSuccess": "Banner updated",
+    "updateError": "Failed to update banner",
+    "createSuccess": "Banner created",
+    "createError": "Failed to create banner"
+  },
+  "createBannerModal": {
+    "trigger": "Add banner",
+    "title": "Add banner",
+    "description": "Upload an image and set the destination URL when users tap the banner in the app.",
+    "redirectLabel": "Redirect link",
+    "redirectRequired": "Redirect link is required",
+    "redirectHint": "Full URL (including https://) for a promo or product page.",
+    "imageLabel": "Banner image",
+    "imageHint": "PNG, JPG, or SVG. Drag a file onto this area or tap to choose.",
+    "uploadAria": "Upload banner image",
+    "previewAlt": "Banner preview",
+    "changeImage": "Change image",
+    "uploadTitle": "Upload image",
+    "uploadDropHint": "Click or drop a file here",
+    "uploading": "Uploading… {{percent}}%",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…"
+  },
+  "editBannerModal": {
+    "triggerShort": "Edit",
+    "triggerAria": "Edit banner",
+    "title": "Edit banner",
+    "description": "Update the image or redirect link. Changes apply after you save."
+  },
+  "deleteBannerModal": {
+    "triggerAria": "Delete banner",
+    "triggerLabel": "Delete",
+    "title": "Delete banner?",
+    "description": "This cannot be undone. The banner will be removed from the list and will no longer appear in the app.",
+    "deleting": "Deleting…",
+    "confirmDelete": "Delete"
   }
 }
