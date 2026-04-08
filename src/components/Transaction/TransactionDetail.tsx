@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import i18n from '@/i18n'
 import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
@@ -23,6 +24,7 @@ import {
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 export interface PaymentDetail {
@@ -486,12 +488,11 @@ function CopyInlineButton({ text }: { text: string }) {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text)
+      await copyTextToClipboard(text)
     } catch {
-      /* clipboard denied or unavailable */
+      toast.error(t('transactionDetail.copy.failed'))
       return
     }
-    // Outside clipboard try/catch: if setState/timers throw, do not treat as copy failure.
     setCopied(true)
     window.setTimeout(() => setCopied(false), 2000)
   }

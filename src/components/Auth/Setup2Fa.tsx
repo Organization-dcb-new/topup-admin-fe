@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 
 import { api } from "@/api/axios";
 import { authStorage } from "@/lib/auth";
+import { copyTextToClipboard } from "@/lib/copy-to-clipboard";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -103,13 +104,18 @@ const Setup2FA = () => {
     },
   });
 
-  const handleCopyCodes = () => {
-    if (setupData) {
-      navigator.clipboard.writeText(setupData.recovery_codes.join("\n"));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-      toast.success("Kode cadangan disalin");
+  const handleCopyCodes = async () => {
+    if (!setupData) return;
+    const text = setupData.recovery_codes.join("\n");
+    try {
+      await copyTextToClipboard(text);
+    } catch {
+      toast.error("Gagal menyalin kode cadangan");
+      return;
     }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast.success("Kode cadangan disalin");
   };
 
   if (isChecking)

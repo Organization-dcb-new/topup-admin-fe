@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import i18n from '@/i18n'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import type { Payment } from '@/types/transaction'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
@@ -38,7 +39,7 @@ function dateLocale() {
 export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
   const copyTransactionId = async (value: string) => {
     try {
-      await navigator.clipboard.writeText(value)
+      await copyTextToClipboard(value)
     } catch {
       toast.error(t('transactionTable.copyError'))
       return
