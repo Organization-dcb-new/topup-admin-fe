@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils'
 import type { OverallStats } from '@/types/summary'
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 function formatCurrency(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -23,6 +24,7 @@ interface SummaryCardProps {
 }
 
 export default function SummaryCard({ stats }: SummaryCardProps) {
+  const { t } = useTranslation('common')
   const revenue = stats.total_amount_pg
   const cost = stats.total_amount_provider
   const profit = stats.total_gross_profit
@@ -39,22 +41,20 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
     >
       <CardHeader className="border-b border-gray-100 pb-4">
         <CardTitle className="text-lg font-semibold tracking-tight text-gray-900">
-          Ringkasan agregat
+          {t('summaryCard.title')}
         </CardTitle>
-        <CardDescription className="text-xs">
-          Angka berikut mengikuti rentang tanggal dan pengelompokan di filter.
-        </CardDescription>
+        <CardDescription className="text-xs">{t('summaryCard.description')}</CardDescription>
       </CardHeader>
       <CardContent className="grid grid-cols-1 gap-6 pt-6 md:grid-cols-3 md:gap-8">
         <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">Total masuk (PG)</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.totalPg')}</p>
           <p className="text-2xl font-semibold tabular-nums text-primary">
             {formatCurrency(revenue)}
           </p>
         </div>
 
         <div className="space-y-2 md:border-l md:border-border/80 md:pl-8">
-          <p className="text-sm font-medium text-muted-foreground">Modal (provider)</p>
+          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.modalProvider')}</p>
           <p className="text-2xl font-semibold tabular-nums text-foreground">
             {formatCurrency(cost)}
           </p>
@@ -63,7 +63,7 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
         <div className="md:border-l md:border-border/80 md:pl-8">
           <div className="space-y-3 rounded-lg border border-border/80 bg-muted/25 p-4">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-foreground">Laba kotor</p>
+              <p className="text-sm font-semibold text-foreground">{t('summaryCard.grossProfit')}</p>
               <Badge
                 variant={isProfit ? 'default' : 'destructive'}
                 className={cn(
@@ -71,7 +71,7 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
                   isProfit && 'border-transparent bg-emerald-600 hover:bg-emerald-600',
                 )}
               >
-                {isProfit ? 'Laba' : 'Rugi'}
+                {isProfit ? t('summaryCard.badgeProfit') : t('summaryCard.badgeLoss')}
               </Badge>
             </div>
             <div className="flex flex-wrap items-end gap-2">
@@ -94,7 +94,7 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
                 ) : (
                   <ArrowDownRight className="h-4 w-4 shrink-0" aria-hidden />
                 )}
-                {marginPercent.toFixed(1)}% dari PG
+                {t('summaryCard.marginFromPg', { percent: marginPercent.toFixed(1) })}
               </span>
             </div>
           </div>

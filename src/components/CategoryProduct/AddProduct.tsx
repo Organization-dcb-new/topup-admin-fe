@@ -19,6 +19,7 @@ import {
 } from '@/hooks/useCategoryProduct'
 import { useGetProductNames } from '@/hooks/useProduct'
 import { Loader2, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ProductName = {
   id: string
@@ -34,6 +35,7 @@ export function AddProductToCategoryProductButton({
   game_id: string
   existingProduct: ProductResponseOnly[]
 }) {
+  const { t } = useTranslation('common')
   const [selected, setSelected] = useState<string[]>([])
   const { data: products, isPending, isError } = useGetProductNames(game_id)
   const mutation = useAddProductToCategoryProduct(id)
@@ -62,7 +64,7 @@ export function AddProductToCategoryProductButton({
           className="cursor-pointer"
           variant="ghost"
           size="icon"
-          aria-label="Atur produk dalam kategori"
+          aria-label={t('categoryProductAddProducts.triggerAria')}
         >
           <Plus className="h-4 w-4" aria-hidden />
         </Button>
@@ -70,10 +72,9 @@ export function AddProductToCategoryProductButton({
 
       <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Atur produk di kategori</AlertDialogTitle>
+          <AlertDialogTitle>{t('categoryProductAddProducts.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Centang produk yang ingin dimasukkan ke kategori ini. Daftar mengikuti produk untuk game
-            terkait.
+            {t('categoryProductAddProducts.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -81,13 +82,13 @@ export function AddProductToCategoryProductButton({
           {isPending ? (
             <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-              Memuat daftar produk…
+              {t('categoryProductAddProducts.loading')}
             </div>
           ) : isError ? (
-            <p className="py-6 text-center text-sm text-destructive">Gagal memuat produk. Coba lagi.</p>
+            <p className="py-6 text-center text-sm text-destructive">{t('categoryProductAddProducts.loadError')}</p>
           ) : !products?.length ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
-              Tidak ada produk untuk game ini.
+              {t('categoryProductAddProducts.empty')}
             </p>
           ) : (
             products.map((product: ProductName) => {
@@ -112,7 +113,7 @@ export function AddProductToCategoryProductButton({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer rounded-xl">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">{t('categoryProductAddProducts.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSubmit}
             disabled={!selected.length || mutation.isPending || isPending || isError}
@@ -121,10 +122,10 @@ export function AddProductToCategoryProductButton({
             {mutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Menyimpan…
+                {t('categoryProductAddProducts.saving')}
               </>
             ) : (
-              'Simpan'
+              t('categoryProductAddProducts.save')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

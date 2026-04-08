@@ -4,6 +4,7 @@ import type { FormValuesChangeImage } from '@/components/Games/UploadImageModal'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export interface GameNames {
   id: string
@@ -69,6 +70,7 @@ export const useCreateGame = () => {
 }
 
 export const useDeleteGame = (id: string) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async () => {
@@ -76,14 +78,15 @@ export const useDeleteGame = (id: string) => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Game berhasil dihapus')
+      toast.success(t('gameToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
-    onError: () => toast.error('Gagal menghapus game'),
+    onError: () => toast.error(t('gameToasts.deleteError')),
   })
 }
 
 export function useUpdateImageGame(onClose: () => void) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -96,17 +99,18 @@ export function useUpdateImageGame(onClose: () => void) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Gambar game berhasil diperbarui')
+      toast.success(t('gameToasts.imageUpdateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
       onClose()
     },
-    onError: () => toast.error('Gagal memperbarui gambar game'),
+    onError: () => toast.error(t('gameToasts.imageUpdateError')),
   })
 
   return mutation
 }
 
 export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -119,11 +123,11 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Game berhasil diperbarui')
+      toast.success(t('gameToasts.gameUpdateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
       setOpen(false)
     },
-    onError: () => toast.error('Gagal memperbarui game'),
+    onError: () => toast.error(t('gameToasts.gameUpdateError')),
   })
 
   return mutation
@@ -163,27 +167,29 @@ export function useToggleGameShow(id: string) {
 }
 
 export function useToggleGameStatus(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (is_active: boolean) => api.patch(`/games/status/${id}`, { is_active }),
     onSuccess: () => {
-      toast.success('Game status updated')
+      toast.success(t('gameToasts.statusToggleSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
-    onError: () => toast.error('Failed to update game status'),
+    onError: () => toast.error(t('gameToasts.statusToggleError')),
   })
 }
 
 export function useBulkUpdateGameStatus() {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (is_active: boolean) => api.patch('/games/bulk-status', { is_active }),
     onSuccess: () => {
-      toast.success('Status semua game berhasil diperbarui')
+      toast.success(t('gameToasts.bulkStatusSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
     },
-    onError: () => toast.error('Gagal memperbarui status semua game'),
+    onError: () => toast.error(t('gameToasts.bulkStatusError')),
   })
 }

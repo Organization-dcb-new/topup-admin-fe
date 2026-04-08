@@ -12,7 +12,7 @@ import TransactionSearchInput from '@/components/Transaction/SearchTransaction'
 import TransactionStatusFilter from '@/components/Transaction/TransactionStatusFilter'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetTransactions } from '@/hooks/useTransaction'
-import { paymentColumns } from '@/tables/table-transaction'
+import { getPaymentColumns } from '@/tables/table-transaction'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import {
@@ -27,11 +27,13 @@ import {
 import type { Payment } from '@/types/transaction'
 import type { DateRange } from 'react-day-picker'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
 const TX_LIST_TOAST_ID = 'transactions-list'
 
 export default function TransactionPage() {
+  const { t } = useTranslation('common')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
@@ -89,21 +91,21 @@ export default function TransactionPage() {
 
   useEffect(() => {
     if (isPending) {
-      toast.loading('Memuat transaksi…', { id: TX_LIST_TOAST_ID })
+      toast.loading(t('transactionPage.toastLoading'), { id: TX_LIST_TOAST_ID })
       return
     }
 
     if (!isFetchedAfterMount) return
 
     if (isError) {
-      toast.error('Gagal memuat transaksi', { id: TX_LIST_TOAST_ID })
+      toast.error(t('transactionPage.toastError'), { id: TX_LIST_TOAST_ID })
       return
     }
 
     if (isSuccess) {
-      toast.success('Berhasil memuat transaksi', { id: TX_LIST_TOAST_ID })
+      toast.success(t('transactionPage.toastSuccess'), { id: TX_LIST_TOAST_ID })
     }
-  }, [isPending, isFetchedAfterMount, isSuccess, isError])
+  }, [isPending, isFetchedAfterMount, isSuccess, isError, t])
 
   const rows = data?.data ?? []
 
@@ -141,6 +143,8 @@ export default function TransactionPage() {
     setPage(1)
   }, [])
 
+  const paymentColumns = useMemo(() => getPaymentColumns(t), [t])
+
   return (
     <DashboardLayout>
       <div className="mx-auto min-w-0 max-w-7xl space-y-6">
@@ -150,9 +154,11 @@ export default function TransactionPage() {
               <Receipt className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Transaksi</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                {t('transactionPage.title')}
+              </h1>
               <p className="text-sm text-muted-foreground">
-                Cari dan saring pembayaran; paginasi {limit} baris per halaman.
+                {t('transactionPage.subtitle', { limit })}
               </p>
             </div>
           </div>
@@ -160,20 +166,22 @@ export default function TransactionPage() {
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('transactionPage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('transactionPage.loadFailedShort')}
               </p>
             )}
             {isSuccess && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} transaksi
+                  {t('transactionPage.totalCount', {
+                    count: (data?.meta?.total_data ?? 0).toLocaleString('id-ID'),
+                  })}
                 </span>
               </p>
             )}
@@ -182,7 +190,7 @@ export default function TransactionPage() {
 
         <section
           className="overflow-hidden rounded-xl border border-gray-200/90 bg-white shadow-sm ring-1 ring-gray-900/5"
-          aria-label="Filter transaksi"
+          aria-label={t('transactionPage.filtersRegionAria')}
         >
           <div
             className={cn(
@@ -200,9 +208,13 @@ export default function TransactionPage() {
             >
               <span className="flex min-w-0 items-center gap-2">
                 <SlidersHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-                <span className="text-sm font-semibold text-gray-900">Filter</span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {t('transactionPage.filterHeading')}
+                </span>
                 <span className="hidden text-xs text-muted-foreground sm:inline">
-                  {filtersOpen ? 'Klik untuk menutup' : 'Klik untuk membuka'}
+                  {filtersOpen
+                    ? t('transactionPage.filtersClickClose')
+                    : t('transactionPage.filtersClickOpen')}
                 </span>
               </span>
               <ChevronDown
@@ -220,10 +232,10 @@ export default function TransactionPage() {
               className="h-9 shrink-0 shadow-xs sm:self-center"
               disabled={!hasActiveFilters}
               onClick={resetFilters}
-              aria-label="Reset semua filter"
+              aria-label={t('transactionPage.resetFiltersAria')}
             >
               <RotateCcw className="mr-2 h-3.5 w-3.5" aria-hidden />
-              Reset filter
+              {t('transactionPage.resetFilters')}
             </Button>
           </div>
           <div
@@ -240,7 +252,7 @@ export default function TransactionPage() {
                     htmlFor="tx-filter-search"
                     className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
                   >
-                    Pencarian
+                    {t('transactionPage.searchLabel')}
                   </Label>
                   <TransactionSearchInput
                     id="tx-filter-search"
@@ -253,22 +265,24 @@ export default function TransactionPage() {
 
                 <div className="space-y-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Waktu, game, metode & status
+                    {t('transactionPage.sectionTimeGameStatus')}
                   </p>
                   <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-5">
                     <div className="space-y-2">
                       <Label className="text-xs font-medium text-muted-foreground">
-                        Rentang tanggal & waktu
+                        {t('transactionPage.dateTimeRange')}
                       </Label>
                       <TransactionDateFilter date={dateRange} onChange={setDateRange} />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">Game</Label>
+                      <Label className="text-xs font-medium text-muted-foreground">
+                        {t('transactionPage.game')}
+                      </Label>
                       <TransactionGameFilter value={gameId} onChange={setGameId} />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs font-medium text-muted-foreground">
-                        Metode pembayaran
+                        {t('transactionPage.paymentMethod')}
                       </Label>
                       <TransactionPaymentMethodFilter
                         value={paymentMethodId}
@@ -276,7 +290,9 @@ export default function TransactionPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs font-medium text-muted-foreground">Status</Label>
+                      <Label className="text-xs font-medium text-muted-foreground">
+                        {t('transactionPage.status')}
+                      </Label>
                       <TransactionStatusFilter value={statusFilter} onChange={setStatusFilter} />
                     </div>
                   </div>
@@ -286,7 +302,7 @@ export default function TransactionPage() {
 
                 <div className="space-y-4">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    Nominal transaksi
+                    {t('transactionPage.amountSection')}
                   </p>
                   <TransactionAmountFilter
                     minValue={minAmountFilter}
@@ -305,10 +321,8 @@ export default function TransactionPage() {
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
           <div className="border-b border-gray-100 px-4 py-3 sm:px-5">
             <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900">Daftar transaksi</h2>
-              <p className="text-xs text-muted-foreground">
-                Filter nominal mendukung batas bawah (≥), batas atas (≤), dan nilai tepat (=).
-              </p>
+              <h2 className="text-sm font-semibold text-gray-900">{t('transactionPage.listTitle')}</h2>
+              <p className="text-xs text-muted-foreground">{t('transactionPage.listHint')}</p>
             </div>
           </div>
 
@@ -322,14 +336,18 @@ export default function TransactionPage() {
               >
                 <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Memuat transaksi…</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                  <p className="text-sm font-medium text-foreground">
+                    {t('transactionPage.tableLoadingTitle')}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t('transactionPage.tableLoadingHint')}
+                  </p>
                 </div>
               </div>
             )}
 
             {isError && (
-              <ErrorComponent message="Gagal memuat transaksi. Periksa koneksi atau coba muat ulang halaman." />
+              <ErrorComponent message={t('transactionPage.loadErrorDetail')} />
             )}
 
             {isSuccess && (
@@ -338,7 +356,7 @@ export default function TransactionPage() {
                   <DataTable
                     columns={paymentColumns}
                     data={rows}
-                    emptyMessage="Tidak ada transaksi pada halaman ini."
+                    emptyMessage={t('transactionPage.emptyPage')}
                   />
                 </div>
                 <div className="mt-4">

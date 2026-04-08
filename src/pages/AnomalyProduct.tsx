@@ -3,12 +3,15 @@ import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import { useGetProductAnomaly } from '@/hooks/useProduct'
-import { anomalyProductTable } from '@/tables/table-anomaly-product'
+import { getAnomalyProductColumns } from '@/tables/table-anomaly-product'
+import i18n from '@/i18n'
 import { AlertCircle, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export default function AnomalyProduct() {
+  const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const limit = 25
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProductAnomaly(
@@ -18,14 +21,15 @@ export default function AnomalyProduct() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success('Berhasil memuat produk anomali')
+      toast.success(t('anomalyProductPage.toastSuccess'))
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat produk anomali')
+      toast.error(t('anomalyProductPage.toastError'))
     }
-  }, [isSuccess, isError, isFetchedAfterMount])
+  }, [isSuccess, isError, isFetchedAfterMount, t])
 
   const rows = data?.data ?? []
+  const anomalyProductTable = useMemo(() => getAnomalyProductColumns(t), [t])
 
   return (
     <DashboardLayout>
@@ -36,31 +40,32 @@ export default function AnomalyProduct() {
               <AlertTriangle className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Produk anomali</h1>
-              <p className="text-sm text-muted-foreground">
-                Daftar produk dengan ketidaksesuaian harga, biaya tambahan, atau stok yang perlu
-                ditinjau. Gunakan paginasi untuk melihat halaman lain.
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('anomalyProductPage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('anomalyProductPage.subtitle')}</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 sm:text-right">
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('anomalyProductPage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('anomalyProductPage.loadFailedShort')}
               </p>
             )}
             {isSuccess && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} entri
+                  {t('anomalyProductPage.totalEntries', {
+                    count: (data?.meta?.total_data ?? 0).toLocaleString(
+                      i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+                    ),
+                  })}
                 </span>
               </p>
             )}
@@ -70,9 +75,9 @@ export default function AnomalyProduct() {
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
           <div className="flex flex-col gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900">Daftar produk anomali</h2>
+              <h2 className="text-sm font-semibold text-gray-900">{t('anomalyProductPage.listTitle')}</h2>
               <p className="text-xs text-muted-foreground">
-                {limit} item per halaman. Periksa kolom harga dan stok untuk koreksi di modul produk.
+                {t('anomalyProductPage.listHint', { limit })}
               </p>
             </div>
           </div>
@@ -87,14 +92,14 @@ export default function AnomalyProduct() {
               >
                 <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Memuat produk anomali…</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                  <p className="text-sm font-medium text-foreground">{t('anomalyProductPage.tableLoadingTitle')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('anomalyProductPage.tableLoadingHint')}</p>
                 </div>
               </div>
             )}
 
             {isError && (
-              <ErrorComponent message="Gagal memuat produk anomali. Periksa koneksi atau coba muat ulang halaman." />
+              <ErrorComponent message={t('anomalyProductPage.loadErrorDetail')} />
             )}
 
             {isSuccess && (
@@ -103,7 +108,7 @@ export default function AnomalyProduct() {
                   <DataTable
                     columns={anomalyProductTable}
                     data={rows}
-                    emptyMessage="Tidak ada produk anomali pada halaman ini."
+                    emptyMessage={t('anomalyProductPage.emptyPage')}
                   />
                 </div>
                 <div className="mt-4">

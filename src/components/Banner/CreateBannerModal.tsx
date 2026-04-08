@@ -1,42 +1,44 @@
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
 
-import { ImagePlus, Plus, UploadCloud } from "lucide-react";
+import { ImagePlus, Plus, UploadCloud } from 'lucide-react'
 
-import { handleFileAutoUpload } from "@/helpers/upload";
-import type { FormValuesBanner } from "@/types/banner";
-import { useCreateBanner } from "@/hooks/useBanner";
+import { handleFileAutoUpload } from '@/helpers/upload'
+import type { FormValuesBanner } from '@/types/banner'
+import { useCreateBanner } from '@/hooks/useBanner'
+import { useTranslation } from 'react-i18next'
 
 export function CreateBannerModal() {
-  const [open, setOpen] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation('common')
+  const [open, setOpen] = useState(false)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [isUploading, setIsUploading] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const {
     register,
     handleSubmit,
     setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValuesBanner>();
+  } = useForm<FormValuesBanner>()
 
-  const mutation = useCreateBanner(reset, setPreview, setOpen);
+  const mutation = useCreateBanner(reset, setPreview, setOpen)
   const onSubmit = (values: FormValuesBanner) => {
-    mutation.mutate(values);
-  };
+    mutation.mutate(values)
+  }
 
   const handleFile = (file: File) => {
     handleFileAutoUpload({
@@ -45,19 +47,19 @@ export function CreateBannerModal() {
       setIsUploading,
       setUploadProgress,
       setValue: setValue as any,
-      fieldName: "image",
-    });
-  };
+      fieldName: 'image',
+    })
+  }
 
   useEffect(() => {
     if (!open) {
-      reset();
-      setPreview(null);
-      setUploadProgress(0);
-      setIsUploading(false);
-      if (inputRef.current) inputRef.current.value = "";
+      reset()
+      setPreview(null)
+      setUploadProgress(0)
+      setIsUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
     }
-  }, [open, reset]);
+  }, [open, reset])
 
   return (
     <>
@@ -67,7 +69,7 @@ export function CreateBannerModal() {
         onClick={() => setOpen(true)}
       >
         <Plus className="h-4 w-4 shrink-0" aria-hidden />
-        Tambah banner
+        {t('createBannerModal.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -79,23 +81,21 @@ export function CreateBannerModal() {
                   <ImagePlus className="h-4 w-4" aria-hidden />
                 </span>
                 <DialogTitle className="text-xl font-semibold tracking-tight">
-                  Tambah banner
+                  {t('createBannerModal.title')}
                 </DialogTitle>
               </div>
-              <DialogDescription>
-                Unggah gambar dan tentukan URL tujuan saat pengguna mengetuk banner di aplikasi.
-              </DialogDescription>
+              <DialogDescription>{t('createBannerModal.description')}</DialogDescription>
             </DialogHeader>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-5">
             <div className="space-y-2">
-              <Label htmlFor="banner-redirect-link">Link redirect</Label>
+              <Label htmlFor="banner-redirect-link">{t('createBannerModal.redirectLabel')}</Label>
               <div className="space-y-1">
                 <Input
                   id="banner-redirect-link"
-                  {...register("redirect_link", {
-                    required: "Link redirect wajib diisi",
+                  {...register('redirect_link', {
+                    required: t('createBannerModal.redirectRequired'),
                   })}
                   placeholder="https://..."
                   inputMode="url"
@@ -104,54 +104,50 @@ export function CreateBannerModal() {
                 />
 
                 {errors.redirect_link && (
-                  <p className="text-xs text-destructive">
-                    {errors.redirect_link.message}
-                  </p>
+                  <p className="text-xs text-destructive">{errors.redirect_link.message}</p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">
-                URL lengkap (termasuk https://) untuk halaman promo atau produk.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('createBannerModal.redirectHint')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Gambar banner</Label>
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG, atau SVG. Seret file ke area ini atau ketuk untuk memilih.
-              </p>
+              <Label>{t('createBannerModal.imageLabel')}</Label>
+              <p className="text-xs text-muted-foreground">{t('createBannerModal.imageHint')}</p>
 
               <div
                 role="button"
                 tabIndex={0}
-                aria-label="Unggah gambar banner"
+                aria-label={t('createBannerModal.uploadAria')}
                 onClick={() => inputRef.current?.click()}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    inputRef.current?.click();
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    inputRef.current?.click()
                   }
                 }}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files[0];
-                  if (file) handleFile(file);
+                  e.preventDefault()
+                  const file = e.dataTransfer.files[0]
+                  if (file) handleFile(file)
                 }}
                 className={`group relative flex min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/20 px-4 py-6 transition-colors outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/50 ${
-                  isUploading ? "pointer-events-none opacity-60" : "hover:border-primary/50 hover:bg-muted/35"
+                  isUploading
+                    ? 'pointer-events-none opacity-60'
+                    : 'hover:border-primary/50 hover:bg-muted/35'
                 }`}
               >
                 {preview ? (
                   <>
                     <img
                       src={preview}
-                      alt="Pratinjau banner"
+                      alt={t('createBannerModal.previewAlt')}
                       className="max-h-44 w-full rounded-lg object-contain"
                     />
                     {!isUploading && (
                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
                         <span className="rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm">
-                          Ganti gambar
+                          {t('createBannerModal.changeImage')}
                         </span>
                       </div>
                     )}
@@ -161,9 +157,11 @@ export function CreateBannerModal() {
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
                       <UploadCloud className="h-6 w-6 text-primary" aria-hidden />
                     </span>
-                    <span className="text-sm font-medium text-foreground">Unggah gambar</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t('createBannerModal.uploadTitle')}
+                    </span>
                     <span className="max-w-[16rem] text-xs leading-relaxed">
-                      Klik atau letakkan file di sini
+                      {t('createBannerModal.uploadDropHint')}
                     </span>
                   </div>
                 )}
@@ -171,7 +169,7 @@ export function CreateBannerModal() {
                 {isUploading && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
                     <span className="text-sm font-medium text-foreground">
-                      Mengunggah… {uploadProgress}%
+                      {t('createBannerModal.uploading', { percent: uploadProgress })}
                     </span>
                     <Progress value={uploadProgress} className="h-2 w-[min(100%,12rem)]" />
                   </div>
@@ -179,15 +177,14 @@ export function CreateBannerModal() {
               </div>
             </div>
 
-            {/* Hidden Input */}
             <input
               ref={inputRef}
               type="file"
               accept="image/*,.svg"
               className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFile(file);
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
               }}
             />
 
@@ -198,19 +195,19 @@ export function CreateBannerModal() {
                 type="button"
                 onClick={() => setOpen(false)}
               >
-                Batal
+                {t('createBannerModal.cancel')}
               </Button>
               <Button
                 className="cursor-pointer sm:min-w-[5.5rem]"
                 type="submit"
                 disabled={isUploading || mutation.isPending}
               >
-                {mutation.isPending ? "Menyimpan…" : "Simpan"}
+                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
     </>
-  );
+  )
 }

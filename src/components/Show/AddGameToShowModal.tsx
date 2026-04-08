@@ -19,6 +19,7 @@ import { useAddGamesToShow } from '@/hooks/useShow'
 import { useGetGameNames } from '@/hooks/useGame'
 import type { ShowGame } from '@/types/show'
 import type { GameName } from '../Blog/types/blog'
+import { useTranslation } from 'react-i18next'
 
 export function AddGamesToShowButton({
   showId,
@@ -29,6 +30,7 @@ export function AddGamesToShowButton({
   existingGames?: ShowGame[]
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const [selected, setSelected] = useState<string[]>([])
   const [search, setSearch] = useState('')
 
@@ -63,10 +65,10 @@ export function AddGamesToShowButton({
           variant="outline"
           size="sm"
           className={cn('cursor-pointer gap-1.5', triggerClassName)}
-          aria-label="Atur game pada show"
+          aria-label={t('addGamesModal.triggerAria')}
         >
           <Plus className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">Atur game</span>
+          <span className="hidden sm:inline">{t('addGamesModal.triggerShort')}</span>
         </Button>
       </AlertDialogTrigger>
 
@@ -78,11 +80,11 @@ export function AddGamesToShowButton({
                 <ListPlus className="h-4 w-4" aria-hidden />
               </span>
               <AlertDialogTitle className="text-xl font-semibold tracking-tight">
-                Atur game pada show
+                {t('addGamesModal.title')}
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-left">
-              Centang game yang ingin masuk ke show ini. Daftar bisa disaring dengan kolom pencarian.
+              {t('addGamesModal.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
@@ -96,38 +98,35 @@ export function AddGamesToShowButton({
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Cari nama game…"
+              placeholder={t('addGamesModal.searchPlaceholder')}
               className="pl-9"
-              aria-label="Cari game"
+              aria-label={t('addGamesModal.searchAria')}
               autoComplete="off"
             />
           </div>
 
           <p className="text-xs text-muted-foreground">
-            <span className="font-medium tabular-nums text-foreground">{selected.length}</span> game
-            dipilih
-            {query ? (
-              <>
-                {' '}
-                · menampilkan{' '}
-                <span className="font-medium tabular-nums text-foreground">
-                  {filteredGames.length}
-                </span>{' '}
-                dari {games?.length ?? 0}
-              </>
-            ) : null}
+            {t('addGamesModal.selectedCount', { count: selected.length })}
+            {query
+              ? t('addGamesModal.filterSummary', {
+                  filtered: filteredGames.length,
+                  total: games?.length ?? 0,
+                })
+              : null}
           </p>
 
           <div className="max-h-64 space-y-0.5 overflow-y-auto rounded-lg border border-border/80 bg-muted/15 p-2">
             {gamesLoading ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">Memuat daftar game…</p>
+              <p className="py-8 text-center text-sm text-muted-foreground">
+                {t('addGamesModal.loadingGames')}
+              </p>
             ) : !games?.length ? (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                Belum ada game yang bisa dipilih.
+                {t('addGamesModal.noGames')}
               </p>
             ) : filteredGames.length === 0 ? (
               <p className="py-8 text-center text-sm text-muted-foreground">
-                Tidak ada game yang cocok dengan pencarian.
+                {t('addGamesModal.noMatch')}
               </p>
             ) : (
               filteredGames.map((game: GameName) => (
@@ -138,7 +137,7 @@ export function AddGamesToShowButton({
                   <Checkbox
                     checked={selected.includes(game.id)}
                     onCheckedChange={() => toggle(game.id)}
-                    aria-label={`Pilih ${game.name}`}
+                    aria-label={t('addGamesModal.selectGameAria', { name: game.name })}
                   />
                   <span className="select-none text-sm leading-snug text-foreground">{game.name}</span>
                 </label>
@@ -152,14 +151,14 @@ export function AddGamesToShowButton({
             className="cursor-pointer sm:min-w-[5.5rem]"
             disabled={mutation.isPending}
           >
-            Batal
+            {t('addGamesModal.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSubmit}
             disabled={!selected.length || mutation.isPending}
             className="cursor-pointer sm:min-w-[5.5rem]"
           >
-            {mutation.isPending ? 'Menyimpan…' : 'Simpan'}
+            {mutation.isPending ? t('addGamesModal.saving') : t('addGamesModal.save')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

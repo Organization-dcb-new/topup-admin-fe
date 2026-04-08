@@ -18,6 +18,7 @@ import { handleFileAutoUpload } from '@/helpers/upload'
 import type { Product } from '@/types/product'
 import { useUpdateImageProductV2 } from '@/hooks/useProduct'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 type PropsImageProducts = {
   product: Product
@@ -30,6 +31,7 @@ export type FormValuesChangeImageProductV2 = {
 }
 
 export function ChangeImageModalProduct({ product, image }: PropsImageProducts) {
+  const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
   const uploadLabelId = useId()
   const [open, setOpen] = useState(false)
@@ -102,7 +104,7 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
           applyOpen(true)
         }}
         className="group relative h-10 w-10 shrink-0 cursor-pointer rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`Ubah gambar produk ${product.name}`}
+        aria-label={t('productImageModal.openAria', { name: product.name })}
       >
         <img
           src={image}
@@ -122,10 +124,9 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
       <Dialog open={open} onOpenChange={applyOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Ubah gambar produk</DialogTitle>
+            <DialogTitle>{t('productImageModal.title')}</DialogTitle>
             <DialogDescription>
-              Produk: <span className="font-medium text-foreground">{product.name}</span>. Unggah gambar
-              baru; file akan diproses otomatis setelah dipilih. Format gambar atau SVG.
+              {t('productImageModal.description', { name: product.name })}
             </DialogDescription>
           </DialogHeader>
 
@@ -133,13 +134,13 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
             <input
               type="hidden"
               {...register('image', {
-                required: 'Gambar wajib diunggah',
+                required: t('productImageModal.required'),
               })}
             />
 
             <div className="space-y-2">
               <Label id={uploadLabelId} className="text-sm font-medium">
-                Gambar
+                {t('productImageModal.label')}
               </Label>
               <div
                 aria-labelledby={uploadLabelId}
@@ -169,13 +170,13 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <UploadCloud className="h-6 w-6" aria-hidden />
-                    <span className="text-sm">Klik atau letakkan gambar di sini</span>
+                    <span className="text-sm">{t('productImageModal.dropHint')}</span>
                   </div>
                 )}
 
                 {isUploading && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
-                    Mengunggah {uploadProgress}%
+                    {t('productImageModal.uploading', { percent: uploadProgress })}
                   </div>
                 )}
               </div>
@@ -205,7 +206,7 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
                 disabled={updateImageMutation.isPending}
                 className="cursor-pointer rounded-xl"
               >
-                Batal
+                {t('productImageModal.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -215,10 +216,10 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
                 {updateImageMutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('productImageModal.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('productImageModal.save')
                 )}
               </Button>
             </DialogFooter>

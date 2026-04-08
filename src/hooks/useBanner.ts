@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { api } from '@/api/axios'
 import type { BannerPayload, BannerResponse } from '@/types/banner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
 type UpdateBannerPayload = {
@@ -10,6 +11,7 @@ type UpdateBannerPayload = {
 }
 
 export const useGetBanners = () => {
+  const { t } = useTranslation('common')
   const query = useQuery<BannerResponse>({
     queryKey: ['banners'],
     queryFn: async () => {
@@ -20,11 +22,11 @@ export const useGetBanners = () => {
 
   useEffect(() => {
     if (!query.isPending) return
-    const id = toast.loading('Sedang memuat daftar banner…')
+    const id = toast.loading(t('bannerToasts.loadingList'))
     return () => {
       toast.dismiss(id)
     }
-  }, [query.isPending])
+  }, [query.isPending, t])
 
   const lastResultSignature = useRef<string | null>(null)
   const hadError = useRef(false)
@@ -35,7 +37,7 @@ export const useGetBanners = () => {
     if (query.isError) {
       if (!hadError.current) {
         hadError.current = true
-        toast.error('Gagal memuat daftar banner')
+        toast.error(t('bannerToasts.loadError'))
       }
       return
     }
@@ -49,16 +51,17 @@ export const useGetBanners = () => {
     lastResultSignature.current = signature
 
     if (query.data.data.length === 0) {
-      toast.success('Belum ada banner')
+      toast.success(t('bannerToasts.emptyList'))
     } else {
-      toast.success('Berhasil memuat daftar banner')
+      toast.success(t('bannerToasts.loadSuccess'))
     }
-  }, [query.isSuccess, query.isError, query.isFetchedAfterMount, query.data, query.dataUpdatedAt])
+  }, [query.isSuccess, query.isError, query.isFetchedAfterMount, query.data, query.dataUpdatedAt, t])
 
   return query
 }
 
 export function useDeleteBanner(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -67,11 +70,11 @@ export function useDeleteBanner(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Banner berhasil dihapus')
+      toast.success(t('bannerToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['banners'] })
     },
     onError: () => {
-      toast.error('Gagal menghapus banner')
+      toast.error(t('bannerToasts.deleteError'))
     },
   })
 
@@ -84,18 +87,19 @@ interface UpdateBannerProps {
 }
 
 export function useUpdateBanner({ id, setOpen }: UpdateBannerProps) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: UpdateBannerPayload) => api.patch(`/banners/${id}`, payload),
 
     onSuccess: () => {
-      toast.success('Banner diperbarui')
+      toast.success(t('bannerToasts.updateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['banners'] })
       setOpen?.(false)
     },
     onError: () => {
-      toast.error('Gagal memperbarui banner')
+      toast.error(t('bannerToasts.updateError'))
     },
   })
 }
@@ -106,6 +110,7 @@ export const useCreateBanner = (
   setPreview: (url: string | null) => void,
   setOpen: (open: boolean) => void
 ) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -114,14 +119,14 @@ export const useCreateBanner = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Banner berhasil dibuat')
+      toast.success(t('bannerToasts.createSuccess'))
       queryClient.invalidateQueries({ queryKey: ['banners'] })
       reset()
       setPreview(null)
       setOpen(false)
     },
     onError: () => {
-      toast.error('Gagal membuat banner')
+      toast.error(t('bannerToasts.createError'))
     },
   })
 

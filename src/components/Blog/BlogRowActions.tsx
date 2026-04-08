@@ -3,10 +3,14 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Blog } from '@/tables/table-blog'
 import { Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function BlogActionsHeader() {
+  const { t } = useTranslation('common')
   return (
-    <span className="flex w-full min-w-[10rem] justify-end pr-1 text-right">Aksi</span>
+    <span className="flex w-full min-w-[10rem] justify-end pr-1 text-right">
+      {t('blogRowActions.actionsHeader')}
+    </span>
   )
 }
 
@@ -17,6 +21,7 @@ export function BlogRowActions({
   blog: Blog
   onEdit: (blog: Blog) => void
 }) {
+  const { t } = useTranslation('common')
   const toolbarBtn =
     'border-0 bg-transparent shadow-none hover:bg-muted/70'
 
@@ -25,7 +30,7 @@ export function BlogRowActions({
       <div
         className="inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35"
         role="group"
-        aria-label="Aksi untuk artikel ini"
+        aria-label={t('blogRowActions.rowGroupAria')}
       >
         <Button
           type="button"
@@ -33,10 +38,10 @@ export function BlogRowActions({
           size="sm"
           onClick={() => onEdit(blog)}
           className={cn('cursor-pointer gap-1.5', toolbarBtn)}
-          aria-label="Ubah artikel"
+          aria-label={t('blogRowActions.editAria')}
         >
           <Pencil className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">Ubah</span>
+          <span className="hidden sm:inline">{t('blogRowActions.editLabel')}</span>
         </Button>
         <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
       </div>

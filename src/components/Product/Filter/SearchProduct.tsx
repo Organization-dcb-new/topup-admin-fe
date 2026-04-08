@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface ProductInputProps {
   search: string
@@ -7,6 +8,7 @@ interface ProductInputProps {
 }
 
 export default function ProductsSearchInput({ search, onSearchChange }: ProductInputProps) {
+  const { t } = useTranslation('common')
   return (
     <div className="relative min-w-0 flex-1 sm:min-w-[14rem] sm:max-w-md">
       <Search
@@ -14,11 +16,11 @@ export default function ProductsSearchInput({ search, onSearchChange }: ProductI
         aria-hidden
       />
       <Input
-        placeholder="Cari berdasarkan game…"
+        placeholder={t('gameSearchInput.placeholder')}
         className="h-10 pl-9 shadow-sm"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
-        aria-label="Cari produk berdasarkan nama game"
+        aria-label={t('gameSearchInput.placeholder')}
       />
     </div>
   )

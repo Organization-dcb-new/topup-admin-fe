@@ -2,6 +2,7 @@ import { api } from '@/api/axios'
 import type { PaginationMeta } from '@/types/game'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export type categoryProductPayload = {
   name: string
@@ -70,6 +71,7 @@ export const useCreateCategoryProduct = (
   setPreview: (url: string | null) => void,
   setOpen: (open: boolean) => void
 ) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -78,14 +80,14 @@ export const useCreateCategoryProduct = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Kategori produk berhasil dibuat')
+      toast.success(t('categoryProductToasts.createSuccess'))
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
       reset()
       setPreview(null)
       setOpen(false)
     },
     onError: () => {
-      toast.error('Gagal membuat kategori produk')
+      toast.error(t('categoryProductToasts.createError'))
     },
   })
 
@@ -97,6 +99,7 @@ export const useUpdateCategoryProduct = (
   reset: () => void,
   setOpen: (open: boolean) => void
 ) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -105,13 +108,13 @@ export const useUpdateCategoryProduct = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Kategori produk berhasil diperbarui')
+      toast.success(t('categoryProductToasts.updateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
       reset()
       setOpen(false)
     },
     onError: () => {
-      toast.error('Gagal memperbarui kategori produk')
+      toast.error(t('categoryProductToasts.updateError'))
     },
   })
 
@@ -119,6 +122,7 @@ export const useUpdateCategoryProduct = (
 }
 
 export function useDeleteCategoryProduct(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -127,11 +131,11 @@ export function useDeleteCategoryProduct(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Kategori produk berhasil dihapus')
+      toast.success(t('categoryProductToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
     },
     onError: () => {
-      toast.error('Gagal menghapus kategori produk')
+      toast.error(t('categoryProductToasts.deleteError'))
     },
   })
 
@@ -139,6 +143,7 @@ export function useDeleteCategoryProduct(id: string) {
 }
 
 export function useAddProductToCategoryProduct(categoryProduct: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -147,11 +152,11 @@ export function useAddProductToCategoryProduct(categoryProduct: string) {
         product_ids: product_ids,
       }),
     onSuccess: () => {
-      toast.success('Daftar produk di kategori berhasil disimpan')
+      toast.success(t('categoryProductToasts.addProductsSuccess'))
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
     },
     onError: () => {
-      toast.error('Gagal menyimpan daftar produk di kategori')
+      toast.error(t('categoryProductToasts.addProductsError'))
     },
   })
 }

@@ -5,12 +5,15 @@ import { GamePickerSelect } from '@/components/Games/GamePickerSelect'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import { useGetGames } from '@/hooks/useGame'
-import { gameColumns } from '@/tables/table-game'
+import { getGameColumns } from '@/tables/table-game'
+import i18n from '@/i18n'
 import { AlertCircle, CheckCircle2, Gamepad2, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export default function GamePage() {
+  const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>('all')
   const [gameId, setGameId] = useState('')
@@ -39,14 +42,20 @@ export default function GamePage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success('Berhasil memuat daftar game')
+      toast.success(t('gameToasts.loadSuccess'))
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat daftar game')
+      toast.error(t('gameToasts.loadError'))
     }
-  }, [isSuccess, isError, isFetchedAfterMount])
+  }, [isSuccess, isError, isFetchedAfterMount, t])
 
   const rows = data?.data ?? []
+
+  const columns = useMemo(() => getGameColumns(t), [t])
+
+  const totalFormatted = (data?.meta?.total_data ?? 0).toLocaleString(
+    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+  )
 
   return (
     <DashboardLayout>
@@ -57,31 +66,28 @@ export default function GamePage() {
               <Gamepad2 className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Game</h1>
-              <p className="text-sm text-muted-foreground">
-                Pilih game dari daftar, saring status, atau pembaruan massal lewat tombol di kanan.
-                Ubah detail per game lewat kolom aksi pada tabel.
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('gamePage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('gamePage.subtitle')}</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 sm:text-right">
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('gamePage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('gamePage.loadFailedShort')}
               </p>
             )}
             {isSuccess && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} game
+                  {t('gamePage.totalGames', { count: totalFormatted })}
                 </span>
               </p>
             )}
@@ -91,17 +97,14 @@ export default function GamePage() {
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
           <div className="space-y-3 border-b border-gray-100 px-4 py-3 sm:px-5">
             <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900">Daftar game</h2>
-              <p className="text-xs text-muted-foreground">
-                Filter status dan pilih game dari dropdown. {limit} game per halaman.
-              </p>
+              <h2 className="text-sm font-semibold text-gray-900">{t('gamePage.listTitle')}</h2>
+              <p className="text-xs text-muted-foreground">{t('gamePage.listHint', { limit })}</p>
             </div>
             <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-end">
                 <GamePickerSelect value={gameId} onChange={setGameId} />
                 <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
               </div>
-              
             </div>
           </div>
 
@@ -115,20 +118,18 @@ export default function GamePage() {
               >
                 <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Memuat daftar game…</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                  <p className="text-sm font-medium text-foreground">{t('gamePage.tableLoadingTitle')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('gamePage.tableLoadingHint')}</p>
                 </div>
               </div>
             )}
 
-            {isError && (
-              <ErrorComponent message="Gagal memuat daftar game. Periksa koneksi atau coba muat ulang halaman." />
-            )}
+            {isError && <ErrorComponent message={t('gamePage.loadErrorDetail')} />}
 
             {isSuccess && (
               <>
                 <div className="max-h-[min(70vh,40rem)] overflow-y-auto overflow-x-auto overscroll-contain">
-                  <DataTable columns={gameColumns()} data={rows} />
+                  <DataTable columns={columns} data={rows} />
                 </div>
                 <div className="mt-4">
                   <Pagination

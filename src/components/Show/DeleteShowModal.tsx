@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { useDeleteShow } from '@/hooks/useShow'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteShowButton({
   id,
@@ -21,6 +22,7 @@ export function DeleteShowButton({
   id: string
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const mutation = useDeleteShow(id)
 
   return (
@@ -34,10 +36,10 @@ export function DeleteShowButton({
             triggerClassName,
           )}
           disabled={mutation.isPending}
-          aria-label="Hapus show"
+          aria-label={t('deleteShowModal.triggerAria')}
         >
           <Trash2 className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">Hapus</span>
+          <span className="hidden sm:inline">{t('deleteShowModal.triggerLabel')}</span>
         </Button>
       </AlertDialogTrigger>
 
@@ -49,12 +51,11 @@ export function DeleteShowButton({
                 <Trash2 className="h-4 w-4" aria-hidden />
               </span>
               <AlertDialogTitle className="text-xl font-semibold tracking-tight">
-                Hapus show?
+                {t('deleteShowModal.title')}
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-left">
-              Tindakan ini tidak bisa dibatalkan. Show beserta pengaturan game di dalamnya akan
-              dihapus dari daftar.
+              {t('deleteShowModal.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
@@ -64,14 +65,14 @@ export function DeleteShowButton({
             className="cursor-pointer sm:min-w-[5.5rem]"
             disabled={mutation.isPending}
           >
-            Batal
+            {t('addGamesModal.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Menghapus…' : 'Hapus'}
+            {mutation.isPending ? t('deleteShowModal.deleting') : t('deleteShowModal.confirmDelete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

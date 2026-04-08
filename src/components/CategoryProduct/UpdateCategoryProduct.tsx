@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 import { type CategoryProduct, useUpdateCategoryProduct } from '@/hooks/useCategoryProduct'
 
@@ -20,6 +21,7 @@ type FormValues = {
 }
 
 export function UpdateCategoryProduct({ category }: { category: CategoryProduct }) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const nameId = useId()
 
@@ -43,7 +45,7 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
         size="icon"
         onClick={() => setOpen(true)}
         className="cursor-pointer"
-        aria-label={`Ubah kategori ${category.name}`}
+        aria-label={t('categoryProductUpdate.triggerAria', { name: category.name })}
       >
         <Pencil className="h-4 w-4" aria-hidden />
       </Button>
@@ -51,15 +53,15 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Ubah kategori produk</DialogTitle>
+            <DialogTitle>{t('categoryProductUpdate.title')}</DialogTitle>
             <DialogDescription>
-              Perbarui nama kategori yang tampil di admin dan dapat dipakai pengguna saat memilih produk.
+              {t('categoryProductUpdate.description')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor={nameId}>Nama kategori</Label>
+              <Label htmlFor={nameId}>{t('categoryProductUpdate.nameLabel')}</Label>
               <Input id={nameId} autoComplete="off" {...register('name', { required: true })} />
             </div>
 
@@ -70,7 +72,7 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
                 onClick={() => setOpen(false)}
                 className="cursor-pointer rounded-xl"
               >
-                Batal
+                {t('categoryProductUpdate.cancel')}
               </Button>
 
               <Button
@@ -81,10 +83,10 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('categoryProductUpdate.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('categoryProductUpdate.save')
                 )}
               </Button>
             </DialogFooter>

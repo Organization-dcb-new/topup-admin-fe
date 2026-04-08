@@ -1,22 +1,26 @@
 'use client'
 
 import { DataTable } from '@/components/Layout/table-data'
-import { blogColumns } from '@/tables/table-blog'
+import { getBlogColumns } from '@/tables/table-blog'
 import { useGetBlogs } from '@/components/Blog/hooks/useBlog'
 import ErrorComponent from '@/components/Layout/error'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import Pagination from '@/components/Layout/Pagination'
 import type { Blog } from '@/tables/table-blog'
 import { FileText, Loader2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface BlogListProps {
   onEdit: (blog: Blog) => void
 }
 
 export default function BlogList({ onEdit }: BlogListProps) {
+  const { t } = useTranslation('common')
   const limit = 5
   const [page, setPage] = useState(1)
   const { data: blogs, isPending, isError } = useGetBlogs(page, limit)
+
+  const columns = useMemo(() => getBlogColumns(t, onEdit), [t, onEdit])
 
   if (isPending) {
     return (
@@ -28,17 +32,15 @@ export default function BlogList({ onEdit }: BlogListProps) {
       >
         <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
         <div className="text-center">
-          <p className="text-sm font-medium text-foreground">Memuat daftar artikel…</p>
-          <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+          <p className="text-sm font-medium text-foreground">{t('blogList.loadingTitle')}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{t('blogList.loadingHint')}</p>
         </div>
       </div>
     )
   }
 
   if (isError) {
-    return (
-      <ErrorComponent message="Gagal memuat daftar artikel. Periksa koneksi atau coba lagi nanti." />
-    )
+    return <ErrorComponent message={t('blogList.loadError')} />
   }
 
   if (!blogs || blogs.data.length === 0) {
@@ -51,10 +53,8 @@ export default function BlogList({ onEdit }: BlogListProps) {
           <FileText className="h-6 w-6" aria-hidden />
         </span>
         <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">Belum ada artikel</p>
-          <p className="max-w-sm text-xs text-muted-foreground">
-            Tambah artikel pertama lewat tombol Tambah artikel di atas.
-          </p>
+          <p className="text-sm font-medium text-foreground">{t('blogList.emptyTitle')}</p>
+          <p className="max-w-sm text-xs text-muted-foreground">{t('blogList.emptyHint')}</p>
         </div>
       </div>
     )
@@ -62,11 +62,7 @@ export default function BlogList({ onEdit }: BlogListProps) {
 
   return (
     <>
-      <DataTable
-        columns={blogColumns(onEdit)}
-        data={blogs.data}
-        emptyMessage="Belum ada artikel di halaman ini."
-      />
+      <DataTable columns={columns} data={blogs.data} emptyMessage={t('blogList.emptyPageRow')} />
       <Pagination page={page} totalPage={blogs?.meta?.total_page} onChange={setPage} />
     </>
   )

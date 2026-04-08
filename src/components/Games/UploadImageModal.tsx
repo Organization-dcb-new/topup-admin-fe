@@ -18,6 +18,7 @@ import type { Game } from '@/types/game'
 import { useUpdateImageGame } from '@/hooks/useGame'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 type PropsImageGame = {
   game: Game
@@ -43,6 +44,7 @@ const emptyUploadState = (): UploadState => ({
 })
 
 export function ChangeImageModal({ game, image }: PropsImageGame) {
+  const { t } = useTranslation('common')
   const inputThumbnailRef = useRef<HTMLInputElement>(null)
   const inputBannerRef = useRef<HTMLInputElement>(null)
   const thumbnailLabelId = useId()
@@ -93,7 +95,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       setPreview: (url) => setState((s) => ({ ...s, preview: url })),
       setIsUploading: (val) => setState((s) => ({ ...s, uploading: val })),
       setUploadProgress: (val) => setState((s) => ({ ...s, progress: val })),
-      setValue: setValue as any,
+      setValue: setValue as Parameters<typeof handleFileAutoUpload>[0]['setValue'],
       fieldName: field,
     })
   }
@@ -156,13 +158,13 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <UploadCloud className="h-6 w-6" aria-hidden />
-            <span className="text-sm">Klik atau letakkan gambar di sini</span>
+            <span className="text-sm">{t('gameImageModal.dropHint')}</span>
           </div>
         )}
 
         {state.uploading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
-            Mengunggah {state.progress}%
+            {t('gameImageModal.uploadingPercent', { percent: state.progress })}
           </div>
         )}
       </div>
@@ -201,7 +203,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
           applyOpen(true)
         }}
         className="group relative h-10 w-10 shrink-0 cursor-pointer rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring"
-        aria-label={`Ubah gambar game ${game.name}`}
+        aria-label={t('gameImageModal.openAria', { name: game.name })}
       >
         <img
           src={image}
@@ -221,18 +223,15 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       <Dialog open={open} onOpenChange={applyOpen}>
         <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Ubah gambar game</DialogTitle>
-            <DialogDescription>
-              Game: <span className="font-medium text-foreground">{game.name}</span>. Perbarui miniatur
-              (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung gambar atau SVG.
-            </DialogDescription>
+            <DialogTitle>{t('gameImageModal.title')}</DialogTitle>
+            <DialogDescription>{t('gameImageModal.description', { name: game.name })}</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {renderUploadBox({
               labelId: thumbnailLabelId,
-              label: 'Miniatur (thumbnail)',
-              requiredMessage: 'Miniatur wajib diunggah',
+              label: t('gameImageModal.thumbnailLabel'),
+              requiredMessage: t('gameImageModal.thumbnailRequired'),
               state: thumbnail,
               inputRef: inputThumbnailRef,
               field: 'thumbnail_url',
@@ -240,8 +239,8 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
 
             {renderUploadBox({
               labelId: bannerLabelId,
-              label: 'Banner',
-              requiredMessage: 'Banner wajib diunggah',
+              label: t('gameImageModal.bannerLabel'),
+              requiredMessage: t('gameImageModal.bannerRequired'),
               state: banner,
               inputRef: inputBannerRef,
               field: 'banner_url',
@@ -255,7 +254,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                 disabled={updateImageMutation.isPending}
                 className="cursor-pointer rounded-xl"
               >
-                Batal
+                {t('gameImageModal.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -265,10 +264,10 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                 {updateImageMutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('gameImageModal.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('gameImageModal.save')
                 )}
               </Button>
             </DialogFooter>

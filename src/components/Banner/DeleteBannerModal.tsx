@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
 import { useDeleteBanner } from '@/hooks/useBanner'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteBannerButton({
   id,
@@ -21,6 +22,7 @@ export function DeleteBannerButton({
   id: string
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const mutation = useDeleteBanner(id)
 
   return (
@@ -34,10 +36,10 @@ export function DeleteBannerButton({
             triggerClassName,
           )}
           disabled={mutation.isPending}
-          aria-label="Hapus banner"
+          aria-label={t('deleteBannerModal.triggerAria')}
         >
           <Trash2 className="h-4 w-4 shrink-0" />
-          <span className="hidden sm:inline">Hapus</span>
+          <span className="hidden sm:inline">{t('deleteBannerModal.triggerLabel')}</span>
         </Button>
       </AlertDialogTrigger>
 
@@ -49,26 +51,25 @@ export function DeleteBannerButton({
                 <Trash2 className="h-4 w-4" aria-hidden />
               </span>
               <AlertDialogTitle className="text-xl font-semibold tracking-tight">
-                Hapus banner?
+                {t('deleteBannerModal.title')}
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-left">
-              Tindakan ini tidak bisa dibatalkan. Banner akan dihapus dari daftar dan tidak lagi tampil
-              di aplikasi.
+              {t('deleteBannerModal.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
 
         <AlertDialogFooter className="gap-2 border-t border-border px-6 py-5 sm:pt-5">
           <AlertDialogCancel className="cursor-pointer sm:min-w-[5.5rem]" disabled={mutation.isPending}>
-            Batal
+            {t('createBannerModal.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             className="cursor-pointer bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]"
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >
-            {mutation.isPending ? 'Menghapus…' : 'Hapus'}
+            {mutation.isPending ? t('deleteBannerModal.deleting') : t('deleteBannerModal.confirmDelete')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

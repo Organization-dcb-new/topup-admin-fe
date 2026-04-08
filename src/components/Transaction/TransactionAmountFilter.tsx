@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownToLine, ArrowUpFromLine, Equal, FilterX } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const AMOUNT_PRESETS = [5_000, 10_000, 50_000, 100_000, 1_000_000] as const
 
@@ -121,43 +122,46 @@ export default function TransactionAmountFilter({
   exactValue,
   onExactChange,
 }: TransactionAmountFilterProps) {
+  const { t } = useTranslation('common')
+  const fmt = (n: number) => n.toLocaleString('id-ID')
+
   return (
     <div className="overflow-hidden rounded-xl border border-border/80 bg-muted/20 px-4 py-1 sm:px-5">
       <AmountFilterRow
-        label="Di atas"
-        hint="Transaksi dengan nominal lebih besar atau sama (≥)."
+        label={t('transactionFilters.amount.min.label')}
+        hint={t('transactionFilters.amount.min.hint')}
         Icon={ArrowUpFromLine}
         symbol="≥"
         value={minValue}
         onChange={onMinChange}
-        placeholder="Minimal manual"
-        ariaInput="Nominal minimum transaksi (manual)"
-        ariaClear="Hapus filter nominal minimum"
-        presetTitle={(n) => `Nominal ≥ ${n.toLocaleString('id-ID')}`}
+        placeholder={t('transactionFilters.amount.min.placeholder')}
+        ariaInput={t('transactionFilters.amount.min.ariaInput')}
+        ariaClear={t('transactionFilters.amount.min.ariaClear')}
+        presetTitle={(n) => t('transactionFilters.amount.min.presetTitle', { amount: fmt(n) })}
       />
       <AmountFilterRow
-        label="Di bawah"
-        hint="Transaksi dengan nominal lebih kecil atau sama (≤)."
+        label={t('transactionFilters.amount.max.label')}
+        hint={t('transactionFilters.amount.max.hint')}
         Icon={ArrowDownToLine}
         symbol="≤"
         value={maxValue}
         onChange={onMaxChange}
-        placeholder="Maksimal manual"
-        ariaInput="Nominal maksimum transaksi (manual)"
-        ariaClear="Hapus filter nominal maksimum"
-        presetTitle={(n) => `Nominal ≤ ${n.toLocaleString('id-ID')}`}
+        placeholder={t('transactionFilters.amount.max.placeholder')}
+        ariaInput={t('transactionFilters.amount.max.ariaInput')}
+        ariaClear={t('transactionFilters.amount.max.ariaClear')}
+        presetTitle={(n) => t('transactionFilters.amount.max.presetTitle', { amount: fmt(n) })}
       />
       <AmountFilterRow
-        label="Tepat"
-        hint="Hanya transaksi dengan nominal sama persis (=)."
+        label={t('transactionFilters.amount.exact.label')}
+        hint={t('transactionFilters.amount.exact.hint')}
         Icon={Equal}
         symbol="="
         value={exactValue}
         onChange={onExactChange}
-        placeholder="Nominal tepat manual"
-        ariaInput="Nominal tepat transaksi (manual)"
-        ariaClear="Hapus filter nominal tepat"
-        presetTitle={(n) => `Nominal = ${n.toLocaleString('id-ID')}`}
+        placeholder={t('transactionFilters.amount.exact.placeholder')}
+        ariaInput={t('transactionFilters.amount.exact.ariaInput')}
+        ariaClear={t('transactionFilters.amount.exact.ariaClear')}
+        presetTitle={(n) => t('transactionFilters.amount.exact.presetTitle', { amount: fmt(n) })}
       />
     </div>
   )

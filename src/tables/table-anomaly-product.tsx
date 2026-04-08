@@ -1,42 +1,45 @@
 import type { Product } from '@/types/product'
 import { cn } from '@/lib/utils'
 import type { ColumnDef } from '@tanstack/react-table'
+import type { TFunction } from 'i18next'
+import i18n from '@/i18n'
 
 function formatRp(value: number | undefined | null) {
   const n = value ?? 0
-  return `Rp ${n.toLocaleString('id-ID')}`
+  const locale = i18n.language.startsWith('id') ? 'id-ID' : 'en-US'
+  return new Intl.NumberFormat(locale, { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n)
 }
 
 /** Kriteria tampilan di kolom ringkasan (selaras dengan filter mental admin). */
-export function getAnomalyIssueLabels(p: Product): string[] {
+export function getAnomalyIssueLabels(p: Product, t: TFunction): string[] {
   const labels: string[] = []
   if (p.selling_price < p.base_price) {
-    labels.push('Harga jual di bawah harga dasar')
+    labels.push(t('anomalyProductTable.issueSellingBelowBase'))
   }
   if ((p.additional_fee ?? 0) < 0) {
-    labels.push('Biaya tambahan minus')
+    labels.push(t('anomalyProductTable.issueNegativeFee'))
   }
   if ((p.additional_percent ?? 0) < 0) {
-    labels.push('Persentase tambahan minus')
+    labels.push(t('anomalyProductTable.issueNegativePercent'))
   }
   return labels
 }
 
-export const anomalyProductTable: ColumnDef<Product>[] = [
+export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => [
   {
     accessorKey: 'name',
-    header: 'Nama produk',
+    header: t('anomalyProductTable.colProductName'),
     cell: ({ row }) => (
       <div className="max-w-[14rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
     ),
   },
   {
     id: 'anomaly_issues',
-    header: 'Masalah terdeteksi',
+    header: t('anomalyProductTable.colDetectedIssues'),
     cell: ({ row }) => {
-      const issues = getAnomalyIssueLabels(row.original)
+      const issues = getAnomalyIssueLabels(row.original, t)
       if (!issues.length) {
-        return <span className="text-xs text-muted-foreground">Tidak dari kriteria ini</span>
+        return <span className="text-xs text-muted-foreground">{t('anomalyProductTable.noIssuesFromCriteria')}</span>
       }
       return (
         <ul className="max-w-[16rem] list-disc space-y-0.5 pl-3.5 text-xs leading-snug text-amber-900 dark:text-amber-100">
@@ -49,7 +52,7 @@ export const anomalyProductTable: ColumnDef<Product>[] = [
   },
   {
     id: 'game',
-    header: 'Game',
+    header: t('anomalyProductTable.colGame'),
     cell: ({ row }) => (
       <span className="max-w-[10rem] truncate text-sm text-foreground sm:max-w-[12rem]">
         {row.original.game?.name ?? '—'}
@@ -58,14 +61,14 @@ export const anomalyProductTable: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'sku',
-    header: 'SKU',
+    header: t('anomalyProductTable.colSku'),
     cell: ({ row }) => (
       <span className="font-mono text-xs tabular-nums text-muted-foreground">{row.original.sku}</span>
     ),
   },
   {
     accessorKey: 'additional_fee',
-    header: 'Biaya tambahan',
+    header: t('anomalyProductTable.colAdditionalFee'),
     cell: ({ row }) => {
       const fee = row.original.additional_fee ?? 0
       const bad = fee < 0
@@ -83,7 +86,7 @@ export const anomalyProductTable: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'additional_percent',
-    header: 'Persentase tambahan',
+    header: t('anomalyProductTable.colAdditionalPercent'),
     cell: ({ row }) => {
       const pct = row.original.additional_percent ?? 0
       const bad = pct < 0
@@ -101,14 +104,14 @@ export const anomalyProductTable: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'base_price',
-    header: 'Harga dasar',
+    header: t('anomalyProductTable.colBasePrice'),
     cell: ({ row }) => (
       <span className="tabular-nums text-sm text-foreground">{formatRp(row.original.base_price)}</span>
     ),
   },
   {
     accessorKey: 'selling_price',
-    header: 'Harga jual',
+    header: t('anomalyProductTable.colSellingPrice'),
     cell: ({ row }) => {
       const bad = row.original.selling_price < row.original.base_price
       return (
@@ -125,10 +128,10 @@ export const anomalyProductTable: ColumnDef<Product>[] = [
   },
   {
     accessorKey: 'stock_quantity',
-    header: 'Stok',
+    header: t('anomalyProductTable.colStock'),
     cell: ({ row }) =>
       row.original.is_unlimited_stock ? (
-        <span className="text-sm text-muted-foreground">Tanpa batas</span>
+        <span className="text-sm text-muted-foreground">{t('anomalyProductTable.stockUnlimited')}</span>
       ) : (
         <span className="tabular-nums text-sm font-medium text-foreground">
           {row.original.stock_quantity}

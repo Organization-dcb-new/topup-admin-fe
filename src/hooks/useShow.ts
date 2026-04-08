@@ -3,6 +3,7 @@ import { api } from '@/api/axios'
 import type { ShowPayload } from '@/components/Show/CreateShowModal'
 import type { ShowResponse } from '@/types/show'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
 type UpdateShowPayload = {
@@ -16,6 +17,7 @@ type UpdateShowPayload = {
 }
 
 export const useGetShows = () => {
+  const { t } = useTranslation('common')
   const query = useQuery<ShowResponse>({
     queryKey: ['shows'],
     queryFn: async () => {
@@ -26,21 +28,21 @@ export const useGetShows = () => {
 
   useEffect(() => {
     if (!query.isPending) return
-    const id = toast.loading('Sedang memuat…')
+    const id = toast.loading(t('showToasts.loading'))
     return () => {
       toast.dismiss(id)
     }
-  }, [query.isPending])
+  }, [query.isPending, t])
 
   useEffect(() => {
     if (!query.isFetchedAfterMount) return
     if (query.isSuccess) {
-      toast.success('Berhasil memuat data show')
+      toast.success(t('showToasts.loadSuccess'))
     }
     if (query.isError) {
-      toast.error('Gagal memuat data show')
+      toast.error(t('showToasts.loadError'))
     }
-  }, [query.isSuccess, query.isError, query.isFetchedAfterMount])
+  }, [query.isSuccess, query.isError, query.isFetchedAfterMount, t])
 
   return query
 }
@@ -48,8 +50,9 @@ export const useGetShows = () => {
 export const useCreateShow = (
   reset: () => void,
   setPreview: (url: string | null) => void,
-  setOpen: (open: boolean) => void
+  setOpen: (open: boolean) => void,
 ) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -58,14 +61,14 @@ export const useCreateShow = (
       return res.data
     },
     onSuccess: () => {
-      toast.success('Show berhasil dibuat')
+      toast.success(t('showToasts.createSuccess'))
       queryClient.invalidateQueries({ queryKey: ['shows'] })
       reset()
       setPreview(null)
       setOpen(false)
     },
     onError: () => {
-      toast.error('Gagal membuat show')
+      toast.error(t('showToasts.createError'))
     },
   })
 
@@ -73,6 +76,7 @@ export const useCreateShow = (
 }
 
 export function useDeleteShow(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -81,11 +85,11 @@ export function useDeleteShow(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Show berhasil dihapus')
+      toast.success(t('showToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['shows'] })
     },
     onError: () => {
-      toast.error('Gagal menghapus show')
+      toast.error(t('showToasts.deleteError'))
     },
   })
 
@@ -93,6 +97,7 @@ export function useDeleteShow(id: string) {
 }
 
 export function useAddGamesToShow(showId: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -101,11 +106,11 @@ export function useAddGamesToShow(showId: string) {
         game_ids: gameIds,
       }),
     onSuccess: () => {
-      toast.success('Daftar game pada show berhasil diperbarui')
+      toast.success(t('showToasts.addGamesSuccess'))
       queryClient.invalidateQueries({ queryKey: ['shows'] })
     },
     onError: () => {
-      toast.error('Gagal memperbarui game pada show')
+      toast.error(t('showToasts.addGamesError'))
     },
   })
 }
@@ -116,18 +121,19 @@ interface UpdateShowProps {
 }
 
 export function useUpdateShow({ id, setOpen }: UpdateShowProps) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (payload: UpdateShowPayload) => api.put(`/shows/${id}`, payload),
 
     onSuccess: () => {
-      toast.success('Show berhasil diperbarui')
+      toast.success(t('showToasts.updateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['shows'] })
       setOpen?.(false)
     },
     onError: () => {
-      toast.error('Gagal memperbarui show')
+      toast.error(t('showToasts.updateError'))
     },
   })
 }

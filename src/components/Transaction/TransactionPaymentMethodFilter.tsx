@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
 import { Check, ChevronsUpDown, CreditCard, FilterX, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface TransactionPaymentMethodFilterProps {
   value: string
@@ -29,16 +30,17 @@ export default function TransactionPaymentMethodFilter({
   value,
   onChange,
 }: TransactionPaymentMethodFilterProps) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const { data, isLoading, isError } = useGetPaymentMethods(1, LIST_LIMIT)
   const methods = data?.data ?? []
 
   const selected = methods.find((m: PaymentMethod) => m.id === value)
   const label = isError
-    ? 'Gagal memuat metode bayar'
+    ? t('transactionFilters.paymentMethod.listError')
     : selected
       ? selected.full_name || selected.name
-      : 'Semua metode'
+      : t('transactionFilters.paymentMethod.allMethods')
 
   return (
     <div className="flex w-full min-w-0 items-center gap-2">
@@ -50,7 +52,7 @@ export default function TransactionPaymentMethodFilter({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              aria-label="Filter payment method"
+              aria-label={t('transactionFilters.paymentMethod.filterAria')}
               disabled={isLoading}
               className={cn(
                 'h-10 w-full min-w-0 justify-between font-normal shadow-xs',
@@ -64,7 +66,9 @@ export default function TransactionPaymentMethodFilter({
               ) : (
                 <CreditCard className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
               )}
-              <span className="truncate">{isLoading ? 'Memuat…' : label}</span>
+              <span className="truncate">
+                {isLoading ? t('transactionFilters.paymentMethod.loading') : label}
+              </span>
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
           </Button>
@@ -74,10 +78,10 @@ export default function TransactionPaymentMethodFilter({
           align="start"
         >
           <Command>
-            <CommandInput placeholder="Cari metode pembayaran…" />
+            <CommandInput placeholder={t('transactionFilters.paymentMethod.commandSearch')} />
             <CommandList>
-              <CommandEmpty>Tidak ada metode yang cocok.</CommandEmpty>
-              <CommandGroup heading="Payment method">
+              <CommandEmpty>{t('transactionFilters.paymentMethod.commandEmpty')}</CommandEmpty>
+              <CommandGroup heading={t('transactionFilters.paymentMethod.groupHeading')}>
                 <CommandItem
                   value="semua-metode"
                   keywords={['semua', 'all']}
@@ -90,7 +94,7 @@ export default function TransactionPaymentMethodFilter({
                     className={cn('mr-2 h-4 w-4 shrink-0', value === '' ? 'opacity-100' : 'opacity-0')}
                     aria-hidden
                   />
-                  Semua metode
+                  {t('transactionFilters.paymentMethod.allMethods')}
                 </CommandItem>
                 {!isError &&
                   methods.map((pm: PaymentMethod) => {
@@ -129,7 +133,7 @@ export default function TransactionPaymentMethodFilter({
           size="icon"
           className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => onChange('')}
-          aria-label="Hapus filter payment method"
+          aria-label={t('transactionFilters.paymentMethod.clearAria')}
         >
           <FilterX className="h-4 w-4" aria-hidden />
         </Button>

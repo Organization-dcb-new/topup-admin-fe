@@ -6,6 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useTranslation } from 'react-i18next'
 
 export type GameActiveFilterValue = 'all' | 'active' | 'inactive'
 
@@ -15,19 +16,21 @@ type Props = {
 }
 
 export function GameActiveFilter({ value, onChange }: Props) {
+  const { t } = useTranslation('common')
+
   return (
     <div className="grid min-w-0 gap-1.5 sm:w-[11rem]">
       <Label htmlFor="game-active-filter" className="text-xs text-muted-foreground">
-        Status
+        {t('gameFilters.statusLabel')}
       </Label>
       <Select value={value} onValueChange={(v) => onChange(v as GameActiveFilterValue)}>
         <SelectTrigger id="game-active-filter" className="w-full min-w-0" size="sm">
-          <SelectValue placeholder="Status" />
+          <SelectValue placeholder={t('gameFilters.statusPlaceholder')} />
         </SelectTrigger>
         <SelectContent position="popper" align="start">
-          <SelectItem value="all">Semua</SelectItem>
-          <SelectItem value="active">Aktif</SelectItem>
-          <SelectItem value="inactive">Nonaktif</SelectItem>
+          <SelectItem value="all">{t('gameFilters.all')}</SelectItem>
+          <SelectItem value="active">{t('gameFilters.active')}</SelectItem>
+          <SelectItem value="inactive">{t('gameFilters.inactive')}</SelectItem>
         </SelectContent>
       </Select>
     </div>

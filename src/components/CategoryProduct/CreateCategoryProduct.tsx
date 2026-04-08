@@ -19,6 +19,7 @@ import { handleFileAutoUpload } from '@/helpers/upload'
 import { useCreateCategoryProduct } from '@/hooks/useCategoryProduct'
 import { useGetGameNamesWithType, type GameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 export type FormValuesCategoryProduct = {
   name: string
@@ -30,6 +31,7 @@ export type FormValuesCategoryProduct = {
 }
 
 export function CreateCategoryProductModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -93,17 +95,17 @@ export function CreateCategoryProductModal() {
         onClick={() => applyOpen(true)}
       >
         <Plus className="h-4 w-4 shrink-0" aria-hidden />
-        Tambah kategori produk
+        {t('categoryProductCreate.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={applyOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Tambah kategori produk
+              {t('categoryProductCreate.title')}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Hubungkan kategori ke satu game. Ikon diunggah otomatis setelah file dipilih.
+              {t('categoryProductCreate.description')}
             </p>
           </DialogHeader>
 
@@ -112,12 +114,12 @@ export function CreateCategoryProductModal() {
 
             <div className="space-y-2">
               <Label htmlFor="ccp-name" className="text-sm font-medium">
-                Nama kategori
+                {t('categoryProductCreate.nameLabel')}
               </Label>
               <Input
                 id="ccp-name"
-                {...register('name', { required: 'Nama wajib diisi' })}
-                placeholder="Contoh: Top-up cepat"
+                {...register('name', { required: t('categoryProductCreate.nameRequired') })}
+                placeholder={t('categoryProductCreate.namePlaceholder')}
                 className="rounded-lg"
                 aria-invalid={!!errors.name}
               />
@@ -126,12 +128,12 @@ export function CreateCategoryProductModal() {
 
             <div className="space-y-2">
               <Label htmlFor="ccp-slug" className="text-sm font-medium">
-                Slug
+                {t('categoryProductCreate.slugLabel')}
               </Label>
               <Input
                 id="ccp-slug"
-                {...register('slug', { required: 'Slug wajib diisi' })}
-                placeholder="top-up-cepat"
+                {...register('slug', { required: t('categoryProductCreate.slugRequired') })}
+                placeholder={t('categoryProductCreate.slugPlaceholder')}
                 className="rounded-lg"
               />
               {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
@@ -139,11 +141,11 @@ export function CreateCategoryProductModal() {
 
             <div className="space-y-2">
               <Label htmlFor="ccp-game" className="text-sm font-medium">
-                Game
+                {t('categoryProductCreate.gameLabel')}
               </Label>
               <select
                 id="ccp-game"
-                {...register('game_id', { required: 'Pilih game' })}
+                {...register('game_id', { required: t('categoryProductCreate.gameRequired') })}
                 className={cn(
                   'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs',
                   'ring-offset-background focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
@@ -151,7 +153,7 @@ export function CreateCategoryProductModal() {
                 )}
               >
                 <option value="" disabled>
-                  — Pilih game —
+                  {t('categoryProductCreate.selectGame')}
                 </option>
                 {dataGameNames?.map((game: GameNames) => (
                   <option key={game.id} value={game.id}>
@@ -166,26 +168,28 @@ export function CreateCategoryProductModal() {
 
             <div className="space-y-2">
               <Label htmlFor="ccp-desc" className="text-sm font-medium">
-                Deskripsi
+                {t('categoryProductCreate.descriptionLabel')}
               </Label>
               <Textarea
                 id="ccp-desc"
                 {...register('description')}
-                placeholder="Deskripsi singkat kategori (opsional)"
+                placeholder={t('categoryProductCreate.descriptionPlaceholder')}
                 rows={3}
                 className="min-h-[4.5rem] resize-y rounded-lg"
               />
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Status</Label>
+              <Label className="text-sm font-medium">{t('categoryProductCreate.statusLabel')}</Label>
               <Controller
                 name="is_active"
                 control={control}
                 render={({ field }) => (
                   <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
                     <span className="text-sm text-muted-foreground">
-                      {field.value ? 'Kategori aktif' : 'Kategori nonaktif'}
+                      {field.value
+                        ? t('categoryProductCreate.statusActive')
+                        : t('categoryProductCreate.statusInactive')}
                     </span>
                     <Switch
                       checked={field.value}
@@ -198,7 +202,7 @@ export function CreateCategoryProductModal() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Ikon</Label>
+              <Label className="text-sm font-medium">{t('categoryProductCreate.iconLabel')}</Label>
 
               <div
                 role="button"
@@ -227,13 +231,13 @@ export function CreateCategoryProductModal() {
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
                     <UploadCloud className="h-6 w-6" aria-hidden />
-                    <span className="text-sm">Klik atau letakkan gambar di sini</span>
+                    <span className="text-sm">{t('categoryProductCreate.iconDropHint')}</span>
                   </div>
                 )}
 
                 {isUploading && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
-                    Mengunggah {uploadProgress}%
+                    {t('categoryProductCreate.uploading', { percent: uploadProgress })}
                   </div>
                 )}
               </div>
@@ -260,7 +264,7 @@ export function CreateCategoryProductModal() {
                 onClick={() => applyOpen(false)}
                 disabled={mutation.isPending}
               >
-                Batal
+                {t('categoryProductCreate.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -270,10 +274,10 @@ export function CreateCategoryProductModal() {
                 {mutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('categoryProductCreate.saving')}
                   </span>
                 ) : (
-                  'Simpan'
+                  t('categoryProductCreate.save')
                 )}
               </Button>
             </DialogFooter>
