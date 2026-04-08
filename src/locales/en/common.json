@@ -37,5 +37,186 @@
       "pemeliharaan": "Maintenance",
       "pengguna": "Users"
     }
+  },
+  "transactionPage": {
+    "toastLoading": "Loading transactions…",
+    "toastError": "Failed to load transactions",
+    "toastSuccess": "Transactions loaded",
+    "title": "Transactions",
+    "subtitle": "Search and filter payments; {{limit}} rows per page.",
+    "loadingShort": "Loading…",
+    "loadFailedShort": "Failed to load",
+    "totalCount": "Total {{count}} transactions",
+    "filtersRegionAria": "Transaction filters",
+    "filterHeading": "Filters",
+    "filtersClickClose": "Click to collapse",
+    "filtersClickOpen": "Click to expand",
+    "resetFiltersAria": "Reset all filters",
+    "resetFilters": "Reset filters",
+    "searchLabel": "Search",
+    "sectionTimeGameStatus": "Time, game, method & status",
+    "dateTimeRange": "Date & time range",
+    "game": "Game",
+    "paymentMethod": "Payment method",
+    "status": "Status",
+    "amountSection": "Transaction amounts",
+    "listTitle": "Transaction list",
+    "listHint": "Amount filters support a lower bound (≥), upper bound (≤), and exact value (=).",
+    "tableLoadingTitle": "Loading transactions…",
+    "tableLoadingHint": "Please wait a moment.",
+    "loadErrorDetail": "Failed to load transactions. Check your connection or try reloading the page.",
+    "emptyPage": "No transactions on this page."
+  },
+  "paymentStatus": {
+    "PAID": "Paid",
+    "PENDING": "Pending",
+    "FAILED": "Failed",
+    "EXPIRED": "Expired"
+  },
+  "paymentChannel": {
+    "gopay": "GoPay",
+    "va": "Virtual account",
+    "qris": "QRIS",
+    "shopeepay": "ShopeePay"
+  },
+  "transactionFilters": {
+    "search": {
+      "placeholder": "Search transactions",
+      "ariaLabel": "Search transactions"
+    },
+    "date": {
+      "pickAria": "Choose transaction date and time range",
+      "placeholderButton": "Date & time range",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "clearAria": "Clear date filter"
+    },
+    "game": {
+      "listError": "Failed to load games",
+      "allGames": "All games",
+      "loading": "Loading games…",
+      "filterAria": "Filter by game",
+      "commandSearch": "Search game name…",
+      "commandEmpty": "No matching games.",
+      "groupHeading": "Game",
+      "clearAria": "Clear game filter"
+    },
+    "paymentMethod": {
+      "listError": "Failed to load payment methods",
+      "allMethods": "All methods",
+      "loading": "Loading…",
+      "filterAria": "Filter by payment method",
+      "commandSearch": "Search payment method…",
+      "commandEmpty": "No matching methods.",
+      "groupHeading": "Payment method",
+      "clearAria": "Clear payment method filter"
+    },
+    "status": {
+      "filterAria": "Filter payment status",
+      "placeholderAll": "All statuses",
+      "optionAll": "All statuses",
+      "clearAria": "Clear status filter"
+    },
+    "amount": {
+      "min": {
+        "label": "Greater than",
+        "hint": "Transactions with amount greater than or equal (≥).",
+        "placeholder": "Min (manual)",
+        "ariaInput": "Minimum amount (manual)",
+        "ariaClear": "Clear minimum amount filter",
+        "presetTitle": "Amount ≥ {{amount}}"
+      },
+      "max": {
+        "label": "Less than",
+        "hint": "Transactions with amount less than or equal (≤).",
+        "placeholder": "Max (manual)",
+        "ariaInput": "Maximum amount (manual)",
+        "ariaClear": "Clear maximum amount filter",
+        "presetTitle": "Amount ≤ {{amount}}"
+      },
+      "exact": {
+        "label": "Exact",
+        "hint": "Only transactions with exactly this amount (=).",
+        "placeholder": "Exact amount (manual)",
+        "ariaInput": "Exact amount (manual)",
+        "ariaClear": "Clear exact amount filter",
+        "presetTitle": "Amount = {{amount}}"
+      }
+    }
+  },
+  "transactionTable": {
+    "copySuccess": "ID copied",
+    "copyError": "Failed to copy ID",
+    "colTransactionId": "Transaction ID",
+    "colTransactionIdSub": "Detail · copy ID",
+    "openDetailTitle": "Open transaction detail — {{id}}",
+    "openDetailAria": "Open transaction detail {{id}}",
+    "copyIdTitle": "Copy transaction ID",
+    "copyIdAria": "Copy transaction ID",
+    "colPayNumber": "Pay number",
+    "colApp": "Application",
+    "colOrderId": "Order ID",
+    "colAmount": "Amount",
+    "colMargin": "Margin",
+    "colChannel": "Channel",
+    "colVa": "VA number",
+    "colStatus": "Status",
+    "colCreated": "Created"
+  },
+  "transactionDetail": {
+    "backAria": "Back",
+    "pageTitle": "Transaction detail",
+    "subtitlePending": "Complete payment before it expires.",
+    "subtitleDefault": "Payment and order information.",
+    "payInstructions": "Payment instructions",
+    "paymentReceived": "Payment received successfully.",
+    "paymentFailed": "Payment failed.",
+    "paymentExpired": "Payment expired.",
+    "sectionPayment": "Payment",
+    "sectionOrder": "Order",
+    "labelTransactionNumber": "Transaction number",
+    "labelPayNumber": "Pay number",
+    "labelOrderId": "Order ID",
+    "labelEmail": "Email",
+    "labelOrderNumber": "Order number",
+    "labelSku": "SKU",
+    "labelProduct": "Product",
+    "labelQuantity": "Quantity",
+    "labelOrderStatus": "Order status",
+    "labelMargin": "Margin",
+    "created": "Created",
+    "wibSuffix": "(WIB)",
+    "voucherCode": "Voucher code",
+    "paymentEmail": "Payment email",
+    "resendVoucher": "Resend voucher",
+    "resendEmail": "Resend email",
+    "waitTime": "Wait {{time}}",
+    "dialogPaymentTitle": "Payment instructions",
+    "dialogPaymentDescription": "{{channel}} — complete before the deadline.",
+    "loadingInstructions": "Loading instructions…",
+    "gopay": {
+      "qrAlt": "GoPay QR",
+      "scanHint": "Scan the QR with the GoPay app",
+      "openButton": "Open GoPay"
+    },
+    "shopeepay": {
+      "redirectHint": "You will be redirected to the ShopeePay app",
+      "openButton": "Open ShopeePay",
+      "footnote": "Complete payment in the Shopee app"
+    },
+    "qris": {
+      "scanHint": "Scan the QR with mobile banking or an e-wallet",
+      "qrAlt": "QRIS",
+      "waitingHint": "Waiting for payment confirmation"
+    },
+    "va": {
+      "label": "Virtual account number",
+      "hint": "Complete the transfer before the deadline"
+    },
+    "copy": {
+      "ariaCopied": "Copied",
+      "ariaCopy": "Copy to clipboard"
+    },
+    "itemCount": "{{count}} item"
   }
 }

@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface TransactionInputProps {
   value: string
@@ -8,6 +9,7 @@ interface TransactionInputProps {
 }
 
 export default function TransactionSearchInput({ value, onChange, id }: TransactionInputProps) {
+  const { t } = useTranslation('common')
   return (
     <div className="relative w-full min-w-0">
       <Search
@@ -19,11 +21,11 @@ export default function TransactionSearchInput({ value, onChange, id }: Transact
         type="search"
         enterKeyHint="search"
         autoComplete="off"
-        placeholder="Cari transaksi"
+        placeholder={t('transactionFilters.search.placeholder')}
         className="h-10 pl-9"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        aria-label="Cari transaksi"
+        aria-label={t('transactionFilters.search.ariaLabel')}
       />
     </div>
   )

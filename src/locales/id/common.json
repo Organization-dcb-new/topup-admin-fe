@@ -37,5 +37,186 @@
       "pemeliharaan": "Pemeliharaan",
       "pengguna": "Pengguna"
     }
+  },
+  "transactionPage": {
+    "toastLoading": "Memuat transaksi…",
+    "toastError": "Gagal memuat transaksi",
+    "toastSuccess": "Berhasil memuat transaksi",
+    "title": "Transaksi",
+    "subtitle": "Cari dan saring pembayaran; paginasi {{limit}} baris per halaman.",
+    "loadingShort": "Memuat…",
+    "loadFailedShort": "Gagal memuat",
+    "totalCount": "Total {{count}} transaksi",
+    "filtersRegionAria": "Filter transaksi",
+    "filterHeading": "Filter",
+    "filtersClickClose": "Klik untuk menutup",
+    "filtersClickOpen": "Klik untuk membuka",
+    "resetFiltersAria": "Reset semua filter",
+    "resetFilters": "Reset filter",
+    "searchLabel": "Pencarian",
+    "sectionTimeGameStatus": "Waktu, game, metode & status",
+    "dateTimeRange": "Rentang tanggal & waktu",
+    "game": "Game",
+    "paymentMethod": "Metode pembayaran",
+    "status": "Status",
+    "amountSection": "Nominal transaksi",
+    "listTitle": "Daftar transaksi",
+    "listHint": "Filter nominal mendukung batas bawah (≥), batas atas (≤), dan nilai tepat (=).",
+    "tableLoadingTitle": "Memuat transaksi…",
+    "tableLoadingHint": "Mohon tunggu sebentar.",
+    "loadErrorDetail": "Gagal memuat transaksi. Periksa koneksi atau coba muat ulang halaman.",
+    "emptyPage": "Tidak ada transaksi pada halaman ini."
+  },
+  "paymentStatus": {
+    "PAID": "Lunas",
+    "PENDING": "Menunggu",
+    "FAILED": "Gagal",
+    "EXPIRED": "Kadaluarsa"
+  },
+  "paymentChannel": {
+    "gopay": "GoPay",
+    "va": "Virtual account",
+    "qris": "QRIS",
+    "shopeepay": "ShopeePay"
+  },
+  "transactionFilters": {
+    "search": {
+      "placeholder": "Cari transaksi",
+      "ariaLabel": "Cari transaksi"
+    },
+    "date": {
+      "pickAria": "Pilih rentang tanggal dan waktu transaksi",
+      "placeholderButton": "Rentang tanggal & waktu",
+      "startTime": "Jam mulai",
+      "endTime": "Jam selesai",
+      "clearAria": "Hapus filter tanggal"
+    },
+    "game": {
+      "listError": "Gagal memuat daftar game",
+      "allGames": "Semua game",
+      "loading": "Memuat game…",
+      "filterAria": "Filter berdasarkan game",
+      "commandSearch": "Cari nama game…",
+      "commandEmpty": "Tidak ada game yang cocok.",
+      "groupHeading": "Game",
+      "clearAria": "Hapus filter game"
+    },
+    "paymentMethod": {
+      "listError": "Gagal memuat metode bayar",
+      "allMethods": "Semua metode",
+      "loading": "Memuat…",
+      "filterAria": "Filter metode pembayaran",
+      "commandSearch": "Cari metode pembayaran…",
+      "commandEmpty": "Tidak ada metode yang cocok.",
+      "groupHeading": "Metode pembayaran",
+      "clearAria": "Hapus filter metode pembayaran"
+    },
+    "status": {
+      "filterAria": "Filter status pembayaran",
+      "placeholderAll": "Semua status",
+      "optionAll": "Semua status",
+      "clearAria": "Hapus filter status"
+    },
+    "amount": {
+      "min": {
+        "label": "Di atas",
+        "hint": "Transaksi dengan nominal lebih besar atau sama (≥).",
+        "placeholder": "Minimal manual",
+        "ariaInput": "Nominal minimum transaksi (manual)",
+        "ariaClear": "Hapus filter nominal minimum",
+        "presetTitle": "Nominal ≥ {{amount}}"
+      },
+      "max": {
+        "label": "Di bawah",
+        "hint": "Transaksi dengan nominal lebih kecil atau sama (≤).",
+        "placeholder": "Maksimal manual",
+        "ariaInput": "Nominal maksimum transaksi (manual)",
+        "ariaClear": "Hapus filter nominal maksimum",
+        "presetTitle": "Nominal ≤ {{amount}}"
+      },
+      "exact": {
+        "label": "Tepat",
+        "hint": "Hanya transaksi dengan nominal sama persis (=).",
+        "placeholder": "Nominal tepat manual",
+        "ariaInput": "Nominal tepat transaksi (manual)",
+        "ariaClear": "Hapus filter nominal tepat",
+        "presetTitle": "Nominal = {{amount}}"
+      }
+    }
+  },
+  "transactionTable": {
+    "copySuccess": "ID disalin",
+    "copyError": "Gagal menyalin ID",
+    "colTransactionId": "ID transaksi",
+    "colTransactionIdSub": "Detail · salin ID",
+    "openDetailTitle": "Buka detail transaksi — {{id}}",
+    "openDetailAria": "Buka detail transaksi {{id}}",
+    "copyIdTitle": "Salin ID transaksi",
+    "copyIdAria": "Salin ID transaksi",
+    "colPayNumber": "Nomor bayar",
+    "colApp": "Aplikasi",
+    "colOrderId": "ID pesanan",
+    "colAmount": "Nominal",
+    "colMargin": "Margin",
+    "colChannel": "Kanal",
+    "colVa": "Nomor VA",
+    "colStatus": "Status",
+    "colCreated": "Dibuat"
+  },
+  "transactionDetail": {
+    "backAria": "Kembali",
+    "pageTitle": "Detail transaksi",
+    "subtitlePending": "Selesaikan pembayaran sebelum kedaluwarsa.",
+    "subtitleDefault": "Informasi pembayaran dan pesanan.",
+    "payInstructions": "Instruksi pembayaran",
+    "paymentReceived": "Pembayaran berhasil diterima.",
+    "paymentFailed": "Pembayaran gagal.",
+    "paymentExpired": "Pembayaran kedaluwarsa.",
+    "sectionPayment": "Pembayaran",
+    "sectionOrder": "Pesanan",
+    "labelTransactionNumber": "Nomor Transaksi",
+    "labelPayNumber": "Nomor bayar",
+    "labelOrderId": "ID pesanan",
+    "labelEmail": "Email",
+    "labelOrderNumber": "Nomor pesanan",
+    "labelSku": "SKU",
+    "labelProduct": "Produk",
+    "labelQuantity": "Jumlah",
+    "labelOrderStatus": "Status pesanan",
+    "labelMargin": "Margin",
+    "created": "Dibuat",
+    "wibSuffix": "(WIB)",
+    "voucherCode": "Kode voucher",
+    "paymentEmail": "Email pembayaran",
+    "resendVoucher": "Kirim ulang voucher",
+    "resendEmail": "Kirim ulang email",
+    "waitTime": "Tunggu {{time}}",
+    "dialogPaymentTitle": "Instruksi pembayaran",
+    "dialogPaymentDescription": "{{channel}} — selesaikan sebelum batas waktu.",
+    "loadingInstructions": "Memuat instruksi…",
+    "gopay": {
+      "qrAlt": "QR GoPay",
+      "scanHint": "Pindai QR dengan aplikasi GoPay",
+      "openButton": "Buka GoPay"
+    },
+    "shopeepay": {
+      "redirectHint": "Anda akan diarahkan ke aplikasi ShopeePay",
+      "openButton": "Buka ShopeePay",
+      "footnote": "Selesaikan pembayaran di aplikasi Shopee"
+    },
+    "qris": {
+      "scanHint": "Pindai QR dengan mobile banking atau dompet digital",
+      "qrAlt": "QRIS",
+      "waitingHint": "Menunggu konfirmasi pembayaran"
+    },
+    "va": {
+      "label": "Nomor virtual account",
+      "hint": "Selesaikan transfer sebelum batas waktu"
+    },
+    "copy": {
+      "ariaCopied": "Disalin",
+      "ariaCopy": "Salin ke papan klip"
+    },
+    "itemCount": "{{count}} item"
   }
 }

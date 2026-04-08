@@ -8,15 +8,11 @@ import {
 } from '@/components/ui/select'
 import type { Payment } from '@/types/transaction'
 import { FilterX, ListFilter } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const ALL = '__all__'
 
-const OPTIONS: { value: Payment['status']; label: string }[] = [
-  { value: 'PAID', label: 'Lunas' },
-  { value: 'PENDING', label: 'Menunggu' },
-  { value: 'FAILED', label: 'Gagal' },
-  { value: 'EXPIRED', label: 'Kadaluarsa' },
-]
+const STATUS_ORDER: Payment['status'][] = ['PAID', 'PENDING', 'FAILED', 'EXPIRED']
 
 interface TransactionStatusFilterProps {
   value: '' | Payment['status']
@@ -24,6 +20,7 @@ interface TransactionStatusFilterProps {
 }
 
 export default function TransactionStatusFilter({ value, onChange }: TransactionStatusFilterProps) {
+  const { t } = useTranslation('common')
   const selectValue = value === '' ? ALL : value
 
   return (
@@ -35,19 +32,19 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
         >
           <SelectTrigger
             className="h-10 w-full min-w-0 font-normal shadow-xs"
-            aria-label="Filter status pembayaran"
+            aria-label={t('transactionFilters.status.filterAria')}
           >
             <ListFilter className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
-            <SelectValue placeholder="Semua status" />
+            <SelectValue placeholder={t('transactionFilters.status.placeholderAll')} />
           </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={ALL}>Semua status</SelectItem>
-          {OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
+          <SelectContent>
+            <SelectItem value={ALL}>{t('transactionFilters.status.optionAll')}</SelectItem>
+            {STATUS_ORDER.map((opt) => (
+              <SelectItem key={opt} value={opt}>
+                {t(`paymentStatus.${opt}`)}
+              </SelectItem>
+            ))}
+          </SelectContent>
         </Select>
       </div>
       {value !== '' && (
@@ -57,7 +54,7 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
           size="icon"
           className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => onChange('')}
-          aria-label="Hapus filter status"
+          aria-label={t('transactionFilters.status.clearAria')}
         >
           <FilterX className="h-4 w-4" aria-hidden />
         </Button>
