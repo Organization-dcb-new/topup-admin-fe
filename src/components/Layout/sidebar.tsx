@@ -78,11 +78,12 @@ export function Sidebar({
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-white transition-[width,transform] duration-300 ease-out',
+          'z-50 flex min-h-0 flex-col overflow-hidden border-r bg-white transition-[width,transform] duration-300 ease-out',
+          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:max-h-[100dvh]',
           'w-64 max-md:max-w-[min(100vw-1rem,16rem)]',
           railCollapsed && 'md:w-20',
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-          'md:static md:max-w-none',
+          'md:sticky md:top-0 md:h-screen md:max-h-screen md:shrink-0 md:self-start md:max-w-none',
         )}
       >
         <div
@@ -128,7 +129,7 @@ export function Sidebar({
 
         <nav
           className={cn(
-            'min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden py-3',
+            'min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden overscroll-y-contain py-3',
             railCollapsed ? 'px-1.5 md:px-1' : 'px-2',
           )}
         >
