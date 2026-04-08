@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils'
 import type { BlogFormValues } from '../types/blog'
 import type { UseMutationResult } from '@tanstack/react-query'
 import { Loader2, UploadCloud } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 interface ThumbnailProps {
   formData: BlogFormValues
@@ -10,17 +11,18 @@ interface ThumbnailProps {
 }
 
 export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) {
+  const { t } = useTranslation('common')
   const isUploading = uploadMutation.isPending
 
   return (
     <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 transition-shadow hover:shadow-md">
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Gambar thumbnail
+          {t('blogThumbnail.label')}
         </p>
         {formData.thumbnail && !isUploading && (
           <Badge variant="secondary" className="text-[10px] font-normal">
-            16:9
+            {t('blogThumbnail.ratioBadge')}
           </Badge>
         )}
       </div>
@@ -36,7 +38,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
         {formData.thumbnail ? (
           <img
             src={formData.thumbnail}
-            alt="Pratinjau thumbnail"
+            alt={t('blogThumbnail.previewAlt')}
             className={cn(
               'h-full w-full object-cover transition-opacity duration-300',
               isUploading && 'opacity-40',
@@ -52,7 +54,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
               aria-hidden
             />
             <p className="text-xs font-medium text-muted-foreground">
-              {isUploading ? 'Mengunggah…' : 'Klik atau pilih file gambar'}
+              {isUploading ? t('blogThumbnail.uploading') : t('blogThumbnail.uploadHint')}
             </p>
           </div>
         )}
@@ -74,7 +76,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
             'absolute inset-0 cursor-pointer opacity-0',
             isUploading && 'cursor-not-allowed',
           )}
-          aria-label="Unggah thumbnail"
+          aria-label={t('blogThumbnail.uploadAria')}
           onChange={(e) => {
             const file = e.target.files?.[0]
             if (file) uploadMutation.mutate(file)
@@ -82,9 +84,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
         />
       </div>
 
-      <p className="mt-2 text-center text-[10px] text-muted-foreground">
-        Disarankan 1280×720 px (rasio 16:9)
-      </p>
+      <p className="mt-2 text-center text-[10px] text-muted-foreground">{t('blogThumbnail.sizeHint')}</p>
     </div>
   )
 }

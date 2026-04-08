@@ -294,6 +294,112 @@
     "loadErrorDetail": "Failed to load banners. Check your connection or try reloading the page.",
     "emptyPage": "No banners yet. Add one with the Add banner button above."
   },
+  "blogPage": {
+    "title": "Blog",
+    "subtitle": "Manage articles: view the list, create a new post, or edit published content. Use the buttons in the workspace below to switch modes.",
+    "listHeading": "Blog list",
+    "createHeading": "New article",
+    "editHeading": "Edit article",
+    "addArticle": "Add article",
+    "backToList": "Back to list"
+  },
+  "blogTable": {
+    "colThumbnail": "Image",
+    "colTitle": "Title",
+    "colCategory": "Category",
+    "colTags": "Tags",
+    "noTags": "No tags",
+    "colStatus": "Status",
+    "statusPublished": "Published",
+    "statusDraft": "Draft"
+  },
+  "blogList": {
+    "loadingTitle": "Loading articles…",
+    "loadingHint": "Please wait a moment.",
+    "loadError": "Failed to load articles. Check your connection or try again later.",
+    "emptyTitle": "No articles yet",
+    "emptyHint": "Add your first article with the Add article button above.",
+    "emptyPageRow": "No articles on this page."
+  },
+  "blogManage": {
+    "excerptLabel": "Summary (excerpt)",
+    "excerptPlaceholder": "Short summary for the article list and SEO…",
+    "statusLabel": "Status",
+    "publishedChangesHint": "Changes to published articles appear on the public site immediately."
+  },
+  "blogField": {
+    "titlePlaceholder": "Article title…",
+    "titleAria": "Article title",
+    "editorPlaceholder": "Write content here (Markdown supported)…"
+  },
+  "blogThumbnail": {
+    "label": "Thumbnail image",
+    "ratioBadge": "16:9",
+    "previewAlt": "Thumbnail preview",
+    "uploading": "Uploading…",
+    "uploadHint": "Click or choose an image file",
+    "uploadAria": "Upload thumbnail",
+    "sizeHint": "Recommended 1280×720 px (16:9)"
+  },
+  "blogCategory": {
+    "gameCategoryTitle": "Game category",
+    "selectPlaceholder": "Choose a game category",
+    "searchPlaceholder": "Search games…",
+    "searchAria": "Search categories",
+    "noResults": "No results",
+    "tagsTitle": "Tags / keywords",
+    "tagsInputPlaceholder": "Type a tag, Enter or comma",
+    "tagsInputAria": "Add tag",
+    "removeTagAria": "Remove tag {{tag}}",
+    "quickAddTitle": "Quick add from games",
+    "quickSearchPlaceholder": "Search…",
+    "quickSearchAria": "Search tag suggestions",
+    "noMatchingCategories": "No matching categories"
+  },
+  "blogPublish": {
+    "sectionTitle": "Publication status",
+    "radiogroupAria": "Publication status",
+    "publishedLabel": "Published",
+    "publishedDesc": "Visible on the public site",
+    "draftLabel": "Draft",
+    "draftDesc": "Admin panel only",
+    "processing": "Processing…",
+    "saveChanges": "Save changes",
+    "publish": "Publish",
+    "saveDraft": "Save draft"
+  },
+  "deleteBlogModal": {
+    "triggerAria": "Delete article",
+    "triggerLabel": "Delete",
+    "title": "Delete article?",
+    "description": "This cannot be undone. The article will be permanently removed from the server.",
+    "cancel": "Cancel",
+    "deleting": "Deleting…",
+    "confirmDelete": "Delete"
+  },
+  "blogRowActions": {
+    "actionsHeader": "Actions",
+    "rowGroupAria": "Actions for this article",
+    "editAria": "Edit article",
+    "editLabel": "Edit"
+  },
+  "blogToasts": {
+    "thumbnailUploadSuccess": "Thumbnail uploaded",
+    "thumbnailUploadError": "Failed to upload image",
+    "updateSuccess": "Article updated",
+    "publishSuccess": "Article published",
+    "draftSavedSuccess": "Article saved as draft",
+    "serverErrorFallback": "A server error occurred",
+    "updateFailed": "Failed to update article: {{error}}",
+    "saveFailed": "Failed to save article: {{error}}",
+    "loadingList": "Loading article list…",
+    "loadError": "Failed to load article list",
+    "emptyList": "No articles yet",
+    "loadSuccess": "Article list loaded",
+    "deleteLoading": "Deleting article…",
+    "deleteSuccess": "Article deleted",
+    "deleteError": "Failed to delete article"
+  },
   "bannerTable": {
     "colImage": "Image",
     "colRedirectLink": "Redirect link",

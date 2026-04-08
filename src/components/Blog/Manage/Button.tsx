@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { BlogFormBlogMutationResult } from '../hooks/useBlog'
 import { Loader2, Save, Send } from 'lucide-react'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface ButtonManageProps {
   handlePublish: (status: 'draft' | 'published') => void
@@ -12,19 +14,6 @@ interface ButtonManageProps {
   onStatusChange: (status: 'draft' | 'published') => void
 }
 
-const statusOptions = [
-  {
-    id: 'published' as const,
-    label: 'Terbit',
-    desc: 'Terlihat di halaman publik',
-  },
-  {
-    id: 'draft' as const,
-    label: 'Draf',
-    desc: 'Hanya di panel admin',
-  },
-]
-
 export default function ButtonManage({
   blogMutation,
   handlePublish,
@@ -33,16 +22,34 @@ export default function ButtonManage({
   currentStatusValue,
   onStatusChange,
 }: ButtonManageProps) {
+  const { t } = useTranslation('common')
   const isPending = blogMutation.isPending
   const isDisabled = isPending || !isFormValid
+
+  const statusOptions = useMemo(
+    () =>
+      [
+        {
+          id: 'published' as const,
+          label: t('blogPublish.publishedLabel'),
+          desc: t('blogPublish.publishedDesc'),
+        },
+        {
+          id: 'draft' as const,
+          label: t('blogPublish.draftLabel'),
+          desc: t('blogPublish.draftDesc'),
+        },
+      ] as const,
+    [t],
+  )
 
   return (
     <div className="space-y-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5">
       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Status publikasi
+        {t('blogPublish.sectionTitle')}
       </p>
 
-      <div className="space-y-2" role="radiogroup" aria-label="Status publikasi">
+      <div className="space-y-2" role="radiogroup" aria-label={t('blogPublish.radiogroupAria')}>
         {statusOptions.map((item) => {
           const selected = currentStatusValue === item.id
           return (
@@ -93,17 +100,17 @@ export default function ButtonManage({
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
-              Memproses…
+              {t('blogPublish.processing')}
             </>
           ) : isEdit ? (
             <>
               <Save className="mr-2 h-4 w-4" aria-hidden />
-              Simpan perubahan
+              {t('blogPublish.saveChanges')}
             </>
           ) : (
             <>
               <Send className="mr-2 h-4 w-4" aria-hidden />
-              {currentStatusValue === 'published' ? 'Publikasikan' : 'Simpan draf'}
+              {currentStatusValue === 'published' ? t('blogPublish.publish') : t('blogPublish.saveDraft')}
             </>
           )}
         </Button>

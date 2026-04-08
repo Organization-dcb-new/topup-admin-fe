@@ -7,6 +7,7 @@ import type { Blog } from '@/tables/table-blog'
 import { useBlogForm } from '../hooks/useBlog'
 import { useCallback, useEffect } from 'react'
 import 'react-markdown-editor-lite/lib/index.css'
+import { useTranslation } from 'react-i18next'
 import ButtonManage from './Button'
 import Category from './Category'
 import Field from './Field'
@@ -27,11 +28,8 @@ interface ManageProps {
 
 const EXCERPT_MAX_LENGTH = 150
 
-function statusLabel(status: 'draft' | 'published') {
-  return status === 'published' ? 'Terbit' : 'Draf'
-}
-
 export default function ManageBlog({ setView, initialData, isEdit = false }: ManageProps) {
+  const { t } = useTranslation('common')
   const {
     formData,
     setFormData,
@@ -65,6 +63,9 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
     }
   }, [isEdit, initialData, setFormData])
 
+  const statusLabel = (status: 'draft' | 'published') =>
+    status === 'published' ? t('blogTable.statusPublished') : t('blogTable.statusDraft')
+
   return (
     <div className="grid animate-in grid-cols-1 gap-8 fade-in duration-500 lg:grid-cols-4">
       <div className="space-y-6 lg:col-span-3">
@@ -79,7 +80,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
         <div className="space-y-2 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 sm:p-5">
           <div className="flex items-center justify-between gap-2">
             <Label htmlFor="blog-excerpt" className="text-xs font-semibold text-muted-foreground">
-              Ringkasan (excerpt)
+              {t('blogManage.excerptLabel')}
             </Label>
             <span
               className={cn(
@@ -94,7 +95,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
           </div>
           <Textarea
             id="blog-excerpt"
-            placeholder="Ringkasan singkat untuk daftar artikel dan SEO…"
+            placeholder={t('blogManage.excerptPlaceholder')}
             value={formData.excerpt}
             maxLength={EXCERPT_MAX_LENGTH}
             onChange={(e) => updateField('excerpt', e.target.value)}
@@ -115,7 +116,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
             )}
           >
             <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Status
+              {t('blogManage.statusLabel')}
             </span>
             <Badge
               variant={formData.status === 'published' ? 'default' : 'secondary'}
@@ -144,7 +145,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
         {isEdit && (
           <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 ring-1 ring-gray-900/5">
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik.
+              {t('blogManage.publishedChangesHint')}
             </p>
           </div>
         )}
