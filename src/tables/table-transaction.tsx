@@ -39,10 +39,12 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
   const copyTransactionId = async (value: string) => {
     try {
       await navigator.clipboard.writeText(value)
-      toast.success(t('transactionTable.copySuccess'))
     } catch {
       toast.error(t('transactionTable.copyError'))
+      return
     }
+    // Separate from clipboard try/catch: if toast.success throws, we must not show copy failure.
+    toast.success(t('transactionTable.copySuccess'))
   }
 
   return [
