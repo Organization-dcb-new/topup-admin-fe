@@ -3,7 +3,8 @@ import { initReactI18next } from 'react-i18next'
 import enCommon from '@/locales/en/common.json'
 import idCommon from '@/locales/id/common.json'
 
-const STORAGE_KEY = 'i18n_lang'
+/** Bumped so a prior default of `id` under the old key does not override project default `en`. */
+const STORAGE_KEY = 'pg_admin_locale'
 
 function getStoredLng(): 'en' | 'id' {
   try {
@@ -12,7 +13,7 @@ function getStoredLng(): 'en' | 'id' {
   } catch {
     /* ignore */
   }
-  return 'id'
+  return 'en'
 }
 
 function syncHtmlLang(lng: string) {
@@ -28,7 +29,10 @@ void i18n.use(initReactI18next).init({
     en: { common: enCommon },
   },
   lng: getStoredLng(),
-  fallbackLng: 'id',
+  fallbackLng: 'en',
+  supportedLngs: ['en', 'id'],
+  /** Use `en` / `id` only (no `en-US` etc.) so UI state matches `changeLanguage`. */
+  load: 'languageOnly',
   defaultNS: 'common',
   ns: ['common'],
   interpolation: { escapeValue: false },

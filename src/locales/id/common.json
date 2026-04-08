@@ -1,5 +1,41 @@
 {
   "sidebar": {
-    "languageToggleAria": "Ganti bahasa"
+    "languageToggleAria": "Ganti bahasa",
+    "expandRail": "Perluas menu samping",
+    "collapseRail": "Ciutkan menu samping",
+    "closeMenu": "Tutup menu",
+    "logout": "Keluar",
+    "logoutAria": "Keluar dari akun",
+    "confirmLogoutTitle": "Konfirmasi keluar",
+    "confirmLogoutDescription": "Apakah Anda yakin ingin keluar dari akun?",
+    "cancel": "Batal",
+    "sectionDataMaster": "Data master",
+    "menu": {
+      "dasbor": "Dasbor",
+      "transaksi": "Transaksi",
+      "ikhtisar": "Ikhtisar",
+      "rekap": "Rekap",
+      "pesanan": "Pesanan",
+      "konten": "Konten",
+      "banner": "Banner",
+      "acara": "Acara",
+      "artikel": "Artikel",
+      "inventaris": "Inventaris",
+      "game": "Game",
+      "produk": "Produk",
+      "kategoriProduk": "Kategori produk",
+      "produkAnomali": "Produk anomali",
+      "kategori": "Kategori",
+      "fieldInput": "Field input",
+      "pembayaran": "Pembayaran",
+      "metode": "Metode",
+      "kategoriPembayaran": "Kategori pembayaran",
+      "penyedia": "Penyedia",
+      "keamanan": "Keamanan",
+      "twoFa": "2FA",
+      "pembatasLaju": "Pembatas laju",
+      "pemeliharaan": "Pemeliharaan",
+      "pengguna": "Pengguna"
+    }
   }
 }

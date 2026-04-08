@@ -1,5 +1,41 @@
 {
   "sidebar": {
-    "languageToggleAria": "Switch language"
+    "languageToggleAria": "Switch language",
+    "expandRail": "Expand sidebar",
+    "collapseRail": "Collapse sidebar",
+    "closeMenu": "Close menu",
+    "logout": "Log out",
+    "logoutAria": "Log out of account",
+    "confirmLogoutTitle": "Confirm log out",
+    "confirmLogoutDescription": "Are you sure you want to log out?",
+    "cancel": "Cancel",
+    "sectionDataMaster": "Master data",
+    "menu": {
+      "dasbor": "Dashboard",
+      "transaksi": "Transactions",
+      "ikhtisar": "Overview",
+      "rekap": "Summary",
+      "pesanan": "Orders",
+      "konten": "Content",
+      "banner": "Banner",
+      "acara": "Shows",
+      "artikel": "Articles",
+      "inventaris": "Inventory",
+      "game": "Games",
+      "produk": "Products",
+      "kategoriProduk": "Product categories",
+      "produkAnomali": "Anomaly products",
+      "kategori": "Categories",
+      "fieldInput": "Input fields",
+      "pembayaran": "Payment",
+      "metode": "Methods",
+      "kategoriPembayaran": "Payment categories",
+      "penyedia": "Provider",
+      "keamanan": "Security",
+      "twoFa": "2FA",
+      "pembatasLaju": "Rate limit",
+      "pemeliharaan": "Maintenance",
+      "pengguna": "Users"
+    }
   }
 }
