@@ -218,5 +218,42 @@
       "ariaCopy": "Copy to clipboard"
     },
     "itemCount": "{{count}} item"
+  },
+  "summaryPage": {
+    "title": "Summary",
+    "subtitle": "Transaction report by date range and time grouping. {{limit}} rows per page.",
+    "loadingShort": "Loading…",
+    "loadFailedShort": "Failed to load",
+    "totalRows": "Total {{count}} rows",
+    "tableLoadingTitle": "Loading summary…",
+    "tableLoadingHint": "Please wait a moment.",
+    "loadErrorDetail": "Failed to load summary. Check your connection or try reloading the page.",
+    "detailSectionTitle": "Details by period",
+    "detailSectionHint": "Data matches the date filter and grouping. Use pagination below.",
+    "emptyPage": "No summary data on this page."
+  },
+  "summaryCard": {
+    "title": "Aggregate summary",
+    "description": "Figures follow the date range and grouping in the filter.",
+    "totalPg": "Total in (PG)",
+    "modalProvider": "Cost (provider)",
+    "grossProfit": "Gross profit",
+    "badgeProfit": "Profit",
+    "badgeLoss": "Loss",
+    "marginFromPg": "{{percent}}% of PG"
+  },
+  "summaryFilter": {
+    "pickDateRange": "Select date range",
+    "pickDateAria": "Choose summary date range",
+    "groupByPlaceholder": "Group by",
+    "groupHour": "By hour",
+    "groupDay": "By day (daily)",
+    "reset": "Reset"
+  },
+  "summaryTable": {
+    "colTime": "Time (WIB)",
+    "colTotalPg": "Total in (PG)",
+    "colModalProvider": "Cost (provider)",
+    "colGrossProfit": "Gross profit"
   }
 }

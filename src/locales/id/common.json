@@ -218,5 +218,42 @@
       "ariaCopy": "Salin ke papan klip"
     },
     "itemCount": "{{count}} item"
+  },
+  "summaryPage": {
+    "title": "Ringkasan",
+    "subtitle": "Laporan transaksi per rentang tanggal dan pengelompokan waktu. Paginasi {{limit}} baris per halaman.",
+    "loadingShort": "Memuat…",
+    "loadFailedShort": "Gagal memuat",
+    "totalRows": "Total {{count}} baris",
+    "tableLoadingTitle": "Memuat ringkasan…",
+    "tableLoadingHint": "Mohon tunggu sebentar.",
+    "loadErrorDetail": "Gagal memuat ringkasan. Periksa koneksi atau coba muat ulang halaman.",
+    "detailSectionTitle": "Detail per periode",
+    "detailSectionHint": "Data sesuai filter tanggal dan pengelompokan. Gunakan paginasi di bawah.",
+    "emptyPage": "Tidak ada data ringkasan pada halaman ini."
+  },
+  "summaryCard": {
+    "title": "Ringkasan agregat",
+    "description": "Angka berikut mengikuti rentang tanggal dan pengelompokan di filter.",
+    "totalPg": "Total masuk (PG)",
+    "modalProvider": "Modal (provider)",
+    "grossProfit": "Laba kotor",
+    "badgeProfit": "Laba",
+    "badgeLoss": "Rugi",
+    "marginFromPg": "{{percent}}% dari PG"
+  },
+  "summaryFilter": {
+    "pickDateRange": "Pilih Rentang Tanggal",
+    "pickDateAria": "Pilih rentang tanggal ringkasan",
+    "groupByPlaceholder": "Pengelompokan",
+    "groupHour": "Per Jam",
+    "groupDay": "Per Hari (Daily)",
+    "reset": "Reset"
+  },
+  "summaryTable": {
+    "colTime": "Waktu (WIB)",
+    "colTotalPg": "Total masuk (PG)",
+    "colModalProvider": "Modal (provider)",
+    "colGrossProfit": "Laba kotor"
   }
 }
