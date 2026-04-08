@@ -21,6 +21,7 @@ import VerifyOtpPage from "@/pages/VerifyOTP";
 import Setup2FAPage from "@/pages/SetupAuth";
 import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
+import MaintenancePage from "@/pages/Maintenance";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
@@ -190,6 +191,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={["dev"]}>
             <RateLimitPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "maintenances",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <MaintenancePage />
           </RoleGuard>
         ),
       },
