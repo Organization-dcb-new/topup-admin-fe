@@ -3,6 +3,7 @@ import {
   defaultProductAmountFilters,
   type ProductAmountFiltersState,
 } from '@/components/Product/Filter/ProductAmountFilters'
+import type { ProductProviderStatusFilterValue } from '@/components/Product/Filter/ProductProviderStatusFilter'
 import type { ProductStatusFilterValue } from '@/components/Product/Filter/ProductStatusFilter'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
@@ -18,6 +19,7 @@ import toast from 'react-hot-toast'
 export default function ProductPage() {
   const [productNameSearch, setProductNameSearch] = useState('')
   const [productStatus, setProductStatus] = useState<ProductStatusFilterValue>('all')
+  const [providerStatus, setProviderStatus] = useState<ProductProviderStatusFilterValue>('all')
   const [sku, setSku] = useState('')
   const [gameName, setGameName] = useState('')
   const [amountFilters, setAmountFilters] = useState<ProductAmountFiltersState>(() =>
@@ -40,6 +42,7 @@ export default function ProductPage() {
       sku: debouncedSku,
       game_name: gameName,
       ...(is_active !== undefined && { is_active }),
+      ...(providerStatus !== 'all' && { provider_status: providerStatus }),
       ...(debouncedAmount.additionalFeeAbove && {
         additional_fee_above: debouncedAmount.additionalFeeAbove,
       }),
@@ -65,11 +68,19 @@ export default function ProductPage() {
         selling_price: debouncedAmount.sellingPriceExact,
       }),
     }
-  }, [debouncedProductNameSearch, debouncedSku, gameName, productStatus, debouncedAmount])
+  }, [
+    debouncedProductNameSearch,
+    debouncedSku,
+    gameName,
+    productStatus,
+    providerStatus,
+    debouncedAmount,
+  ])
 
   const hasActiveFilters =
     productNameSearch.trim() !== '' ||
     productStatus !== 'all' ||
+    providerStatus !== 'all' ||
     sku.trim() !== '' ||
     gameName !== '' ||
     Object.values(amountFilters).some((v) => v.trim() !== '')
@@ -77,6 +88,7 @@ export default function ProductPage() {
   const handleResetFilters = () => {
     setProductNameSearch('')
     setProductStatus('all')
+    setProviderStatus('all')
     setSku('')
     setGameName('')
     setAmountFilters(defaultProductAmountFilters())
@@ -85,7 +97,14 @@ export default function ProductPage() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron page dengan filter
     setPage(1)
-  }, [debouncedProductNameSearch, debouncedSku, gameName, productStatus, debouncedAmount])
+  }, [
+    debouncedProductNameSearch,
+    debouncedSku,
+    gameName,
+    productStatus,
+    providerStatus,
+    debouncedAmount,
+  ])
 
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProducts(
     page,
@@ -119,7 +138,8 @@ export default function ProductPage() {
             <div className="min-w-0 space-y-1">
               <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Produk</h1>
               <p className="text-sm text-muted-foreground">
-                Cari nama produk, filter status, nominal, SKU, dan game. Tabel menampilkan{' '}
+                Cari nama produk, filter status & status provider, nominal, SKU, dan game. Tabel
+                menampilkan{' '}
                 {limit} item per halaman.
               </p>
             </div>
@@ -153,6 +173,8 @@ export default function ProductPage() {
           onProductNameSearchChange={setProductNameSearch}
           productStatus={productStatus}
           onProductStatusChange={setProductStatus}
+          providerStatus={providerStatus}
+          onProviderStatusChange={setProviderStatus}
           sku={sku}
           onSkuChange={setSku}
           gameName={gameName}

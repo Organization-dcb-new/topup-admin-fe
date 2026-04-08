@@ -17,7 +17,7 @@ import { useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useAddGamesToShow } from '@/hooks/useShow'
 import { useGetGameNames } from '@/hooks/useGame'
-import type { GameV2 } from '@/types/show'
+import type { ShowGame } from '@/types/show'
 import type { GameName } from '../Blog/types/blog'
 
 export function AddGamesToShowButton({
@@ -26,7 +26,7 @@ export function AddGamesToShowButton({
   triggerClassName,
 }: {
   showId: string
-  existingGames?: GameV2[]
+  existingGames?: ShowGame[]
   triggerClassName?: string
 }) {
   const [selected, setSelected] = useState<string[]>([])
@@ -55,7 +55,7 @@ export function AddGamesToShowButton({
       onOpenChange={(open) => {
         if (!open) return
         setSearch('')
-        setSelected(existingGames?.map((g) => g.ID) ?? [])
+        setSelected(existingGames?.map((g) => g.id) ?? [])
       }}
     >
       <AlertDialogTrigger asChild>

@@ -32,13 +32,13 @@ type UpdateShowForm = {
 
 function showToFormValues(show: Show): UpdateShowForm {
   return {
-    name: show.Name,
-    alias: show.Alias,
-    image: show.Image,
-    is_hot: show.IsHot,
-    is_new: show.IsNew,
-    is_popular: show.IsPopular,
-    is_show: show.IsShow,
+    name: show.name,
+    alias: show.alias,
+    image: show.image,
+    is_hot: show.is_hot,
+    is_new: show.is_new,
+    is_popular: show.is_popular,
+    is_show: show.is_show,
   }
 }
 
@@ -69,14 +69,14 @@ export function UpdateShowModal({
   }
 
   const mutation = useUpdateShow({
-    id: show.ID,
+    id: show.id,
     setOpen: setDialogOpen,
   })
 
   const openDialog = () => {
     reset(showToFormValues(show))
-    setPreview(show.Image || null)
-    defaultPreview.current = show.Image || null
+    setPreview(show.image || null)
+    defaultPreview.current = show.image || null
     setOpen(true)
   }
 

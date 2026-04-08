@@ -126,6 +126,26 @@ export const productColumns: ColumnDef<Product>[] = [
     ),
   },
   {
+    accessorKey: 'provider_status',
+    header: 'Status provider',
+    cell: ({ row }) => {
+      const raw = row.original.provider_status?.trim()
+      const lower = raw?.toLowerCase()
+      const isAvailable = lower === 'available'
+      const isEmpty = lower === 'empty' || raw === ''
+      const label = isAvailable ? 'Tersedia' : isEmpty ? 'Kosong' : raw || '—'
+      return (
+        <Badge
+          variant={isAvailable ? 'success' : isEmpty ? 'secondary' : 'outline'}
+          className="max-w-[10rem] truncate font-normal text-sm"
+          title={raw || undefined}
+        >
+          {label}
+        </Badge>
+      )
+    },
+  },
+  {
     id: 'actions',
     header: 'Aksi',
     cell: ({ row }) => (
