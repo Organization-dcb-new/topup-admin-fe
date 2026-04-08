@@ -54,7 +54,7 @@ export default function ModalAddPaymentMethod() {
       setPreview,
       setIsUploading,
       setUploadProgress,
-      setValue,
+      setValue : setValue as any,
       fieldName: 'icon_url',
     })
   }
