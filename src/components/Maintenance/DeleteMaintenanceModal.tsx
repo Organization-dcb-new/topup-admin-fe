@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { useDeleteMaintenance } from '@/hooks/useMaintenance'
 import { cn } from '@/lib/utils'
 import { Loader2, Trash2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteMaintenanceModal({
   id,
@@ -23,6 +24,7 @@ export function DeleteMaintenanceModal({
   name: string
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const mutation = useDeleteMaintenance(id)
 
   return (
@@ -34,7 +36,7 @@ export function DeleteMaintenanceModal({
           size="icon"
           className={cn('cursor-pointer text-destructive hover:bg-destructive/10', triggerClassName)}
           disabled={mutation.isPending}
-          aria-label={`Hapus pemeliharaan ${name}`}
+          aria-label={t('maintenanceDeleteModal.triggerAria', { name })}
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
@@ -42,14 +44,16 @@ export function DeleteMaintenanceModal({
 
       <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Hapus pemeliharaan?</AlertDialogTitle>
+          <AlertDialogTitle>{t('maintenanceDeleteModal.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Entri &quot;{name}&quot; akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
+            {t('maintenanceDeleteModal.description', { name })}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer rounded-xl">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">
+            {t('maintenanceDeleteModal.cancel')}
+          </AlertDialogCancel>
           <AlertDialogAction
             className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-destructive hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
@@ -58,10 +62,10 @@ export function DeleteMaintenanceModal({
             {mutation.isPending ? (
               <>
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Menghapus…
+                {t('maintenanceDeleteModal.deleting')}
               </>
             ) : (
-              'Hapus'
+              t('maintenanceDeleteModal.confirmDelete')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

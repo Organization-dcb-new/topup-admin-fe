@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table'
 import { Fragment } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import { cn } from '@/lib/utils'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -14,6 +15,8 @@ interface DataTableProps<TData, TValue> {
   renderSubRow?: (row: TData) => React.ReactNode
   /** Tampilan sel kosong bila `data` tidak ada baris (default: "No data") */
   emptyMessage?: React.ReactNode
+  /** Header mengikuti scroll vertikal (berguna saat tabel panjang) */
+  stickyHeader?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -21,6 +24,7 @@ export function DataTable<TData, TValue>({
   data,
   renderSubRow,
   emptyMessage = 'No data',
+  stickyHeader = false,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -37,7 +41,13 @@ export function DataTable<TData, TValue>({
         className="min-w-max [&_td]:border-x-0 [&_th]:border-x-0"
         scrollContainer={false}
       >
-        <TableHeader className="bg-white">
+        <TableHeader
+          className={cn(
+            'bg-card',
+            stickyHeader &&
+              'sticky top-0 z-10 border-b border-border/80 bg-card/95 shadow-sm backdrop-blur-sm [&_th]:bg-card/95',
+          )}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
