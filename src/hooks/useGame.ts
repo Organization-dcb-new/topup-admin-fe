@@ -98,9 +98,10 @@ export function useUpdateImageGame(onClose: () => void) {
       const res = await api.patch(`/games/image`, payload)
       return res.data
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       toast.success(t('gameToasts.imageUpdateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['game', variables.game_id] })
       onClose()
     },
     onError: () => toast.error(t('gameToasts.imageUpdateError')),
@@ -125,6 +126,7 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
     onSuccess: () => {
       toast.success(t('gameToasts.gameUpdateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['game', id] })
       setOpen(false)
     },
     onError: () => toast.error(t('gameToasts.gameUpdateError')),

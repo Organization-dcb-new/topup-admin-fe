@@ -3,10 +3,9 @@ import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
 import EditGameModal from './EditGameModal'
 import UpdateBulkProductPriceModal from './EditBulkPriceModal'
-import type { Product } from '@/types/product'
 import { useTranslation } from 'react-i18next'
 
-export function GameTableActions({ game, product }: { game: Game; product: Product[] }) {
+export function GameTableActions({ game }: { game: Game }) {
   const { t } = useTranslation('common')
   const toggleMutation = useToggleGameShow(game.id)
 
@@ -31,7 +30,7 @@ export function GameTableActions({ game, product }: { game: Game; product: Produ
       <div className="flex flex-wrap items-center gap-0.5">
         <EditGameModal game={game} />
         {/* <DeleteGameModal id={game.id} /> */}
-        <UpdateBulkProductPriceModal product={product} gameId={game.id} />
+        <UpdateBulkProductPriceModal key={game.id} gameId={game.id} />
       </div>
     </div>
   )

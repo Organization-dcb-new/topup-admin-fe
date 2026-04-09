@@ -19,13 +19,13 @@ export interface Product {
   stock_quantity: number
   is_unlimited_stock: boolean
   is_active: boolean
-  meta_data: ProductMetaData
+  meta_data: ProductMetaData | null
   sort_order: number
   created_at: string
   updated_at: string
   additional_fee: number
   additional_percent: number
-  game: Game
+  game?: Game
 }
 
 export interface ProductResponse {

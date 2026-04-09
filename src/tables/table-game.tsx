@@ -4,6 +4,7 @@ import type { Game } from '@/types/game'
 import { ChangeImageModal } from '@/components/Games/UploadImageModal'
 import { GameTableActions } from '@/components/Games/TableAction'
 import ToggleGameStatus from '@/components/Games/ToggleGameStatus'
+import { Link } from 'react-router-dom'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
@@ -26,7 +27,12 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     accessorKey: 'name',
     header: t('gameTable.colName'),
     cell: ({ row }) => (
-      <div className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
+      <Link
+        to={`/games/${row.original.id}`}
+        className="max-w-[12rem] font-medium text-primary hover:underline sm:max-w-xs"
+      >
+        {row.original.name}
+      </Link>
     ),
   },
   {
@@ -36,15 +42,6 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
       <code className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground">
         {row.original.code}
       </code>
-    ),
-  },
-  {
-    accessorKey: 'category.name',
-    header: t('gameTable.colCategory'),
-    cell: ({ row }) => (
-      <span className="max-w-[8rem] truncate text-sm text-foreground sm:max-w-[10rem]">
-        {row.original.category?.name ?? '—'}
-      </span>
     ),
   },
   {
@@ -84,7 +81,7 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
           role="group"
           aria-label={t('gameTable.rowActionsAria', { name: row.original.name })}
         >
-          <GameTableActions game={row.original} product={row.original.product ?? []} />
+          <GameTableActions game={row.original} />
         </div>
       </div>
     ),

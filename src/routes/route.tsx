@@ -4,6 +4,7 @@ import LoginPage from "../pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import TransactionPage from "@/pages/Transaction";
 import GamePage from "@/pages/Game";
+import GameDetailPage from "@/pages/GameDetail";
 import CategoryPage from "@/pages/Category";
 import ProductPage from "@/pages/Product";
 import PaymentMethodPage from "@/pages/PaymentMethod";
@@ -117,6 +118,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={["dev", "admin"]}>
             <GamePage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "games/:gameId",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <GameDetailPage />
           </RoleGuard>
         ),
       },
