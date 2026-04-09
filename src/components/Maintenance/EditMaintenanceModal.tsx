@@ -15,12 +15,13 @@ import { Switch } from '@/components/ui/switch'
 import {
   datetimeLocalToIso,
   isoToDatetimeLocal,
-  maintenanceWindowOrderMessage,
+  isMaintenanceWindowOrderInvalid,
 } from '@/helpers/maintenance-datetime'
 import { useUpdateMaintenance } from '@/hooks/useMaintenance'
 import type { Maintenance, UpdateMaintenancePayload } from '@/types/maintenance'
 import { cn } from '@/lib/utils'
 import { Loader2, Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type FormValues = {
   name: string
@@ -56,6 +57,7 @@ export function EditMaintenanceModal({
   maintenance: Maintenance
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const mutation = useUpdateMaintenance(maintenance.id, () => setOpen(false))
   const nameId = useId()
@@ -84,7 +86,7 @@ export function EditMaintenanceModal({
         variant="ghost"
         size="icon"
         className={cn('cursor-pointer', triggerClassName)}
-        aria-label={`Ubah pemeliharaan ${maintenance.name}`}
+        aria-label={t('maintenanceEditModal.triggerAria', { name: maintenance.name })}
         onClick={openDialog}
       >
         <Pencil className="h-4 w-4" aria-hidden />
@@ -93,15 +95,16 @@ export function EditMaintenanceModal({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah pemeliharaan</DialogTitle>
-            <DialogDescription>Perbarui nama, status, dan jadwal waktu.</DialogDescription>
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              {t('maintenanceEditModal.title')}
+            </DialogTitle>
+            <DialogDescription>{t('maintenanceEditModal.description')}</DialogDescription>
           </DialogHeader>
 
           <form
             onSubmit={handleSubmit((v) => {
-              const msg = maintenanceWindowOrderMessage(v.start_time, v.end_time)
-              if (msg) {
-                setError('root', { message: msg })
+              if (isMaintenanceWindowOrderInvalid(v.start_time, v.end_time)) {
+                setError('root', { message: t('maintenanceForm.orderInvalid') })
                 return
               }
               mutation.mutate(toUpdatePayload(v))
@@ -109,13 +112,13 @@ export function EditMaintenanceModal({
             className="space-y-4"
           >
             <div className="space-y-2">
-              <Label htmlFor={nameId}>Nama</Label>
+              <Label htmlFor={nameId}>{t('maintenanceForm.nameLabel')}</Label>
               <Input
                 id={nameId}
                 autoComplete="off"
                 className="rounded-lg"
                 aria-invalid={!!formState.errors.name}
-                {...register('name', { required: 'Nama wajib diisi' })}
+                {...register('name', { required: t('maintenanceForm.nameRequired') })}
               />
               {formState.errors.name && (
                 <p className="text-xs text-destructive">{formState.errors.name.message}</p>
@@ -124,23 +127,23 @@ export function EditMaintenanceModal({
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5">
               <div className="min-w-0 space-y-0.5">
-                <p className="text-sm font-medium">Mode pemeliharaan</p>
-                <p className="text-xs text-muted-foreground">Tandai entri ini sedang dalam pemeliharaan.</p>
+                <p className="text-sm font-medium">{t('maintenanceForm.modeLabel')}</p>
+                <p className="text-xs text-muted-foreground">{t('maintenanceForm.modeHint')}</p>
               </div>
               <Switch
                 checked={watch('is_maintenance')}
                 onCheckedChange={(c) => setValue('is_maintenance', c)}
-                aria-label="Mode pemeliharaan"
+                aria-label={t('maintenanceForm.modeAria')}
               />
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor={startId}>Mulai</Label>
+                <Label htmlFor={startId}>{t('maintenanceForm.startLabel')}</Label>
                 <Input id={startId} type="datetime-local" className="rounded-lg" {...register('start_time')} />
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor={endId}>Selesai</Label>
+                <Label htmlFor={endId}>{t('maintenanceForm.endLabel')}</Label>
                 <Input id={endId} type="datetime-local" className="rounded-lg" {...register('end_time')} />
               </div>
             </div>
@@ -153,16 +156,16 @@ export function EditMaintenanceModal({
 
             <DialogFooter className="gap-2 sm:gap-2">
               <Button type="button" variant="outline" className="cursor-pointer" onClick={() => setOpen(false)}>
-                Batal
+                {t('maintenanceForm.cancel')}
               </Button>
               <Button type="submit" disabled={mutation.isPending} className="cursor-pointer gap-2">
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('maintenanceForm.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('maintenanceForm.save')
                 )}
               </Button>
             </DialogFooter>

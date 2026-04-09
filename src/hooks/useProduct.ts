@@ -1,7 +1,7 @@
 import { api } from "@/api/axios";
 import type { FormValuesProductImage } from "@/components/Product/Filter/ChangeImage";
 import type { FormValuesChangeImageProductV2 } from "@/components/Product/Filter/UploadImage";
-import type { ProductResponse } from "@/types/product";
+import type { Product, ProductResponse } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -141,6 +141,20 @@ export function useGetProductNames(id: string) {
       const res = await api.get(`/products/game/${id}`);
       return res.data.data;
     },
+  });
+}
+
+/** Produk per game — dipakai saat payload game (list/detail) tidak menyertakan `product`. */
+export function useProductsByGame(gameId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["products-by-game", gameId],
+    queryFn: async (): Promise<Product[]> => {
+      const res = await api.get(`/products/game/${gameId}`);
+      const raw = res.data?.data;
+      return Array.isArray(raw) ? raw : [];
+    },
+    enabled: Boolean(gameId && enabled),
+    staleTime: 10_000,
   });
 }
 

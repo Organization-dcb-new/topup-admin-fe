@@ -4,6 +4,8 @@ import type { Game } from '@/types/game'
 import { ChangeImageModal } from '@/components/Games/UploadImageModal'
 import { GameTableActions } from '@/components/Games/TableAction'
 import ToggleGameStatus from '@/components/Games/ToggleGameStatus'
+import { ChevronRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
@@ -26,7 +28,16 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     accessorKey: 'name',
     header: t('gameTable.colName'),
     cell: ({ row }) => (
-      <div className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
+      <Link
+        to={`/games/${row.original.id}`}
+        className="group inline-flex max-w-[13rem] items-center gap-1 font-medium text-primary sm:max-w-xs"
+      >
+        <span className="truncate group-hover:underline">{row.original.name}</span>
+        <ChevronRight
+          className="h-3.5 w-3.5 shrink-0 text-primary/50 transition-colors group-hover:text-primary/80"
+          aria-hidden
+        />
+      </Link>
     ),
   },
   {
@@ -39,31 +50,29 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     ),
   },
   {
-    accessorKey: 'category.name',
-    header: t('gameTable.colCategory'),
-    cell: ({ row }) => (
-      <span className="max-w-[8rem] truncate text-sm text-foreground sm:max-w-[10rem]">
-        {row.original.category?.name ?? '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'developer',
-    header: t('gameTable.colDeveloper'),
-    cell: ({ row }) => (
-      <span className="max-w-[8rem] truncate text-sm text-muted-foreground sm:max-w-[9rem]">
-        {row.original.developer || '—'}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'publisher',
-    header: t('gameTable.colPublisher'),
-    cell: ({ row }) => (
-      <span className="max-w-[8rem] truncate text-sm text-muted-foreground sm:max-w-[9rem]">
-        {row.original.publisher || '—'}
-      </span>
-    ),
+    id: 'dev_publisher',
+    header: t('gameTable.colDevPublisher'),
+    cell: ({ row }) => {
+      const d = row.original.developer?.trim()
+      const p = row.original.publisher?.trim()
+      if (!d && !p) {
+        return <span className="text-sm text-muted-foreground">—</span>
+      }
+      return (
+        <div className="max-w-[10rem] space-y-0.5 text-sm text-muted-foreground">
+          {d ? (
+            <div className="truncate" title={d}>
+              {d}
+            </div>
+          ) : null}
+          {p ? (
+            <div className="truncate text-xs text-muted-foreground/90" title={p}>
+              {p}
+            </div>
+          ) : null}
+        </div>
+      )
+    },
   },
   {
     accessorKey: 'is_active',
@@ -80,11 +89,11 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     cell: ({ row }) => (
       <div className="flex min-w-0 items-center">
         <div
-          className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
+          className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-border/70 bg-muted/25 p-1 shadow-sm"
           role="group"
           aria-label={t('gameTable.rowActionsAria', { name: row.original.name })}
         >
-          <GameTableActions game={row.original} product={row.original.product ?? []} />
+          <GameTableActions game={row.original} />
         </div>
       </div>
     ),

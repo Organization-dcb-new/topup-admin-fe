@@ -5,20 +5,12 @@ import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import type { Payment } from '@/types/transaction'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
-import { format, isValid } from 'date-fns'
+import { format } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
+import { parseBackendDate } from '@/lib/backend-datetime'
 import { ChevronRight, Copy } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
-
-export function parseBackendDate(raw?: string): Date | null {
-  if (!raw) return null
-
-  const cleaned = raw.replace(' WIB', '').replace(/ /, 'T').replace(/ \+/, '+')
-
-  const date = new Date(cleaned)
-  return isValid(date) ? date : null
-}
 
 function formatIdr(value: number) {
   return new Intl.NumberFormat('id-ID', {

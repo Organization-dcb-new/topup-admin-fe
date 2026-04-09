@@ -85,17 +85,13 @@ function datetimeLocalMsWib(local: string): number {
   return new Date(`${y}-${mo}-${da}T${h}:${mi}:00${WIB_RFC3339_OFFSET}`).getTime()
 }
 
-/** Jika mulai & selesai terisi, mulai harus ≤ selesai (keduanya diinterpretasikan sebagai WIB). */
-export function maintenanceWindowOrderMessage(
-  startLocal: string,
-  endLocal: string,
-): string | undefined {
+/** True jika mulai & selesai terisi dan mulai > selesai (keduanya diinterpretasikan sebagai WIB). */
+export function isMaintenanceWindowOrderInvalid(startLocal: string, endLocal: string): boolean {
   const s = startLocal.trim()
   const e = endLocal.trim()
-  if (!s || !e) return undefined
+  if (!s || !e) return false
   const t0 = datetimeLocalMsWib(s)
   const t1 = datetimeLocalMsWib(e)
-  if (Number.isNaN(t0) || Number.isNaN(t1)) return undefined
-  if (t0 > t1) return 'Waktu mulai tidak boleh setelah waktu selesai.'
-  return undefined
+  if (Number.isNaN(t0) || Number.isNaN(t1)) return false
+  return t0 > t1
 }

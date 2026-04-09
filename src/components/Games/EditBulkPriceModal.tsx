@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { DollarSign, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -13,9 +13,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useProductsByGame } from '@/hooks/useProduct'
 import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
-import type { Product } from '@/types/product'
 import { useTranslation } from 'react-i18next'
 
 interface FormValues {
@@ -25,18 +25,24 @@ interface FormValues {
 
 interface Props {
   gameId: string
-  product: Product[]
 }
 
 const BULK_MAX_PERCENT = 40
 
-export default function UpdateBulkProductPriceModal({ gameId, product }: Props) {
+export default function UpdateBulkProductPriceModal({ gameId }: Props) {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
 
-  const firstAdditionalPercent = product[0]?.additional_percent ?? 0
-  const hasProducts = product.length > 0
+  const {
+    data: products = [],
+    isPending: isLoadingProducts,
+    isError: isProductsError,
+    refetch: refetchProducts,
+  } = useProductsByGame(gameId, open)
+
+  const hasProducts = products.length > 0
+  const firstAdditionalPercent = products[0]?.additional_percent ?? 0
 
   const {
     register,
@@ -54,6 +60,14 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
   const percent = Number(watch('additional_percent')) || 0
   const isOverLimit = percent > BULK_MAX_PERCENT
 
+  useEffect(() => {
+    if (!open || isLoadingProducts) return
+    reset({
+      game_id: gameId,
+      additional_percent: hasProducts ? firstAdditionalPercent : 0,
+    })
+  }, [open, isLoadingProducts, gameId, hasProducts, firstAdditionalPercent, reset])
+
   const mutation = useMutation({
     mutationFn: (data: FormValues) =>
       api.patch('/products/price/bulk', {
@@ -64,6 +78,9 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
       toast.success(t('gameToasts.bulkPriceSuccess'))
       queryClient.invalidateQueries({ queryKey: ['products'] })
       queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['game', gameId] })
+      queryClient.invalidateQueries({ queryKey: ['products-by-game', gameId] })
+      queryClient.invalidateQueries({ queryKey: ['product-names', gameId] })
       setOpen(false)
     },
     onError: () => toast.error(t('gameToasts.bulkPriceError')),
@@ -76,13 +93,12 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next)
-    if (next && hasProducts) {
-      reset({
-        game_id: gameId,
-        additional_percent: firstAdditionalPercent,
-      })
+    if (next) {
+      reset({ game_id: gameId, additional_percent: 0 })
     }
   }
+
+  const formReady = open && !isLoadingProducts && !isProductsError && hasProducts
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -92,10 +108,8 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
           variant="ghost"
           size="icon"
           className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
-          disabled={!hasProducts || mutation.isPending}
-          aria-label={
-            hasProducts ? t('bulkPriceModal.triggerAria') : t('bulkPriceModal.triggerAriaNoProducts')
-          }
+          disabled={mutation.isPending}
+          aria-label={t('bulkPriceModal.triggerAria')}
         >
           <DollarSign className="h-4 w-4" aria-hidden />
         </Button>
@@ -114,7 +128,30 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input type="hidden" {...register('game_id')} />
 
-          {!hasProducts ? (
+          {open && isLoadingProducts ? (
+            <div
+              className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-10 text-center"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
+              <p className="text-sm text-muted-foreground">{t('bulkPriceModal.loadingProducts')}</p>
+            </div>
+          ) : open && isProductsError ? (
+            <div className="space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-4 text-center">
+              <p className="text-sm text-destructive">{t('bulkPriceModal.loadProductsError')}</p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-lg"
+                onClick={() => void refetchProducts()}
+              >
+                {t('bulkPriceModal.retry')}
+              </Button>
+            </div>
+          ) : !hasProducts ? (
             <p className="rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-4 text-center text-sm text-muted-foreground">
               {t('bulkPriceModal.emptyProducts')}
             </p>
@@ -144,7 +181,7 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
                 <p className="text-xs text-amber-700">{t('bulkPriceModal.overLimit')}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                {t('bulkPriceModal.productCount', { count: product.length })}
+                {t('bulkPriceModal.productCount', { count: products.length })}
               </p>
             </div>
           )}
@@ -162,7 +199,7 @@ export default function UpdateBulkProductPriceModal({ gameId, product }: Props) 
             <Button
               type="submit"
               className="rounded-lg font-semibold"
-              disabled={mutation.isPending || !hasProducts || isOverLimit}
+              disabled={mutation.isPending || !formReady || isOverLimit}
             >
               {mutation.isPending ? (
                 <span className="flex items-center gap-2">
