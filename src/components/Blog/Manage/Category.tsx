@@ -4,6 +4,7 @@ import type { GameNames } from '@/hooks/useGame'
 import type { BlogFormValues } from '../types/blog'
 import { Check, ChevronDown, Gamepad2, Hash, Plus, Search, X } from 'lucide-react'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface CategoryProps {
   formData: BlogFormValues
@@ -12,6 +13,7 @@ interface CategoryProps {
 }
 
 export default function Category({ formData, listCategory, updateField }: CategoryProps) {
+  const { t } = useTranslation('common')
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [tagInput, setTagInput] = useState('')
@@ -57,7 +59,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
     const currentTags = formData.tags || []
     updateField(
       'tags',
-      currentTags.filter((t) => t !== tagToRemove),
+      currentTags.filter((x) => x !== tagToRemove),
     )
   }
 
@@ -76,7 +78,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
       >
         <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <Gamepad2 className="h-3.5 w-3.5 text-primary" aria-hidden />
-          Kategori game
+          {t('blogCategory.gameCategoryTitle')}
         </p>
 
         <div className="relative">
@@ -93,7 +95,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
             )}
           >
             <span className={formData.category ? 'text-foreground' : 'text-muted-foreground'}>
-              {formData.category || 'Pilih kategori game'}
+              {formData.category || t('blogCategory.selectPlaceholder')}
             </span>
             <ChevronDown
               className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', isOpen && 'rotate-180')}
@@ -110,12 +112,12 @@ export default function Category({ formData, listCategory, updateField }: Catego
                 <Search className="ml-1 h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
                 <input
                   type="text"
-                  placeholder="Cari game…"
+                  placeholder={t('blogCategory.searchPlaceholder')}
                   autoFocus
                   className="min-w-0 flex-1 bg-transparent py-2 text-xs outline-none placeholder:text-muted-foreground"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  aria-label="Cari kategori"
+                  aria-label={t('blogCategory.searchAria')}
                 />
               </div>
 
@@ -138,7 +140,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
                   ))
                 ) : (
                   <div className="p-4 text-center text-xs text-muted-foreground">
-                    Tidak ada hasil
+                    {t('blogCategory.noResults')}
                   </div>
                 )}
               </div>
@@ -150,7 +152,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
       <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5">
         <p className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <Hash className="h-3.5 w-3.5 text-primary" aria-hidden />
-          Tag / kata kunci
+          {t('blogCategory.tagsTitle')}
         </p>
 
         <div className="flex flex-wrap gap-2 rounded-xl border border-border/80 bg-muted/20 p-2.5 focus-within:ring-2 focus-within:ring-primary/15">
@@ -165,7 +167,7 @@ export default function Category({ formData, listCategory, updateField }: Catego
                 type="button"
                 onClick={() => handleRemoveTag(tag)}
                 className="rounded p-0.5 hover:bg-destructive/20 hover:text-destructive"
-                aria-label={`Hapus tag ${tag}`}
+                aria-label={t('blogCategory.removeTagAria', { tag })}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -174,28 +176,28 @@ export default function Category({ formData, listCategory, updateField }: Catego
           <input
             type="text"
             className="min-w-[6rem] flex-1 bg-transparent p-1 text-xs outline-none placeholder:text-muted-foreground"
-            placeholder="Ketik tag, Enter atau koma"
+            placeholder={t('blogCategory.tagsInputPlaceholder')}
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            aria-label="Tambah tag"
+            aria-label={t('blogCategory.tagsInputAria')}
           />
         </div>
 
         <div className="mt-4 border-t border-border/60 pt-4">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Tambah cepat dari game
+              {t('blogCategory.quickAddTitle')}
             </p>
             <div className="relative flex items-center">
               <Search className="absolute left-2 h-3 w-3 text-muted-foreground" aria-hidden />
               <input
                 type="text"
-                placeholder="Cari…"
+                placeholder={t('blogCategory.quickSearchPlaceholder')}
                 className="w-28 rounded-md border border-border/60 bg-muted/30 py-1 pl-7 pr-2 text-[10px] outline-none transition-all focus:w-36 focus:ring-1 focus:ring-primary/25"
                 value={tagSearch}
                 onChange={(e) => setTagSearch(e.target.value)}
-                aria-label="Cari untuk saran tag"
+                aria-label={t('blogCategory.quickSearchAria')}
               />
             </div>
           </div>
@@ -224,7 +226,9 @@ export default function Category({ formData, listCategory, updateField }: Catego
                   )
                 })
               ) : (
-                <p className="py-2 text-[10px] text-muted-foreground">Tidak ada kategori cocok</p>
+                <p className="py-2 text-[10px] text-muted-foreground">
+                  {t('blogCategory.noMatchingCategories')}
+                </p>
               )}
             </div>
           </div>

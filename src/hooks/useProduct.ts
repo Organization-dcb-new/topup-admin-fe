@@ -1,9 +1,10 @@
 import { api } from "@/api/axios";
 import type { FormValuesProductImage } from "@/components/Product/Filter/ChangeImage";
 import type { FormValuesChangeImageProductV2 } from "@/components/Product/Filter/UploadImage";
-import type { ProductResponse } from "@/types/product";
+import type { Product, ProductResponse } from "@/types/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 /** Query list produk admin — selaraskan nama field dengan DTO backend bila perlu. */
 export type GetProductsParams = {
@@ -86,6 +87,7 @@ export const useGetProducts = (
 };
 
 export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
+  const { t } = useTranslation("common");
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -98,17 +100,18 @@ export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Gambar produk berhasil diperbarui");
+      toast.success(t("productToasts.imageUpdateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["products"] });
       setOpen(false);
     },
-    onError: () => toast.error("Gagal memperbarui gambar produk"),
+    onError: () => toast.error(t("productToasts.imageUpdateError")),
   });
 
   return mutation;
 }
 
 export function useUpdateImageProductV2(onClose: () => void) {
+  const { t } = useTranslation("common");
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -121,11 +124,11 @@ export function useUpdateImageProductV2(onClose: () => void) {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Gambar produk berhasil diperbarui");
+      toast.success(t("productToasts.imageUpdateSuccess"));
       queryClient.invalidateQueries({ queryKey: ["products"] });
       onClose();
     },
-    onError: () => toast.error("Gagal memperbarui gambar produk"),
+    onError: () => toast.error(t("productToasts.imageUpdateError")),
   });
 
   return mutation;
@@ -138,6 +141,20 @@ export function useGetProductNames(id: string) {
       const res = await api.get(`/products/game/${id}`);
       return res.data.data;
     },
+  });
+}
+
+/** Produk per game — dipakai saat payload game (list/detail) tidak menyertakan `product`. */
+export function useProductsByGame(gameId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["products-by-game", gameId],
+    queryFn: async (): Promise<Product[]> => {
+      const res = await api.get(`/products/game/${gameId}`);
+      const raw = res.data?.data;
+      return Array.isArray(raw) ? raw : [];
+    },
+    enabled: Boolean(gameId && enabled),
+    staleTime: 10_000,
   });
 }
 

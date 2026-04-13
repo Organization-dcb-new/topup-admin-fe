@@ -5,15 +5,17 @@ import { DataTable } from '@/components/Layout/table-data'
 import SummaryCard from '@/components/Summary/Summary'
 import { SummaryFilter } from '@/components/Summary/SummaryFilter'
 import { useGetSummary } from '@/hooks/useSummary'
-import { summaryColumns } from '@/tables/table-summary'
+import { getSummaryColumns } from '@/tables/table-summary'
 import { format } from 'date-fns'
 import { AlertCircle, BarChart3, CheckCircle2, Loader2 } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const PAGE_LIMIT = 10
 
 export default function SummaryPage() {
+  const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const [groupBy, setGroupBy] = useState('hour')
   const [date, setDate] = useState<DateRange | undefined>({
@@ -39,6 +41,7 @@ export default function SummaryPage() {
   }
 
   const tableRows = data?.data.data ?? []
+  const summaryColumns = useMemo(() => getSummaryColumns(t), [t])
 
   return (
     <DashboardLayout>
@@ -49,10 +52,11 @@ export default function SummaryPage() {
               <BarChart3 className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Ringkasan</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                {t('summaryPage.title')}
+              </h1>
               <p className="text-sm text-muted-foreground">
-                Laporan transaksi per rentang tanggal dan pengelompokan waktu. Paginasi {PAGE_LIMIT}{' '}
-                baris per halaman.
+                {t('summaryPage.subtitle', { limit: PAGE_LIMIT })}
               </p>
             </div>
           </div>
@@ -60,20 +64,22 @@ export default function SummaryPage() {
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('summaryPage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('summaryPage.loadFailedShort')}
               </p>
             )}
             {isSuccess && data && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data.data.meta.total_data ?? 0).toLocaleString('id-ID')} baris
+                  {t('summaryPage.totalRows', {
+                    count: (data.data.meta.total_data ?? 0).toLocaleString('id-ID'),
+                  })}
                 </span>
               </p>
             )}
@@ -103,15 +109,13 @@ export default function SummaryPage() {
           >
             <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
             <div className="text-center">
-              <p className="text-sm font-medium text-foreground">Memuat ringkasan…</p>
-              <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+              <p className="text-sm font-medium text-foreground">{t('summaryPage.tableLoadingTitle')}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t('summaryPage.tableLoadingHint')}</p>
             </div>
           </div>
         )}
 
-        {isError && (
-          <ErrorComponent message="Gagal memuat ringkasan. Periksa koneksi atau coba muat ulang halaman." />
-        )}
+        {isError && <ErrorComponent message={t('summaryPage.loadErrorDetail')} />}
 
         {isSuccess && data && (
           <div className="space-y-6">
@@ -120,10 +124,10 @@ export default function SummaryPage() {
             <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
               <div className="border-b border-gray-100 px-4 py-3 sm:px-5">
                 <div className="min-w-0 space-y-0.5">
-                  <h2 className="text-sm font-semibold text-gray-900">Detail per periode</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Data sesuai filter tanggal dan pengelompokan. Gunakan paginasi di bawah.
-                  </p>
+                  <h2 className="text-sm font-semibold text-gray-900">
+                    {t('summaryPage.detailSectionTitle')}
+                  </h2>
+                  <p className="text-xs text-muted-foreground">{t('summaryPage.detailSectionHint')}</p>
                 </div>
               </div>
               <div className="min-w-0 p-3 sm:p-4">
@@ -131,7 +135,7 @@ export default function SummaryPage() {
                   <DataTable
                     columns={summaryColumns}
                     data={tableRows}
-                    emptyMessage="Tidak ada data ringkasan pada halaman ini."
+                    emptyMessage={t('summaryPage.emptyPage')}
                   />
                 </div>
                 <div className="mt-4">

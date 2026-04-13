@@ -15,8 +15,10 @@ import { Plus, UploadCloud } from 'lucide-react'
 import { useCreatePaymentMethodSubmit, type PaymentMethodPayload } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import type { FormValuesPaymentMethodCreate } from '@/types/payment-method'
+import { useTranslation } from 'react-i18next'
 
 export default function ModalAddPaymentMethod() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -67,17 +69,17 @@ export default function ModalAddPaymentMethod() {
         onClick={() => applyOpen(true)}
       >
         <Plus className="h-4 w-4 shrink-0" aria-hidden />
-        Tambah metode pembayaran
+        {t('paymentMethodCreate.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={applyOpen}>
         <DialogContent className="rounded-xl sm:max-w-3xl">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="text-lg font-semibold tracking-tight">
-              Tambah metode pembayaran
+              {t('paymentMethodCreate.title')}
             </DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Lengkapi formulir di bawah. Ikon akan diunggah otomatis setelah file dipilih.
+              {t('paymentMethodCreate.description')}
             </p>
           </DialogHeader>
 
@@ -87,40 +89,40 @@ export default function ModalAddPaymentMethod() {
               <div className="w-full flex gap-3 flex-col">
                 {/* Name */}
                 <div className="space-y-1">
-                  <Label>Name</Label>
+                  <Label>{t('paymentMethodCreate.nameLabel')}</Label>
                   <Input
-                    {...register('name', { required: 'Name is required' })}
-                    placeholder="Name"
+                    {...register('name', { required: t('paymentMethodCreate.nameRequired') })}
+                    placeholder={t('paymentMethodCreate.namePlaceholder')}
                   />
                   {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
                 </div>
 
                 {/* Code */}
                 <div className="space-y-1">
-                  <Label>Code</Label>
+                  <Label>{t('paymentMethodCreate.codeLabel')}</Label>
                   <Input
-                    {...register('code', { required: 'Code is required' })}
-                    placeholder="Code"
+                    {...register('code', { required: t('paymentMethodCreate.codeRequired') })}
+                    placeholder={t('paymentMethodCreate.codePlaceholder')}
                   />
                   {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
                 </div>
 
                 {/* Type */}
                 <div className="space-y-1">
-                  <Label>Type</Label>
+                  <Label>{t('paymentMethodCreate.typeLabel')}</Label>
                   <Input
-                    {...register('type', { required: 'Type is required' })}
-                    placeholder="Type"
+                    {...register('type', { required: t('paymentMethodCreate.typeRequired') })}
+                    placeholder={t('paymentMethodCreate.typePlaceholder')}
                   />
                   {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
                 </div>
 
                 {/* Provider */}
                 <div className="space-y-1">
-                  <Label>Provider</Label>
+                  <Label>{t('paymentMethodCreate.providerLabel')}</Label>
                   <Input
-                    {...register('provider', { required: 'Provider is required' })}
-                    placeholder="Provider"
+                    {...register('provider', { required: t('paymentMethodCreate.providerRequired') })}
+                    placeholder={t('paymentMethodCreate.providerPlaceholder')}
                   />
                   {errors.provider && (
                     <p className="text-xs text-destructive">{errors.provider.message}</p>
@@ -128,7 +130,7 @@ export default function ModalAddPaymentMethod() {
                 </div>
                 {/* Drag & Drop Icon */}
                 <div className="space-y-2">
-                  <Label>Icon</Label>
+                  <Label>{t('paymentMethodCreate.iconLabel')}</Label>
                   <div
                     onClick={() => inputRef.current?.click()}
                     onDragOver={(e) => e.preventDefault()}
@@ -146,13 +148,13 @@ export default function ModalAddPaymentMethod() {
                     ) : (
                       <div className="flex flex-col items-center gap-2 text-muted-foreground">
                         <UploadCloud className="h-6 w-6" />
-                        <span className="text-sm">Click or Drop image</span>
+                        <span className="text-sm">{t('paymentMethodCreate.iconDropHint')}</span>
                       </div>
                     )}
 
                     {isUploading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white">
-                        <span className="text-sm">Uploading {uploadProgress}%</span>
+                        <span className="text-sm">{t('paymentMethodCreate.uploading', { percent: uploadProgress })}</span>
                       </div>
                     )}
                   </div>
@@ -176,12 +178,12 @@ export default function ModalAddPaymentMethod() {
               <div className="w-full flex gap-3 flex-col">
                 {/* Fee Percentage */}
                 <div className="space-y-1">
-                  <Label>Fee Percentage</Label>
+                  <Label>{t('paymentMethodCreate.feePercentLabel')}</Label>
                   <Input
                     type="number"
                     {...register('fee_percentage', {
                       valueAsNumber: true,
-                      required: 'Fee Percentage is required',
+                      required: t('paymentMethodCreate.feePercentRequired'),
                     })}
                   />
                   {errors.fee_percentage && (
@@ -191,12 +193,12 @@ export default function ModalAddPaymentMethod() {
 
                 {/* Fee Fixed */}
                 <div className="space-y-1">
-                  <Label>Fee Fixed</Label>
+                  <Label>{t('paymentMethodCreate.feeFixedLabel')}</Label>
                   <Input
                     type="number"
                     {...register('fee_fixed', {
                       valueAsNumber: true,
-                      required: 'Fee Fixed is required',
+                      required: t('paymentMethodCreate.feeFixedRequired'),
                     })}
                   />
                   {errors.fee_fixed && (
@@ -206,12 +208,12 @@ export default function ModalAddPaymentMethod() {
 
                 {/* Min Amount */}
                 <div className="space-y-1">
-                  <Label>Min Amount</Label>
+                  <Label>{t('paymentMethodCreate.minAmountLabel')}</Label>
                   <Input
                     type="number"
                     {...register('min_amount', {
                       valueAsNumber: true,
-                      required: 'Min Amount is required',
+                      required: t('paymentMethodCreate.minAmountRequired'),
                     })}
                   />
                   {errors.min_amount && (
@@ -221,12 +223,12 @@ export default function ModalAddPaymentMethod() {
 
                 {/* Max Amount */}
                 <div className="space-y-1">
-                  <Label>Max Amount</Label>
+                  <Label>{t('paymentMethodCreate.maxAmountLabel')}</Label>
                   <Input
                     type="number"
                     {...register('max_amount', {
                       valueAsNumber: true,
-                      required: 'Max Amount is required',
+                      required: t('paymentMethodCreate.maxAmountRequired'),
                     })}
                   />
                   {errors.max_amount && (
@@ -236,12 +238,12 @@ export default function ModalAddPaymentMethod() {
 
                 {/* Sort Order */}
                 <div className="space-y-1">
-                  <Label>Sort Order</Label>
+                  <Label>{t('paymentMethodCreate.sortOrderLabel')}</Label>
                   <Input
                     type="number"
                     {...register('sort_order', {
                       valueAsNumber: true,
-                      required: 'Sort Order is required',
+                      required: t('paymentMethodCreate.sortOrderRequired'),
                     })}
                   />
                   {errors.sort_order && (
@@ -251,7 +253,7 @@ export default function ModalAddPaymentMethod() {
 
                 {/* Config */}
                 <div className="space-y-1">
-                  <Label>Config (JSON)</Label>
+                  <Label>{t('paymentMethodCreate.configLabel')}</Label>
                 </div>
               </div>
             </div>
@@ -263,14 +265,14 @@ export default function ModalAddPaymentMethod() {
                 type="button"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t('paymentMethodCreate.cancel')}
               </Button>
               <Button
                 className="cursor-pointer"
                 type="submit"
                 disabled={mutation.isPending || isUploading}
               >
-                {mutation.isPending ? 'Saving...' : 'Create'}
+                {mutation.isPending ? t('paymentMethodCreate.saving') : t('paymentMethodCreate.create')}
               </Button>
             </DialogFooter>
           </form>

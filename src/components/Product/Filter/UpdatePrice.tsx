@@ -16,6 +16,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/axios'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 type PriceType = 'fee' | 'percent'
 
@@ -33,6 +34,7 @@ interface Props {
 }
 
 export default function UpdateProductPriceModal({ productId, basePrice, productName }: Props) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const typeId = useId()
@@ -82,12 +84,12 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
   const mutation = useMutation({
     mutationFn: (data: FormValues) => api.patch('/products/price', data),
     onSuccess: () => {
-      toast.success('Harga berhasil diperbarui')
+      toast.success(t('productToasts.priceUpdateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['products'] })
       setOpen(false)
     },
     onError: () => {
-      toast.error('Gagal memperbarui harga')
+      toast.error(t('productToasts.priceUpdateError'))
     },
   })
 
@@ -111,7 +113,7 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
         size="icon"
         onClick={() => setOpen(true)}
         className="cursor-pointer"
-        aria-label={`Ubah harga ${productName}`}
+        aria-label={t('productPriceModal.openAria', { name: productName })}
       >
         <Pencil className="h-4 w-4" aria-hidden />
       </Button>
@@ -119,10 +121,9 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Ubah harga jual</DialogTitle>
+            <DialogTitle>{t('productPriceModal.title')}</DialogTitle>
             <DialogDescription>
-              Produk: <span className="font-medium text-foreground">{productName}</span>. Pilih tambahan
-              nominal (fee) atau persen di atas harga dasar. Pratinjau di bawah sebelum menyimpan.
+              {t('productPriceModal.description', { name: productName })}
             </DialogDescription>
           </DialogHeader>
 
@@ -131,18 +132,18 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
 
             <div className="space-y-2">
               <Label htmlFor={typeId} className="text-sm font-medium">
-                Jenis tambahan
+                {t('productPriceModal.typeLabel')}
               </Label>
               <select id={typeId} {...register('type', { required: true })} className={selectClass}>
-                <option value="fee">Biaya tambahan (rupiah)</option>
-                <option value="percent">Persen markup</option>
+                <option value="fee">{t('productPriceModal.typeFee')}</option>
+                <option value="percent">{t('productPriceModal.typePercent')}</option>
               </select>
             </div>
 
             {type === 'fee' && (
               <div className="space-y-2">
                 <Label htmlFor={feeId} className="text-sm font-medium">
-                  Biaya tambahan (Rp)
+                  {t('productPriceModal.feeLabel')}
                 </Label>
                 <Input
                   id={feeId}
@@ -157,11 +158,11 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                   aria-invalid={!!errors.additional_fee}
                 />
                 {errors.additional_fee && (
-                  <p className="text-xs text-destructive">Nilai biaya tidak valid</p>
+                  <p className="text-xs text-destructive">{t('productPriceModal.invalidFee')}</p>
                 )}
                 {isFeeOverLimit && (
                   <p className="text-xs text-amber-600 dark:text-amber-500">
-                    Maksimum biaya tambahan Rp 1.000.000
+                    {t('productPriceModal.feeMax')}
                   </p>
                 )}
               </div>
@@ -170,7 +171,7 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
             {type === 'percent' && (
               <div className="space-y-2">
                 <Label htmlFor={percentId} className="text-sm font-medium">
-                  Persen tambahan (%)
+                  {t('productPriceModal.percentLabel')}
                 </Label>
                 <Input
                   id={percentId}
@@ -186,23 +187,23 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                   aria-invalid={!!errors.additional_percent}
                 />
                 {errors.additional_percent && (
-                  <p className="text-xs text-destructive">Nilai persen tidak valid</p>
+                  <p className="text-xs text-destructive">{t('productPriceModal.invalidPercent')}</p>
                 )}
                 {isPercentOverLimit && (
-                  <p className="text-xs text-amber-600 dark:text-amber-500">Maksimum markup 40%</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-500">{t('productPriceModal.percentMax')}</p>
                 )}
               </div>
             )}
 
             <div className="space-y-2 rounded-lg border border-border/80 bg-muted/30 p-4 text-sm">
               <div className="flex items-center justify-between gap-4 text-muted-foreground">
-                <span>Harga dasar</span>
+                <span>{t('productPriceModal.basePrice')}</span>
                 <span className="font-mono tabular-nums text-foreground">
                   Rp {basePrice?.toLocaleString('id-ID')}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-4 border-t border-border/60 pt-2 font-semibold text-foreground">
-                <span>Harga jual (perkiraan)</span>
+                <span>{t('productPriceModal.sellingEstimate')}</span>
                 <span className="font-mono tabular-nums">
                   Rp {sellingPrice?.toLocaleString('id-ID')}
                 </span>
@@ -216,7 +217,7 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                 onClick={() => setOpen(false)}
                 className="cursor-pointer rounded-xl"
               >
-                Batal
+                {t('productPriceModal.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -226,10 +227,10 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('productPriceModal.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('productPriceModal.save')
                 )}
               </Button>
             </DialogFooter>

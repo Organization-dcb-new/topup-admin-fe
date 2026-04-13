@@ -11,12 +11,15 @@ import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import { useDebounce } from '@/hooks/useDebounce'
 import { type GetProductsParams, useGetProducts } from '@/hooks/useProduct'
-import { productColumns } from '@/tables/table-product'
+import { getProductColumns } from '@/tables/table-product'
+import i18n from '@/i18n'
 import { AlertCircle, Boxes, CheckCircle2, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export default function ProductPage() {
+  const { t } = useTranslation('common')
   const [productNameSearch, setProductNameSearch] = useState('')
   const [productStatus, setProductStatus] = useState<ProductStatusFilterValue>('all')
   const [providerStatus, setProviderStatus] = useState<ProductProviderStatusFilterValue>('all')
@@ -114,14 +117,15 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
-      toast.success('Berhasil memuat produk')
+      toast.success(t('productPage.toastSuccess'))
     }
     if (isError && isFetchedAfterMount) {
-      toast.error('Gagal memuat produk')
+      toast.error(t('productPage.toastError'))
     }
-  }, [isSuccess, isError, isFetchedAfterMount])
+  }, [isSuccess, isError, isFetchedAfterMount, t])
 
   const rows = data?.data ?? []
+  const productColumns = useMemo(() => getProductColumns(t), [t])
 
   const patchAmountFilters = (patch: Partial<ProductAmountFiltersState>) => {
     setAmountFilters((prev) => ({ ...prev, ...patch }))
@@ -136,32 +140,32 @@ export default function ProductPage() {
               <Boxes className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Produk</h1>
-              <p className="text-sm text-muted-foreground">
-                Cari nama produk, filter status & status provider, nominal, SKU, dan game. Tabel
-                menampilkan{' '}
-                {limit} item per halaman.
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('productPage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('productPage.subtitle', { limit })}</p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 sm:text-right">
             {isLoading && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary" aria-hidden />
-                Memuat…
+                {t('productPage.loadingShort')}
               </p>
             )}
             {isError && (
               <p className="flex items-center gap-2 text-sm font-medium text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                Gagal memuat
+                {t('productPage.loadFailedShort')}
               </p>
             )}
             {isSuccess && (
               <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" aria-hidden />
                 <span className="tabular-nums text-foreground">
-                  Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} produk
+                  {t('productPage.totalProducts', {
+                    count: (data?.meta?.total_data ?? 0).toLocaleString(
+                      i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+                    ),
+                  })}
                 </span>
               </p>
             )}
@@ -193,14 +197,14 @@ export default function ProductPage() {
             >
               <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
               <div className="text-center">
-                <p className="text-sm font-medium text-foreground">Memuat produk…</p>
-                <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                <p className="text-sm font-medium text-foreground">{t('productPage.tableLoadingTitle')}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t('productPage.tableLoadingHint')}</p>
               </div>
             </div>
           )}
 
           {isError && (
-            <ErrorComponent message="Gagal memuat produk. Periksa koneksi atau coba muat ulang halaman." />
+            <ErrorComponent message={t('productPage.loadErrorDetail')} />
           )}
 
           {isSuccess && (
@@ -209,7 +213,7 @@ export default function ProductPage() {
                 <DataTable
                   columns={productColumns}
                   data={rows}
-                  emptyMessage="Tidak ada produk yang cocok dengan filter saat ini."
+                  emptyMessage={t('productPage.emptyPage')}
                 />
               </div>
               <div className="mt-4">

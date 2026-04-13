@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import HeaderBlog from '@/components/Blog/Header/Header'
 import BlogList from '@/components/Blog/List/List'
@@ -7,6 +8,7 @@ import type { Blog } from '@/tables/table-blog'
 import { BookOpen } from 'lucide-react'
 
 export default function BlogPage() {
+  const { t } = useTranslation('common')
   const [view, setView] = useState<'list' | 'create' | 'edit'>('list')
   const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null)
 
@@ -29,11 +31,8 @@ export default function BlogPage() {
               <BookOpen className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Blog</h1>
-              <p className="text-sm text-muted-foreground">
-                Kelola artikel: lihat daftar, buat posting baru, atau ubah konten yang sudah terbit.
-                Gunakan tombol di area kerja di bawah untuk beralih mode.
-              </p>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('blogPage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('blogPage.subtitle')}</p>
             </div>
           </div>
         </div>

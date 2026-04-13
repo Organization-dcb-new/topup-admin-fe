@@ -3,6 +3,11 @@ import type { Category, CategoryResponse } from './category'
 import type { ProviderResponse } from './provider'
 import type { Product } from './product'
 
+export type GameUpdatedBy = {
+  id: string
+  name: string
+}
+
 export interface Game {
   id: string
   category_id: string
@@ -19,11 +24,14 @@ export interface Game {
   is_featured: boolean
   is_show: boolean
   is_active: boolean
+  /** When true, customer ID is validated (e.g. against provider). */
+  is_check_id?: boolean
   popularity_score: number
   created_at: string
   updated_at: string
+  updated_by?: GameUpdatedBy | null
   category: Category
-  input: GameInput | null
+  input: GameInput[] | GameInput | null
   product: Product[] | null
 }
 
@@ -32,16 +40,17 @@ export type GameInput = {
   game_id: string
   key: string
   label: string
-  input_type: 'text' | 'number' | 'email' | 'password' | 'select'
+  input_type: 'text' | 'number' | 'email' | 'password' | 'select' | 'tel'
   required: boolean
   sort_order: number
   placeholder: string
+  Options?: unknown
 }
 
 export interface GameByIDResponse {
   status: string
   message: string
-  data: Game[]
+  data: Game
 }
 
 export interface GamesResponse {

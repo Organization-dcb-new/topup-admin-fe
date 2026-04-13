@@ -2,6 +2,7 @@ import { api } from '@/api/axios'
 import type { Provider, ProviderPayload, ProviderResponse } from '@/types/provider'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 // Get All Categories
 export const useGetProvider = () =>
@@ -14,6 +15,7 @@ export const useGetProvider = () =>
   })
 
 export const useUpdateProvider = () => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -22,16 +24,17 @@ export const useUpdateProvider = () => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Provider updated')
+      toast.success(t('providerToasts.updateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['providers'] })
     },
     onError: () => {
-      toast.error('Failed to update provider')
+      toast.error(t('providerToasts.updateError'))
     },
   })
 }
 
 export const useDeleteProvider = (id: string) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -40,11 +43,11 @@ export const useDeleteProvider = (id: string) => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Provider Deleted')
+      toast.success(t('providerToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['providers'] })
     },
     onError: () => {
-      toast.error('Failed to deleted provider')
+      toast.error(t('providerToasts.deleteError'))
     },
   })
 }
@@ -54,6 +57,7 @@ interface CreateProviderProps {
 }
 
 export const useCreateProvider = ({ setOpen }: CreateProviderProps) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -62,12 +66,12 @@ export const useCreateProvider = ({ setOpen }: CreateProviderProps) => {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Provider Created')
+      toast.success(t('providerToasts.createSuccess'))
       queryClient.invalidateQueries({ queryKey: ['providers'] })
       setOpen(false)
     },
     onError: () => {
-      toast.error('Failed to Create provider')
+      toast.error(t('providerToasts.createError'))
     },
   })
 }

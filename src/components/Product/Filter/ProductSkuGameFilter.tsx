@@ -14,6 +14,7 @@ import { useGetGameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type ProductSkuGameFilterProps = {
   sku: string
@@ -28,6 +29,7 @@ export function ProductSkuGameFilter({
   gameName,
   onGameNameChange,
 }: ProductSkuGameFilterProps) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const { data: games } = useGetGameNames()
   const selectedGameLabel = games?.find((g: GameNames) => g.name === gameName)?.name
@@ -35,17 +37,17 @@ export function ProductSkuGameFilter({
   return (
     <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:items-end">
       <div className="grid min-w-0 gap-1.5">
-        <span className="text-xs text-muted-foreground">SKU</span>
+        <span className="text-xs text-muted-foreground">{t('productFilters.skuLabel')}</span>
         <Input
-          placeholder="Filter SKU…"
+          placeholder={t('productFilters.skuPlaceholder')}
           className="h-10 w-full min-w-0 shadow-sm"
           value={sku}
           onChange={(e) => onSkuChange(e.target.value)}
-          aria-label="Filter SKU"
+          aria-label={t('productFilters.skuAria')}
         />
       </div>
       <div className="grid min-w-0 gap-1.5">
-        <span className="text-xs text-muted-foreground">Game</span>
+        <span className="text-xs text-muted-foreground">{t('productFilters.gameLabel')}</span>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -55,7 +57,7 @@ export function ProductSkuGameFilter({
               aria-expanded={open}
               className="h-10 w-full min-w-0 justify-between font-normal shadow-sm"
             >
-              <span className="truncate">{selectedGameLabel || 'Pilih game…'}</span>
+              <span className="truncate">{selectedGameLabel || t('productFilters.gamePlaceholder')}</span>
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
             </Button>
           </PopoverTrigger>
@@ -64,9 +66,9 @@ export function ProductSkuGameFilter({
             align="start"
           >
           <Command>
-            <CommandInput placeholder="Cari game…" />
+            <CommandInput placeholder={t('productFilters.gameSearchPlaceholder')} />
             <CommandList>
-              <CommandEmpty>Tidak ada game.</CommandEmpty>
+              <CommandEmpty>{t('productFilters.gameEmpty')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   value=""
@@ -79,7 +81,7 @@ export function ProductSkuGameFilter({
                     className={cn('mr-2 h-4 w-4', gameName === '' ? 'opacity-100' : 'opacity-0')}
                     aria-hidden
                   />
-                  Semua game
+                  {t('productFilters.allGames')}
                 </CommandItem>
                 {games?.map((game: GameNames) => (
                   <CommandItem

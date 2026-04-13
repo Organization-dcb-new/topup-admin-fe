@@ -2,6 +2,7 @@ import { api } from '@/api/axios'
 import type { FormValuesPaymentMethodEdit, PaymentMethodResponse } from '@/types/payment-method'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export type PaymentMethodPayload = {
   name: string
@@ -37,6 +38,7 @@ interface CreatePaymentMethodProps {
 }
 
 export const useCreatePaymentMethodSubmit = ({ setOpen }: CreatePaymentMethodProps) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (payload: PaymentMethodPayload) => {
@@ -46,15 +48,16 @@ export const useCreatePaymentMethodSubmit = ({ setOpen }: CreatePaymentMethodPro
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
       setOpen(false)
-      toast.success('Metode pembayaran berhasil dibuat')
+      toast.success(t('paymentMethodToasts.createSuccess'))
     },
     onError: () => {
-      toast.error('Gagal membuat metode pembayaran')
+      toast.error(t('paymentMethodToasts.createError'))
     },
   })
 }
 
 export function useDeletePaymentMethod(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -63,11 +66,11 @@ export function useDeletePaymentMethod(id: string) {
       return res
     },
     onSuccess: () => {
-      toast.success('Metode pembayaran berhasil dihapus')
+      toast.success(t('paymentMethodToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
     },
     onError: () => {
-      toast.error('Gagal menghapus metode pembayaran')
+      toast.error(t('paymentMethodToasts.deleteError'))
     },
   })
 
@@ -75,6 +78,7 @@ export function useDeletePaymentMethod(id: string) {
 }
 
 export function useEditPaymentMethod(paymentMethodId: string, setOpen: (open: boolean) => void) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -87,11 +91,11 @@ export function useEditPaymentMethod(paymentMethodId: string, setOpen: (open: bo
       return res.data
     },
     onSuccess: () => {
-      toast.success('Metode pembayaran berhasil diperbarui')
+      toast.success(t('paymentMethodToasts.updateSuccess'))
       queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
       setOpen(false)
     },
-    onError: () => toast.error('Gagal memperbarui metode pembayaran'),
+    onError: () => toast.error(t('paymentMethodToasts.updateError')),
   })
 
   return mutation

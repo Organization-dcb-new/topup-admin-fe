@@ -17,6 +17,7 @@ import { useGetGameNamesWithType } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   value: string
@@ -24,15 +25,16 @@ type Props = {
 }
 
 export function GamePickerSelect({ value, onChange }: Props) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const { data: games, isLoading, isError } = useGetGameNamesWithType()
 
   const selectedName = value ? games?.find((g) => g.id === value)?.name : undefined
 
   return (
-    <div className="grid min-w-0 flex-1 gap-1.5">
+    <div className="grid min-w-0 w-full gap-1.5">
       <Label htmlFor="game-picker-trigger" className="text-xs text-muted-foreground">
-        Game
+        {t('gameFilters.gameLabel')}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -43,10 +45,10 @@ export function GamePickerSelect({ value, onChange }: Props) {
             role="combobox"
             aria-expanded={open}
             disabled={isLoading || isError}
-            className="h-8 w-full min-w-0 justify-between px-3 font-normal"
+            className="h-9 w-full min-w-0 justify-between px-3 font-normal shadow-sm"
           >
             <span className="truncate text-left">
-              {isLoading ? 'Memuat daftar game…' : (selectedName ?? 'Semua game')}
+              {isLoading ? t('gameFilters.loadingGames') : (selectedName ?? t('gameFilters.allGames'))}
             </span>
             {isLoading ? (
               <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin opacity-50" aria-hidden />
@@ -60,9 +62,9 @@ export function GamePickerSelect({ value, onChange }: Props) {
           align="start"
         >
           <Command>
-            <CommandInput placeholder="Cari game…" />
+            <CommandInput placeholder={t('gameFilters.searchPlaceholder')} />
             <CommandList>
-              <CommandEmpty>Tidak ada game yang cocok.</CommandEmpty>
+              <CommandEmpty>{t('gameFilters.emptySearch')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
                   value="semua game all"
@@ -76,7 +78,7 @@ export function GamePickerSelect({ value, onChange }: Props) {
                     className={cn('mr-2 h-4 w-4 shrink-0', !value ? 'opacity-100' : 'opacity-0')}
                     aria-hidden
                   />
-                  Semua game
+                  {t('gameFilters.allGames')}
                 </CommandItem>
                 {games?.map((g) => (
                   <CommandItem
@@ -104,7 +106,7 @@ export function GamePickerSelect({ value, onChange }: Props) {
         </PopoverContent>
       </Popover>
       {isError && (
-        <p className="text-xs text-destructive">Gagal memuat daftar nama game.</p>
+        <p className="text-xs text-destructive">{t('gameFilters.loadNamesError')}</p>
       )}
     </div>
   )

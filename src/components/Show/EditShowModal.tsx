@@ -1,12 +1,12 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +19,7 @@ import type { Show } from '@/types/show'
 import { useUpdateShow } from '@/hooks/useShow'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 type UpdateShowForm = {
   name: string
@@ -49,6 +50,7 @@ export function UpdateShowModal({
   show: Show
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
   const defaultPreview = useRef<string | null>(null)
 
@@ -58,6 +60,23 @@ export function UpdateShowModal({
   const [uploadProgress, setUploadProgress] = useState(0)
 
   const { register, handleSubmit, reset, setValue, watch, formState } = useForm<UpdateShowForm>()
+
+  const flagFields = useMemo(
+    () =>
+      (
+        [
+          ['is_hot', 'flagHotLabel', 'flagHotDesc'],
+          ['is_new', 'flagNewLabel', 'flagNewDesc'],
+          ['is_popular', 'flagPopularLabel', 'flagPopularDesc'],
+          ['is_show', 'flagShowLabel', 'flagShowDesc'],
+        ] as const
+      ).map(([key, labelKey, descKey]) => ({
+        key,
+        label: t(`editShowModal.${labelKey}`),
+        description: t(`editShowModal.${descKey}`),
+      })),
+    [t],
+  )
 
   const setDialogOpen = (value: boolean) => {
     if (!value) {
@@ -91,20 +110,6 @@ export function UpdateShowModal({
     })
   }
 
-  const flagFields: {
-    key: keyof Pick<
-      UpdateShowForm,
-      'is_hot' | 'is_new' | 'is_popular' | 'is_show'
-    >
-    label: string
-    description: string
-  }[] = [
-    { key: 'is_hot', label: 'Hot', description: 'Tandai sebagai konten hot.' },
-    { key: 'is_new', label: 'Baru', description: 'Tandai sebagai konten baru.' },
-    { key: 'is_popular', label: 'Populer', description: 'Tandai sebagai populer.' },
-    { key: 'is_show', label: 'Tampil sebagai show', description: 'Show aktif di katalog.' },
-  ]
-
   return (
     <>
       <Button
@@ -112,10 +117,10 @@ export function UpdateShowModal({
         size="sm"
         onClick={openDialog}
         className={cn('cursor-pointer gap-1.5', triggerClassName)}
-        aria-label="Ubah show"
+        aria-label={t('editShowModal.triggerAria')}
       >
         <Pencil className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="hidden sm:inline">Ubah</span>
+        <span className="hidden sm:inline">{t('editShowModal.triggerShort')}</span>
       </Button>
 
       <Dialog open={open} onOpenChange={setDialogOpen}>
@@ -126,11 +131,11 @@ export function UpdateShowModal({
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Pencil className="h-4 w-4" aria-hidden />
                 </span>
-                <DialogTitle className="text-xl font-semibold tracking-tight">Ubah show</DialogTitle>
+                <DialogTitle className="text-xl font-semibold tracking-tight">
+                  {t('editShowModal.title')}
+                </DialogTitle>
               </div>
-              <DialogDescription>
-                Perbarui data show, gambar, dan penanda tampilan. Perubahan diterapkan setelah disimpan.
-              </DialogDescription>
+              <DialogDescription>{t('editShowModal.description')}</DialogDescription>
             </DialogHeader>
           </div>
 
@@ -139,12 +144,12 @@ export function UpdateShowModal({
             className="space-y-5 px-6 py-5"
           >
             <div className="space-y-2">
-              <Label htmlFor="edit-show-name">Nama show</Label>
+              <Label htmlFor="edit-show-name">{t('editShowModal.nameLabel')}</Label>
               <div className="space-y-1">
                 <Input
                   id="edit-show-name"
-                  {...register('name', { required: 'Nama show wajib diisi' })}
-                  placeholder="Contoh: Topup Hemat"
+                  {...register('name', { required: t('editShowModal.nameRequired') })}
+                  placeholder={t('editShowModal.namePlaceholder')}
                   aria-invalid={!!formState.errors.name}
                 />
                 {formState.errors.name && (
@@ -154,34 +159,30 @@ export function UpdateShowModal({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-show-alias">Alias</Label>
+              <Label htmlFor="edit-show-alias">{t('editShowModal.aliasLabel')}</Label>
               <Input
                 id="edit-show-alias"
-                {...register('alias', { required: 'Alias wajib diisi' })}
-                placeholder="topup-hemat"
+                {...register('alias', { required: t('editShowModal.aliasRequired') })}
+                placeholder={t('editShowModal.aliasPlaceholder')}
                 autoComplete="off"
                 aria-invalid={!!formState.errors.alias}
               />
               {formState.errors.alias && (
                 <p className="text-xs text-destructive">{formState.errors.alias.message}</p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Identitas unik untuk sistem (biasanya huruf kecil, tanpa spasi).
-              </p>
+              <p className="text-xs text-muted-foreground">{t('editShowModal.aliasHint')}</p>
             </div>
 
             <input type="hidden" {...register('image')} />
 
             <div className="space-y-2">
-              <Label>Gambar show</Label>
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG, atau SVG. Seret ke area ini atau ketuk untuk memilih.
-              </p>
+              <Label>{t('editShowModal.imageLabel')}</Label>
+              <p className="text-xs text-muted-foreground">{t('createBannerModal.imageHint')}</p>
 
               <div
                 role="button"
                 tabIndex={0}
-                aria-label="Unggah gambar show"
+                aria-label={t('editShowModal.uploadAria')}
                 onClick={() => inputRef.current?.click()}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -205,13 +206,13 @@ export function UpdateShowModal({
                   <>
                     <img
                       src={preview}
-                      alt="Pratinjau gambar show"
+                      alt={t('editShowModal.previewAlt')}
                       className="max-h-44 w-full rounded-lg object-contain"
                     />
                     {!isUploading && (
                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
                         <span className="rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm">
-                          Ganti gambar
+                          {t('createBannerModal.changeImage')}
                         </span>
                       </div>
                     )}
@@ -221,9 +222,11 @@ export function UpdateShowModal({
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
                       <UploadCloud className="h-6 w-6 text-primary" aria-hidden />
                     </span>
-                    <span className="text-sm font-medium text-foreground">Unggah gambar</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t('createBannerModal.uploadTitle')}
+                    </span>
                     <span className="max-w-[16rem] text-xs leading-relaxed">
-                      Klik atau letakkan file di sini
+                      {t('createBannerModal.uploadDropHint')}
                     </span>
                   </div>
                 )}
@@ -231,7 +234,7 @@ export function UpdateShowModal({
                 {isUploading && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
                     <span className="text-sm font-medium text-foreground">
-                      Mengunggah… {uploadProgress}%
+                      {t('createBannerModal.uploading', { percent: uploadProgress })}
                     </span>
                     <Progress value={uploadProgress} className="h-2 w-[min(100%,12rem)]" />
                   </div>
@@ -257,10 +260,8 @@ export function UpdateShowModal({
 
             <div className="space-y-3 rounded-xl border border-border/80 bg-muted/15 p-4">
               <div>
-                <p className="text-sm font-semibold text-foreground">Penanda</p>
-                <p className="text-xs text-muted-foreground">
-                  Atur bagaimana show ini ditampilkan di aplikasi.
-                </p>
+                <p className="text-sm font-semibold text-foreground">{t('editShowModal.flagsTitle')}</p>
+                <p className="text-xs text-muted-foreground">{t('editShowModal.flagsHint')}</p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 {flagFields.map(({ key, label, description }) => (
@@ -291,14 +292,14 @@ export function UpdateShowModal({
                 onClick={() => setDialogOpen(false)}
                 className="cursor-pointer sm:min-w-[5.5rem]"
               >
-                Batal
+                {t('createBannerModal.cancel')}
               </Button>
               <Button
                 type="submit"
                 disabled={mutation.isPending || isUploading}
                 className="cursor-pointer sm:min-w-[5.5rem]"
               >
-                {mutation.isPending ? 'Menyimpan…' : 'Simpan'}
+                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
               </Button>
             </DialogFooter>
           </form>

@@ -5,9 +5,9 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -16,6 +16,7 @@ import { Clapperboard, Plus, UploadCloud } from 'lucide-react'
 
 import { handleFileAutoUpload } from '@/helpers/upload'
 import { useCreateShow } from '@/hooks/useShow'
+import { useTranslation } from 'react-i18next'
 
 export type FormValuesShow = {
   name: string
@@ -30,6 +31,7 @@ export type ShowPayload = {
 }
 
 export function CreateShowModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -80,7 +82,7 @@ export function CreateShowModal() {
         onClick={() => setDialogOpen(true)}
       >
         <Plus className="h-4 w-4 shrink-0" aria-hidden />
-        Tambah show
+        {t('createShowModal.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setDialogOpen}>
@@ -91,64 +93,58 @@ export function CreateShowModal() {
                 <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Clapperboard className="h-4 w-4" aria-hidden />
                 </span>
-                <DialogTitle className="text-xl font-semibold tracking-tight">Tambah show</DialogTitle>
+                <DialogTitle className="text-xl font-semibold tracking-tight">
+                  {t('createShowModal.title')}
+                </DialogTitle>
               </div>
-              <DialogDescription>
-                Isi nama, alias, dan gambar show. Game bisa ditambahkan setelah show dibuat.
-              </DialogDescription>
+              <DialogDescription>{t('createShowModal.description')}</DialogDescription>
             </DialogHeader>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-5">
             <div className="space-y-2">
-              <Label htmlFor="show-name">Nama show</Label>
+              <Label htmlFor="show-name">{t('createShowModal.nameLabel')}</Label>
               <div className="space-y-1">
                 <Input
                   id="show-name"
                   {...register('name', {
-                    required: 'Nama show wajib diisi',
+                    required: t('createShowModal.nameRequired'),
                   })}
-                  placeholder="Contoh: Topup Hemat"
+                  placeholder={t('createShowModal.namePlaceholder')}
                   aria-invalid={!!errors.name}
                 />
                 {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Nama yang tampil untuk pengguna di aplikasi.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('createShowModal.nameHint')}</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="show-alias">Alias</Label>
+              <Label htmlFor="show-alias">{t('createShowModal.aliasLabel')}</Label>
               <div className="space-y-1">
                 <Input
                   id="show-alias"
                   {...register('alias', {
-                    required: 'Alias wajib diisi',
+                    required: t('createShowModal.aliasRequired'),
                   })}
-                  placeholder="topup-hemat"
+                  placeholder={t('createShowModal.aliasPlaceholder')}
                   autoComplete="off"
                   aria-invalid={!!errors.alias}
                 />
                 {errors.alias && <p className="text-xs text-destructive">{errors.alias.message}</p>}
               </div>
-              <p className="text-xs text-muted-foreground">
-                Identitas unik (biasanya huruf kecil, tanpa spasi) untuk sistem.
-              </p>
+              <p className="text-xs text-muted-foreground">{t('createShowModal.aliasHint')}</p>
             </div>
 
             <input type="hidden" {...register('image')} />
 
             <div className="space-y-2">
-              <Label>Gambar show</Label>
-              <p className="text-xs text-muted-foreground">
-                PNG, JPG, atau SVG. Seret file ke area ini atau ketuk untuk memilih.
-              </p>
+              <Label>{t('createShowModal.imageLabel')}</Label>
+              <p className="text-xs text-muted-foreground">{t('createBannerModal.imageHint')}</p>
 
               <div
                 role="button"
                 tabIndex={0}
-                aria-label="Unggah gambar show"
+                aria-label={t('createShowModal.uploadAria')}
                 onClick={() => inputRef.current?.click()}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -172,13 +168,13 @@ export function CreateShowModal() {
                   <>
                     <img
                       src={preview}
-                      alt="Pratinjau gambar show"
+                      alt={t('createShowModal.previewAlt')}
                       className="max-h-44 w-full rounded-lg object-contain"
                     />
                     {!isUploading && (
                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
                         <span className="rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm">
-                          Ganti gambar
+                          {t('createBannerModal.changeImage')}
                         </span>
                       </div>
                     )}
@@ -188,9 +184,11 @@ export function CreateShowModal() {
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
                       <UploadCloud className="h-6 w-6 text-primary" aria-hidden />
                     </span>
-                    <span className="text-sm font-medium text-foreground">Unggah gambar</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {t('createBannerModal.uploadTitle')}
+                    </span>
                     <span className="max-w-[16rem] text-xs leading-relaxed">
-                      Klik atau letakkan file di sini
+                      {t('createBannerModal.uploadDropHint')}
                     </span>
                   </div>
                 )}
@@ -198,7 +196,7 @@ export function CreateShowModal() {
                 {isUploading && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
                     <span className="text-sm font-medium text-foreground">
-                      Mengunggah… {uploadProgress}%
+                      {t('createBannerModal.uploading', { percent: uploadProgress })}
                     </span>
                     <Progress value={uploadProgress} className="h-2 w-[min(100%,12rem)]" />
                   </div>
@@ -224,14 +222,14 @@ export function CreateShowModal() {
                 type="button"
                 onClick={() => setDialogOpen(false)}
               >
-                Batal
+                {t('createBannerModal.cancel')}
               </Button>
               <Button
                 className="cursor-pointer sm:min-w-[5.5rem]"
                 type="submit"
                 disabled={isUploading || mutation.isPending}
               >
-                {mutation.isPending ? 'Menyimpan…' : 'Simpan'}
+                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
               </Button>
             </DialogFooter>
           </form>

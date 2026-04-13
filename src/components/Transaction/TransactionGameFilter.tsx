@@ -17,6 +17,7 @@ import { useGetGameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, FilterX, Gamepad2, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface TransactionGameFilterProps {
   /** ID game terpilih; string kosong = semua game */
@@ -25,15 +26,16 @@ interface TransactionGameFilterProps {
 }
 
 export default function TransactionGameFilter({ value, onChange }: TransactionGameFilterProps) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const { data: games, isLoading, isError } = useGetGameNames()
 
   const selected = games?.find((g: GameName) => g.id === value)
   const label = isError
-    ? 'Gagal memuat daftar game'
+    ? t('transactionFilters.game.listError')
     : selected
       ? selected.name
-      : 'Semua game'
+      : t('transactionFilters.game.allGames')
 
   return (
     <div className="flex w-full min-w-0 items-center gap-2">
@@ -45,7 +47,7 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              aria-label="Filter berdasarkan game"
+              aria-label={t('transactionFilters.game.filterAria')}
               disabled={isLoading}
               className={cn(
                 'h-10 w-full min-w-0 justify-between font-normal shadow-xs',
@@ -59,7 +61,9 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
               ) : (
                 <Gamepad2 className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
               )}
-              <span className="truncate">{isLoading ? 'Memuat game…' : label}</span>
+              <span className="truncate">
+                {isLoading ? t('transactionFilters.game.loading') : label}
+              </span>
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
           </Button>
@@ -69,10 +73,10 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
           align="start"
         >
           <Command>
-            <CommandInput placeholder="Cari nama game…" />
+            <CommandInput placeholder={t('transactionFilters.game.commandSearch')} />
             <CommandList>
-              <CommandEmpty>Tidak ada game yang cocok.</CommandEmpty>
-              <CommandGroup heading="Game">
+              <CommandEmpty>{t('transactionFilters.game.commandEmpty')}</CommandEmpty>
+              <CommandGroup heading={t('transactionFilters.game.groupHeading')}>
                 <CommandItem
                   value="semua-game"
                   keywords={['semua', 'all', '']}
@@ -85,7 +89,7 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
                     className={cn('mr-2 h-4 w-4 shrink-0', value === '' ? 'opacity-100' : 'opacity-0')}
                     aria-hidden
                   />
-                  Semua game
+                  {t('transactionFilters.game.allGames')}
                 </CommandItem>
                 {!isError &&
                   games?.map((game: GameName) => (
@@ -121,7 +125,7 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
           size="icon"
           className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => onChange('')}
-          aria-label="Hapus filter game"
+          aria-label={t('transactionFilters.game.clearAria')}
         >
           <FilterX className="h-4 w-4" aria-hidden />
         </Button>

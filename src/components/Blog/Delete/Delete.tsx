@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useDeleteBlog } from '../hooks/useBlog'
+import { useTranslation } from 'react-i18next'
 
 export function DeleteBlogDialog({
   blogId,
@@ -21,6 +22,7 @@ export function DeleteBlogDialog({
   blogId: string
   triggerClassName?: string
 }) {
+  const { t } = useTranslation('common')
   const deleteMutation = useDeleteBlog()
   const inToolbar = Boolean(triggerClassName)
 
@@ -39,10 +41,10 @@ export function DeleteBlogDialog({
             !inToolbar && 'hover:text-destructive',
           )}
           disabled={deleteMutation.isPending}
-          aria-label="Hapus artikel"
+          aria-label={t('deleteBlogModal.triggerAria')}
         >
           <Trash2 className="h-4 w-4 shrink-0" aria-hidden />
-          {inToolbar ? <span className="hidden sm:inline">Hapus</span> : null}
+          {inToolbar ? <span className="hidden sm:inline">{t('deleteBlogModal.triggerLabel')}</span> : null}
         </Button>
       </AlertDialogTrigger>
 
@@ -54,11 +56,11 @@ export function DeleteBlogDialog({
                 <Trash2 className="h-4 w-4" aria-hidden />
               </span>
               <AlertDialogTitle className="text-xl font-semibold tracking-tight">
-                Hapus artikel?
+                {t('deleteBlogModal.title')}
               </AlertDialogTitle>
             </div>
             <AlertDialogDescription className="text-left">
-              Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server.
+              {t('deleteBlogModal.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
@@ -68,7 +70,7 @@ export function DeleteBlogDialog({
             className="cursor-pointer sm:min-w-[5.5rem]"
             disabled={deleteMutation.isPending}
           >
-            Batal
+            {t('deleteBlogModal.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
             className="inline-flex cursor-pointer items-center justify-center bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]"
@@ -78,10 +80,10 @@ export function DeleteBlogDialog({
             {deleteMutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                Menghapus…
+                {t('deleteBlogModal.deleting')}
               </>
             ) : (
-              'Hapus'
+              t('deleteBlogModal.confirmDelete')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -12,8 +12,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useDeletePaymentMethod } from '@/hooks/usePaymentMethod'
+import { useTranslation } from 'react-i18next'
 
 export function DeletePaymentMethodModal({ id }: { id: string }) {
+  const { t } = useTranslation('common')
   const mutation = useDeletePaymentMethod(id)
 
   return (
@@ -24,7 +26,7 @@ export function DeletePaymentMethodModal({ id }: { id: string }) {
           size="icon"
           className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
           disabled={mutation.isPending}
-          aria-label="Hapus metode pembayaran"
+          aria-label={t('paymentMethodDelete.triggerAria')}
         >
           <Trash2 className="h-4 w-4" aria-hidden />
         </Button>
@@ -32,14 +34,14 @@ export function DeletePaymentMethodModal({ id }: { id: string }) {
 
       <AlertDialogContent className="rounded-xl">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-lg font-semibold">Hapus metode pembayaran?</AlertDialogTitle>
+          <AlertDialogTitle className="text-lg font-semibold">{t('paymentMethodDelete.title')}</AlertDialogTitle>
           <AlertDialogDescription className="text-sm text-muted-foreground">
-            Tindakan ini tidak dapat dibatalkan. Metode pembayaran akan dihapus permanen dari sistem.
+            {t('paymentMethodDelete.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter className="gap-2 sm:gap-0">
-          <AlertDialogCancel className="rounded-lg">Batal</AlertDialogCancel>
+          <AlertDialogCancel className="rounded-lg">{t('paymentMethodDelete.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
             onClick={() => mutation.mutate()}
@@ -48,10 +50,10 @@ export function DeletePaymentMethodModal({ id }: { id: string }) {
             {mutation.isPending ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                Menghapus…
+                {t('paymentMethodDelete.deleting')}
               </span>
             ) : (
-              'Hapus'
+              t('paymentMethodDelete.confirmDelete')
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

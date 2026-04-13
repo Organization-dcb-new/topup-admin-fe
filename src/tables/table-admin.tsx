@@ -1,4 +1,5 @@
 import type { ColumnDef } from '@tanstack/react-table'
+import type { TFunction } from 'i18next'
 import type { AdminUser } from '@/types/admin'
 import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -19,17 +20,17 @@ const roleBadgeClass = (role: string | undefined) => {
   }
 }
 
-export const adminColumns: ColumnDef<AdminUser>[] = [
+export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
   {
     accessorKey: 'username',
-    header: 'Nama pengguna',
+    header: t('adminTable.colUsername'),
     cell: ({ row }) => (
       <div className="font-medium text-gray-900">{row.original.username}</div>
     ),
   },
   {
     accessorKey: 'email',
-    header: 'Email',
+    header: t('adminTable.colEmail'),
     cell: ({ row }) => (
       <div className="max-w-[14rem] truncate font-medium text-gray-900 sm:max-w-xs">
         {row.original.email}
@@ -38,7 +39,7 @@ export const adminColumns: ColumnDef<AdminUser>[] = [
   },
   {
     accessorKey: 'role',
-    header: 'Peran',
+    header: t('adminTable.colRole'),
     cell: ({ row }) => {
       const role = row.original.role
       return (
@@ -62,23 +63,23 @@ export const adminColumns: ColumnDef<AdminUser>[] = [
   },
   {
     accessorKey: 'two_factor_enabled',
-    header: '2FA',
+    header: t('adminTable.colTwoFactor'),
     cell: ({ row }) => {
       const enabled = row.original.two_factor_enabled
       return enabled ? (
         <Badge variant="success" className="font-medium">
-          Aktif
+          {t('adminTable.enabled')}
         </Badge>
       ) : (
         <Badge variant="outline" className="border-border font-medium text-muted-foreground">
-          Nonaktif
+          {t('adminTable.disabled')}
         </Badge>
       )
     },
   },
   {
     id: 'actions',
-    header: 'Aksi',
+    header: t('adminTable.colActions'),
     cell: ({ row }) => (
       <div className="flex flex-wrap items-center gap-2">
         <UpdateAdminRole id={row.original.id} currentRole={row.original.role} />

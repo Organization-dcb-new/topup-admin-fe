@@ -2,6 +2,7 @@ import MarkdownIt from 'markdown-it'
 import MdEditor from 'react-markdown-editor-lite'
 import { cn } from '@/lib/utils'
 import type { BlogFormValues } from '../types/blog'
+import { useTranslation } from 'react-i18next'
 
 interface FieldProps {
   formData: BlogFormValues
@@ -12,6 +13,8 @@ interface FieldProps {
 const mdParser = new MarkdownIt()
 
 export default function Field({ updateField, formData, handleEditorImageUpload }: FieldProps) {
+  const { t } = useTranslation('common')
+
   return (
     <div className="space-y-4">
       <input
@@ -21,10 +24,10 @@ export default function Field({ updateField, formData, handleEditorImageUpload }
           'placeholder:text-muted-foreground/40 sm:text-4xl',
           'focus-visible:ring-0',
         )}
-        placeholder="Judul artikel…"
+        placeholder={t('blogField.titlePlaceholder')}
         value={formData.title}
         onChange={(e) => updateField('title', e.target.value)}
-        aria-label="Judul artikel"
+        aria-label={t('blogField.titleAria')}
       />
 
       <div
@@ -39,7 +42,7 @@ export default function Field({ updateField, formData, handleEditorImageUpload }
           value={formData.content_markdown}
           onChange={({ text }) => updateField('content_markdown', text)}
           onImageUpload={handleEditorImageUpload}
-          placeholder="Tulis konten di sini (Markdown didukung)…"
+          placeholder={t('blogField.editorPlaceholder')}
         />
       </div>
     </div>

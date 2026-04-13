@@ -15,12 +15,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { useUpdateProvider } from '@/hooks/useProvider'
 import type { Provider, ProviderFormValues } from '@/types/provider'
 import { Eye, EyeOff, Loader2, Pencil } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   provider: Provider
 }
 
 export function EditProviderModal({ provider }: Props) {
+  const { t } = useTranslation('common')
   const [showApiKey, setShowApiKey] = useState(false)
   const [open, setOpen] = useState(false)
 
@@ -79,7 +81,7 @@ export function EditProviderModal({ provider }: Props) {
         size="icon"
         onClick={() => setOpen(true)}
         className="cursor-pointer"
-        aria-label={`Ubah penyedia ${provider.name}`}
+        aria-label={t('providerEdit.triggerAria', { name: provider.name })}
       >
         <Pencil className="h-4 w-4" aria-hidden />
       </Button>
@@ -87,39 +89,38 @@ export function EditProviderModal({ provider }: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah penyedia</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">{t('providerEdit.title')}</DialogTitle>
             <DialogDescription>
-              Kode penyedia tidak dapat diubah. Kosongkan kunci API jika tidak ingin mengganti nilai di
-              server.
+              {t('providerEdit.description')}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor={nameId} className="text-sm font-medium">
-                Nama
+                {t('providerEdit.nameLabel')}
               </Label>
               <Input
                 id={nameId}
                 autoComplete="off"
                 className="rounded-lg"
                 aria-invalid={!!errors.name}
-                {...register('name', { required: 'Nama wajib diisi' })}
+                {...register('name', { required: t('providerEdit.nameRequired') })}
               />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor={codeId} className="text-sm font-medium">
-                Kode
+                {t('providerEdit.codeLabel')}
               </Label>
               <Input id={codeId} disabled className="rounded-lg bg-muted/50 font-mono text-sm" {...register('code')} />
-              <p className="text-xs text-muted-foreground">Kode bersifat tetap setelah dibuat.</p>
+              <p className="text-xs text-muted-foreground">{t('providerEdit.codeHint')}</p>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor={apiUrlId} className="text-sm font-medium">
-                URL API
+                {t('providerEdit.apiUrlLabel')}
               </Label>
               <Input
                 id={apiUrlId}
@@ -127,10 +128,10 @@ export function EditProviderModal({ provider }: Props) {
                 className="rounded-lg"
                 aria-invalid={!!errors.api_url}
                 {...register('api_url', {
-                  required: 'URL API wajib diisi',
+                  required: t('providerEdit.apiUrlRequired'),
                   pattern: {
                     value: /^https?:\/\//,
-                    message: 'Gunakan URL yang diawali http:// atau https://',
+                    message: t('providerEdit.apiUrlInvalid'),
                   },
                 })}
               />
@@ -141,10 +142,10 @@ export function EditProviderModal({ provider }: Props) {
 
             <div className="space-y-2">
               <Label htmlFor={apiKeyId} className="text-sm font-medium">
-                Kunci API
+                {t('providerEdit.apiKeyLabel')}
               </Label>
               <p className="text-xs text-muted-foreground">
-                Biarkan kosong untuk mempertahankan kunci yang tersimpan di server.
+                {t('providerEdit.apiKeyHint')}
               </p>
               <div className="relative">
                 <Input
@@ -152,14 +153,14 @@ export function EditProviderModal({ provider }: Props) {
                   type={showApiKey ? 'text' : 'password'}
                   autoComplete="off"
                   className="rounded-lg pr-10"
-                  placeholder="••••••••"
+                  placeholder={t('providerEdit.apiKeyPlaceholder')}
                   {...register('api_key_encrypted')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowApiKey((prev) => !prev)}
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-                  aria-label={showApiKey ? 'Sembunyikan kunci API' : 'Tampilkan kunci API'}
+                  aria-label={showApiKey ? t('providerEdit.hideApiKey') : t('providerEdit.showApiKey')}
                 >
                   {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -168,7 +169,7 @@ export function EditProviderModal({ provider }: Props) {
 
             <div className="space-y-2">
               <Label htmlFor={priorityId} className="text-sm font-medium">
-                Prioritas
+                {t('providerEdit.priorityLabel')}
               </Label>
               <Input
                 id={priorityId}
@@ -181,7 +182,7 @@ export function EditProviderModal({ provider }: Props) {
 
             <div className="space-y-2">
               <Label htmlFor={configId} className="text-sm font-medium">
-                Konfigurasi (JSON)
+                {t('providerEdit.configLabel')}
               </Label>
               <Textarea
                 id={configId}
@@ -189,14 +190,14 @@ export function EditProviderModal({ provider }: Props) {
                 className="max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm"
                 aria-invalid={!!errors.config}
                 {...register('config', {
-                  required: 'Konfigurasi wajib diisi',
+                  required: t('providerEdit.configRequired'),
                   validate: (value) => {
                     const s = typeof value === 'string' ? value : String(value ?? '')
                     try {
                       JSON.parse(s)
                       return true
                     } catch {
-                      return 'Format JSON tidak valid'
+                      return t('providerEdit.configInvalid')
                     }
                   },
                 })}
@@ -208,7 +209,7 @@ export function EditProviderModal({ provider }: Props) {
 
             <DialogFooter className="gap-2 sm:gap-2">
               <Button type="button" variant="outline" className="rounded-xl" onClick={() => setOpen(false)}>
-                Batal
+                {t('providerEdit.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -218,10 +219,10 @@ export function EditProviderModal({ provider }: Props) {
                 {mutation.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('providerEdit.saving')}
                   </>
                 ) : (
-                  'Simpan'
+                  t('providerEdit.save')
                 )}
               </Button>
             </DialogFooter>

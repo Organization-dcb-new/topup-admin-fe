@@ -8,10 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
+import i18n from '@/i18n'
 import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
 import { format, isValid } from 'date-fns'
-import { id } from 'date-fns/locale'
+import { enUS, id as idLocale } from 'date-fns/locale'
 import { ArrowLeft, Check, Copy, CreditCard, Loader2, Receipt } from 'lucide-react'
 import {
   type Dispatch,
@@ -21,6 +23,8 @@ import {
   useEffect,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
+import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 export interface PaymentDetail {
@@ -92,21 +96,12 @@ const parseWIBDate = (dateString: string) => {
   return new Date(noMs.replace(' ', 'T'))
 }
 
-const paymentStatusLabel: Record<PaymentDetail['status'], string> = {
-  PAID: 'Lunas',
-  PENDING: 'Menunggu',
-  FAILED: 'Gagal',
-  EXPIRED: 'Kadaluarsa',
-}
-
-const channelLabel: Record<PaymentDetail['payment_channel'], string> = {
-  gopay: 'GoPay',
-  va: 'Virtual account',
-  qris: 'QRIS',
-  shopeepay: 'ShopeePay',
+function detailDateLocale() {
+  return i18n.language.startsWith('id') ? idLocale : enUS
 }
 
 export default function PaymentDetail({ data, isLoading }: Props) {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const [voucherCooldown, setVoucherCooldown] = useState(0)
   const [emailCooldown, setEmailCooldown] = useState(0)
@@ -190,7 +185,7 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                   size="icon"
                   onClick={() => navigate(-1)}
                   className="mt-0.5 shrink-0 rounded-full"
-                  aria-label="Kembali"
+                  aria-label={t('transactionDetail.backAria')}
                 >
                   <ArrowLeft className="h-5 w-5" aria-hidden />
                 </Button>
@@ -200,12 +195,12 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                   </div>
                   <div className="min-w-0 space-y-1">
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                      Detail transaksi
+                      {t('transactionDetail.pageTitle')}
                     </h1>
                     <p className="text-sm text-muted-foreground">
                       {data.status === 'PENDING'
-                        ? 'Selesaikan pembayaran sebelum kedaluwarsa.'
-                        : 'Informasi pembayaran dan pesanan.'}
+                        ? t('transactionDetail.subtitlePending')
+                        : t('transactionDetail.subtitleDefault')}
                     </p>
                     <p className="font-mono text-xs text-muted-foreground tabular-nums">{data.id}</p>
                   </div>
@@ -221,7 +216,8 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                     {formatIdr(data.amount)}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {channelLabel[data.payment_channel]} · {data.payment_channel.toUpperCase()}
+                    {t(`paymentChannel.${data.payment_channel}`)} ·{' '}
+                    {data.payment_channel.toUpperCase()}
                   </p>
                 </div>
 
@@ -233,23 +229,23 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                     onClick={() => setPaymentModalOpen(true)}
                   >
                     <CreditCard className="h-4 w-4 shrink-0" aria-hidden />
-                    Instruksi pembayaran
+                    {t('transactionDetail.payInstructions')}
                   </Button>
                 )}
 
                 {data.status === 'PAID' && (
                   <p className="text-sm font-medium text-emerald-700 sm:max-w-xs sm:text-right">
-                    Pembayaran berhasil diterima.
+                    {t('transactionDetail.paymentReceived')}
                   </p>
                 )}
                 {data.status === 'FAILED' && (
                   <p className="text-sm font-medium text-destructive sm:max-w-xs sm:text-right">
-                    Pembayaran gagal.
+                    {t('transactionDetail.paymentFailed')}
                   </p>
                 )}
                 {data.status === 'EXPIRED' && (
                   <p className="text-sm font-medium text-muted-foreground sm:max-w-xs sm:text-right">
-                    Pembayaran kedaluwarsa.
+                    {t('transactionDetail.paymentExpired')}
                   </p>
                 )}
               </div>
@@ -258,42 +254,70 @@ export default function PaymentDetail({ data, isLoading }: Props) {
             <div className="grid min-w-0 divide-y divide-border/70 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
               <section className="min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8">
                 <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Pembayaran
+                  {t('transactionDetail.sectionPayment')}
                 </h2>
                 <dl className="space-y-0">
-                  <InfoRow label="Nomor Transaksi" value={data.id} mono copyText={data.id} />
-                  <InfoRow label="Nomor bayar" value={data.payment_number} mono />
-                  <InfoRow label="ID pesanan" value={data.order_id} mono muted />
-                  <InfoRow label="Email" value={data.email} breakAll />
+                  <InfoRow
+                    label={t('transactionDetail.labelTransactionNumber')}
+                    value={data.id}
+                    mono
+                    copyText={data.id}
+                  />
+                  <InfoRow
+                    label={t('transactionDetail.labelPayNumber')}
+                    value={data.payment_number}
+                    mono
+                  />
+                  <InfoRow
+                    label={t('transactionDetail.labelOrderId')}
+                    value={data.order_id}
+                    mono
+                    muted
+                  />
+                  <InfoRow label={t('transactionDetail.labelEmail')} value={data.email} breakAll />
                 </dl>
               </section>
 
               <section className="min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8">
                 <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  Pesanan
+                  {t('transactionDetail.sectionOrder')}
                 </h2>
                 <dl className="space-y-0">
-                  <InfoRow label="Nomor pesanan" value={data.order.order_number} mono />
-                  <InfoRow label="SKU" value={data.sku} mono copyText={data.sku} />
-                  <InfoRow label="Produk" value={data.order_item.product_name} />
-                  <InfoRow label="Jumlah" value={`${data.order_item.quantity} item`} />
                   <InfoRow
-                    label="Status pesanan"
+                    label={t('transactionDetail.labelOrderNumber')}
+                    value={data.order.order_number}
+                    mono
+                  />
+                  <InfoRow label={t('transactionDetail.labelSku')} value={data.sku} mono copyText={data.sku} />
+                  <InfoRow
+                    label={t('transactionDetail.labelProduct')}
+                    value={data.order_item.product_name}
+                  />
+                  <InfoRow
+                    label={t('transactionDetail.labelQuantity')}
+                    value={t('transactionDetail.itemCount', { count: data.order_item.quantity })}
+                  />
+                  <InfoRow
+                    label={t('transactionDetail.labelOrderStatus')}
                     value={<OrderStatusBadge status={data.order.status} />}
                     valueClassName="sm:flex sm:justify-end"
                   />
-                  <InfoRow label="Margin" value={formatIdr(data.margin)} mono />
+                  <InfoRow label={t('transactionDetail.labelMargin')} value={formatIdr(data.margin)} mono />
                 </dl>
               </section>
             </div>
 
             <section className="border-t border-border/70 px-4 py-5 sm:px-6 md:px-8">
-              <p className="text-xs font-medium text-muted-foreground">Dibuat</p>
+              <p className="text-xs font-medium text-muted-foreground">
+                {t('transactionDetail.created')}
+              </p>
               <p className="mt-1 tabular-nums text-sm text-foreground">
                 {date && isValid(date)
-                  ? format(date, 'dd MMM yyyy, HH:mm', { locale: id })
+                  ? format(date, 'dd MMM yyyy, HH:mm', { locale: detailDateLocale() })
                   : '—'}{' '}
-                <span className="text-xs text-muted-foreground">(WIB)</span>
+                <span className="text-xs text-muted-foreground">
+                  {t('transactionDetail.wibSuffix')}
+                </span>
               </p>
             </section>
 
@@ -301,7 +325,9 @@ export default function PaymentDetail({ data, isLoading }: Props) {
               <div className="flex flex-col gap-4 border-t border-border/70 bg-muted/15 px-4 py-6 sm:flex-row sm:flex-wrap sm:px-6 md:px-8">
                 {data.order_item?.voucher_code && (
                   <div className="min-w-0 flex-1 space-y-2 sm:min-w-[12rem]">
-                    <p className="text-xs font-medium text-muted-foreground">Kode voucher</p>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      {t('transactionDetail.voucherCode')}
+                    </p>
                     <Button
                       type="button"
                       variant="secondary"
@@ -311,13 +337,17 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                       disabled={isResendingVoucher || voucherCooldown > 0}
                     >
                       {voucherCooldown > 0
-                        ? `Tunggu ${formatTime(voucherCooldown)}`
-                        : 'Kirim ulang voucher'}
+                        ? t('transactionDetail.waitTime', {
+                            time: formatTime(voucherCooldown),
+                          })
+                        : t('transactionDetail.resendVoucher')}
                     </Button>
                   </div>
                 )}
                 <div className="min-w-0 flex-1 space-y-2 sm:min-w-[12rem]">
-                  <p className="text-xs font-medium text-muted-foreground">Email pembayaran</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {t('transactionDetail.paymentEmail')}
+                  </p>
                   <Button
                     type="button"
                     variant="secondary"
@@ -327,8 +357,10 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                     disabled={isResendingEmail || emailCooldown > 0}
                   >
                     {emailCooldown > 0
-                      ? `Tunggu ${formatTime(emailCooldown)}`
-                      : 'Kirim ulang email'}
+                      ? t('transactionDetail.waitTime', {
+                          time: formatTime(emailCooldown),
+                        })
+                      : t('transactionDetail.resendEmail')}
                   </Button>
                 </div>
               </div>
@@ -343,9 +375,11 @@ export default function PaymentDetail({ data, isLoading }: Props) {
           showCloseButton
         >
           <DialogHeader className="border-b border-border/80 px-6 py-4 text-left">
-            <DialogTitle>Instruksi pembayaran</DialogTitle>
+            <DialogTitle>{t('transactionDetail.dialogPaymentTitle')}</DialogTitle>
             <DialogDescription>
-              {channelLabel[data.payment_channel]} — selesaikan sebelum batas waktu.
+              {t('transactionDetail.dialogPaymentDescription', {
+                channel: t(`paymentChannel.${data.payment_channel}`),
+              })}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center px-6 py-6">
@@ -368,16 +402,19 @@ const paymentComponentMap: Record<PaymentChannel, FC<{ data: PaymentDetail }>> =
 }
 
 function GopayPayment({ data }: { data: PaymentDetail }) {
+  const { t } = useTranslation('common')
   return (
     <div className="w-full max-w-sm space-y-4">
       {data.qr_code_url && (
         <div className="flex flex-col items-center gap-2">
           <img
             src={data.qr_code_url}
-            alt="QR GoPay"
+            alt={t('transactionDetail.gopay.qrAlt')}
             className="h-52 w-52 rounded-lg border object-contain sm:h-56 sm:w-56"
           />
-          <p className="text-center text-sm text-muted-foreground">Pindai QR dengan aplikasi GoPay</p>
+          <p className="text-center text-sm text-muted-foreground">
+            {t('transactionDetail.gopay.scanHint')}
+          </p>
         </div>
       )}
       {data.payment_url && (
@@ -386,7 +423,7 @@ function GopayPayment({ data }: { data: PaymentDetail }) {
           className="w-full"
           onClick={() => window.open(data.payment_url, '_blank')}
         >
-          Buka GoPay
+          {t('transactionDetail.gopay.openButton')}
         </Button>
       )}
     </div>
@@ -394,67 +431,70 @@ function GopayPayment({ data }: { data: PaymentDetail }) {
 }
 
 function ShopeepayPayment({ data }: { data: PaymentDetail }) {
+  const { t } = useTranslation('common')
   return (
     <div className="w-full max-w-sm space-y-4 text-center">
-      <p className="text-sm text-muted-foreground">Anda akan diarahkan ke aplikasi ShopeePay</p>
+      <p className="text-sm text-muted-foreground">{t('transactionDetail.shopeepay.redirectHint')}</p>
       <Button
         type="button"
         className="w-full"
         onClick={() => window.open(data.payment_url, '_blank')}
         disabled={!data.payment_url}
       >
-        Buka ShopeePay
+        {t('transactionDetail.shopeepay.openButton')}
       </Button>
       <p className="text-xs text-amber-600 dark:text-amber-500">
-        Selesaikan pembayaran di aplikasi Shopee
+        {t('transactionDetail.shopeepay.footnote')}
       </p>
     </div>
   )
 }
 
 function QrisPayment({ data }: { data: PaymentDetail }) {
+  const { t } = useTranslation('common')
   return (
     <div className="w-full max-w-sm space-y-4 text-center">
-      <p className="text-sm text-muted-foreground">
-        Pindai QR dengan mobile banking atau dompet digital
-      </p>
+      <p className="text-sm text-muted-foreground">{t('transactionDetail.qris.scanHint')}</p>
       <img
         src={data.qr_code_url}
-        alt="QRIS"
+        alt={t('transactionDetail.qris.qrAlt')}
         className="mx-auto max-h-[min(55vh,18rem)] w-auto max-w-full rounded-xl border object-contain"
       />
-      <p className="text-xs text-amber-600 dark:text-amber-500">Menunggu konfirmasi pembayaran</p>
+      <p className="text-xs text-amber-600 dark:text-amber-500">
+        {t('transactionDetail.qris.waitingHint')}
+      </p>
     </div>
   )
 }
 
 function VaPayment({ data }: { data: PaymentDetail }) {
+  const { t } = useTranslation('common')
   return (
     <div className="w-full max-w-sm space-y-3 text-center">
-      <p className="text-sm text-muted-foreground">Nomor virtual account</p>
+      <p className="text-sm text-muted-foreground">{t('transactionDetail.va.label')}</p>
       <div className="rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-lg tabular-nums">
         {data.va_number || '—'}
       </div>
-      <p className="text-xs text-amber-600 dark:text-amber-500">
-        Selesaikan transfer sebelum batas waktu
-      </p>
+      <p className="text-xs text-amber-600 dark:text-amber-500">{t('transactionDetail.va.hint')}</p>
     </div>
   )
 }
 
 function CopyInlineButton({ text }: { text: string }) {
+  const { t } = useTranslation('common')
   const [copied, setCopied] = useState(false)
 
   if (!text) return null
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
+      await copyTextToClipboard(text)
     } catch {
-      /* clipboard denied or unavailable */
+      toast.error(t('transactionDetail.copy.failed'))
+      return
     }
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -464,7 +504,7 @@ function CopyInlineButton({ text }: { text: string }) {
       size="icon"
       className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
       onClick={handleCopy}
-      aria-label={copied ? 'Disalin' : 'Salin ke papan klip'}
+      aria-label={copied ? t('transactionDetail.copy.ariaCopied') : t('transactionDetail.copy.ariaCopy')}
     >
       {copied ? (
         <Check className="h-4 w-4 text-emerald-600" aria-hidden />
@@ -529,6 +569,7 @@ function InfoRow({
 }
 
 function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
+  const { t } = useTranslation('common')
   const variant =
     status === 'PAID'
       ? 'success'
@@ -540,7 +581,7 @@ function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
       variant={variant}
       className={cn(status === 'PAID' && 'border-transparent bg-emerald-600 hover:bg-emerald-600')}
     >
-      {paymentStatusLabel[status]}
+      {t(`paymentStatus.${status}`)}
     </Badge>
   )
 }
@@ -554,10 +595,11 @@ function OrderStatusBadge({ status }: { status: string }) {
 }
 
 function PaymentActionSpinner() {
+  const { t } = useTranslation('common')
   return (
     <div className="flex flex-col items-center gap-3 py-8 text-muted-foreground">
       <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
-      <p className="text-sm">Memuat instruksi…</p>
+      <p className="text-sm">{t('transactionDetail.loadingInstructions')}</p>
     </div>
   )
 }

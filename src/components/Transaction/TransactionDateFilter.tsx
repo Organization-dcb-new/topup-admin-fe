@@ -12,6 +12,7 @@ import { format, startOfDay } from 'date-fns'
 import { CalendarIcon, FilterX } from 'lucide-react'
 import type { ChangeEvent } from 'react'
 import type { DateRange } from 'react-day-picker'
+import { useTranslation } from 'react-i18next'
 
 interface TransactionDateFilterProps {
   date: DateRange | undefined
@@ -38,6 +39,7 @@ export default function TransactionDateFilter({
   date,
   onChange,
 }: TransactionDateFilterProps) {
+  const { t } = useTranslation('common')
   const tsPattern = 'yyyy-MM-dd HH:mm:ss'
 
   const rangeLabel = date?.from
@@ -97,7 +99,7 @@ export default function TransactionDateFilter({
             <Button
               type="button"
               variant="outline"
-              aria-label="Pilih rentang tanggal dan waktu transaksi"
+              aria-label={t('transactionFilters.date.pickAria')}
               className={cn(
                 'h-10 w-full min-w-0 justify-start text-left text-xs font-normal shadow-xs sm:text-sm',
                 !date?.from && 'text-muted-foreground',
@@ -109,7 +111,7 @@ export default function TransactionDateFilter({
                 {rangeLabel}
               </span>
             ) : (
-              <span>Rentang tanggal & waktu</span>
+              <span>{t('transactionFilters.date.placeholderButton')}</span>
             )}
           </Button>
         </PopoverTrigger>
@@ -131,7 +133,7 @@ export default function TransactionDateFilter({
                   htmlFor="tx-filter-start-time"
                   className="text-xs font-medium text-muted-foreground"
                 >
-                  Jam mulai
+                  {t('transactionFilters.date.startTime')}
                 </Label>
                 <Input
                   id="tx-filter-start-time"
@@ -147,7 +149,7 @@ export default function TransactionDateFilter({
                   htmlFor="tx-filter-end-time"
                   className="text-xs font-medium text-muted-foreground"
                 >
-                  Jam selesai
+                  {t('transactionFilters.date.endTime')}
                 </Label>
                 <Input
                   id="tx-filter-end-time"
@@ -170,7 +172,7 @@ export default function TransactionDateFilter({
           size="icon"
           className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
           onClick={() => onChange(undefined)}
-          aria-label="Hapus filter tanggal"
+          aria-label={t('transactionFilters.date.clearAria')}
         >
           <FilterX className="h-4 w-4" aria-hidden />
         </Button>

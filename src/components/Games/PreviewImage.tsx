@@ -5,6 +5,7 @@ import { UploadCloud } from 'lucide-react'
 import { Progress } from '../ui/progress'
 import type { UseFormSetValue } from 'react-hook-form'
 import type { CreateGamePayload } from '@/types/game'
+import { useTranslation } from 'react-i18next'
 
 interface ImageComponentProps {
   title: string
@@ -29,6 +30,7 @@ export default function ImageComponent({
   uploadProgress,
   setUploadProgress,
 }: ImageComponentProps) {
+  const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (file: File) => {
@@ -37,7 +39,7 @@ export default function ImageComponent({
       setPreview,
       setIsUploading,
       setUploadProgress,
-      setValue: setValue as any,
+      setValue: setValue as Parameters<typeof handleFileAutoUpload>[0]['setValue'],
       fieldName: value,
     })
   }
@@ -67,17 +69,17 @@ export default function ImageComponent({
                 `}
       >
         {preview ? (
-          <img src={preview} className="h-full w-full rounded-lg object-contain" />
+          <img src={preview} className="h-full w-full rounded-lg object-contain" alt="" />
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <UploadCloud className="h-6 w-6" />
-            <span className="text-sm">Click or Drop image</span>
+            <UploadCloud className="h-6 w-6" aria-hidden />
+            <span className="text-sm">{t('gamePreviewImage.dropHint')}</span>
           </div>
         )}
 
         {isUploading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-            <span className="text-sm">Uploading {uploadProgress}%</span>
+            <span className="text-sm">{t('gamePreviewImage.uploadingPercent', { percent: uploadProgress })}</span>
           </div>
         )}
       </div>

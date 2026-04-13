@@ -1,4 +1,5 @@
 import { sidebarMenus, type SidebarMenu } from '@/constants/sidebar-menu'
+import { SIDEBAR_I18N_KEY_BY_TEXT } from '@/i18n/sidebar-label-keys'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -9,12 +10,22 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
 import type { SidebarProps } from '@/types/sidebar'
 import { logout, useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
+
+function useSidebarCopy() {
+  const { t } = useTranslation('common')
+  return (original: string) => {
+    const key = SIDEBAR_I18N_KEY_BY_TEXT[original]
+    return key ? t(key) : original
+  }
+}
 
 function useIsMdUp() {
   const [isMdUp, setIsMdUp] = useState(false)
@@ -36,9 +47,12 @@ export function Sidebar({
 }: SidebarProps) {
   const { pathname } = useLocation()
   const { role } = useAuthUser()
+  const { t, i18n } = useTranslation('common')
+  const tr = useSidebarCopy()
   const [openLogoutModal, setOpenLogoutModal] = useState(false)
   const isMdUp = useIsMdUp()
   const railCollapsed = collapsed && isMdUp
+  const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
 
   const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Pesanan', 'Ikhtisar']
   const DEV_ONLY_LABELS = ['Pembatas laju', 'Pengguna']
@@ -78,11 +92,12 @@ export function Sidebar({
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-white transition-[width,transform] duration-300 ease-out',
+          'z-50 flex min-h-0 flex-col overflow-hidden border-r bg-white transition-[width,transform] duration-300 ease-out',
+          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:max-h-[100dvh]',
           'w-64 max-md:max-w-[min(100vw-1rem,16rem)]',
           railCollapsed && 'md:w-20',
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-          'md:static md:max-w-none',
+          'md:sticky md:top-0 md:h-screen md:max-h-screen md:shrink-0 md:self-start md:max-w-none',
         )}
       >
         <div
@@ -106,7 +121,7 @@ export function Sidebar({
               'hidden shrink-0 cursor-pointer md:flex',
               railCollapsed && 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
             )}
-            aria-label={railCollapsed ? 'Perluas menu samping' : 'Ciutkan menu samping'}
+            aria-label={railCollapsed ? t('sidebar.expandRail') : t('sidebar.collapseRail')}
           >
             <ChevronLeft
               className={cn('h-4 w-4 transition-transform', railCollapsed && 'rotate-180')}
@@ -120,7 +135,7 @@ export function Sidebar({
             size="icon"
             className="absolute right-2 top-1/2 -translate-y-1/2 md:hidden"
             onClick={onCloseMobile}
-            aria-label="Tutup menu"
+            aria-label={t('sidebar.closeMenu')}
           >
             <X className="h-4 w-4" aria-hidden />
           </Button>
@@ -128,7 +143,7 @@ export function Sidebar({
 
         <nav
           className={cn(
-            'min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden py-3',
+            'min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden overscroll-y-contain py-3',
             railCollapsed ? 'px-1.5 md:px-1' : 'px-2',
           )}
         >
@@ -141,7 +156,7 @@ export function Sidebar({
             >
               {!railCollapsed && section.title && (
                 <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                  {section.title}
+                  {tr(section.title)}
                 </p>
               )}
               <div className="flex flex-col gap-1">
@@ -152,6 +167,7 @@ export function Sidebar({
                     collapsed={railCollapsed}
                     pathname={pathname}
                     onNavigate={() => onCloseMobile()}
+                    tr={tr}
                   />
                 ))}
               </div>
@@ -162,9 +178,42 @@ export function Sidebar({
         <div
           className={cn(
             'shrink-0 border-t border-gray-100',
-            railCollapsed ? 'p-1.5 md:px-1 md:py-2' : 'p-2',
+            railCollapsed ? 'space-y-1.5 p-1.5 md:px-1 md:py-2' : 'space-y-2 p-2',
           )}
         >
+          <div
+            className={cn(
+              'flex rounded-lg border border-input bg-background shadow-sm',
+              railCollapsed
+                ? 'mx-auto w-full max-w-[4.5rem] flex-col items-center gap-1 px-2 py-2'
+                : 'h-10 w-full items-center justify-center gap-3 px-2',
+            )}
+            title={railCollapsed ? t('sidebar.languageToggleAria') : undefined}
+          >
+            <span
+              className={cn(
+                'select-none tabular-nums text-xs',
+                isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
+              )}
+            >
+              ID
+            </span>
+            <Switch
+              checked={!isIdLocale}
+              onCheckedChange={(checked) => {
+                void i18n.changeLanguage(checked ? 'en' : 'id')
+              }}
+              aria-label={t('sidebar.languageToggleAria')}
+            />
+            <span
+              className={cn(
+                'select-none tabular-nums text-xs',
+                !isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
+              )}
+            >
+              EN
+            </span>
+          </div>
           <Button
             type="button"
             variant="outline"
@@ -175,11 +224,11 @@ export function Sidebar({
                 : 'h-10 w-full justify-start',
             )}
             onClick={() => setOpenLogoutModal(true)}
-            aria-label="Keluar dari akun"
-            title={railCollapsed ? 'Keluar' : undefined}
+            aria-label={t('sidebar.logoutAria')}
+            title={railCollapsed ? t('sidebar.logout') : undefined}
           >
             <LogOut className="h-4 w-4 shrink-0" aria-hidden />
-            {!railCollapsed && <span>Keluar</span>}
+            {!railCollapsed && <span>{t('sidebar.logout')}</span>}
           </Button>
         </div>
       </aside>
@@ -187,8 +236,8 @@ export function Sidebar({
       <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Konfirmasi keluar</DialogTitle>
-            <DialogDescription>Apakah Anda yakin ingin keluar dari akun?</DialogDescription>
+            <DialogTitle>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
+            <DialogDescription>{t('sidebar.confirmLogoutDescription')}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-2">
             <Button
@@ -197,7 +246,7 @@ export function Sidebar({
               className="rounded-xl"
               onClick={() => setOpenLogoutModal(false)}
             >
-              Batal
+              {t('sidebar.cancel')}
             </Button>
             <Button
               type="button"
@@ -208,7 +257,7 @@ export function Sidebar({
                 setOpenLogoutModal(false)
               }}
             >
-              Keluar
+              {t('sidebar.logout')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -222,11 +271,13 @@ function NavItem({
   collapsed,
   pathname,
   onNavigate,
+  tr,
 }: {
   menu: SidebarMenu
   collapsed: boolean
   pathname: string
   onNavigate: () => void
+  tr: (original: string) => string
 }) {
   const hasChildren = !!menu.children?.length
   const isChildActive = menu.children?.some((child) => child.path === pathname)
@@ -245,8 +296,8 @@ function NavItem({
                 : 'text-foreground hover:bg-gray-100',
             )}
             aria-haspopup="dialog"
-            aria-label={menu.label}
-            title={menu.label}
+            aria-label={tr(menu.label)}
+            title={tr(menu.label)}
           >
             <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
           </button>
@@ -259,7 +310,7 @@ function NavItem({
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <p className="border-b border-border/60 px-2 pb-2 text-xs font-semibold text-muted-foreground">
-            {menu.label}
+            {tr(menu.label)}
           </p>
           <div className="mt-1 flex flex-col gap-0.5">
             {menu.children?.map((child) => (
@@ -276,7 +327,7 @@ function NavItem({
                   )
                 }
               >
-                {child.label}
+                {tr(child.label)}
               </NavLink>
             ))}
           </div>
@@ -299,7 +350,7 @@ function NavItem({
         >
           <div className="flex min-w-0 items-center gap-3">
             <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
-            <span className="truncate">{menu.label}</span>
+            <span className="truncate">{tr(menu.label)}</span>
           </div>
           <ChevronDown className={cn('h-3 w-3 shrink-0 transition-transform', isOpen && 'rotate-180')} />
         </button>
@@ -319,7 +370,7 @@ function NavItem({
                   )
                 }
               >
-                {child.label}
+                {tr(child.label)}
               </NavLink>
             ))}
           </div>
@@ -332,8 +383,8 @@ function NavItem({
     <NavLink
       to={menu.path ?? '#'}
       onClick={onNavigate}
-      title={collapsed ? menu.label : undefined}
-      aria-label={collapsed ? menu.label : undefined}
+      title={collapsed ? tr(menu.label) : undefined}
+      aria-label={collapsed ? tr(menu.label) : undefined}
       className={({ isActive }) =>
         cn(
           'flex items-center rounded-lg text-sm transition-colors',
@@ -347,7 +398,7 @@ function NavItem({
       }
     >
       <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
-      {!collapsed && <span className="min-w-0 truncate">{menu.label}</span>}
+      {!collapsed && <span className="min-w-0 truncate">{tr(menu.label)}</span>}
     </NavLink>
   )
 }

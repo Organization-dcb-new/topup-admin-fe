@@ -2,23 +2,27 @@ import type { Show } from '@/types/show'
 import { AddGamesToShowButton } from '@/components/Show/AddGameToShowModal'
 import { DeleteShowButton } from '@/components/Show/DeleteShowModal'
 import { UpdateShowModal } from '@/components/Show/EditShowModal'
+import { useTranslation } from 'react-i18next'
 
 export function ShowActionsHeader() {
+  const { t } = useTranslation('common')
   return (
-    <span className="flex w-full min-w-[12rem] justify-end pr-1 text-right">Aksi</span>
+    <span className="flex w-full min-w-[12rem] justify-end pr-1 text-right">
+      {t('showTable.actionsHeader')}
+    </span>
   )
 }
 
 export function ShowRowActions({ show }: { show: Show }) {
-  const toolbarBtn =
-    'border-0 bg-transparent shadow-none hover:bg-muted/70'
+  const { t } = useTranslation('common')
+  const toolbarBtn = 'border-0 bg-transparent shadow-none hover:bg-muted/70'
 
   return (
     <div className="flex w-full min-w-[12rem] justify-end pr-0.5">
       <div
         className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35"
         role="group"
-        aria-label="Aksi untuk show ini"
+        aria-label={t('showTable.rowActionsAria')}
       >
         <AddGamesToShowButton
           showId={show.id}

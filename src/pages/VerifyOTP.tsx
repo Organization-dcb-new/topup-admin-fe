@@ -27,10 +27,12 @@ import { useMutation } from '@tanstack/react-query'
 import { Loader2, ShieldCheck } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 const VerifyOtpPage = () => {
+  const { t } = useTranslation('common')
   const navigate = useNavigate()
   const { isMfaRequired, token } = useAuthUser()
   const [isRecoveryMode, setIsRecoveryMode] = useState(false)
@@ -63,18 +65,18 @@ const VerifyOtpPage = () => {
     },
     onSuccess: (data) => {
       if (isRecoveryMode) {
-        toast.success('Pemulihan berhasil. Silakan login kembali.')
+        toast.success(t('verifyOtpPage.recoverySuccess'))
         authStorage.clearToken()
         window.location.href = '/login'
       } else {
-        toast.success('Verifikasi berhasil')
+        toast.success(t('verifyOtpPage.verifySuccess'))
         authStorage.setToken(data.token)
         window.location.href = '/'
       }
     },
     onError: (err: unknown) => {
       const e = err as { response?: { data?: { message?: string } } }
-      toast.error(e?.response?.data?.message || 'Kode salah atau expired')
+      toast.error(e?.response?.data?.message || t('verifyOtpPage.verifyError'))
       form.reset()
     },
   })
@@ -96,12 +98,12 @@ const VerifyOtpPage = () => {
           </div>
           <div className="space-y-1.5">
             <CardTitle className="text-2xl font-semibold tracking-tight text-gray-900">
-              {isRecoveryMode ? 'Pemulihan akun' : 'Otentikasi dua faktor'}
+              {isRecoveryMode ? t('verifyOtpPage.recoveryTitle') : t('verifyOtpPage.otpTitle')}
             </CardTitle>
             <CardDescription className="text-base text-muted-foreground">
               {isRecoveryMode
-                ? 'Masukkan kode pemulihan (recovery code) Anda.'
-                : 'Masukkan 6 digit kode dari aplikasi authenticator Anda.'}
+                ? t('verifyOtpPage.recoverySubtitle')
+                : t('verifyOtpPage.otpSubtitle')}
             </CardDescription>
           </div>
         </CardHeader>
@@ -116,13 +118,13 @@ const VerifyOtpPage = () => {
                 name="code"
                 render={({ field }) => (
                   <FormItem className="flex w-full flex-col items-center">
-                    <FormLabel className="sr-only">Kode OTP</FormLabel>
+                    <FormLabel className="sr-only">{t('verifyOtpPage.otpLabel')}</FormLabel>
                     <FormControl>
                       {isRecoveryMode ? (
                         <Input
                           {...field}
                           className="h-12 rounded-lg text-center font-mono text-base font-semibold uppercase tracking-widest"
-                          placeholder="KODE-RECOVERY"
+                          placeholder={t('verifyOtpPage.recoveryPlaceholder')}
                           autoComplete="one-time-code"
                           autoFocus
                         />
@@ -178,10 +180,10 @@ const VerifyOtpPage = () => {
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                      Memproses…
+                      {t('verifyOtpPage.processing')}
                     </>
                   ) : (
-                    'Verifikasi recovery'
+                    t('verifyOtpPage.verifyRecovery')
                   )}
                 </Button>
               )}
@@ -197,11 +199,11 @@ const VerifyOtpPage = () => {
               }}
               className="font-medium text-primary hover:underline"
             >
-              {isRecoveryMode ? 'Gunakan OTP' : 'Gunakan kode recovery'}
+              {isRecoveryMode ? t('verifyOtpPage.useOtp') : t('verifyOtpPage.useRecovery')}
             </button>
 
             <div>
-              Terjadi masalah?{' '}
+              {t('verifyOtpPage.trouble')}{' '}
               <Button
                 type="button"
                 variant="link"
@@ -211,7 +213,7 @@ const VerifyOtpPage = () => {
                   navigate('/login')
                 }}
               >
-                Kembali ke login
+                {t('verifyOtpPage.backToLogin')}
               </Button>
             </div>
           </div>

@@ -12,9 +12,11 @@ import { useLogin, useLoginForm } from '@/hooks/useLogin'
 import { decodeJwt, useAuthUser, type JwtPayload } from '@/lib/auth'
 import { Loader2, Lock } from 'lucide-react'
 import { useEffect, useId } from 'react'
+import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
 export default function LoginPage() {
+  const { t } = useTranslation('common')
   const form = useLoginForm()
   const { mutate: loginMutate, isPending } = useLogin()
   const { token, isAuthenticated, isMfaRequired } = useAuthUser()
@@ -44,7 +46,7 @@ export default function LoginPage() {
         if (token) {
           const payload = decodeJwt<JwtPayload>(token)
 
-          toast.success('Login berhasil')
+          toast.success(t('loginPage.loginSuccess'))
 
           if (payload?.status === 'mfa_pending') {
             window.location.href = '/verify-otp'
@@ -55,7 +57,7 @@ export default function LoginPage() {
       },
       onError: (err: unknown) => {
         const e = err as { response?: { data?: { message?: string } } }
-        toast.error(e?.response?.data?.message || 'Login gagal')
+        toast.error(e?.response?.data?.message || t('loginPage.loginError'))
       },
     })
   }
@@ -73,10 +75,10 @@ export default function LoginPage() {
           </div>
           <div className="space-y-1.5">
             <CardTitle className="text-2xl font-semibold tracking-tight text-gray-900">
-              Dashboard Redigame
+              {t('loginPage.title')}
             </CardTitle>
             <CardDescription className="text-base text-muted-foreground">
-              Login untuk melanjutkan
+              {t('loginPage.subtitle')}
             </CardDescription>
           </div>
         </CardHeader>
@@ -85,13 +87,13 @@ export default function LoginPage() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor={emailId} className="text-sm font-medium">
-                Email atau nama pengguna
+                {t('loginPage.emailOrUsernameLabel')}
               </Label>
               <Input
                 id={emailId}
                 autoComplete="username"
                 className="h-11 rounded-lg"
-                placeholder="admin atau email@contoh.com"
+                placeholder={t('loginPage.emailOrUsernamePlaceholder')}
                 aria-invalid={!!form.formState.errors.email_or_username}
                 {...form.register('email_or_username')}
               />
@@ -104,7 +106,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <Label htmlFor={passwordId} className="text-sm font-medium">
-                Kata sandi
+                {t('loginPage.passwordLabel')}
               </Label>
               <Input
                 id={passwordId}
@@ -130,10 +132,10 @@ export default function LoginPage() {
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                  Memproses…
+                  {t('loginPage.processing')}
                 </>
               ) : (
-                'Masuk'
+                t('loginPage.submit')
               )}
             </Button>
           </form>

@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { useGetCategoriesName } from '@/hooks/useCategory'
 import type { CategoryNames } from '@/types/category'
 import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 interface EditGameModalProps {
   game: Game
@@ -31,6 +32,7 @@ export interface FormValuesEditGame {
 }
 
 export default function EditGameModal({ game }: EditGameModalProps) {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
 
   const { data: categoriesResponse } = useGetCategoriesName()
@@ -74,7 +76,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
         type="button"
         onClick={() => setOpen(true)}
         className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label={`Ubah game ${game.name}`}
+        aria-label={t('editGameModal.triggerAria', { name: game.name })}
       >
         <Pencil className="h-4 w-4" aria-hidden />
       </Button>
@@ -82,23 +84,20 @@ export default function EditGameModal({ game }: EditGameModalProps) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-lg">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah game</DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Perbarui nama, deskripsi, kategori, dan skor popularitas. Status tampil di etalase
-              tetap diatur dari kolom aksi.
-            </p>
+            <DialogTitle className="text-lg font-semibold tracking-tight">{t('editGameModal.title')}</DialogTitle>
+            <p className="text-sm text-muted-foreground">{t('editGameModal.description')}</p>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor={`edit-game-name-${gid}`} className="text-sm font-medium">
-                  Nama game
+                  {t('editGameModal.nameLabel')}
                 </Label>
                 <Input
                   id={`edit-game-name-${gid}`}
-                  {...register('name', { required: 'Nama wajib diisi' })}
-                  placeholder="Nama game"
+                  {...register('name', { required: t('editGameModal.nameRequired') })}
+                  placeholder={t('editGameModal.namePlaceholder')}
                   className="rounded-lg"
                   autoComplete="off"
                 />
@@ -109,12 +108,12 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor={`edit-game-desc-${gid}`} className="text-sm font-medium">
-                  Deskripsi
+                  {t('editGameModal.descriptionLabel')}
                 </Label>
                 <Textarea
                   id={`edit-game-desc-${gid}`}
-                  {...register('description', { required: 'Deskripsi wajib diisi' })}
-                  placeholder="Deskripsi singkat game"
+                  {...register('description', { required: t('editGameModal.descriptionRequired') })}
+                  placeholder={t('editGameModal.descriptionPlaceholder')}
                   rows={4}
                   className="max-h-40 min-h-[6rem] resize-y rounded-lg"
                 />
@@ -125,7 +124,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor={`edit-game-cat-${gid}`} className="text-sm font-medium">
-                  Kategori
+                  {t('editGameModal.categoryLabel')}
                 </Label>
                 <select
                   id={`edit-game-cat-${gid}`}
@@ -136,7 +135,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                     'disabled:cursor-not-allowed disabled:opacity-50',
                   )}
                 >
-                  <option value="">— Tanpa kategori —</option>
+                  <option value="">{t('editGameModal.categoryNone')}</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -147,17 +146,17 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor={`edit-game-pop-${gid}`} className="text-sm font-medium">
-                  Skor popularitas
+                  {t('editGameModal.popularityLabel')}
                 </Label>
                 <Input
                   id={`edit-game-pop-${gid}`}
                   type="number"
                   step="1"
                   {...register('popularity_score', {
-                    required: 'Skor popularitas wajib diisi',
+                    required: t('editGameModal.popularityRequired'),
                     valueAsNumber: true,
                   })}
-                  placeholder="0"
+                  placeholder={t('editGameModal.popularityPlaceholder')}
                   className="rounded-lg"
                 />
                 {errors.popularity_score && (
@@ -173,7 +172,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                 className="h-10 rounded-lg px-5"
                 onClick={() => setOpen(false)}
               >
-                Batal
+                {t('editGameModal.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -183,10 +182,10 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                 {updateGameMutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Menyimpan…
+                    {t('editGameModal.saving')}
                   </span>
                 ) : (
-                  'Simpan'
+                  t('editGameModal.save')
                 )}
               </Button>
             </DialogFooter>

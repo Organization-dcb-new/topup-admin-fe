@@ -2,16 +2,20 @@ import { useState } from 'react'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { DataTable } from '@/components/Layout/table-data'
 import Pagination from '@/components/Layout/Pagination'
-import { adminColumns } from '@/tables/table-admin'
+import { getAdminColumns } from '@/tables/table-admin'
 import { UserCog, Loader2 } from 'lucide-react'
+import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAdminData } from '@/hooks/useAdmin'
 import { CreateAdminModal } from '@/components/Admin/Create'
 
 export default function AdminManagementPage() {
+  const { t, i18n } = useTranslation('common')
   const [page, setPage] = useState(1)
   const limit = 10
 
   const { data, isLoading } = useAdminData(page, limit)
+  const adminColumns = useMemo(() => getAdminColumns(t), [t])
 
   return (
     <DashboardLayout>
@@ -22,24 +26,27 @@ export default function AdminManagementPage() {
               <UserCog className="h-5 w-5" aria-hidden />
             </div>
             <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">Kelola admin</h1>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('adminPage.title')}</h1>
               <p className="text-sm text-muted-foreground">
-                Tambah akun admin dari toolbar di bawah. Ubah peran atau hapus lewat kolom Aksi pada
-                setiap baris.
+                {t('adminPage.subtitle')}
               </p>
             </div>
           </div>
           <p className="text-sm font-medium tabular-nums text-muted-foreground sm:text-right">
-            Total {(data?.meta?.total_data ?? 0).toLocaleString('id-ID')} admin
+            {t('adminPage.total', {
+              total: (data?.meta?.total_data ?? 0).toLocaleString(
+                i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+              ),
+            })}
           </p>
         </div>
 
         <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
           <div className="flex flex-col gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900">Daftar administrator</h2>
+              <h2 className="text-sm font-semibold text-gray-900">{t('adminPage.listTitle')}</h2>
               <p className="text-xs text-muted-foreground">
-                Data dari server. Gunakan paginasi untuk melihat halaman lain.
+                {t('adminPage.listHint')}
               </p>
             </div>
             <CreateAdminModal />
@@ -54,8 +61,8 @@ export default function AdminManagementPage() {
               >
                 <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
                 <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">Memuat data administrator…</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Mohon tunggu sebentar.</p>
+                  <p className="text-sm font-medium text-foreground">{t('adminPage.loadingBody')}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t('adminPage.pleaseWait')}</p>
                 </div>
               </div>
             ) : (
@@ -63,7 +70,7 @@ export default function AdminManagementPage() {
                 <DataTable
                   columns={adminColumns}
                   data={data?.data ?? []}
-                  emptyMessage="Belum ada administrator. Tambahkan lewat tombol di atas."
+                  emptyMessage={t('adminPage.emptyMessage')}
                 />
                 <div className="mt-4">
                   <Pagination
