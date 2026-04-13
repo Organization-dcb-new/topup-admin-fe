@@ -30,6 +30,7 @@ type CreateAdminFormValues = {
   password: string
   full_name: string
   role: string
+  confirm_admin_password: string
 }
 
 export const CreateAdminModal = () => {

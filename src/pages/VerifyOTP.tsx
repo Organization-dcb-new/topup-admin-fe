@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -47,18 +47,14 @@ const VerifyOtpPage = () => {
 
   const form = useForm({
     defaultValues: {
-      code: '',
+      code: "",
     },
-  })
+  });
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (code: string) => {
-      const endpoint = isRecoveryMode ? '/admin/recover' : '/admin/verify-otp'
-      const res = await api.post(
-        endpoint,
-        { code },
-        { withCredentials: true }
-      );
+      const endpoint = isRecoveryMode ? "/admin/recover" : "/admin/verify-otp";
+      const res = await api.post(endpoint, { code }, { withCredentials: true });
       return res.data;
     },
     onSuccess: (_data) => {
@@ -72,17 +68,23 @@ const VerifyOtpPage = () => {
       }
     },
     onError: (err: unknown) => {
-      const e = err as { response?: { data?: { message?: string } } }
-      toast.error(e?.response?.data?.message || t('verifyOtpPage.verifyError'))
-      form.reset()
+      const e = err as { response?: { data?: { message?: string } } };
+      toast.error(e?.response?.data?.message || t("verifyOtpPage.verifyError"));
+      form.reset();
     },
-  })
+  });
 
   const onSubmit = (values: { code: string }) => {
-    mutate(values.code)
-  }
+    if (isPending) return;
+    mutate(values.code);
+  };
 
-  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  if (isLoading)
+    return (
+      <div className="flex h-screen items-center justify-center">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
@@ -97,12 +99,14 @@ const VerifyOtpPage = () => {
           </div>
           <div className="space-y-1.5">
             <CardTitle className="text-2xl font-semibold tracking-tight text-gray-900">
-              {isRecoveryMode ? t('verifyOtpPage.recoveryTitle') : t('verifyOtpPage.otpTitle')}
+              {isRecoveryMode
+                ? t("verifyOtpPage.recoveryTitle")
+                : t("verifyOtpPage.otpTitle")}
             </CardTitle>
             <CardDescription className="text-base text-muted-foreground">
               {isRecoveryMode
-                ? t('verifyOtpPage.recoverySubtitle')
-                : t('verifyOtpPage.otpSubtitle')}
+                ? t("verifyOtpPage.recoverySubtitle")
+                : t("verifyOtpPage.otpSubtitle")}
             </CardDescription>
           </div>
         </CardHeader>
@@ -110,20 +114,21 @@ const VerifyOtpPage = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="flex flex-col items-center space-y-6"
-            >
+              className="flex flex-col items-center space-y-6">
               <FormField
                 control={form.control}
                 name="code"
                 render={({ field }: { field: any }) => (
                   <FormItem className="flex w-full flex-col items-center">
-                    <FormLabel className="sr-only">{t('verifyOtpPage.otpLabel')}</FormLabel>
+                    <FormLabel className="sr-only">
+                      {t("verifyOtpPage.otpLabel")}
+                    </FormLabel>
                     <FormControl>
                       {isRecoveryMode ? (
                         <Input
                           {...field}
                           className="h-12 rounded-lg text-center font-mono text-base font-semibold uppercase tracking-widest"
-                          placeholder={t('verifyOtpPage.recoveryPlaceholder')}
+                          placeholder={t("verifyOtpPage.recoveryPlaceholder")}
                           autoComplete="one-time-code"
                           autoFocus
                         />
@@ -132,8 +137,9 @@ const VerifyOtpPage = () => {
                           maxLength={6}
                           disabled={isPending}
                           {...field}
-                          onComplete={(value: string) => mutate(value)}
-                        >
+                          onComplete={(value: string) => {
+                            if (!isPending) mutate(value);
+                          }}>
                           <InputOTPGroup className="gap-2">
                             <InputOTPSlot
                               index={0}
@@ -174,15 +180,17 @@ const VerifyOtpPage = () => {
                 <Button
                   type="submit"
                   className="h-11 w-full rounded-xl text-base font-medium"
-                  disabled={isPending}
-                >
+                  disabled={isPending}>
                   {isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
-                      {t('verifyOtpPage.processing')}
+                      <Loader2
+                        className="mr-2 h-4 w-4 shrink-0 animate-spin"
+                        aria-hidden
+                      />
+                      {t("verifyOtpPage.processing")}
                     </>
                   ) : (
-                    t('verifyOtpPage.verifyRecovery')
+                    t("verifyOtpPage.verifyRecovery")
                   )}
                 </Button>
               )}
@@ -193,33 +201,33 @@ const VerifyOtpPage = () => {
             <button
               type="button"
               onClick={() => {
-                setIsRecoveryMode(!isRecoveryMode)
-                form.reset()
+                setIsRecoveryMode(!isRecoveryMode);
+                form.reset();
               }}
-              className="font-medium text-primary hover:underline"
-            >
-              {isRecoveryMode ? t('verifyOtpPage.useOtp') : t('verifyOtpPage.useRecovery')}
+              className="font-medium text-primary hover:underline">
+              {isRecoveryMode
+                ? t("verifyOtpPage.useOtp")
+                : t("verifyOtpPage.useRecovery")}
             </button>
 
             <div>
-              {t('verifyOtpPage.trouble')}{' '}
+              {t("verifyOtpPage.trouble")}{" "}
               <Button
                 type="button"
                 variant="link"
                 className="h-auto p-0 font-medium text-primary"
                 onClick={() => {
-                  authStorage.clearToken()
-                  navigate('/login')
-                }}
-              >
-                {t('verifyOtpPage.backToLogin')}
+                  authStorage.clearToken();
+                  navigate("/login");
+                }}>
+                {t("verifyOtpPage.backToLogin")}
               </Button>
             </div>
           </div>
         </CardContent>
       </Card>
     </div>
-  )
-}
+  );
+};
 
-export default VerifyOtpPage
+export default VerifyOtpPage;

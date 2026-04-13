@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api/axios";
+import toast from "react-hot-toast";
 
 export const authStorage = {
   getToken(): string | null {

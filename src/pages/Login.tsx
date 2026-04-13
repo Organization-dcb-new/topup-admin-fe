@@ -11,10 +11,15 @@ import { Label } from "@/components/ui/label";
 import { useLogin, useLoginForm } from "@/hooks/useLogin";
 import { useAuthUser } from "@/lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { Lock, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
+  const emailId = useId();
+  const passwordId = useId();
   const form = useLoginForm();
   const queryClient = useQueryClient();
   const { mutate: loginMutate, isPending } = useLogin();
@@ -47,7 +52,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.12),transparent)]"
         aria-hidden
