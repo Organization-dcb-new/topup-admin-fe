@@ -1,31 +1,17 @@
-import { authStorage } from "@/lib/auth";
 import axios from "axios";
 
 export const api = axios.create({
   baseURL: "/api",
+  withCredentials: true,
 });
 
-function isTokenExpired(token: string) {
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return Date.now() >= payload.exp * 1000;
-  } catch {
-    return true;
-  }
-}
-
-api.interceptors.request.use((config) => {
-  const token = authStorage.getToken();
-
-  if (token) {
-    if (isTokenExpired(token)) {
-      authStorage.clearToken();
-      window.location.href = "/login";
-      return Promise.reject(new Error("Token expired"));
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // If the error is 401 Unauthorized, handle session expiration
+    if (error.response?.status === 401 && window.location.pathname !== '/login') {
+      window.location.href = '/login';
     }
-
-    config.headers.Authorization = `Bearer ${token}`;
+    return Promise.reject(error);
   }
-
-  return config;
-});
+);

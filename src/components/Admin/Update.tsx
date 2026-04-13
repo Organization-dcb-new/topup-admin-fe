@@ -4,8 +4,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
-import { useAdminMutation } from '@/hooks/useAdmin'
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useAdminMutation } from "@/hooks/useAdmin";
+import { useState } from "react";
 
 export const UpdateAdminRole = ({
   id,
@@ -14,22 +25,51 @@ export const UpdateAdminRole = ({
   id: string
   currentRole: string
 }) => {
-  const { updateRole } = useAdminMutation()
+  const { updateRole } = useAdminMutation();
+  const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(currentRole);
+
+  const handleConfirm = () => {
+    updateRole.mutate({ id, role: selectedRole });
+    setOpen(false);
+  };
 
   return (
-    <Select
-      defaultValue={currentRole}
-      onValueChange={(value) => updateRole.mutate({ id, role: value })}
-      disabled={updateRole.isPending}
-    >
-      <SelectTrigger className="h-8 w-[6.25rem] min-w-[6.25rem] rounded-lg border-border text-[10px] font-semibold uppercase tracking-wide ring-offset-0 focus:ring-0">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="dev">Dev</SelectItem>
-        <SelectItem value="admin">Admin</SelectItem>
-        <SelectItem value="noc">NOC</SelectItem>
-      </SelectContent>
-    </Select>
-  )
-}
+    <>
+      <Select
+        value={currentRole}
+        onValueChange={(value) => {
+          setSelectedRole(value);
+          setOpen(true);
+        }}
+        disabled={updateRole.isPending}
+      >
+        <SelectTrigger className="w-25 h-8 text-[10px] font-black uppercase ring-offset-0 focus:ring-0">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="admin">ADMIN</SelectItem>
+          <SelectItem value="noc">NOC</SelectItem>
+        </SelectContent>
+      </Select>
+
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Konfirmasi Perikatan Role</AlertDialogTitle>
+            <AlertDialogDescription>
+              Apakah Anda yakin ingin mengubah role menjadi {selectedRole.toUpperCase()}?
+              Ini akan merubah hak akses akun terkait.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm} className="bg-indigo-600 hover:bg-indigo-700">
+              Ubah Role
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};

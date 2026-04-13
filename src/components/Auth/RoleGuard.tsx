@@ -7,11 +7,14 @@ interface RoleGuardProps {
 }
 
 export const RoleGuard = ({ children, allowedRoles }: RoleGuardProps) => {
-  const { role } = useAuthUser();
+  const { role, isAuthenticated, isMfaRequired, isLoading } = useAuthUser();
 
-  const token = localStorage.getItem("access_token");
+  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
-  if (!token) {
+  if (!isAuthenticated) {
+    if (isMfaRequired) {
+      return <Navigate to="/verify-otp" replace />;
+    }
     return <Navigate to="/login" replace />;
   }
 

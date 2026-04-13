@@ -1,5 +1,12 @@
-import { api } from '@/api/axios'
-import { Button } from '@/components/ui/button'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+
+import { authStorage, useAuthUser } from "@/lib/auth";
+import { api } from "@/api/axios";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -32,16 +39,16 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 const VerifyOtpPage = () => {
-  const { t } = useTranslation('common')
-  const navigate = useNavigate()
-  const { isMfaRequired, token } = useAuthUser()
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
+  const navigate = useNavigate();
+  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
+  const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!token || !isMfaRequired) {
-      navigate('/login')
+  React.useEffect(() => {
+    if (!isLoading && !isMfaRequired) {
+      navigate(isAuthenticated ? "/" : "/login");
     }
-  }, [token, isMfaRequired, navigate])
+  }, [isMfaRequired, isAuthenticated, isLoading, navigate]);
 
   const form = useForm({
     defaultValues: {
@@ -55,23 +62,18 @@ const VerifyOtpPage = () => {
       const res = await api.post(
         endpoint,
         { code },
-        {
-          headers: {
-            Authorization: `Bearer ${authStorage.getToken()}`,
-          },
-        },
-      )
-      return res.data
+        { withCredentials: true }
+      );
+      return res.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       if (isRecoveryMode) {
-        toast.success(t('verifyOtpPage.recoverySuccess'))
-        authStorage.clearToken()
-        window.location.href = '/login'
+        toast.success("Pemulihan berhasil. Silakan login kembali.");
+        authStorage.clearToken();
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       } else {
-        toast.success(t('verifyOtpPage.verifySuccess'))
-        authStorage.setToken(data.token)
-        window.location.href = '/'
+        toast.success("Verifikasi berhasil");
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       }
     },
     onError: (err: unknown) => {
@@ -84,6 +86,8 @@ const VerifyOtpPage = () => {
   const onSubmit = (values: { code: string }) => {
     mutate(values.code)
   }
+
+  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">

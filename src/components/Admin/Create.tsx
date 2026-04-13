@@ -45,11 +45,12 @@ export const CreateAdminModal = () => {
     formState: { errors },
   } = useForm<CreateAdminFormValues>({
     defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-      full_name: '',
-      role: 'admin',
+      username: "",
+      email: "",
+      password: "",
+      full_name: "",
+      role: "admin",
+      confirm_admin_password: "",
     },
   })
 
@@ -128,8 +129,7 @@ export const CreateAdminModal = () => {
                   <SelectValue placeholder="Pilih peran" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dev">Dev</SelectItem>
-                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="admin">ADMIN</SelectItem>
                   <SelectItem value="noc">NOC</SelectItem>
                 </SelectContent>
               </Select>
@@ -177,7 +177,26 @@ export const CreateAdminModal = () => {
             )}
           </div>
 
-          <Button type="submit" className="mt-2 h-11 w-full rounded-xl font-semibold" disabled={isPending}>
+          <div className="space-y-2 border-t pt-4 mt-6">
+            <Label className="font-bold text-indigo-600">Admin Password Check</Label>
+            <Input
+              {...register("confirm_admin_password", {
+                required: "Your password is required to confirm this action",
+              })}
+              type="password"
+              placeholder="Validasi Password Anda"
+              className="rounded-xl border-indigo-200"
+            />
+            {errors.confirm_admin_password && (
+              <p className="text-xs text-red-500">{errors.confirm_admin_password.message}</p>
+            )}
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 rounded-xl h-11 font-bold mt-4"
+            disabled={isPending}
+          >
             {isPending ? (
               <span className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
