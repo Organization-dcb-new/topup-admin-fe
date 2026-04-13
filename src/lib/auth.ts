@@ -1,63 +1,42 @@
-const TOKEN_KEY = "access_token";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/api/axios";
 
 export const authStorage = {
   getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
-  },
-
-  setToken(token: string) {
-    localStorage.setItem(TOKEN_KEY, token);
-  },
-
-  clearToken() {
-    localStorage.removeItem(TOKEN_KEY);
-  },
-};
-
-export function isAuthenticated(): boolean {
-  return !!authStorage.getToken();
-}
-
-export function useAuth() {
-  const token = authStorage.getToken();
-
-  return {
-    isAuthenticated: !!token,
-  };
-}
-
-export type JwtPayload = {
-  admin_id: string;
-  email: string;
-  role: "admin" | "noc" | "dev";
-  status: "full" | "mfa_pending";
-  exp: number;
-  iat: number;
-};
-
-export function decodeJwt<T = any>(token: string): T | null {
-  try {
-    const payload = token.split(".")[1];
-    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
-    return JSON.parse(decoded);
-  } catch {
     return null;
-  }
-}
+  },
+  setToken(_token: string) {},
+  clearToken() {
+    api.post("/admin/logout").catch(() => {});
+  },
+};
 
 export function useAuthUser() {
-  const token = authStorage.getToken();
-  const payload = token ? decodeJwt<JwtPayload>(token) : null;
+  const { data, isLoading, error: _error } = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: async () => {
+      try {
+        const res = await api.get('/admin/me');
+        return { user: res.data.data, mfa_pending: false };
+      } catch (err: any) {
+        if (err.response?.data?.message === "MFA_REQUIRED") {
+          return { user: null, mfa_pending: true };
+        }
+        throw err;
+      }
+    },
+    retry: false,
+    staleTime: 30000,
+  });
 
-  const isFullyAuthenticated = !!token && payload?.status === "full";
-
-  const isMfaRequired = !!token && payload?.status === "mfa_pending";
+  const isMfaRequired = data?.mfa_pending === true;
+  const isFullyAuthenticated = !!data?.user && !isMfaRequired;
 
   return {
     isAuthenticated: isFullyAuthenticated,
-    isMfaRequired: isMfaRequired,
-    role: payload?.role ?? null,
-    user: payload,
-    token,
+    isMfaRequired,
+    role: data?.user?.role ?? null,
+    user: data?.user ?? null,
+    isLoading
   };
 }

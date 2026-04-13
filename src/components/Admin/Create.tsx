@@ -42,6 +42,7 @@ export const CreateAdminModal = () => {
       password: "",
       full_name: "",
       role: "admin",
+      confirm_admin_password: "",
     },
   });
 
@@ -120,7 +121,6 @@ export const CreateAdminModal = () => {
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="dev">DEV</SelectItem>
                   <SelectItem value="admin">ADMIN</SelectItem>
                   <SelectItem value="noc">NOC</SelectItem>
                 </SelectContent>
@@ -160,6 +160,21 @@ export const CreateAdminModal = () => {
             />
             {errors.password && (
               <p className="text-xs text-red-500">{errors.password.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2 border-t pt-4 mt-6">
+            <Label className="font-bold text-indigo-600">Admin Password Check</Label>
+            <Input
+              {...register("confirm_admin_password", {
+                required: "Your password is required to confirm this action",
+              })}
+              type="password"
+              placeholder="Validasi Password Anda"
+              className="rounded-xl border-indigo-200"
+            />
+            {errors.confirm_admin_password && (
+              <p className="text-xs text-red-500">{errors.confirm_admin_password.message}</p>
             )}
           </div>
 

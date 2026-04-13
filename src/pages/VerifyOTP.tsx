@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -32,14 +32,15 @@ import { Input } from "@/components/ui/input";
 
 const VerifyOtpPage = () => {
   const navigate = useNavigate();
-  const { isMfaRequired, token } = useAuthUser();
+  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
-    if (!token || !isMfaRequired) {
-      navigate("/login");
+    if (!isLoading && !isMfaRequired) {
+      navigate(isAuthenticated ? "/" : "/login");
     }
-  }, [token, isMfaRequired, navigate]);
+  }, [isMfaRequired, isAuthenticated, isLoading, navigate]);
 
   const form = useForm({
     defaultValues: {
@@ -53,23 +54,18 @@ const VerifyOtpPage = () => {
       const res = await api.post(
         endpoint,
         { code },
-        {
-          headers: {
-            Authorization: `Bearer ${authStorage.getToken()}`,
-          },
-        },
+        { withCredentials: true }
       );
       return res.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (_data) => {
       if (isRecoveryMode) {
         toast.success("Pemulihan berhasil. Silakan login kembali.");
         authStorage.clearToken();
-        window.location.href = "/login";
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       } else {
         toast.success("Verifikasi berhasil");
-        authStorage.setToken(data.token);
-        window.location.href = "/";
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       }
     },
     onError: (err: any) => {
@@ -80,6 +76,8 @@ const VerifyOtpPage = () => {
   const onSubmit = (values: { code: string }) => {
     mutate(values.code);
   };
+
+  if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-linear-to-br from-indigo-300/20 px-4">

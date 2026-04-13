@@ -9,44 +9,35 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin, useLoginForm } from "@/hooks/useLogin";
-import { decodeJwt, useAuthUser, type JwtPayload } from "@/lib/auth";
+import { useAuthUser } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const form = useLoginForm();
+  const queryClient = useQueryClient();
   const { mutate: loginMutate, isPending } = useLogin();
-  const { token, isAuthenticated, isMfaRequired } = useAuthUser();
+  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser();
 
   useEffect(() => {
-    if (token) {
-      if (isMfaRequired) {
-        window.location.href = "/verify-otp";
-      } else if (isAuthenticated) {
+    if (!isLoading) {
+      if (isAuthenticated) {
         window.location.href = "/";
+      } else if (isMfaRequired) {
+        window.location.href = "/verify-otp";
       }
     }
-  }, [token, isAuthenticated, isMfaRequired]);
+  }, [isAuthenticated, isMfaRequired, isLoading]);
 
   const onSubmit = (values: {
     email_or_username: string;
     password: string;
   }) => {
     loginMutate(values, {
-      onSuccess: (res: any) => {
-        const token = res?.data?.token || res?.token;
-
-        if (token) {
-          const payload = decodeJwt<JwtPayload>(token);
-
-          toast.success("Login berhasil");
-
-          if (payload?.status === "mfa_pending") {
-            window.location.href = "/verify-otp";
-          } else {
-            window.location.href = "/";
-          }
-        }
+      onSuccess: () => {
+        toast.success("Login berhasil");
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       },
       onError: (err: any) => {
         toast.error(err?.response?.data?.message || "Login gagal");
