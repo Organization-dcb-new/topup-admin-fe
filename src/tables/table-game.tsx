@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import type { Game } from '@/types/game'
+import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { ChangeImageModal } from '@/components/Games/UploadImageModal'
 import { GameTableActions } from '@/components/Games/TableAction'
 import ToggleGameStatus from '@/components/Games/ToggleGameStatus'
@@ -82,6 +83,25 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
         <ToggleGameStatus game={row.original} />
       </div>
     ),
+  },
+  {
+    accessorKey: 'updated_at',
+    header: t('gameTable.colUpdatedAt'),
+    cell: ({ row }) => {
+      const by = row.original.updated_by?.name?.trim()
+      return (
+        <div className="max-w-[12rem] space-y-0.5">
+          <div className="whitespace-nowrap text-sm text-muted-foreground">
+            {formatBackendDateTime(row.original.updated_at)}
+          </div>
+          {by ? (
+            <div className="truncate text-xs text-muted-foreground/90" title={by}>
+              {by}
+            </div>
+          ) : null}
+        </div>
+      )
+    },
   },
   {
     id: 'actions',

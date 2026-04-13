@@ -18,13 +18,47 @@ export type GetGamesParams = {
   is_active?: boolean
   /** Backend: filter per `game_id` */
   game_id?: string
+  is_show?: boolean
+  is_check_id?: boolean
+  updated_by?: string
+  updated_from?: string
+  updated_to?: string
+  sort?: 'name' | 'updated_at'
+  order?: 'asc' | 'desc'
 }
 
 export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
-  const { search = '', image = 'all', is_active, game_id } = params
+  const {
+    search = '',
+    image = 'all',
+    is_active,
+    game_id,
+    is_show,
+    is_check_id,
+    updated_by,
+    updated_from,
+    updated_to,
+    sort,
+    order,
+  } = params
 
   return useQuery<GamesResponse>({
-    queryKey: ['games', page, limit, search, image, is_active ?? 'all', game_id ?? ''],
+    queryKey: [
+      'games',
+      page,
+      limit,
+      search,
+      image,
+      is_active ?? 'all',
+      game_id ?? '',
+      is_show ?? 'all',
+      is_check_id ?? 'all',
+      updated_by ?? '',
+      updated_from ?? '',
+      updated_to ?? '',
+      sort ?? '',
+      order ?? '',
+    ],
     queryFn: async () => {
       const { data } = await api.get('/games/pagination', {
         params: {
@@ -34,6 +68,12 @@ export function useGetGames(page: number, limit: number, params: GetGamesParams 
           ...(search.trim() !== '' && { search: search.trim() }),
           ...(is_active !== undefined && { is_active }),
           ...(game_id && { game_id }),
+          ...(is_show !== undefined && { is_show }),
+          ...(is_check_id !== undefined && { is_check_id }),
+          ...(updated_by?.trim() && { updated_by: updated_by.trim() }),
+          ...(updated_from && { updated_from }),
+          ...(updated_to && { updated_to }),
+          ...(sort && order && { sort, order }),
         },
       })
 

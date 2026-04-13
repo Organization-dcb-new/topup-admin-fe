@@ -1,3 +1,15 @@
+/** GET /auth/admin/brief — ringkas untuk filter (id + name). */
+export interface AdminBriefUser {
+  id: string;
+  name: string;
+}
+
+export interface AdminBriefListResponse {
+  status: string;
+  message: string;
+  data: AdminBriefUser[];
+}
+
 export interface AdminUser {
   id: string;
   username: string;

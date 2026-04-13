@@ -19,12 +19,12 @@ export function GameActiveFilter({ value, onChange }: Props) {
   const { t } = useTranslation('common')
 
   return (
-    <div className="grid min-w-0 gap-1.5 sm:w-[11rem]">
+    <div className="grid min-w-0 w-full gap-1.5">
       <Label htmlFor="game-active-filter" className="text-xs text-muted-foreground">
         {t('gameFilters.statusLabel')}
       </Label>
       <Select value={value} onValueChange={(v) => onChange(v as GameActiveFilterValue)}>
-        <SelectTrigger id="game-active-filter" className="w-full min-w-0" size="sm">
+        <SelectTrigger id="game-active-filter" className="w-full min-w-0 bg-background shadow-sm" size="sm">
           <SelectValue placeholder={t('gameFilters.statusPlaceholder')} />
         </SelectTrigger>
         <SelectContent position="popper" align="start">

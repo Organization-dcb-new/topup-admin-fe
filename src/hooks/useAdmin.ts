@@ -1,7 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api/axios";
 import toast from "react-hot-toast";
-import type { AdminResponse } from "@/types/admin";
+import type { AdminBriefListResponse, AdminResponse } from "@/types/admin";
+
+/** Daftar admin ringkas (id + name) untuk filter, dll. */
+export function useGetAdminBrief() {
+  return useQuery({
+    queryKey: ["admin-brief"],
+    queryFn: async () => {
+      const { data } = await api.get<AdminBriefListResponse>("/admin/brief");
+      return data.data ?? [];
+    },
+    staleTime: 60_000,
+  });
+}
 
 export const useAdminData = (page: number, limit: number) => {
   return useQuery({

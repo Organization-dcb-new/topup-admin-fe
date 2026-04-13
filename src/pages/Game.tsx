@@ -1,3 +1,4 @@
+import { AdminBriefSelect } from '@/components/Admin/AdminBriefSelect'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { GameActiveFilter, type GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
@@ -6,35 +7,108 @@ import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useGetGameNamesWithType, useGetGames } from '@/hooks/useGame'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { useGetAdminBrief } from '@/hooks/useAdmin'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useGetGameNamesWithType, useGetGames, type GetGamesParams } from '@/hooks/useGame'
 import { getGameColumns } from '@/tables/table-game'
 import i18n from '@/i18n'
-import { Gamepad2, Inbox, Loader2, RefreshCw, RotateCcw, SearchX } from 'lucide-react'
+import { Gamepad2, Inbox, Loader2, RefreshCw, RotateCcw, Search, SearchX } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+
+function datetimeLocalToIso(value: string): string | undefined {
+  if (!value.trim()) return undefined
+  const ms = new Date(value).getTime()
+  if (Number.isNaN(ms)) return undefined
+  return new Date(ms).toISOString()
+}
+
+type TriBool = 'all' | 'yes' | 'no'
+
+function triToOptionalBool(v: TriBool): boolean | undefined {
+  if (v === 'all') return undefined
+  return v === 'yes'
+}
 
 export default function GamePage() {
   const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>('all')
   const [gameId, setGameId] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const debouncedSearch = useDebounce(searchInput, 500)
+  const [imageFilter, setImageFilter] = useState<'all' | 'no_image'>('all')
+  const [showFilter, setShowFilter] = useState<TriBool>('all')
+  const [checkIdFilter, setCheckIdFilter] = useState<TriBool>('all')
+  const [updatedByUserId, setUpdatedByUserId] = useState('')
+  const [updatedFromLocal, setUpdatedFromLocal] = useState('')
+  const [updatedToLocal, setUpdatedToLocal] = useState('')
+  const [sortField, setSortField] = useState<'' | 'name' | 'updated_at'>('')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   const limit = 20
 
-  const listParams = useMemo(() => {
+  const listParams = useMemo((): GetGamesParams => {
     const is_active =
       activeFilter === 'active' ? true : activeFilter === 'inactive' ? false : undefined
+    const is_show = triToOptionalBool(showFilter)
+    const is_check_id = triToOptionalBool(checkIdFilter)
+    const updated_by = updatedByUserId.trim() ? updatedByUserId.trim() : undefined
+    const updated_from = datetimeLocalToIso(updatedFromLocal)
+    const updated_to = datetimeLocalToIso(updatedToLocal)
+
     return {
-      is_active,
+      search: debouncedSearch.trim(),
+      image: imageFilter,
+      ...(is_active !== undefined && { is_active }),
       ...(gameId && { game_id: gameId }),
+      ...(is_show !== undefined && { is_show }),
+      ...(is_check_id !== undefined && { is_check_id }),
+      ...(updated_by && { updated_by }),
+      ...(updated_from && { updated_from }),
+      ...(updated_to && { updated_to }),
+      ...(sortField && { sort: sortField, order: sortOrder }),
     }
-  }, [activeFilter, gameId])
+  }, [
+    activeFilter,
+    gameId,
+    debouncedSearch,
+    imageFilter,
+    showFilter,
+    checkIdFilter,
+    updatedByUserId,
+    updatedFromLocal,
+    updatedToLocal,
+    sortField,
+    sortOrder,
+  ])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter
     setPage(1)
-  }, [activeFilter, gameId])
+  }, [
+    activeFilter,
+    gameId,
+    debouncedSearch,
+    imageFilter,
+    showFilter,
+    checkIdFilter,
+    updatedByUserId,
+    updatedFromLocal,
+    updatedToLocal,
+    sortField,
+    sortOrder,
+  ])
 
   const {
     data,
@@ -47,6 +121,11 @@ export default function GamePage() {
   } = useGetGames(page, limit, listParams)
 
   const { data: gameNameOptions } = useGetGameNamesWithType()
+  const { data: adminBriefList } = useGetAdminBrief()
+
+  const selectedUpdatedByName = updatedByUserId.trim()
+    ? (adminBriefList?.find((a) => a.id === updatedByUserId.trim())?.name ?? updatedByUserId.trim())
+    : undefined
 
   useEffect(() => {
     if (isSuccess && isFetchedAfterMount) {
@@ -79,14 +158,58 @@ export default function GamePage() {
         ? t('gameFilters.active')
         : t('gameFilters.inactive')
 
-  const hasActiveFilters = activeFilter !== 'all' || Boolean(gameId)
+  const hasActiveFilters =
+    activeFilter !== 'all' ||
+    Boolean(gameId) ||
+    debouncedSearch.trim() !== '' ||
+    imageFilter !== 'all' ||
+    showFilter !== 'all' ||
+    checkIdFilter !== 'all' ||
+    Boolean(updatedByUserId.trim()) ||
+    Boolean(datetimeLocalToIso(updatedFromLocal)) ||
+    Boolean(datetimeLocalToIso(updatedToLocal)) ||
+    sortField !== ''
+
   const isFilteredEmpty = isSuccess && rows.length === 0 && hasActiveFilters
   const isDatabaseEmpty = isSuccess && rows.length === 0 && !hasActiveFilters
 
   const clearFilters = () => {
     setActiveFilter('all')
     setGameId('')
+    setSearchInput('')
+    setImageFilter('all')
+    setShowFilter('all')
+    setCheckIdFilter('all')
+    setUpdatedByUserId('')
+    setUpdatedFromLocal('')
+    setUpdatedToLocal('')
+    setSortField('')
+    setSortOrder('asc')
   }
+
+  const showLabelSummary =
+    showFilter === 'all'
+      ? t('gameFilters.all')
+      : showFilter === 'yes'
+        ? t('gameDetailPage.showYes')
+        : t('gameDetailPage.showNo')
+
+  const checkIdLabelSummary =
+    checkIdFilter === 'all'
+      ? t('gameFilters.all')
+      : checkIdFilter === 'yes'
+        ? t('gameDetailPage.checkIdYes')
+        : t('gameDetailPage.checkIdNo')
+
+  const sortOrderSummary =
+    sortOrder === 'asc' ? t('gameFilters.orderAsc') : t('gameFilters.orderDesc')
+
+  const sortFieldSummary =
+    sortField === 'name'
+      ? t('gameFilters.sortName')
+      : sortField === 'updated_at'
+        ? t('gameFilters.sortUpdatedAt')
+        : ''
 
   return (
     <DashboardLayout>
@@ -107,24 +230,185 @@ export default function GamePage() {
               <h2 className="text-sm font-semibold text-foreground">{t('gamePage.listTitle')}</h2>
               <p className="text-xs text-muted-foreground">{t('gamePage.listHint', { limit })}</p>
             </div>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-              <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
-                <GamePickerSelect value={gameId} onChange={setGameId} />
-                <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
+
+            <div className="overflow-hidden rounded-xl border border-border/70 bg-muted/20 shadow-inner ring-1 ring-black/[0.03] dark:ring-white/[0.04]">
+              <div className="flex flex-col gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                <span className="text-xs font-medium text-muted-foreground">{t('gamePage.filtersHeading')}</span>
+                {hasActiveFilters ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 w-full shrink-0 gap-1.5 rounded-lg px-3 text-xs font-medium sm:w-auto"
+                    onClick={clearFilters}
+                    aria-label={t('gamePage.resetFiltersAria')}
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" aria-hidden />
+                    {t('gamePage.resetFilters')}
+                  </Button>
+                ) : (
+                  <span className="hidden text-[11px] text-muted-foreground/80 sm:inline">
+                    {t('gamePage.filtersToolbarHint')}
+                  </span>
+                )}
               </div>
-              {hasActiveFilters ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 shrink-0 gap-1.5 rounded-lg px-3 text-xs font-medium"
-                  onClick={clearFilters}
-                  aria-label={t('gamePage.resetFiltersAria')}
-                >
-                  <RotateCcw className="h-3.5 w-3.5" aria-hidden />
-                  {t('gamePage.resetFilters')}
-                </Button>
-              ) : null}
+
+              <div className="space-y-5 p-4 sm:p-5">
+                <div className="grid gap-4 lg:grid-cols-12 lg:items-end">
+                  <div className="min-w-0 lg:col-span-5">
+                    <Label htmlFor="game-list-search" className="text-xs text-muted-foreground">
+                      {t('gameFilters.searchLabel')}
+                    </Label>
+                    <div className="relative mt-1.5">
+                      <Search
+                        className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden
+                      />
+                      <Input
+                        id="game-list-search"
+                        type="search"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        placeholder={t('gameFilters.searchPlaceholder')}
+                        className="h-9 bg-background pl-9 shadow-sm"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                  <div className="min-w-0 lg:col-span-3">
+                    <Label htmlFor="game-list-image" className="text-xs text-muted-foreground">
+                      {t('gameFilters.imageLabel')}
+                    </Label>
+                    <Select
+                      value={imageFilter}
+                      onValueChange={(v) => setImageFilter(v as 'all' | 'no_image')}
+                    >
+                      <SelectTrigger id="game-list-image" className="mt-1.5 w-full min-w-0 bg-background shadow-sm" size="sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent position="popper" align="start">
+                        <SelectItem value="all">{t('gameFilters.imageAll')}</SelectItem>
+                        <SelectItem value="no_image">{t('gameFilters.imageNoImage')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="min-w-0 lg:col-span-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-3">
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <Label htmlFor="game-list-sort" className="text-xs text-muted-foreground">
+                          {t('gameFilters.sortLabel')}
+                        </Label>
+                        <Select
+                          value={sortField === '' ? 'default' : sortField}
+                          onValueChange={(v) => {
+                            if (v === 'default') {
+                              setSortField('')
+                              return
+                            }
+                            const field = v as 'name' | 'updated_at'
+                            setSortField(field)
+                            setSortOrder(field === 'name' ? 'asc' : 'desc')
+                          }}
+                        >
+                          <SelectTrigger id="game-list-sort" className="w-full min-w-0 bg-background shadow-sm" size="sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent position="popper" align="start">
+                            <SelectItem value="default">{t('gameFilters.sortDefault')}</SelectItem>
+                            <SelectItem value="name">{t('gameFilters.sortName')}</SelectItem>
+                            <SelectItem value="updated_at">{t('gameFilters.sortUpdatedAt')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {sortField ? (
+                        <div className="min-w-0 flex-1 space-y-1.5 sm:max-w-[11rem]">
+                          <Label htmlFor="game-list-order" className="text-xs text-muted-foreground">
+                            {t('gameFilters.orderLabel')}
+                          </Label>
+                          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'asc' | 'desc')}>
+                            <SelectTrigger id="game-list-order" className="w-full min-w-0 bg-background shadow-sm" size="sm">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent position="popper" align="start">
+                              <SelectItem value="asc">{t('gameFilters.orderAsc')}</SelectItem>
+                              <SelectItem value="desc">{t('gameFilters.orderDesc')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="h-px w-full bg-border/70" aria-hidden />
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <GamePickerSelect value={gameId} onChange={setGameId} />
+                  <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
+                </div>
+
+                <div className="h-px w-full bg-border/70" aria-hidden />
+
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6 xl:items-end">
+                  <div className="min-w-0 space-y-1.5 xl:col-span-1">
+                    <Label htmlFor="game-list-show" className="text-xs text-muted-foreground">
+                      {t('gameFilters.showLabel')}
+                    </Label>
+                    <Select value={showFilter} onValueChange={(v) => setShowFilter(v as TriBool)}>
+                      <SelectTrigger id="game-list-show" className="w-full min-w-0 bg-background shadow-sm" size="sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent position="popper" align="start">
+                        <SelectItem value="all">{t('gameFilters.all')}</SelectItem>
+                        <SelectItem value="yes">{t('gameDetailPage.yes')}</SelectItem>
+                        <SelectItem value="no">{t('gameDetailPage.no')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="min-w-0 space-y-1.5 xl:col-span-1">
+                    <Label htmlFor="game-list-check-id" className="text-xs text-muted-foreground">
+                      {t('gameFilters.checkIdLabel')}
+                    </Label>
+                    <Select value={checkIdFilter} onValueChange={(v) => setCheckIdFilter(v as TriBool)}>
+                      <SelectTrigger id="game-list-check-id" className="w-full min-w-0 bg-background shadow-sm" size="sm">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent position="popper" align="start">
+                        <SelectItem value="all">{t('gameFilters.all')}</SelectItem>
+                        <SelectItem value="yes">{t('gameDetailPage.yes')}</SelectItem>
+                        <SelectItem value="no">{t('gameDetailPage.no')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="min-w-0 sm:col-span-2 xl:col-span-2">
+                    <AdminBriefSelect value={updatedByUserId} onChange={setUpdatedByUserId} />
+                  </div>
+                  <div className="min-w-0 space-y-1.5 xl:col-span-1">
+                    <Label htmlFor="game-list-updated-from" className="text-xs text-muted-foreground">
+                      {t('gameFilters.updatedFromLabel')}
+                    </Label>
+                    <Input
+                      id="game-list-updated-from"
+                      type="datetime-local"
+                      value={updatedFromLocal}
+                      onChange={(e) => setUpdatedFromLocal(e.target.value)}
+                      className="h-9 bg-background shadow-sm"
+                    />
+                  </div>
+                  <div className="min-w-0 space-y-1.5 xl:col-span-1">
+                    <Label htmlFor="game-list-updated-to" className="text-xs text-muted-foreground">
+                      {t('gameFilters.updatedToLabel')}
+                    </Label>
+                    <Input
+                      id="game-list-updated-to"
+                      type="datetime-local"
+                      value={updatedToLocal}
+                      onChange={(e) => setUpdatedToLocal(e.target.value)}
+                      className="h-9 bg-background shadow-sm"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {isSuccess && (
@@ -147,6 +431,55 @@ export default function GamePage() {
                   ) : (
                     <span className="text-xs text-muted-foreground">{t('gamePage.filterGameAll')}</span>
                   )}
+                  {debouncedSearch.trim() ? (
+                    <Badge variant="outline" className="max-w-[min(100%,20rem)] truncate font-normal" title={debouncedSearch.trim()}>
+                      {t('gamePage.filterSearchChip', { q: debouncedSearch.trim() })}
+                    </Badge>
+                  ) : null}
+                  {imageFilter !== 'all' ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterImageChip', {
+                        label:
+                          imageFilter === 'no_image'
+                            ? t('gameFilters.imageNoImage')
+                            : t('gameFilters.imageAll'),
+                      })}
+                    </Badge>
+                  ) : null}
+                  {showFilter !== 'all' ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterShowChip', { value: showLabelSummary })}
+                    </Badge>
+                  ) : null}
+                  {checkIdFilter !== 'all' ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterCheckIdChip', { value: checkIdLabelSummary })}
+                    </Badge>
+                  ) : null}
+                  {updatedByUserId.trim() ? (
+                    <Badge
+                      variant="outline"
+                      className="max-w-[min(100%,16rem)] truncate font-normal"
+                      title={selectedUpdatedByName}
+                    >
+                      {t('gamePage.filterUpdatedByChip', { name: selectedUpdatedByName })}
+                    </Badge>
+                  ) : null}
+                  {datetimeLocalToIso(updatedFromLocal) ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterUpdatedFromChip', { value: updatedFromLocal })}
+                    </Badge>
+                  ) : null}
+                  {datetimeLocalToIso(updatedToLocal) ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterUpdatedToChip', { value: updatedToLocal })}
+                    </Badge>
+                  ) : null}
+                  {sortField ? (
+                    <Badge variant="outline" className="font-normal">
+                      {t('gamePage.filterSortChip', { field: sortFieldSummary, order: sortOrderSummary })}
+                    </Badge>
+                  ) : null}
                 </div>
                 <span className="sm:ml-auto tabular-nums text-xs text-muted-foreground">
                   {t('gamePage.totalGames', { count: totalFormatted })}
