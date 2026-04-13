@@ -10,22 +10,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const { token, isMfaRequired } = useAuthUser()
+  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
 
   useEffect(() => {
-    if (!token) {
-      window.location.href = '/login'
-      return
+    if (!isLoading) {
+      if (!isAuthenticated && !isMfaRequired) {
+        window.location.href = "/login";
+      } else if (isMfaRequired) {
+        window.location.href = "/verify-otp";
+      }
     }
+  }, [isAuthenticated, isMfaRequired, isLoading]);
 
-    if (isMfaRequired) {
-      window.location.href = '/verify-otp'
-      return
-    }
-  }, [token, isMfaRequired])
-
-  if (!token || isMfaRequired) return null
-
+  if (isLoading || (!isAuthenticated && !isMfaRequired) || isMfaRequired) return null;
   return (
     <div className="flex">
       <Sidebar

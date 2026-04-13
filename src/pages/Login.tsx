@@ -5,55 +5,39 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { useLogin, useLoginForm } from '@/hooks/useLogin'
-import { decodeJwt, useAuthUser, type JwtPayload } from '@/lib/auth'
-import { Loader2, Lock } from 'lucide-react'
-import { useEffect, useId } from 'react'
-import { useTranslation } from 'react-i18next'
-import toast from 'react-hot-toast'
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useLogin, useLoginForm } from "@/hooks/useLogin";
+import { useAuthUser } from "@/lib/auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
-  const { t } = useTranslation('common')
-  const form = useLoginForm()
-  const { mutate: loginMutate, isPending } = useLogin()
-  const { token, isAuthenticated, isMfaRequired } = useAuthUser()
-
-  const emailId = useId()
-  const passwordId = useId()
+  const form = useLoginForm();
+  const queryClient = useQueryClient();
+  const { mutate: loginMutate, isPending } = useLogin();
+  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser();
 
   useEffect(() => {
-    if (token) {
-      if (isMfaRequired) {
-        window.location.href = '/verify-otp'
-      } else if (isAuthenticated) {
-        window.location.href = '/'
+    if (!isLoading) {
+      if (isAuthenticated) {
+        window.location.href = "/";
+      } else if (isMfaRequired) {
+        window.location.href = "/verify-otp";
       }
     }
-  }, [token, isAuthenticated, isMfaRequired])
+  }, [isAuthenticated, isMfaRequired, isLoading]);
 
   const onSubmit = (values: {
     email_or_username: string
     password: string
   }) => {
     loginMutate(values, {
-      onSuccess: (res: unknown) => {
-        const r = res as { data?: { token?: string }; token?: string }
-        const token = r?.data?.token || r?.token
-
-        if (token) {
-          const payload = decodeJwt<JwtPayload>(token)
-
-          toast.success(t('loginPage.loginSuccess'))
-
-          if (payload?.status === 'mfa_pending') {
-            window.location.href = '/verify-otp'
-          } else {
-            window.location.href = '/'
-          }
-        }
+      onSuccess: () => {
+        toast.success("Login berhasil");
+        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       },
       onError: (err: unknown) => {
         const e = err as { response?: { data?: { message?: string } } }
