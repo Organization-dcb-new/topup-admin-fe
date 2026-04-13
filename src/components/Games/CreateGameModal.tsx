@@ -8,8 +8,10 @@ import { useGetProvider } from '@/hooks/useProvider'
 import { useGetCategories } from '@/hooks/useCategory'
 import type { CreateGamePayload, GameInputPayload } from '@/types/game'
 import { GameInput, GameInputForm } from './GameInput'
+import { useTranslation } from 'react-i18next'
 
 export function CreateGameModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const { register, handleSubmit, setValue, reset } = useForm<CreateGamePayload>()
   const [inputs, setInputs] = useState<GameInputPayload[]>([])
@@ -59,7 +61,7 @@ export function CreateGameModal() {
 
     await mutateAsync(payload as any, {
       onSuccess: () => {
-        toast.success('Game success added')
+        toast.success(t('gameToasts.createGameSuccess'))
         reset()
         setOpen(false)
       },
@@ -69,7 +71,7 @@ export function CreateGameModal() {
   return (
     <div>
       <Button onClick={() => setOpen(true)} className="cursor-pointer">
-        + Create Game
+        {t('createGameModal.trigger')}
       </Button>
       <Dialog
         open={open}
@@ -79,7 +81,7 @@ export function CreateGameModal() {
       >
         <DialogContent className="sm:max-w-4xl">
           <DialogHeader>
-            <DialogTitle>Create Game</DialogTitle>
+            <DialogTitle>{t('createGameModal.title')}</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
@@ -112,10 +114,10 @@ export function CreateGameModal() {
                   setOpen(false)
                 }}
               >
-                Cancel
+                {t('createGameModal.cancel')}
               </Button>
               <Button type="submit" disabled={isPending} className="cursor-pointer">
-                {isPending ? 'Saving...' : 'Save'}
+                {isPending ? t('createGameModal.saving') : t('createGameModal.save')}
               </Button>
             </div>
           </form>

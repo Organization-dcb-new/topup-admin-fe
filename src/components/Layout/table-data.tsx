@@ -5,19 +5,26 @@ import {
   getExpandedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Fragment } from 'react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import { cn } from '@/lib/utils'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   renderSubRow?: (row: TData) => React.ReactNode
+  /** Tampilan sel kosong bila `data` tidak ada baris (default: "No data") */
+  emptyMessage?: React.ReactNode
+  /** Header mengikuti scroll vertikal (berguna saat tabel panjang) */
+  stickyHeader?: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   renderSubRow,
+  emptyMessage = 'No data',
+  stickyHeader = false,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -29,9 +36,18 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="rounded-md overflow-x-auto border">
-      <Table className="min-w-max">
-        <TableHeader className="bg-white">
+    <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80">
+      <Table
+        className="min-w-max [&_td]:border-x-0 [&_th]:border-x-0"
+        scrollContainer={false}
+      >
+        <TableHeader
+          className={cn(
+            'bg-card',
+            stickyHeader &&
+              'sticky top-0 z-10 border-b border-border/80 bg-card/95 shadow-sm backdrop-blur-sm [&_th]:bg-card/95',
+          )}
+        >
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -68,8 +84,8 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No data
+              <TableCell colSpan={columns.length} className="h-28 px-4 text-center text-sm text-muted-foreground">
+                {emptyMessage}
               </TableCell>
             </TableRow>
           )}

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,14 +11,15 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
-import { useState } from 'react'
-
-import { useGetProductNames } from '@/hooks/useProduct'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import {
-  useAddProductToCategoryProduct,
   type ProductResponseOnly,
+  useAddProductToCategoryProduct,
 } from '@/hooks/useCategoryProduct'
+import { useGetProductNames } from '@/hooks/useProduct'
+import { Loader2, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 type ProductName = {
   id: string
@@ -33,12 +35,15 @@ export function AddProductToCategoryProductButton({
   game_id: string
   existingProduct: ProductResponseOnly[]
 }) {
+  const { t } = useTranslation('common')
   const [selected, setSelected] = useState<string[]>([])
-  const { data: products } = useGetProductNames(game_id)
+  const { data: products, isPending, isError } = useGetProductNames(game_id)
   const mutation = useAddProductToCategoryProduct(id)
 
-  const toggle = (id: string) => {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  const toggle = (productId: string) => {
+    setSelected((prev) =>
+      prev.includes(productId) ? prev.filter((x) => x !== productId) : [...prev, productId],
+    )
   }
 
   const handleSubmit = () => {
@@ -54,41 +59,74 @@ export function AddProductToCategoryProductButton({
       }}
     >
       <AlertDialogTrigger asChild>
-        <Button className="cursor-pointer" variant="ghost" size="icon">
-          <Plus className="h-4 w-4" />
+        <Button
+          type="button"
+          className="cursor-pointer"
+          variant="ghost"
+          size="icon"
+          aria-label={t('categoryProductAddProducts.triggerAria')}
+        >
+          <Plus className="h-4 w-4" aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="rounded-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Add Games to Show</AlertDialogTitle>
+          <AlertDialogTitle>{t('categoryProductAddProducts.title')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Select games you want to add to this show.
+            {t('categoryProductAddProducts.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        {/* LIST GAME */}
-        <div className="max-h-64 overflow-y-auto space-y-2">
-          {products?.map((product: ProductName) => (
-            <label key={product.id} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selected.includes(product.id)}
-                onChange={() => toggle(product.id)}
-              />
-              <span>{product.name}</span>
-            </label>
-          ))}
+        <div className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border/60 bg-muted/10 p-2">
+          {isPending ? (
+            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              {t('categoryProductAddProducts.loading')}
+            </div>
+          ) : isError ? (
+            <p className="py-6 text-center text-sm text-destructive">{t('categoryProductAddProducts.loadError')}</p>
+          ) : !products?.length ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              {t('categoryProductAddProducts.empty')}
+            </p>
+          ) : (
+            products.map((product: ProductName) => {
+              const checkboxId = `cat-prod-${id}-${product.id}`
+              return (
+                <div
+                  key={product.id}
+                  className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/40"
+                >
+                  <Checkbox
+                    id={checkboxId}
+                    checked={selected.includes(product.id)}
+                    onCheckedChange={() => toggle(product.id)}
+                  />
+                  <Label htmlFor={checkboxId} className="flex-1 cursor-pointer text-sm font-normal">
+                    {product.name}
+                  </Label>
+                </div>
+              )
+            })
+          )}
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer rounded-xl">{t('categoryProductAddProducts.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSubmit}
-            disabled={!selected.length || mutation.isPending}
-            className="cursor-pointer"
+            disabled={!selected.length || mutation.isPending || isPending || isError}
+            className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
           >
-            {mutation.isPending ? 'Saving...' : 'Add Games'}
+            {mutation.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                {t('categoryProductAddProducts.saving')}
+              </>
+            ) : (
+              t('categoryProductAddProducts.save')
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

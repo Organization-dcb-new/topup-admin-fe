@@ -9,7 +9,18 @@ export const authStorage = {
   clearToken() {
     api.post("/admin/logout").catch(() => {});
   },
-};
+}
+
+export async function logout(): Promise<void> {
+  try {
+    authStorage.clearToken()
+    toast.success('Berhasil logout')
+    window.location.href = '/login'
+  } catch (error) {
+    console.error(error)
+    toast.error('Gagal logout, coba lagi!')
+  }
+}
 
 export function useAuthUser() {
   const { data, isLoading, error: _error } = useQuery({

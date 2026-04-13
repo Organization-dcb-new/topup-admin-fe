@@ -1,7 +1,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/api/axios";
 import toast from "react-hot-toast";
-import type { AdminResponse } from "@/types/admin";
+import type { AdminBriefListResponse, AdminResponse } from "@/types/admin";
+
+/** Daftar admin ringkas (id + name) untuk filter, dll. */
+export function useGetAdminBrief() {
+  return useQuery({
+    queryKey: ["admin-brief"],
+    queryFn: async () => {
+      const { data } = await api.get<AdminBriefListResponse>("/admin/brief");
+      return data.data ?? [];
+    },
+    staleTime: 60_000,
+  });
+}
 
 export const useAdminData = (page: number, limit: number) => {
   return useQuery({
@@ -24,10 +36,12 @@ export const useAdminMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Role updated successfully");
+      toast.success("Peran berhasil diperbarui");
     },
-    onError: (err: any) =>
-      toast.error(err.response?.data?.message || "Failed to update role"),
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || "Gagal memperbarui peran");
+    },
   });
 
   const deleteAdmin = useMutation({
@@ -36,10 +50,12 @@ export const useAdminMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Admin deleted successfully");
+      toast.success("Admin berhasil dihapus");
     },
-    onError: (err: any) =>
-      toast.error(err.response?.data?.message || "Failed to delete admin"),
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      toast.error(msg || "Gagal menghapus admin");
+    },
   });
 
   return { updateRole, deleteAdmin };

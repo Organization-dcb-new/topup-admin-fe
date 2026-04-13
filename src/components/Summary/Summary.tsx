@@ -1,85 +1,105 @@
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import type { OverallStats } from "@/types/summary";
+import { Badge } from '@/components/ui/badge'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+import type { OverallStats } from '@/types/summary'
+import { ArrowDownRight, ArrowUpRight } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
-const formatCurrency = (value: number) => {
-  return new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
     maximumFractionDigits: 0,
-  }).format(value);
-};
+  }).format(value)
+}
 
 interface SummaryCardProps {
-  stats: OverallStats;
+  stats: OverallStats
 }
 
 export default function SummaryCard({ stats }: SummaryCardProps) {
-  const revenue = stats.total_amount_pg;
-  const cost = stats.total_amount_provider;
-  const profit = stats.total_gross_profit;
+  const { t } = useTranslation('common')
+  const revenue = stats.total_amount_pg
+  const cost = stats.total_amount_provider
+  const profit = stats.total_gross_profit
 
-  const marginPercent = revenue > 0 ? (profit / revenue) * 100 : 0;
-  const isProfit = profit >= 0;
+  const marginPercent = revenue > 0 ? (profit / revenue) * 100 : 0
+  const isProfit = profit >= 0
 
   return (
-    <Card className="w-full shadow-md rounded-xl border-t-4 border-t-purple-500">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold">
-          Financial Overall Summary
+    <Card
+      className={cn(
+        'w-full overflow-hidden rounded-xl border shadow-sm ring-1 ring-gray-900/5',
+        'border-l-4 border-l-primary',
+      )}
+    >
+      <CardHeader className="border-b border-gray-100 pb-4">
+        <CardTitle className="text-lg font-semibold tracking-tight text-gray-900">
+          {t('summaryCard.title')}
         </CardTitle>
-        <p className="text-xs text-muted-foreground">
-          Berdasarkan filter yang dipilih
-        </p>
+        <CardDescription className="text-xs">{t('summaryCard.description')}</CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-        {/* PG Amount */}
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Total Payment Gateway</p>
-          <p className="text-2xl font-bold text-purple-600">
+      <CardContent className="grid grid-cols-1 gap-6 pt-6 md:grid-cols-3 md:gap-8">
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.totalPg')}</p>
+          <p className="text-2xl font-semibold tabular-nums text-primary">
             {formatCurrency(revenue)}
           </p>
         </div>
 
-        {/* Provider Amount */}
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">Total Modal Provider</p>
-          <p className="text-2xl font-bold text-orange-600">
+        <div className="space-y-2 md:border-l md:border-border/80 md:pl-8">
+          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.modalProvider')}</p>
+          <p className="text-2xl font-semibold tabular-nums text-foreground">
             {formatCurrency(cost)}
           </p>
         </div>
 
-        {/* Profit/Loss */}
-        <div className="space-y-1 p-3 bg-slate-50 rounded-lg border">
-          <div className="flex justify-between items-center">
-            <p className="text-sm font-medium">Net Gross Profit</p>
-            <Badge
-              variant={isProfit ? "default" : "destructive"}
-              className={isProfit ? "bg-emerald-500" : ""}
-            >
-              {isProfit ? "PROFIT" : "LOSS"}
-            </Badge>
-          </div>
-          <div className="flex items-end gap-2">
-            <p
-              className={`text-2xl font-black ${isProfit ? "text-emerald-600" : "text-red-600"}`}
-            >
-              {formatCurrency(profit)}
-            </p>
-            <span
-              className={`text-sm mb-1 flex items-center ${isProfit ? "text-emerald-600" : "text-red-600"}`}
-            >
-              {isProfit ? (
-                <ArrowUpRight className="w-4 h-4" />
-              ) : (
-                <ArrowDownRight className="w-4 h-4" />
-              )}
-              {marginPercent.toFixed(1)}%
-            </span>
+        <div className="md:border-l md:border-border/80 md:pl-8">
+          <div className="space-y-3 rounded-lg border border-border/80 bg-muted/25 p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-foreground">{t('summaryCard.grossProfit')}</p>
+              <Badge
+                variant={isProfit ? 'default' : 'destructive'}
+                className={cn(
+                  'shrink-0 text-xs font-medium',
+                  isProfit && 'border-transparent bg-emerald-600 hover:bg-emerald-600',
+                )}
+              >
+                {isProfit ? t('summaryCard.badgeProfit') : t('summaryCard.badgeLoss')}
+              </Badge>
+            </div>
+            <div className="flex flex-wrap items-end gap-2">
+              <p
+                className={cn(
+                  'text-2xl font-bold tabular-nums tracking-tight',
+                  isProfit ? 'text-emerald-600' : 'text-destructive',
+                )}
+              >
+                {formatCurrency(profit)}
+              </p>
+              <span
+                className={cn(
+                  'mb-0.5 flex items-center gap-0.5 text-sm tabular-nums',
+                  isProfit ? 'text-emerald-600' : 'text-destructive',
+                )}
+              >
+                {isProfit ? (
+                  <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden />
+                ) : (
+                  <ArrowDownRight className="h-4 w-4 shrink-0" aria-hidden />
+                )}
+                {t('summaryCard.marginFromPg', { percent: marginPercent.toFixed(1) })}
+              </span>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

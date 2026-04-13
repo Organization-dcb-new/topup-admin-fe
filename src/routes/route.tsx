@@ -4,6 +4,7 @@ import LoginPage from "../pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import TransactionPage from "@/pages/Transaction";
 import GamePage from "@/pages/Game";
+import GameDetailPage from "@/pages/GameDetail";
 import CategoryPage from "@/pages/Category";
 import ProductPage from "@/pages/Product";
 import PaymentMethodPage from "@/pages/PaymentMethod";
@@ -21,9 +22,11 @@ import VerifyOtpPage from "@/pages/VerifyOTP";
 import Setup2FAPage from "@/pages/SetupAuth";
 import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
+import MaintenancePage from "@/pages/Maintenance";
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
+import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -119,6 +122,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "games/:gameId",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <GameDetailPage />
+          </RoleGuard>
+        ),
+      },
+      {
         path: "category-product",
         element: (
           <RoleGuard allowedRoles={["dev", "admin"]}>
@@ -193,6 +204,14 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "maintenances",
+        element: (
+          <RoleGuard allowedRoles={["dev", "admin"]}>
+            <MaintenancePage />
+          </RoleGuard>
+        ),
+      },
+      {
         path: "admin",
         element: (
           <RoleGuard allowedRoles={["dev"]}>
@@ -203,6 +222,10 @@ export const router = createBrowserRouter([
       {
         path: "unauthorized",
         element: <UnauthorizedPage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

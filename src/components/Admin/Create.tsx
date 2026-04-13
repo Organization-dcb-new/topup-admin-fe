@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Plus, Loader2 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Loader2, Plus } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -12,21 +12,29 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { api } from "@/api/axios";
+} from '@/components/ui/select'
+import { api } from '@/api/axios'
+
+type CreateAdminFormValues = {
+  username: string
+  email: string
+  password: string
+  full_name: string
+  role: string
+}
 
 export const CreateAdminModal = () => {
-  const [open, setOpen] = useState(false);
-  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   const {
     register,
@@ -35,7 +43,7 @@ export const CreateAdminModal = () => {
     reset,
     watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<CreateAdminFormValues>({
     defaultValues: {
       username: "",
       email: "",
@@ -44,81 +52,81 @@ export const CreateAdminModal = () => {
       role: "admin",
       confirm_admin_password: "",
     },
-  });
+  })
 
-  const selectedRole = watch("role");
+  const selectedRole = watch('role')
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (values: any) => {
-      return await api.post("/admin/register", values);
+    mutationFn: async (values: CreateAdminFormValues) => {
+      return await api.post('/admin/register', values)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("New admin successfully registered!");
-      setOpen(false);
-      reset();
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      toast.success('Admin baru berhasil didaftarkan')
+      setOpen(false)
+      reset()
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Failed to register admin");
+    onError: (err: unknown) => {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(msg || 'Gagal mendaftarkan admin')
     },
-  });
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-indigo-600 hover:bg-indigo-700 font-bold gap-2 rounded-xl shadow-lg shadow-indigo-200">
-          <Plus className="w-4 h-4" /> Add Admin
+        <Button className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto">
+          <Plus className="h-4 w-4 shrink-0" aria-hidden />
+          Tambah admin
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-106.25 rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Add New Admin</DialogTitle>
-          <DialogDescription>
-            Enter account details to grant dashboard access.
+      <DialogContent className="rounded-xl sm:max-w-lg">
+        <DialogHeader className="space-y-1 text-left">
+          <DialogTitle className="text-lg font-semibold tracking-tight">Tambah admin baru</DialogTitle>
+          <DialogDescription className="text-sm text-muted-foreground">
+            Isi detail akun untuk memberi akses ke dashboard admin.
           </DialogDescription>
         </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit((v) => mutate(v))}
-          className="space-y-4 pt-4"
-        >
+        <form onSubmit={handleSubmit((v) => mutate(v))} className="space-y-4 pt-2">
           <div className="space-y-2">
-            <Label className="font-bold">Full Name</Label>
+            <Label htmlFor="admin-full-name" className="text-sm font-medium">
+              Nama lengkap
+            </Label>
             <Input
-              {...register("full_name", {
-                required: "Full name is required",
-              })}
-              placeholder="e.g. John Doe"
-              className="rounded-xl"
+              id="admin-full-name"
+              {...register('full_name', { required: 'Nama lengkap wajib diisi' })}
+              placeholder="Contoh: Budi Santoso"
+              className="rounded-lg"
+              autoComplete="name"
             />
             {errors.full_name && (
-              <p className="text-xs text-red-500">{errors.full_name.message}</p>
+              <p className="text-xs text-destructive">{errors.full_name.message}</p>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label className="font-bold">Username</Label>
+              <Label htmlFor="admin-username" className="text-sm font-medium">
+                Nama pengguna
+              </Label>
               <Input
-                {...register("username", { required: "Username is required" })}
-                placeholder="johndoe"
-                className="rounded-xl"
+                id="admin-username"
+                {...register('username', { required: 'Nama pengguna wajib diisi' })}
+                placeholder="budisantoso"
+                className="rounded-lg"
+                autoComplete="username"
               />
               {errors.username && (
-                <p className="text-xs text-red-500">
-                  {errors.username.message}
-                </p>
+                <p className="text-xs text-destructive">{errors.username.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label className="font-bold">Role</Label>
-              <Select
-                onValueChange={(val) => setValue("role", val)}
-                defaultValue={selectedRole}
-              >
-                <SelectTrigger className="rounded-xl uppercase font-bold text-xs">
-                  <SelectValue placeholder="Select Role" />
+              <Label className="text-sm font-medium">Peran</Label>
+              <Select onValueChange={(val) => setValue('role', val)} defaultValue={selectedRole}>
+                <SelectTrigger className="rounded-lg font-medium uppercase">
+                  <SelectValue placeholder="Pilih peran" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">ADMIN</SelectItem>
@@ -129,37 +137,43 @@ export const CreateAdminModal = () => {
           </div>
 
           <div className="space-y-2">
-            <Label className="font-bold">Email</Label>
+            <Label htmlFor="admin-email" className="text-sm font-medium">
+              Email
+            </Label>
             <Input
-              {...register("email", {
-                required: "Email is required",
+              id="admin-email"
+              {...register('email', {
+                required: 'Email wajib diisi',
                 pattern: {
                   value: /^\S+@\S+$/i,
-                  message: "Invalid email format",
+                  message: 'Format email tidak valid',
                 },
               })}
               type="email"
               placeholder="admin@pakargaming.id"
-              className="rounded-xl"
+              className="rounded-lg"
+              autoComplete="email"
             />
-            {errors.email && (
-              <p className="text-xs text-red-500">{errors.email.message}</p>
-            )}
+            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label className="font-bold">Password</Label>
+            <Label htmlFor="admin-password" className="text-sm font-medium">
+              Kata sandi
+            </Label>
             <Input
-              {...register("password", {
-                required: "Password is required",
-                minLength: { value: 6, message: "Minimum 6 characters" },
+              id="admin-password"
+              {...register('password', {
+                required: 'Kata sandi wajib diisi',
+                minLength: { value: 6, message: 'Minimal 6 karakter' },
               })}
               type="password"
-              placeholder="******"
-              className="rounded-xl"
+              placeholder="••••••••"
+              className="rounded-lg"
+              autoComplete="new-password"
             />
             {errors.password && (
-              <p className="text-xs text-red-500">{errors.password.message}</p>
+              <p className="text-xs text-destructive">{errors.password.message}</p>
             )}
           </div>
 
@@ -184,13 +198,16 @@ export const CreateAdminModal = () => {
             disabled={isPending}
           >
             {isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                Mendaftar…
+              </span>
             ) : (
-              "Register Now"
+              'Daftarkan'
             )}
           </Button>
         </form>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}

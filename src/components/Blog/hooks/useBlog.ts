@@ -5,6 +5,7 @@ import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
 import type { Blog } from '@/tables/table-blog'
 import type { PaginationMeta } from '@/types/game'
+import { useTranslation } from 'react-i18next'
 
 type ViewMode = 'list' | 'create'
 
@@ -14,6 +15,7 @@ interface useBlogFormProps {
 }
 
 export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   const initialValue: BlogFormValues = {
@@ -39,9 +41,9 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     },
     onSuccess: (url) => {
       setFormData((prev) => ({ ...prev, thumbnail: url }))
-      toast.success('Thumbnail berhasil diunggah')
+      toast.success(t('blogToasts.thumbnailUploadSuccess'))
     },
-    onError: () => toast.error('Gagal mengunggah gambar'),
+    onError: () => toast.error(t('blogToasts.thumbnailUploadError')),
   })
 
   const blogMutation = useMutation({
@@ -51,9 +53,16 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
       }
       return api.post('/blogs/admin', payload)
     },
-    onSuccess: () => {
-      const message = blogId ? 'Artikel diperbarui!' : 'Artikel dipublish!'
-      toast.success(message)
+    onSuccess: (_data, variables) => {
+      if (blogId) {
+        toast.success(t('blogToasts.updateSuccess'))
+      } else {
+        toast.success(
+          variables.status === 'published'
+            ? t('blogToasts.publishSuccess')
+            : t('blogToasts.draftSavedSuccess'),
+        )
+      }
 
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
 
@@ -62,9 +71,19 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
         setView('list')
       }
     },
-    onError: (err: any) => {
-      const errMsg = err.response?.data?.message || 'Terjadi kesalahan pada server'
-      toast.error(blogId ? `Gagal update: ${errMsg}` : `Gagal create: ${errMsg}`)
+    onError: (err: unknown) => {
+      const msg =
+        err && typeof err === 'object' && 'response' in err
+          ? String(
+              (err as { response?: { data?: { message?: string } } }).response?.data?.message ?? '',
+            )
+          : ''
+      const errMsg = msg || t('blogToasts.serverErrorFallback')
+      toast.error(
+        blogId
+          ? t('blogToasts.updateFailed', { error: errMsg })
+          : t('blogToasts.saveFailed', { error: errMsg }),
+      )
     },
   })
 
@@ -80,7 +99,7 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
     return Object.values(checks).every(Boolean)
   }, [formData])
 
-  const updateField = (field: keyof BlogFormValues, value: string) => {
+  const updateField = <K extends keyof BlogFormValues>(field: K, value: BlogFormValues[K]) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -98,6 +117,9 @@ export const useBlogForm = ({ setView, blogId }: useBlogFormProps) => {
   }
 }
 
+/** Tipe `blogMutation` dari hook — selaras inferensi `useMutation` (hindari mismatch generik Error vs unknown). */
+export type BlogFormBlogMutationResult = ReturnType<typeof useBlogForm>['blogMutation']
+
 export interface BlogResponse {
   data: Blog[]
   meta: PaginationMeta
@@ -106,8 +128,7 @@ export interface BlogResponse {
 }
 
 export const useGetBlogs = (page: number, limit: number) => {
-  const toastIdRef = useRef<string | number | null>(null)
-
+  const { t } = useTranslation('common')
   const query = useQuery<BlogResponse>({
     queryKey: ['blogs', page, limit],
     queryFn: async () => {
@@ -120,33 +141,76 @@ export const useGetBlogs = (page: number, limit: number) => {
   })
 
   useEffect(() => {
-    if (query.isFetching && !query.isPlaceholderData && !toastIdRef.current) {
-      toastIdRef.current = toast.loading('Fetching articles...')
+    if (!query.isPending) return
+    const id = toast.loading(t('blogToasts.loadingList'))
+    return () => {
+      toast.dismiss(id)
+    }
+  }, [query.isPending, t])
+
+  const lastResultSignature = useRef<string | null>(null)
+  const hadError = useRef(false)
+
+  useEffect(() => {
+    if (!query.isFetchedAfterMount) return
+
+    if (query.isError) {
+      if (!hadError.current) {
+        hadError.current = true
+        toast.error(t('blogToasts.loadError'))
+      }
+      return
     }
 
-    if (!query.isFetching && toastIdRef.current) {
-      if (query.isSuccess) {
-        toast.success('Articles loaded successfully', { id: String(toastIdRef.current) })
-      } else if (query.isError) {
-        toast.error('Failed to fetch articles', { id: String(toastIdRef.current) })
-      }
-      toastIdRef.current = null
+    hadError.current = false
+
+    if (!query.isSuccess || !query.data) return
+
+    const signature = `${page}-${limit}-${query.dataUpdatedAt}`
+    if (lastResultSignature.current === signature) return
+    lastResultSignature.current = signature
+
+    if (query.data.data.length === 0) {
+      toast.success(t('blogToasts.emptyList'))
+    } else {
+      toast.success(t('blogToasts.loadSuccess'))
     }
-  }, [query.isFetching, query.isSuccess, query.isError, query.isPlaceholderData])
+  }, [
+    query.isSuccess,
+    query.isError,
+    query.isFetchedAfterMount,
+    query.data,
+    query.dataUpdatedAt,
+    page,
+    limit,
+    t,
+  ])
 
   return query
 }
 
 export const useDeleteBlog = () => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (id: string) => {
       return api.delete(`/blogs/admin/${id}`)
     },
-    onSuccess: () => {
-      toast.success('Artikel berhasil dihapus')
+    onMutate: () => toast.loading(t('blogToasts.deleteLoading')),
+    onSuccess: (_data, _id, toastId) => {
+      if (toastId != null) {
+        toast.success(t('blogToasts.deleteSuccess'), { id: toastId as string })
+      } else {
+        toast.success(t('blogToasts.deleteSuccess'))
+      }
       queryClient.invalidateQueries({ queryKey: ['blogs'] })
     },
-    onError: () => toast.error('Gagal menghapus artikel'),
+    onError: (_err, _id, toastId) => {
+      if (toastId != null) {
+        toast.error(t('blogToasts.deleteError'), { id: toastId as string })
+      } else {
+        toast.error(t('blogToasts.deleteError'))
+      }
+    },
   })
 }

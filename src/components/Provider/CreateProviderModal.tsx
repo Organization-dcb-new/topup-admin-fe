@@ -1,25 +1,34 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import type { ProviderPayload } from '@/types/provider'
-
+import { Textarea } from '@/components/ui/textarea'
 import { useCreateProvider } from '@/hooks/useProvider'
-import { Eye, EyeOff } from 'lucide-react'
+import type { ProviderPayload } from '@/types/provider'
+import { Eye, EyeOff, Loader2, Plus } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export function CreateProviderModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const mutation = useCreateProvider({ setOpen })
   const [showApiKey, setShowApiKey] = useState(false)
+
+  const nameId = useId()
+  const codeId = useId()
+  const apiUrlId = useId()
+  const apiKeyId = useId()
+  const priorityId = useId()
+  const configId = useId()
 
   const {
     register,
@@ -36,59 +45,84 @@ export function CreateProviderModal() {
   useEffect(() => {
     if (!open) {
       reset()
-    }
-  }, [open, reset])
-
-  useEffect(() => {
-    if (!open) {
-      reset()
+      /* eslint-disable react-hooks/set-state-in-effect -- reset tampilan kunci API saat dialog ditutup */
       setShowApiKey(false)
+      /* eslint-enable react-hooks/set-state-in-effect */
     }
   }, [open, reset])
 
   return (
-    <div>
-      <Button onClick={() => setOpen(true)} className="cursor-pointer">
-        + Create Provider
+    <>
+      <Button
+        type="button"
+        className="h-10 shrink-0 gap-2 shadow-sm"
+        onClick={() => setOpen(true)}
+      >
+        <Plus className="h-4 w-4" aria-hidden />
+        {t('providerCreate.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Create Provider</DialogTitle>
+        <DialogContent className="rounded-xl sm:max-w-lg">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">{t('providerCreate.title')}</DialogTitle>
+            <DialogDescription>
+              {t('providerCreate.description')}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-            {/* Global error */}
             {errors.root && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive" role="alert">
                 {errors.root.message}
               </div>
             )}
 
-            {/* Name */}
-            <div className="space-y-1">
-              <Label>Name</Label>
-              <Input {...register('name', { required: 'Name is required' })} />
+            <div className="space-y-2">
+              <Label htmlFor={nameId} className="text-sm font-medium">
+                {t('providerCreate.nameLabel')}
+              </Label>
+              <Input
+                id={nameId}
+                autoComplete="off"
+                placeholder={t('providerCreate.namePlaceholder')}
+                className="rounded-lg"
+                aria-invalid={!!errors.name}
+                {...register('name', { required: t('providerCreate.nameRequired') })}
+              />
               {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
-            {/* Code */}
-            <div className="space-y-1">
-              <Label>Code</Label>
-              <Input {...register('code', { required: 'Code is required' })} />
+            <div className="space-y-2">
+              <Label htmlFor={codeId} className="text-sm font-medium">
+                {t('providerCreate.codeLabel')}
+              </Label>
+              <Input
+                id={codeId}
+                autoComplete="off"
+                placeholder={t('providerCreate.codePlaceholder')}
+                className="rounded-lg font-mono text-sm"
+                aria-invalid={!!errors.code}
+                {...register('code', { required: t('providerCreate.codeRequired') })}
+              />
               {errors.code && <p className="text-xs text-destructive">{errors.code.message}</p>}
             </div>
 
-            {/* API URL */}
-            <div className="space-y-1">
-              <Label>API URL</Label>
+            <div className="space-y-2">
+              <Label htmlFor={apiUrlId} className="text-sm font-medium">
+                {t('providerCreate.apiUrlLabel')}
+              </Label>
               <Input
+                id={apiUrlId}
+                autoComplete="off"
+                placeholder={t('providerCreate.apiUrlPlaceholder')}
+                className="rounded-lg"
+                aria-invalid={!!errors.api_url}
                 {...register('api_url', {
-                  required: 'API URL is required',
+                  required: t('providerCreate.apiUrlRequired'),
                   pattern: {
                     value: /^https?:\/\//,
-                    message: 'Invalid URL format',
+                    message: t('providerCreate.apiUrlInvalid'),
                   },
                 })}
               />
@@ -97,82 +131,105 @@ export function CreateProviderModal() {
               )}
             </div>
 
-            {/* API KEY */}
-            <div className="space-y-1">
-              <Label>API Key (Encrypted)</Label>
-
+            <div className="space-y-2">
+              <Label htmlFor={apiKeyId} className="text-sm font-medium">
+                {t('providerCreate.apiKeyLabel')}
+              </Label>
+              <p className="text-xs text-muted-foreground">
+                {t('providerCreate.apiKeyHint')}
+              </p>
               <div className="relative">
                 <Input
+                  id={apiKeyId}
                   type={showApiKey ? 'text' : 'password'}
+                  autoComplete="off"
+                  className="rounded-lg pr-10"
+                  aria-invalid={!!errors.api_key_encrypted}
                   {...register('api_key_encrypted', {
-                    required: 'API Key is required',
+                    required: t('providerCreate.apiKeyRequired'),
                   })}
-                  className="pr-10"
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowApiKey((v) => !v)}
-                  className="absolute cursor-pointer right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  aria-label={showApiKey ? t('providerCreate.hideApiKey') : t('providerCreate.showApiKey')}
                 >
-                  {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-
               {errors.api_key_encrypted && (
                 <p className="text-xs text-destructive">{errors.api_key_encrypted.message}</p>
               )}
             </div>
 
-            {/* Priority */}
-            <div className="space-y-1">
-              <Label>Priority</Label>
+            <div className="space-y-2">
+              <Label htmlFor={priorityId} className="text-sm font-medium">
+                {t('providerCreate.priorityLabel')}
+              </Label>
               <Input
+                id={priorityId}
                 type="number"
-                {...register('priority', {
-                  valueAsNumber: true,
-                })}
+                min={0}
+                className="rounded-lg"
+                {...register('priority', { valueAsNumber: true })}
               />
+              <p className="text-xs text-muted-foreground">{t('providerCreate.priorityHint')}</p>
             </div>
 
-            {/* Config */}
-            <div className="space-y-1">
-              <Label>Config (JSON)</Label>
+            <div className="space-y-2">
+              <Label htmlFor={configId} className="text-sm font-medium">
+                {t('providerCreate.configLabel')}
+              </Label>
               <Textarea
+                id={configId}
                 rows={4}
-                className="max-h-32"
+                className="max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm"
+                placeholder={t('providerCreate.configPlaceholder')}
+                aria-invalid={!!errors.config}
                 {...register('config', {
-                  required: 'Config is required',
+                  required: t('providerCreate.configRequired'),
                   validate: (v) => {
+                    const s = typeof v === 'string' ? v : String(v ?? '')
                     try {
-                      JSON.parse(v as any)
+                      JSON.parse(s)
                       return true
                     } catch {
-                      return 'Invalid JSON format'
+                      return t('providerCreate.configInvalid')
                     }
                   },
                 })}
-                placeholder='{"timeout":5000}'
               />
               {errors.config && <p className="text-xs text-destructive">{errors.config.message}</p>}
             </div>
 
-            <DialogFooter>
+            <DialogFooter className="gap-2 sm:gap-2">
               <Button
-                variant="outline"
                 type="button"
+                variant="outline"
+                className="rounded-xl"
                 onClick={() => setOpen(false)}
-                className="cursor-pointer"
               >
-                Cancel
+                {t('providerCreate.cancel')}
               </Button>
-              <Button type="submit" disabled={mutation.isPending} className="cursor-pointer">
-                {mutation.isPending ? 'Creating...' : 'Create'}
+              <Button
+                type="submit"
+                disabled={mutation.isPending}
+                className="inline-flex items-center gap-2 rounded-xl"
+              >
+                {mutation.isPending ? (
+                  <>
+                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    {t('providerCreate.saving')}
+                  </>
+                ) : (
+                  t('providerCreate.save')
+                )}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }

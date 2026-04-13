@@ -22,8 +22,8 @@ export const UpdateAdminRole = ({
   id,
   currentRole,
 }: {
-  id: string;
-  currentRole: string;
+  id: string
+  currentRole: string
 }) => {
   const { updateRole } = useAdminMutation();
   const [open, setOpen] = useState(false);

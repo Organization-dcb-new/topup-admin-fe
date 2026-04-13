@@ -15,10 +15,7 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       host: true,
-      allowedHosts: [
-        "dev-dashboard.pakargaming.id",
-        "dashboard.pakargaming.id",
-      ],
+      allowedHosts: ["10.100.20.3", "10.104.0.2"],
     },
     server: {
       proxy: {
@@ -27,8 +24,14 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
           configure: (proxy) => {
-            proxy.on("proxyReq", (proxyReq) => {
-              proxyReq.removeHeader("X-Forwarded-For");
+            proxy.on("proxyReq", (proxyReq, req) => {
+              const forwardedFor =
+                req.headers["x-forwarded-for"] ||
+                req.socket.remoteAddress ||
+                "";
+
+              proxyReq.setHeader("X-Forwarded-For", forwardedFor);
+              proxyReq.setHeader("X-Real-IP", req.socket.remoteAddress || "");
             });
           },
         },

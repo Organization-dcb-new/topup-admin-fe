@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -11,11 +11,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { UploadCloud } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
+import { Loader2, Plus, UploadCloud } from 'lucide-react'
 
 import { handleFileAutoUpload } from '@/helpers/upload'
 import { useCreateCategoryProduct } from '@/hooks/useCategoryProduct'
 import { useGetGameNamesWithType, type GameNames } from '@/hooks/useGame'
+import { cn } from '@/lib/utils'
+import { useTranslation } from 'react-i18next'
 
 export type FormValuesCategoryProduct = {
   name: string
@@ -27,20 +31,43 @@ export type FormValuesCategoryProduct = {
 }
 
 export function CreateCategoryProductModal() {
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
   const {
     register,
     handleSubmit,
     setValue,
     reset,
+    control,
     formState: { errors },
-  } = useForm<FormValuesCategoryProduct>()
+  } = useForm<FormValuesCategoryProduct>({
+    defaultValues: {
+      name: '',
+      game_id: '',
+      slug: '',
+      icon_url: '',
+      description: '',
+      is_active: true,
+    },
+  })
 
-  const mutation = useCreateCategoryProduct(reset, setPreview, setOpen)
+  const applyOpen = (next: boolean) => {
+    setOpen(next)
+    if (!next) {
+      reset()
+      setPreview(null)
+      setUploadProgress(0)
+      setIsUploading(false)
+      if (inputRef.current) inputRef.current.value = ''
+    }
+  }
+
+  const mutation = useCreateCategoryProduct(reset, setPreview, applyOpen)
   const { data: dataGameNames } = useGetGameNamesWithType()
 
   const onSubmit = (values: FormValuesCategoryProduct) => {
@@ -53,99 +80,139 @@ export function CreateCategoryProductModal() {
       setPreview,
       setIsUploading,
       setUploadProgress,
-      setValue: setValue as any,
+      setValue: (_field, value, options) => {
+        setValue('icon_url', value, options)
+      },
       fieldName: 'icon_url',
     })
   }
 
-  useEffect(() => {
-    if (!open) {
-      reset()
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
-  }, [open, reset])
-
   return (
     <>
-      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
-        + Create Category Product
+      <Button
+        type="button"
+        className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto"
+        onClick={() => applyOpen(true)}
+      >
+        <Plus className="h-4 w-4 shrink-0" aria-hidden />
+        {t('categoryProductCreate.trigger')}
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Create Banner</DialogTitle>
+      <Dialog open={open} onOpenChange={applyOpen}>
+        <DialogContent className="rounded-xl sm:max-w-md">
+          <DialogHeader className="space-y-1 text-left">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
+              {t('categoryProductCreate.title')}
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground">
+              {t('categoryProductCreate.description')}
+            </p>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
-            {/* Name */}
-            <div className="space-y-2">
-              <Label>Name</Label>
-              <div className="space-y-1">
-                <Input
-                  {...register('name', {
-                    required: 'Name is required',
-                  })}
-                  placeholder="Category name"
-                  aria-invalid={!!errors.name}
-                />
+            <input type="hidden" {...register('icon_url')} />
 
-                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-              </div>
-            </div>
-
-            {/* Slug */}
             <div className="space-y-2">
-              <Label>Slug</Label>
+              <Label htmlFor="ccp-name" className="text-sm font-medium">
+                {t('categoryProductCreate.nameLabel')}
+              </Label>
               <Input
-                {...register('slug', {
-                  required: 'Slug is required',
-                })}
-                placeholder="action-games"
+                id="ccp-name"
+                {...register('name', { required: t('categoryProductCreate.nameRequired') })}
+                placeholder={t('categoryProductCreate.namePlaceholder')}
+                className="rounded-lg"
+                aria-invalid={!!errors.name}
               />
+              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
             </div>
 
-            {/* Game */}
             <div className="space-y-2">
-              <Label>Game</Label>
+              <Label htmlFor="ccp-slug" className="text-sm font-medium">
+                {t('categoryProductCreate.slugLabel')}
+              </Label>
+              <Input
+                id="ccp-slug"
+                {...register('slug', { required: t('categoryProductCreate.slugRequired') })}
+                placeholder={t('categoryProductCreate.slugPlaceholder')}
+                className="rounded-lg"
+              />
+              {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="ccp-game" className="text-sm font-medium">
+                {t('categoryProductCreate.gameLabel')}
+              </Label>
               <select
-                {...register('game_id')}
-                className="w-full rounded-md border px-3 py-2 text-sm"
-                defaultValue=""
+                id="ccp-game"
+                {...register('game_id', { required: t('categoryProductCreate.gameRequired') })}
+                className={cn(
+                  'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs',
+                  'ring-offset-background focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
+                  'disabled:cursor-not-allowed disabled:opacity-50',
+                )}
               >
                 <option value="" disabled>
-                  Select game
+                  {t('categoryProductCreate.selectGame')}
                 </option>
-
                 {dataGameNames?.map((game: GameNames) => (
                   <option key={game.id} value={game.id}>
                     {game.name}
                   </option>
                 ))}
               </select>
+              {errors.game_id && (
+                <p className="text-xs text-destructive">{errors.game_id.message}</p>
+              )}
             </div>
 
-            {/* Description */}
             <div className="space-y-2">
-              <Label>Description</Label>
-              <Input {...register('description')} placeholder="Category description" />
+              <Label htmlFor="ccp-desc" className="text-sm font-medium">
+                {t('categoryProductCreate.descriptionLabel')}
+              </Label>
+              <Textarea
+                id="ccp-desc"
+                {...register('description')}
+                placeholder={t('categoryProductCreate.descriptionPlaceholder')}
+                rows={3}
+                className="min-h-[4.5rem] resize-y rounded-lg"
+              />
             </div>
 
-            {/* Is Active */}
-            <div className="flex items-center gap-2">
-              <input type="checkbox" defaultChecked {...register('is_active')} />
-              <Label>Active</Label>
-            </div>
-
-            {/* Drag & Drop Zone */}
             <div className="space-y-2">
-              <Label>Icon</Label>
+              <Label className="text-sm font-medium">{t('categoryProductCreate.statusLabel')}</Label>
+              <Controller
+                name="is_active"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
+                    <span className="text-sm text-muted-foreground">
+                      {field.value
+                        ? t('categoryProductCreate.statusActive')
+                        : t('categoryProductCreate.statusInactive')}
+                    </span>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={isUploading || mutation.isPending}
+                    />
+                  </div>
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">{t('categoryProductCreate.iconLabel')}</Label>
 
               <div
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    inputRef.current?.click()
+                  }
+                }}
                 onClick={() => inputRef.current?.click()}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
@@ -153,31 +220,31 @@ export function CreateCategoryProductModal() {
                   const file = e.dataTransfer.files[0]
                   if (file) handleFile(file)
                 }}
-                className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition
-                  ${isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'}
-                `}
+                className={cn(
+                  'relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition',
+                  isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary',
+                  'border-border/80',
+                )}
               >
                 {preview ? (
-                  <img src={preview} className="h-full w-full rounded-lg object-contain" />
+                  <img src={preview} alt="" className="h-full w-full rounded-lg object-contain" />
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" />
-                    <span className="text-sm">Click or Drop image</span>
+                    <UploadCloud className="h-6 w-6" aria-hidden />
+                    <span className="text-sm">{t('categoryProductCreate.iconDropHint')}</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-                    <span className="text-sm">Uploading {uploadProgress}%</span>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+                    {t('categoryProductCreate.uploading', { percent: uploadProgress })}
                   </div>
                 )}
               </div>
 
-              {/* Progress */}
               {isUploading && <Progress value={uploadProgress} />}
             </div>
 
-            {/* Hidden Input */}
             <input
               ref={inputRef}
               type="file"
@@ -189,24 +256,29 @@ export function CreateCategoryProductModal() {
               }}
             />
 
-            {/* Save */}
-            <DialogFooter>
+            <DialogFooter className="gap-2 sm:gap-3 sm:justify-end">
               <Button
-                className="cursor-pointer"
-                variant="outline"
                 type="button"
-                onClick={() => {
-                  setOpen(false)
-                }}
+                variant="outline"
+                className="rounded-lg"
+                onClick={() => applyOpen(false)}
+                disabled={mutation.isPending}
               >
-                Cancel
+                {t('categoryProductCreate.cancel')}
               </Button>
               <Button
-                className="cursor-pointer"
                 type="submit"
+                className="rounded-lg font-semibold"
                 disabled={isUploading || mutation.isPending}
               >
-                {mutation.isPending ? 'Saving...' : 'Create'}
+                {mutation.isPending ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    {t('categoryProductCreate.saving')}
+                  </span>
+                ) : (
+                  t('categoryProductCreate.save')
+                )}
               </Button>
             </DialogFooter>
           </form>
