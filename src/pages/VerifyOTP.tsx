@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { Loader2, ShieldCheck } from "lucide-react";
 
 import { authStorage, useAuthUser } from "@/lib/auth";
 import { api } from "@/api/axios";
@@ -13,7 +15,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -21,30 +23,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@/components/ui/input-otp'
-import { authStorage, useAuthUser } from '@/lib/auth'
-import { useMutation } from '@tanstack/react-query'
-import { Loader2, ShieldCheck } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import toast from 'react-hot-toast'
+} from "@/components/ui/input-otp";
 
 const VerifyOtpPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const queryClient = useQueryClient();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && !isMfaRequired) {
       navigate(isAuthenticated ? "/" : "/login");
     }
@@ -90,7 +85,7 @@ const VerifyOtpPage = () => {
   if (isLoading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.12),transparent)]"
         aria-hidden
@@ -120,7 +115,7 @@ const VerifyOtpPage = () => {
               <FormField
                 control={form.control}
                 name="code"
-                render={({ field }) => (
+                render={({ field }: { field: any }) => (
                   <FormItem className="flex w-full flex-col items-center">
                     <FormLabel className="sr-only">{t('verifyOtpPage.otpLabel')}</FormLabel>
                     <FormControl>
@@ -137,7 +132,7 @@ const VerifyOtpPage = () => {
                           maxLength={6}
                           disabled={isPending}
                           {...field}
-                          onComplete={(value) => mutate(value)}
+                          onComplete={(value: string) => mutate(value)}
                         >
                           <InputOTPGroup className="gap-2">
                             <InputOTPSlot
