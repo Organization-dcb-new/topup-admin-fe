@@ -59,7 +59,7 @@ export const CreateAdminModal = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: CreateAdminFormValues) => {
-      return await api.post('/admin/register', values)
+      return await api.post('/admin/users/register', values)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
