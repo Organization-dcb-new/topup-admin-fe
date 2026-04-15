@@ -30,6 +30,7 @@ type CreateAdminFormValues = {
   password: string
   full_name: string
   role: string
+  confirm_admin_password: string
 }
 
 export const CreateAdminModal = () => {
@@ -58,7 +59,7 @@ export const CreateAdminModal = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: CreateAdminFormValues) => {
-      return await api.post('/admin/register', values)
+      return await api.post('/admin/users', values)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
