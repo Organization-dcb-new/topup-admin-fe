@@ -1480,7 +1480,8 @@
     "processing": "Memproses…",
     "submit": "Masuk",
     "loginSuccess": "Login berhasil",
-    "loginError": "Login gagal"
+    "loginError": "Login gagal",
+    "checkingSession": "Memeriksa sesi"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Pemulihan berhasil. Silakan login kembali.",

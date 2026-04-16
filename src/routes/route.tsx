@@ -1,5 +1,11 @@
 import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+
+import {
+  guestOnlyLoader,
+  requireAuthLoader,
+  verifyOtpLoader,
+} from "./authLoaders";
 import LoginPage from "../pages/Login";
 import DashboardPage from "@/pages/Dashboard";
 import TransactionPage from "@/pages/Transaction";
@@ -28,17 +34,25 @@ import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
 import NotFoundPage from "@/pages/NotFound";
 
+function ProtectedLayout() {
+  return <Outlet />;
+}
+
 export const router = createBrowserRouter([
   {
     path: "/login",
+    loader: guestOnlyLoader,
     element: <LoginPage />,
   },
   {
     path: "/verify-otp",
+    loader: verifyOtpLoader,
     element: <VerifyOtpPage />,
   },
   {
     path: "/",
+    loader: requireAuthLoader,
+    element: <ProtectedLayout />,
     children: [
       {
         index: true,

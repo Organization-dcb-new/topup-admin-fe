@@ -1480,7 +1480,8 @@
     "processing": "Processing…",
     "submit": "Login",
     "loginSuccess": "Login successful",
-    "loginError": "Login failed"
+    "loginError": "Login failed",
+    "checkingSession": "Checking session"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Recovery successful. Please log in again.",

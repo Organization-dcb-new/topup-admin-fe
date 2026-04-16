@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Loader2, ShieldCheck } from "lucide-react";
 
-import { authStorage, useAuthUser } from "@/lib/auth";
+import { authStorage, AUTH_ME_QUERY_KEY } from "@/lib/auth";
 import { api } from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,15 +35,8 @@ import {
 const VerifyOtpPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
   const [isRecoveryMode, setIsRecoveryMode] = useState(false);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!isLoading && !isMfaRequired) {
-      navigate(isAuthenticated ? "/" : "/login");
-    }
-  }, [isMfaRequired, isAuthenticated, isLoading, navigate]);
 
   const form = useForm({
     defaultValues: {
@@ -57,14 +50,16 @@ const VerifyOtpPage = () => {
       const res = await api.post(endpoint, { code }, { withCredentials: true });
       return res.data;
     },
-    onSuccess: (_data) => {
+    onSuccess: async () => {
       if (isRecoveryMode) {
         toast.success("Pemulihan berhasil. Silakan login kembali.");
-        authStorage.clearToken();
-        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
+        await authStorage.clearToken();
+        await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+        navigate("/login", { replace: true });
       } else {
         toast.success("Verifikasi berhasil");
-        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
+        await queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+        navigate("/", { replace: true });
       }
     },
     onError: (err: unknown) => {
@@ -78,13 +73,6 @@ const VerifyOtpPage = () => {
     if (isPending) return;
     mutate(values.code);
   };
-
-  if (isLoading)
-    return (
-      <div className="flex h-screen items-center justify-center">
-        Loading...
-      </div>
-    );
 
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-linear-to-br from-primary/5 via-gray-50 to-violet-500/10 px-4 py-10">
@@ -216,9 +204,12 @@ const VerifyOtpPage = () => {
                 type="button"
                 variant="link"
                 className="h-auto p-0 font-medium text-primary"
-                onClick={() => {
-                  authStorage.clearToken();
-                  navigate("/login");
+                onClick={async () => {
+                  await authStorage.clearToken();
+                  await queryClient.invalidateQueries({
+                    queryKey: AUTH_ME_QUERY_KEY,
+                  });
+                  navigate("/login", { replace: true });
                 }}>
                 {t("verifyOtpPage.backToLogin")}
               </Button>

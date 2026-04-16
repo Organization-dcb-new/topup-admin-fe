@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { useAuthUser } from '@/lib/auth'
@@ -10,19 +10,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser();
+  const { isLoading } = useAuthUser();
 
-  useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated && !isMfaRequired) {
-        window.location.href = "/login";
-      } else if (isMfaRequired) {
-        window.location.href = "/verify-otp";
-      }
-    }
-  }, [isAuthenticated, isMfaRequired, isLoading]);
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">Loading...</div>
+    );
+  }
 
-  if (isLoading || (!isAuthenticated && !isMfaRequired) || isMfaRequired) return null;
   return (
     <div className="flex">
       <Sidebar

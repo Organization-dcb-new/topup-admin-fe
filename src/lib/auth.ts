@@ -1,6 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/api/axios";
+import type { AdminUser } from "@/types/admin";
 import toast from "react-hot-toast";
+
+export const AUTH_ME_QUERY_KEY = ["auth-me"] as const;
+
+export type AuthSession = {
+  user: AdminUser | null;
+  mfa_pending: boolean;
+};
+
+export async function fetchAuthSession(): Promise<AuthSession> {
+  try {
+    const res = await api.get<{ data: AdminUser }>("/admin/me");
+    return { user: res.data.data, mfa_pending: false };
+  } catch (err: unknown) {
+    const e = err as {
+      response?: { status?: number; data?: { message?: string } };
+    };
+    if (e.response?.data?.message === "MFA_REQUIRED") {
+      return { user: null, mfa_pending: true };
+    }
+    if (e.response?.status === 401) {
+      return { user: null, mfa_pending: false };
+    }
+    throw err;
+  }
+}
 
 export const authStorage = {
   getToken(): string | null {
@@ -25,18 +51,8 @@ export async function logout(): Promise<void> {
 
 export function useAuthUser() {
   const { data, isLoading, error: _error } = useQuery({
-    queryKey: ['auth-me'],
-    queryFn: async () => {
-      try {
-        const res = await api.get('/admin/me');
-        return { user: res.data.data, mfa_pending: false };
-      } catch (err: any) {
-        if (err.response?.data?.message === "MFA_REQUIRED") {
-          return { user: null, mfa_pending: true };
-        }
-        throw err;
-      }
-    },
+    queryKey: AUTH_ME_QUERY_KEY,
+    queryFn: fetchAuthSession,
     retry: false,
     staleTime: 30000,
   });

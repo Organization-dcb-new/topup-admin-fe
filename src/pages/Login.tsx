@@ -9,40 +9,41 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useLogin, useLoginForm } from "@/hooks/useLogin";
-import { useAuthUser } from "@/lib/auth";
+import { AUTH_ME_QUERY_KEY, fetchAuthSession } from "@/lib/auth";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useId } from "react";
+import { useId } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Lock, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const emailId = useId();
   const passwordId = useId();
   const form = useLoginForm();
   const queryClient = useQueryClient();
   const { mutate: loginMutate, isPending } = useLogin();
-  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser();
-
-  useEffect(() => {
-    if (!isLoading) {
-      if (isAuthenticated) {
-        window.location.href = "/";
-      } else if (isMfaRequired) {
-        window.location.href = "/verify-otp";
-      }
-    }
-  }, [isAuthenticated, isMfaRequired, isLoading]);
 
   const onSubmit = (values: {
     email_or_username: string
     password: string
   }) => {
     loginMutate(values, {
-      onSuccess: () => {
+      onSuccess: async () => {
         toast.success("Login berhasil");
-        queryClient.invalidateQueries({ queryKey: ["auth-me"] });
+        queryClient.removeQueries({ queryKey: AUTH_ME_QUERY_KEY });
+        const session = await queryClient.fetchQuery({
+          queryKey: AUTH_ME_QUERY_KEY,
+          queryFn: fetchAuthSession,
+          staleTime: 30_000,
+        });
+        if (session.mfa_pending) {
+          navigate("/verify-otp", { replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
       },
       onError: (err: unknown) => {
         const e = err as { response?: { data?: { message?: string } } }
