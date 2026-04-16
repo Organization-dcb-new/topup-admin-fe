@@ -43,7 +43,7 @@ export default function TransactionPage() {
   const [minAmountFilter, setMinAmountFilter] = useState('')
   const [maxAmountFilter, setMaxAmountFilter] = useState('')
   const [exactAmountFilter, setExactAmountFilter] = useState('')
-  const [filtersOpen, setFiltersOpen] = useState(true)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const limit = 20
   const debouncedSearch = useDebounce(search, 500)
