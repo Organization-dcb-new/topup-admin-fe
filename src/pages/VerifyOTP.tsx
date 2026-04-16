@@ -57,10 +57,10 @@ const VerifyOtpPage = () => {
       const res = await api.post(endpoint, { code }, { withCredentials: true });
       return res.data;
     },
-    onSuccess: (_data) => {
+    onSuccess: async (_data) => {
       if (isRecoveryMode) {
         toast.success("Pemulihan berhasil. Silakan login kembali.");
-        authStorage.clearToken();
+        await authStorage.clearToken();
         queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       } else {
         toast.success("Verifikasi berhasil");
@@ -216,8 +216,8 @@ const VerifyOtpPage = () => {
                 type="button"
                 variant="link"
                 className="h-auto p-0 font-medium text-primary"
-                onClick={() => {
-                  authStorage.clearToken();
+                onClick={async () => {
+                  await authStorage.clearToken();
                   navigate("/login");
                 }}>
                 {t("verifyOtpPage.backToLogin")}
