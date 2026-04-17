@@ -1341,6 +1341,7 @@
     "iconAltFallback": "Category icon",
     "colName": "Name",
     "colSlug": "Slug",
+    "colSortOrder": "Sort order",
     "colActions": "Actions",
     "rowActionsAria": "Actions for category {{name}}"
   },

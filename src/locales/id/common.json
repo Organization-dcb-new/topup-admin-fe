@@ -1341,6 +1341,7 @@
     "iconAltFallback": "Ikon kategori",
     "colName": "Nama",
     "colSlug": "Slug",
+    "colSortOrder": "Sort order",
     "colActions": "Aksi",
     "rowActionsAria": "Aksi untuk kategori {{name}}"
   },

@@ -33,6 +33,42 @@ export const useCreatePaymentCategory = (
   return mutation
 }
 
+export type UpdatePaymentCategoryPayload = {
+  name: string
+  slug: string
+  icon_url: string
+  sort_order: number
+  is_active: boolean
+}
+
+export const useUpdatePaymentCategory = (
+  id: string,
+  onSuccessClose: () => void,
+  reset: () => void,
+  setPreview: (url: string | null) => void
+) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: UpdatePaymentCategoryPayload) => {
+      const res = await api.put(`/payment-categories/${id}`, payload)
+      return res.data
+    },
+    onSuccess: () => {
+      toast.success('Kategori berhasil diperbarui')
+      queryClient.invalidateQueries({
+        queryKey: ['payment-methods-categories'],
+      })
+      onSuccessClose()
+      reset()
+      setPreview(null)
+    },
+    onError: () => {
+      toast.error('Gagal memperbarui kategori')
+    },
+  })
+}
+
 export const useGetPaymentMethodCategory = () =>
   useQuery<PaymentMethodCategoriesResponse>({
     queryKey: ['payment-methods-categories'],
