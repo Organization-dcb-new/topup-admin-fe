@@ -1,62 +1,62 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/api/axios";
-import toast from "react-hot-toast";
-import type { AdminBriefListResponse, AdminResponse } from "@/types/admin";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '@/api/axios'
+import toast from 'react-hot-toast'
+import type { AdminBriefListResponse, AdminResponse } from '@/types/admin'
 
 /** Daftar admin ringkas (id + name) untuk filter, dll. */
 export function useGetAdminBrief() {
   return useQuery({
-    queryKey: ["admin-brief"],
+    queryKey: ['admin-brief'],
     queryFn: async () => {
-      const { data } = await api.get<AdminBriefListResponse>("/admin/brief");
-      return data.data ?? [];
+      const { data } = await api.get<AdminBriefListResponse>('/admin/brief')
+      return data.data ?? []
     },
     staleTime: 60_000,
-  });
+  })
 }
 
 export const useAdminData = (page: number, limit: number) => {
   return useQuery({
-    queryKey: ["admin-users", page, limit],
+    queryKey: ['admin-users', page, limit],
     queryFn: async () => {
-      const { data } = await api.get<AdminResponse>("/admin/users/", {
+      const { data } = await api.get<AdminResponse>('/admin/users/', {
         params: { page, limit },
-      });
-      return data;
+      })
+      return data
     },
-  });
-};
+  })
+}
 
 export const useAdminMutation = () => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
   const updateRole = useMutation({
     mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      return api.patch(`/admin/users/${id}`, { role });
+      return api.patch(`/admin/users/${id}`, { role })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Peran berhasil diperbarui");
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      toast.success('Peran berhasil diperbarui')
     },
     onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Gagal memperbarui peran");
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(msg || 'Gagal memperbarui peran')
     },
-  });
+  })
 
   const deleteAdmin = useMutation({
     mutationFn: async (id: string) => {
-      return api.delete(`/admin/users/${id}`);
+      return api.delete(`/admin/users/${id}`)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Admin berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      toast.success('Admin berhasil dihapus')
     },
     onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(msg || "Gagal menghapus admin");
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+      toast.error(msg || 'Gagal menghapus admin')
     },
-  });
+  })
 
-  return { updateRole, deleteAdmin };
-};
+  return { updateRole, deleteAdmin }
+}

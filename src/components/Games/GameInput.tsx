@@ -21,9 +21,9 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
   return (
     <>
       {/* Category & Provider */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <Select onValueChange={(v) => setValue('category_id', v)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder={t('gameCreateForm.selectCategory')} />
           </SelectTrigger>
           <SelectContent>
@@ -36,7 +36,7 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
         </Select>
 
         <Select onValueChange={(v) => setValue('provider_id', v)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className='w-full'>
             <SelectValue placeholder={t('gameCreateForm.selectProvider')} />
           </SelectTrigger>
           <SelectContent>
@@ -50,27 +50,27 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
       </div>
 
       {/* Basic Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <Input placeholder={t('gameCreateForm.name')} {...register('name')} />
         <Input placeholder={t('gameCreateForm.code')} {...register('code')} />
       </div>
 
       <Input placeholder={t('gameCreateForm.slug')} {...register('slug')} />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <Input placeholder={t('gameCreateForm.developer')} {...register('developer')} />
         <Input placeholder={t('gameCreateForm.publisher')} {...register('publisher')} />
       </div>
 
-      <Textarea className="max-h-32" placeholder={t('gameCreateForm.description')} {...register('description')} />
-      <Textarea className="max-h-32" placeholder={t('gameCreateForm.instruction')} {...register('instruction')} />
+      <Textarea className='max-h-32' placeholder={t('gameCreateForm.description')} {...register('description')} />
+      <Textarea className='max-h-32' placeholder={t('gameCreateForm.instruction')} {...register('instruction')} />
 
       {/* Images */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex flex-col">
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='flex flex-col'>
           <ImageComponent
             title={t('gameCreateForm.thumbnail')}
-            value="thumbnail_url"
+            value='thumbnail_url'
             isUploading={isUploadingThumbnail}
             preview={previewThumbnail!}
             setIsUploading={setIsUploadingThumbnail}
@@ -81,10 +81,10 @@ export function GameInput({ setValue, register, categories, providers }: GameInp
           />
         </div>
 
-        <div className="flex flex-col">
+        <div className='flex flex-col'>
           <ImageComponent
             title={t('gameCreateForm.banner')}
-            value="banner_url"
+            value='banner_url'
             isUploading={isUploadingBanner}
             preview={previewBanner!}
             setIsUploading={setIsUploadingBanner}
@@ -103,25 +103,25 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
   const { t } = useTranslation('common')
 
   return (
-    <div className="space-y-3 w-full ">
-      <div className="flex justify-between items-center">
-        <h3 className="font-semibold">{t('gameCreateForm.inputsTitle')}</h3>
-        <Button type="button" size="sm" onClick={addInput} className="cursor-pointer">
+    <div className='space-y-3 w-full '>
+      <div className='flex justify-between items-center'>
+        <h3 className='font-semibold'>{t('gameCreateForm.inputsTitle')}</h3>
+        <Button type='button' size='sm' onClick={addInput} className='cursor-pointer'>
           {t('gameCreateForm.addInput')}
         </Button>
       </div>
-      <div className=" flex flex-col gap-4 max-h-120 overflow-y-auto">
+      <div className=' flex flex-col gap-4 max-h-120 overflow-y-auto'>
         {inputs.map((item, idx) => (
-          <div key={idx} className="border rounded-lg p-3 space-y-2 ">
-            <div className="flex gap-2  ">
+          <div key={idx} className='border rounded-lg p-3 space-y-2 '>
+            <div className='flex gap-2  '>
               <Input
-                className="w-full"
+                className='w-full'
                 placeholder={t('gameCreateForm.key')}
                 value={item.key}
                 onChange={(e) => updateInput(idx, 'key', e.target.value)}
               />
               <Input
-                className="w-full"
+                className='w-full'
                 placeholder={t('gameCreateForm.label')}
                 value={item.label}
                 onChange={(e) => updateInput(idx, 'label', e.target.value)}
@@ -131,12 +131,12 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
                 value={item.input_type}
                 onValueChange={(v) => updateInput(idx, 'input_type', v as 'text' | 'number')}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className='w-full'>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="text">{t('gameCreateForm.typeText')}</SelectItem>
-                  <SelectItem value="number">{t('gameCreateForm.typeNumber')}</SelectItem>
+                  <SelectItem value='text'>{t('gameCreateForm.typeText')}</SelectItem>
+                  <SelectItem value='number'>{t('gameCreateForm.typeNumber')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -146,10 +146,10 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
               onChange={(e) => updateInput(idx, 'placeholder', e.target.value)}
             />
 
-            <div className="flex justify-between items-center">
-              <label className="flex items-center gap-2 text-sm">
+            <div className='flex justify-between items-center'>
+              <label className='flex items-center gap-2 text-sm'>
                 <input
-                  type="checkbox"
+                  type='checkbox'
                   checked={item.required}
                   onChange={(e) => updateInput(idx, 'required', e.target.checked)}
                 />
@@ -157,10 +157,10 @@ export function GameInputForm({ addInput, updateInput, removeInput, inputs }: Ga
               </label>
 
               <Button
-                className="cursor-pointer"
-                type="button"
-                size="sm"
-                variant="destructive"
+                className='cursor-pointer'
+                type='button'
+                size='sm'
+                variant='destructive'
                 onClick={() => removeInput(idx)}
               >
                 {t('gameCreateForm.remove')}

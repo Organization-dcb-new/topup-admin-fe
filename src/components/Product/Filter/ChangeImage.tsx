@@ -78,19 +78,19 @@ export function ChangeImageByGame() {
   return (
     <>
       <Button
-        type="button"
-        variant="outline"
-        className="h-10 shrink-0 gap-2 font-normal shadow-sm"
+        type='button'
+        variant='outline'
+        className='h-10 shrink-0 gap-2 font-normal shadow-sm'
         onClick={() => setOpen(true)}
       >
-        <ImagePlus className="h-4 w-4 text-primary" aria-hidden />
+        <ImagePlus className='h-4 w-4 text-primary' aria-hidden />
         {t('productFilters.changeImageByGame')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
+        <DialogContent className='rounded-xl sm:max-w-md'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>
               {t('productGameImageModal.title')}
             </DialogTitle>
             <DialogDescription>
@@ -98,13 +98,13 @@ export function ChangeImageByGame() {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="change-img-game" className="text-sm font-medium">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor='change-img-game' className='text-sm font-medium'>
                 {t('productGameImageModal.gameLabel')}
               </Label>
               <select
-                id="change-img-game"
+                id='change-img-game'
                 {...register('game_id', {
                   required: t('productGameImageModal.gameRequired'),
                 })}
@@ -115,7 +115,7 @@ export function ChangeImageByGame() {
                 )}
                 aria-invalid={!!errors.game_id}
               >
-                <option value="" disabled>
+                <option value='' disabled>
                   {t('productGameImageModal.selectGame')}
                 </option>
                 {dataGameNames?.map((game: GameNames) => (
@@ -125,18 +125,18 @@ export function ChangeImageByGame() {
                 ))}
               </select>
               {errors.game_id && (
-                <p className="text-xs text-destructive">{errors.game_id.message}</p>
+                <p className='text-xs text-destructive'>{errors.game_id.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-sm font-medium">{t('productGameImageModal.imageLabel')}</Label>
-              <p className="text-xs text-muted-foreground">
+            <div className='space-y-2'>
+              <Label className='text-sm font-medium'>{t('productGameImageModal.imageLabel')}</Label>
+              <p className='text-xs text-muted-foreground'>
                 {t('productGameImageModal.imageHint')}
               </p>
 
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
                 onClick={openFilePicker}
                 onKeyDown={(e) => {
@@ -163,34 +163,34 @@ export function ChangeImageByGame() {
                   <img
                     src={preview}
                     alt={t('productGameImageModal.previewAlt')}
-                    className="max-h-full max-w-full rounded-lg object-contain p-2"
+                    className='max-h-full max-w-full rounded-lg object-contain p-2'
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 px-4 text-center text-muted-foreground">
-                    <UploadCloud className="h-8 w-8 opacity-80" aria-hidden />
-                    <span className="text-sm font-medium text-foreground">{t('productGameImageModal.dropHint')}</span>
-                    <span className="text-xs">{t('productGameImageModal.maxHint')}</span>
+                  <div className='flex flex-col items-center gap-2 px-4 text-center text-muted-foreground'>
+                    <UploadCloud className='h-8 w-8 opacity-80' aria-hidden />
+                    <span className='text-sm font-medium text-foreground'>{t('productGameImageModal.dropHint')}</span>
+                    <span className='text-xs'>{t('productGameImageModal.maxHint')}</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
-                    <span className="text-sm font-medium text-foreground">
+                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
+                    <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+                    <span className='text-sm font-medium text-foreground'>
                       {t('productGameImageModal.uploading', { percent: uploadProgress })}
                     </span>
                   </div>
                 )}
               </div>
 
-              {isUploading && <Progress value={uploadProgress} className="h-2" />}
+              {isUploading && <Progress value={uploadProgress} className='h-2' />}
             </div>
 
             <input
               ref={inputRef}
-              type="file"
-              accept="image/*,.svg"
-              className="hidden"
+              type='file'
+              accept='image/*,.svg'
+              className='hidden'
               tabIndex={-1}
               onChange={(e) => {
                 const file = e.target.files?.[0]
@@ -198,23 +198,23 @@ export function ChangeImageByGame() {
               }}
             />
 
-            <DialogFooter className="gap-2 sm:gap-2">
+            <DialogFooter className='gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
-                className="rounded-xl"
+                type='button'
+                variant='outline'
+                className='rounded-xl'
                 onClick={() => setOpen(false)}
               >
                 {t('productGameImageModal.cancel')}
               </Button>
               <Button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-xl"
+                type='submit'
+                className='inline-flex items-center gap-2 rounded-xl'
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('productGameImageModal.saving')}
                   </>
                 ) : (

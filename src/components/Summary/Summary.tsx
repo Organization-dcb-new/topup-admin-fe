@@ -39,31 +39,31 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
         'border-l-4 border-l-primary',
       )}
     >
-      <CardHeader className="border-b border-gray-100 pb-4">
-        <CardTitle className="text-lg font-semibold tracking-tight text-gray-900">
+      <CardHeader className='border-b border-gray-100 pb-4'>
+        <CardTitle className='text-lg font-semibold tracking-tight text-gray-900'>
           {t('summaryCard.title')}
         </CardTitle>
-        <CardDescription className="text-xs">{t('summaryCard.description')}</CardDescription>
+        <CardDescription className='text-xs'>{t('summaryCard.description')}</CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-6 pt-6 md:grid-cols-3 md:gap-8">
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.totalPg')}</p>
-          <p className="text-2xl font-semibold tabular-nums text-primary">
+      <CardContent className='grid grid-cols-1 gap-6 pt-6 md:grid-cols-3 md:gap-8'>
+        <div className='space-y-2'>
+          <p className='text-sm font-medium text-muted-foreground'>{t('summaryCard.totalPg')}</p>
+          <p className='text-2xl font-semibold tabular-nums text-primary'>
             {formatCurrency(revenue)}
           </p>
         </div>
 
-        <div className="space-y-2 md:border-l md:border-border/80 md:pl-8">
-          <p className="text-sm font-medium text-muted-foreground">{t('summaryCard.modalProvider')}</p>
-          <p className="text-2xl font-semibold tabular-nums text-foreground">
+        <div className='space-y-2 md:border-l md:border-border/80 md:pl-8'>
+          <p className='text-sm font-medium text-muted-foreground'>{t('summaryCard.modalProvider')}</p>
+          <p className='text-2xl font-semibold tabular-nums text-foreground'>
             {formatCurrency(cost)}
           </p>
         </div>
 
-        <div className="md:border-l md:border-border/80 md:pl-8">
-          <div className="space-y-3 rounded-lg border border-border/80 bg-muted/25 p-4">
-            <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-semibold text-foreground">{t('summaryCard.grossProfit')}</p>
+        <div className='md:border-l md:border-border/80 md:pl-8'>
+          <div className='space-y-3 rounded-lg border border-border/80 bg-muted/25 p-4'>
+            <div className='flex items-center justify-between gap-2'>
+              <p className='text-sm font-semibold text-foreground'>{t('summaryCard.grossProfit')}</p>
               <Badge
                 variant={isProfit ? 'default' : 'destructive'}
                 className={cn(
@@ -74,7 +74,7 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
                 {isProfit ? t('summaryCard.badgeProfit') : t('summaryCard.badgeLoss')}
               </Badge>
             </div>
-            <div className="flex flex-wrap items-end gap-2">
+            <div className='flex flex-wrap items-end gap-2'>
               <p
                 className={cn(
                   'text-2xl font-bold tabular-nums tracking-tight',
@@ -90,9 +90,9 @@ export default function SummaryCard({ stats }: SummaryCardProps) {
                 )}
               >
                 {isProfit ? (
-                  <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden />
+                  <ArrowUpRight className='h-4 w-4 shrink-0' aria-hidden />
                 ) : (
-                  <ArrowDownRight className="h-4 w-4 shrink-0" aria-hidden />
+                  <ArrowDownRight className='h-4 w-4 shrink-0' aria-hidden />
                 )}
                 {t('summaryCard.marginFromPg', { percent: marginPercent.toFixed(1) })}
               </span>

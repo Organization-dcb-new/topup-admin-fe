@@ -36,9 +36,9 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80">
+    <div className='w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80'>
       <Table
-        className="min-w-max [&_td]:border-x-0 [&_th]:border-x-0"
+        className='min-w-max [&_td]:border-x-0 [&_th]:border-x-0'
         scrollContainer={false}
       >
         <TableHeader
@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
 
                 {/* ROW EXPANDED */}
                 {renderSubRow && row.getIsExpanded() && (
-                  <TableRow className="bg-muted/40">
+                  <TableRow className='bg-muted/40'>
                     <TableCell colSpan={columns.length}>{renderSubRow(row.original)}</TableCell>
                   </TableRow>
                 )}
@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-28 px-4 text-center text-sm text-muted-foreground">
+              <TableCell colSpan={columns.length} className='h-28 px-4 text-center text-sm text-muted-foreground'>
                 {emptyMessage}
               </TableCell>
             </TableRow>

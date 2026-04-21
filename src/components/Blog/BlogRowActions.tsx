@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 export function BlogActionsHeader() {
   const { t } = useTranslation('common')
   return (
-    <span className="flex w-full min-w-[10rem] justify-end pr-1 text-right">
+    <span className='flex w-full min-w-[10rem] justify-end pr-1 text-right'>
       {t('blogRowActions.actionsHeader')}
     </span>
   )
@@ -26,22 +26,22 @@ export function BlogRowActions({
     'border-0 bg-transparent shadow-none hover:bg-muted/70'
 
   return (
-    <div className="flex w-full min-w-[10rem] justify-end pr-0.5">
+    <div className='flex w-full min-w-[10rem] justify-end pr-0.5'>
       <div
-        className="inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35"
-        role="group"
+        className='inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35'
+        role='group'
         aria-label={t('blogRowActions.rowGroupAria')}
       >
         <Button
-          type="button"
-          variant="outline"
-          size="sm"
+          type='button'
+          variant='outline'
+          size='sm'
           onClick={() => onEdit(blog)}
           className={cn('cursor-pointer gap-1.5', toolbarBtn)}
           aria-label={t('blogRowActions.editAria')}
         >
-          <Pencil className="h-4 w-4 shrink-0" aria-hidden />
-          <span className="hidden sm:inline">{t('blogRowActions.editLabel')}</span>
+          <Pencil className='h-4 w-4 shrink-0' aria-hidden />
+          <span className='hidden sm:inline'>{t('blogRowActions.editLabel')}</span>
         </Button>
         <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
       </div>

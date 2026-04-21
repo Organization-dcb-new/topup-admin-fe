@@ -25,15 +25,15 @@ export default function BlogList({ onEdit }: BlogListProps) {
   if (isPending) {
     return (
       <div
-        className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12"
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
+        className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
+        role='status'
+        aria-live='polite'
+        aria-busy='true'
       >
-        <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
-        <div className="text-center">
-          <p className="text-sm font-medium text-foreground">{t('blogList.loadingTitle')}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{t('blogList.loadingHint')}</p>
+        <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
+        <div className='text-center'>
+          <p className='text-sm font-medium text-foreground'>{t('blogList.loadingTitle')}</p>
+          <p className='mt-1 text-xs text-muted-foreground'>{t('blogList.loadingHint')}</p>
         </div>
       </div>
     )
@@ -46,15 +46,15 @@ export default function BlogList({ onEdit }: BlogListProps) {
   if (!blogs || blogs.data.length === 0) {
     return (
       <div
-        className="flex min-h-[14rem] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center"
-        role="status"
+        className='flex min-h-[14rem] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center'
+        role='status'
       >
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <FileText className="h-6 w-6" aria-hidden />
+        <span className='flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground'>
+          <FileText className='h-6 w-6' aria-hidden />
         </span>
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-foreground">{t('blogList.emptyTitle')}</p>
-          <p className="max-w-sm text-xs text-muted-foreground">{t('blogList.emptyHint')}</p>
+        <div className='space-y-1'>
+          <p className='text-sm font-medium text-foreground'>{t('blogList.emptyTitle')}</p>
+          <p className='max-w-sm text-xs text-muted-foreground'>{t('blogList.emptyHint')}</p>
         </div>
       </div>
     )

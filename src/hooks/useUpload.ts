@@ -1,4 +1,4 @@
-import { api } from "@/api/axios"
+import { api } from '@/api/axios'
 
 export const uploadFile = async (file: File, onProgress?: (progress: number) => void) => {
   const formData = new FormData()

@@ -32,34 +32,34 @@ export function GamePickerSelect({ value, onChange }: Props) {
   const selectedName = value ? games?.find((g) => g.id === value)?.name : undefined
 
   return (
-    <div className="grid min-w-0 w-full gap-1.5">
-      <Label htmlFor="game-picker-trigger" className="text-xs text-muted-foreground">
+    <div className='grid min-w-0 w-full gap-1.5'>
+      <Label htmlFor='game-picker-trigger' className='text-xs text-muted-foreground'>
         {t('gameFilters.gameLabel')}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            id="game-picker-trigger"
-            type="button"
-            variant="outline"
-            role="combobox"
+            id='game-picker-trigger'
+            type='button'
+            variant='outline'
+            role='combobox'
             aria-expanded={open}
             disabled={isLoading || isError}
-            className="h-9 w-full min-w-0 justify-between px-3 font-normal shadow-sm"
+            className='h-9 w-full min-w-0 justify-between px-3 font-normal shadow-sm'
           >
-            <span className="truncate text-left">
+            <span className='truncate text-left'>
               {isLoading ? t('gameFilters.loadingGames') : (selectedName ?? t('gameFilters.allGames'))}
             </span>
             {isLoading ? (
-              <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin opacity-50" aria-hidden />
+              <Loader2 className='h-3.5 w-3.5 shrink-0 animate-spin opacity-50' aria-hidden />
             ) : (
-              <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" aria-hidden />
+              <ChevronsUpDown className='h-3.5 w-3.5 shrink-0 opacity-50' aria-hidden />
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0"
-          align="start"
+          className='w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0'
+          align='start'
         >
           <Command>
             <CommandInput placeholder={t('gameFilters.searchPlaceholder')} />
@@ -67,7 +67,7 @@ export function GamePickerSelect({ value, onChange }: Props) {
               <CommandEmpty>{t('gameFilters.emptySearch')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
-                  value="semua game all"
+                  value='semua game all'
                   keywords={['semua', 'all', 'game']}
                   onSelect={() => {
                     onChange('')
@@ -106,7 +106,7 @@ export function GamePickerSelect({ value, onChange }: Props) {
         </PopoverContent>
       </Popover>
       {isError && (
-        <p className="text-xs text-destructive">{t('gameFilters.loadNamesError')}</p>
+        <p className='text-xs text-destructive'>{t('gameFilters.loadNamesError')}</p>
       )}
     </div>
   )

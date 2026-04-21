@@ -13,7 +13,7 @@ export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
         <img
           src={src}
           alt={row.original.name || t('categoryTable.iconAltFallback')}
-          className="w-10 h-10 rounded object-contain border"
+          className='w-10 h-10 rounded object-contain border'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
@@ -37,7 +37,7 @@ export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
     id: 'actions',
     header: t('categoryTable.colActions'),
     cell: ({ row }) => (
-      <div className="flex items-center gap-1">
+      <div className='flex items-center gap-1'>
         <EditCategoryModal category={row.original}   />
         <DeleteCategoryButton id={row.original.id} />
       </div>

@@ -16,9 +16,9 @@ export default function Field({ updateField, formData, handleEditorImageUpload }
   const { t } = useTranslation('common')
 
   return (
-    <div className="space-y-4">
+    <div className='space-y-4'>
       <input
-        type="text"
+        type='text'
         className={cn(
           'w-full border-0 bg-transparent text-3xl font-bold tracking-tight outline-none',
           'placeholder:text-muted-foreground/40 sm:text-4xl',

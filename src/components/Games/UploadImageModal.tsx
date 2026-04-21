@@ -230,18 +230,18 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
     const fieldError = errors[field]?.message
 
     return (
-      <div className="space-y-2">
-        <Label id={labelId} htmlFor={inputId} className="text-sm font-medium">
+      <div className='space-y-2'>
+        <Label id={labelId} htmlFor={inputId} className='text-sm font-medium'>
           {label}
         </Label>
 
         <input
-          type="hidden"
+          type='hidden'
           {...register(field, field === 'thumbnail_url' ? { required: requiredMessage } : {})}
         />
 
         <div
-          className="relative rounded-lg"
+          className='relative rounded-lg'
           onDragOver={(e) => {
             e.preventDefault()
             e.stopPropagation()
@@ -254,7 +254,7 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
           }}
         >
           <button
-            type="button"
+            type='button'
             id={inputId}
             aria-labelledby={labelId}
             aria-busy={state.uploading}
@@ -271,20 +271,20 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
             {hasImage ? (
               <img
                 src={url}
-                alt=""
-                className="h-full w-full bg-muted/20 object-cover"
+                alt=''
+                className='h-full w-full bg-muted/20 object-cover'
               />
             ) : (
-              <div className="flex flex-col items-center gap-2 px-4 py-8 text-muted-foreground">
-                <UploadCloud className="h-6 w-6 shrink-0" aria-hidden />
-                <span className="text-center text-sm">{t('gameImageModal.dropHint')}</span>
+              <div className='flex flex-col items-center gap-2 px-4 py-8 text-muted-foreground'>
+                <UploadCloud className='h-6 w-6 shrink-0' aria-hidden />
+                <span className='text-center text-sm'>{t('gameImageModal.dropHint')}</span>
               </div>
             )}
 
             {state.uploading && (
               <div
-                className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white"
-                aria-live="polite"
+                className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white'
+                aria-live='polite'
               >
                 {t('gameImageModal.uploadingPercent', { percent: state.progress })}
               </div>
@@ -294,9 +294,9 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
           <Input
             id={`${inputId}-file`}
             ref={inputRef}
-            type="file"
-            accept="image/*,.svg"
-            className="sr-only"
+            type='file'
+            accept='image/*,.svg'
+            className='sr-only'
             tabIndex={-1}
             aria-hidden
             onChange={(e) => {
@@ -310,12 +310,12 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
         {state.uploading && <Progress value={state.progress} />}
 
         {hasImage && !state.uploading && (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className='flex flex-wrap items-center gap-2'>
             <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 gap-1.5 rounded-lg text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+              type='button'
+              variant='outline'
+              size='sm'
+              className='h-8 gap-1.5 rounded-lg text-xs text-destructive hover:bg-destructive/10 hover:text-destructive'
               onClick={() => handleRemove(field)}
               aria-label={
                 field === 'thumbnail_url'
@@ -323,14 +323,14 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
                   : t('gameImageModal.removeImageAriaBanner')
               }
             >
-              <Trash2 className="h-3.5 w-3.5" aria-hidden />
+              <Trash2 className='h-3.5 w-3.5' aria-hidden />
               {t('gameImageModal.remove')}
             </Button>
           </div>
         )}
 
         {(fileError || fieldError) && (
-          <p className="text-xs text-destructive">{fileError ?? fieldError}</p>
+          <p className='text-xs text-destructive'>{fileError ?? fieldError}</p>
         )}
       </div>
     )
@@ -339,37 +339,37 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
   return (
     <>
       <button
-        type="button"
+        type='button'
         onClick={(e) => {
           e.stopPropagation()
           setOpen(true)
         }}
-        className="group relative h-10 w-10 shrink-0 rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring"
+        className='group relative h-10 w-10 shrink-0 rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring'
         aria-label={t('gameImageModal.openAria', { name: game.name })}
       >
         <img
           src={image}
-          alt=""
-          className="h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5"
-          loading="lazy"
+          alt=''
+          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+          loading='lazy'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
         />
 
-        <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
-          <Pencil className="h-4 w-4 text-white" aria-hidden />
+        <span className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100'>
+          <Pencil className='h-4 w-4 text-white' aria-hidden />
         </span>
       </button>
 
       <Dialog open={open} onOpenChange={handleMainOpenChange}>
-        <DialogContent className="rounded-xl sm:max-w-lg">
+        <DialogContent className='rounded-xl sm:max-w-lg'>
           <DialogHeader>
             <DialogTitle>{t('gameImageModal.title')}</DialogTitle>
             <DialogDescription>{t('gameImageModal.description', { name: game.name })}</DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
             {renderUploadBox({
               labelId: thumbnailLabelId,
               inputId: thumbnailInputId,
@@ -392,24 +392,24 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
               variant: 'banner',
             })}
 
-            <DialogFooter className="gap-2 sm:gap-2">
+            <DialogFooter className='gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => handleRequestClose()}
                 disabled={updateImageMutation.isPending}
-                className="cursor-pointer rounded-xl"
+                className='cursor-pointer rounded-xl'
               >
                 {t('gameImageModal.cancel')}
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={updateImageMutation.isPending || thumbnail.uploading || banner.uploading}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+                className='inline-flex cursor-pointer items-center gap-2 rounded-xl'
               >
                 {updateImageMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('gameImageModal.saving')}
                   </>
                 ) : (
@@ -422,15 +422,15 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
       </Dialog>
 
       <AlertDialog open={confirmDiscardOpen} onOpenChange={setConfirmDiscardOpen}>
-        <AlertDialogContent className="rounded-xl">
+        <AlertDialogContent className='rounded-xl'>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('gameImageModal.discardTitle')}</AlertDialogTitle>
             <AlertDialogDescription>{t('gameImageModal.discardDescription')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">{t('gameImageModal.discardStay')}</AlertDialogCancel>
+            <AlertDialogCancel className='rounded-lg'>{t('gameImageModal.discardStay')}</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg"
+              className='rounded-lg'
               onClick={() => {
                 setConfirmDiscardOpen(false)
                 performClose()

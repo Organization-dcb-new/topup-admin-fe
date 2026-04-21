@@ -18,18 +18,18 @@ type Props = {
 export function ProductStatusFilter({ value, onChange }: Props) {
   const { t } = useTranslation('common')
   return (
-    <div className="grid min-w-0 gap-1.5">
-      <Label htmlFor="product-status-filter" className="text-xs text-muted-foreground">
+    <div className='grid min-w-0 gap-1.5'>
+      <Label htmlFor='product-status-filter' className='text-xs text-muted-foreground'>
         {t('productFilters.statusLabel')}
       </Label>
       <Select value={value} onValueChange={(v) => onChange(v as ProductStatusFilterValue)}>
-        <SelectTrigger id="product-status-filter" className="h-10 w-full min-w-0 shadow-sm">
+        <SelectTrigger id='product-status-filter' className='h-10 w-full min-w-0 shadow-sm'>
           <SelectValue placeholder={t('productFilters.statusPlaceholder')} />
         </SelectTrigger>
-        <SelectContent position="popper" align="start">
-          <SelectItem value="all">{t('productFilters.all')}</SelectItem>
-          <SelectItem value="active">{t('productFilters.active')}</SelectItem>
-          <SelectItem value="inactive">{t('productFilters.inactive')}</SelectItem>
+        <SelectContent position='popper' align='start'>
+          <SelectItem value='all'>{t('productFilters.all')}</SelectItem>
+          <SelectItem value='active'>{t('productFilters.active')}</SelectItem>
+          <SelectItem value='inactive'>{t('productFilters.inactive')}</SelectItem>
         </SelectContent>
       </Select>
     </div>

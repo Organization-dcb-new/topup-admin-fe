@@ -21,7 +21,7 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
               ? t('paymentMethodTable.iconAltName', { name: row.original.name })
               : t('paymentMethodTable.iconAltFallback')
           }
-          className="h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5"
+          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
@@ -33,14 +33,14 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     accessorKey: 'name',
     header: t('paymentMethodTable.colName'),
     cell: ({ row }) => (
-      <div className="max-w-[10rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
+      <div className='max-w-[10rem] font-medium text-gray-900 sm:max-w-xs'>{row.original.name}</div>
     ),
   },
   {
     accessorKey: 'code',
     header: t('paymentMethodTable.colCode'),
     cell: ({ row }) => (
-      <code className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground">
+      <code className='rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground'>
         {row.original.code}
       </code>
     ),
@@ -49,7 +49,7 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     accessorKey: 'provider',
     header: t('paymentMethodTable.colProvider'),
     cell: ({ row }) => (
-      <Badge variant="outline" className="font-medium capitalize">
+      <Badge variant='outline' className='font-medium capitalize'>
         {row.original.provider}
       </Badge>
     ),
@@ -58,14 +58,14 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     accessorKey: 'fee_percentage',
     header: t('paymentMethodTable.colFeePercent'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm text-foreground">{row.original.fee_percentage}%</span>
+      <span className='tabular-nums text-sm text-foreground'>{row.original.fee_percentage}%</span>
     ),
   },
   {
     accessorKey: 'fee_fixed',
     header: t('paymentMethodTable.colFeeFixed'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm text-foreground">
+      <span className='tabular-nums text-sm text-foreground'>
         {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
           style: 'currency',
           currency: 'IDR',
@@ -78,7 +78,7 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     accessorKey: 'min_amount',
     header: t('paymentMethodTable.colMin'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm text-muted-foreground">
+      <span className='tabular-nums text-sm text-muted-foreground'>
         {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
           style: 'currency',
           currency: 'IDR',
@@ -91,7 +91,7 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     accessorKey: 'max_amount',
     header: t('paymentMethodTable.colMax'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm text-muted-foreground">
+      <span className='tabular-nums text-sm text-muted-foreground'>
         {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
           style: 'currency',
           currency: 'IDR',
@@ -105,11 +105,11 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     header: t('paymentMethodTable.colStatus'),
     cell: ({ row }) =>
       row.original.is_active ? (
-        <Badge variant="success" className="font-medium">
+        <Badge variant='success' className='font-medium'>
           {t('paymentMethodTable.statusActive')}
         </Badge>
       ) : (
-        <Badge variant="outline" className="border-border font-medium text-muted-foreground">
+        <Badge variant='outline' className='border-border font-medium text-muted-foreground'>
           {t('paymentMethodTable.statusInactive')}
         </Badge>
       ),
@@ -118,7 +118,7 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     id: 'actions',
     header: t('paymentMethodTable.colActions'),
     cell: ({ row }) => (
-      <div className="flex flex-wrap items-center gap-1">
+      <div className='flex flex-wrap items-center gap-1'>
         <EditPaymentMethodModal paymentMethod={row.original} />
         <DeletePaymentMethodModal id={row.original.id} />
       </div>

@@ -16,32 +16,32 @@ export default function EditGameInputModalForm({ inputs }: EditGameInputModalPro
   return (
     <>
       <Button
-        type="button"
-        variant="ghost"
-        size="icon"
+        type='button'
+        variant='ghost'
+        size='icon'
         onClick={() => setOpen(true)}
-        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
-        aria-label="Ubah field input game"
+        className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
+        aria-label='Ubah field input game'
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="max-h-[min(80vh,36rem)] overflow-y-auto rounded-xl sm:max-w-lg"
+          className='max-h-[min(80vh,36rem)] overflow-y-auto rounded-xl sm:max-w-lg'
           onPointerDownOutside={(e) => e.preventDefault()}
         >
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Ubah input game</DialogTitle>
-            <p className="text-sm text-muted-foreground">
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>Ubah input game</DialogTitle>
+            <p className='text-sm text-muted-foreground'>
               Setiap blok di bawah adalah satu field. Simpan perubahan lewat tombol Simpan pada masing-masing
               form. Klik di luar dialog dinonaktifkan agar tidak kehilangan isian tanpa sengaja.
             </p>
           </DialogHeader>
 
-          <div className="space-y-4 pt-1">
+          <div className='space-y-4 pt-1'>
             {inputs.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border/80 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+              <p className='rounded-lg border border-dashed border-border/80 bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground'>
                 Game ini belum memiliki field input.
               </p>
             ) : (

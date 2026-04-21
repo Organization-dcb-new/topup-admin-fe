@@ -1,10 +1,10 @@
-import { api } from "@/api/axios";
-import type { FormValuesProductImage } from "@/components/Product/Filter/ChangeImage";
-import type { FormValuesChangeImageProductV2 } from "@/components/Product/Filter/UploadImage";
-import type { Product, ProductResponse } from "@/types/product";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { api } from '@/api/axios'
+import type { FormValuesProductImage } from '@/components/Product/Filter/ChangeImage'
+import type { FormValuesChangeImageProductV2 } from '@/components/Product/Filter/UploadImage'
+import type { Product, ProductResponse } from '@/types/product'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 /** Query list produk admin — selaraskan nama field dengan DTO backend bila perlu. */
 export type GetProductsParams = {
@@ -32,8 +32,8 @@ export type GetProductsParams = {
 
 function pickNonEmpty(params: Record<string, string | undefined>) {
   return Object.fromEntries(
-    Object.entries(params).filter(([, v]) => v !== undefined && v !== ""),
-  );
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== ''),
+  )
 }
 
 export const useGetProducts = (
@@ -41,7 +41,7 @@ export const useGetProducts = (
   limit: number,
   filters: GetProductsParams,
 ) => {
-  const providerStatus = filters.provider_status?.trim() ?? "";
+  const providerStatus = filters.provider_status?.trim() ?? ''
 
   const numeric = pickNonEmpty({
     additional_fee_above: filters.additional_fee_above,
@@ -54,11 +54,11 @@ export const useGetProducts = (
     selling_price_above: filters.selling_price_above,
     selling_price_below: filters.selling_price_below,
     selling_price: filters.selling_price,
-  });
+  })
 
   return useQuery({
     queryKey: [
-      "products",
+      'products',
       page,
       limit,
       filters.search,
@@ -69,7 +69,7 @@ export const useGetProducts = (
       numeric,
     ],
     queryFn: async (): Promise<ProductResponse> => {
-      const res = await api.get("/products/admin", {
+      const res = await api.get('/products/admin', {
         params: {
           page,
           limit,
@@ -80,95 +80,95 @@ export const useGetProducts = (
           ...(providerStatus && { provider_status: providerStatus }),
           ...numeric,
         },
-      });
-      return res.data;
+      })
+      return res.data
     },
-  });
-};
+  })
+}
 
 export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
-  const { t } = useTranslation("common");
-  const queryClient = useQueryClient();
+  const { t } = useTranslation('common')
+  const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: async (values: FormValuesProductImage) => {
       const payload = {
         ...values,
-      };
+      }
 
-      const res = await api.patch(`/products/by-game`, payload);
-      return res.data;
+      const res = await api.patch(`/products/by-game`, payload)
+      return res.data
     },
     onSuccess: () => {
-      toast.success(t("productToasts.imageUpdateSuccess"));
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      setOpen(false);
+      toast.success(t('productToasts.imageUpdateSuccess'))
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      setOpen(false)
     },
-    onError: () => toast.error(t("productToasts.imageUpdateError")),
-  });
+    onError: () => toast.error(t('productToasts.imageUpdateError')),
+  })
 
-  return mutation;
+  return mutation
 }
 
 export function useUpdateImageProductV2(onClose: () => void) {
-  const { t } = useTranslation("common");
-  const queryClient = useQueryClient();
+  const { t } = useTranslation('common')
+  const queryClient = useQueryClient()
 
   const mutation = useMutation({
     mutationFn: async (values: FormValuesChangeImageProductV2) => {
       const payload = {
         ...values,
-      };
+      }
 
-      const res = await api.patch(`/products/by-game`, payload);
-      return res.data;
+      const res = await api.patch(`/products/by-game`, payload)
+      return res.data
     },
     onSuccess: () => {
-      toast.success(t("productToasts.imageUpdateSuccess"));
-      queryClient.invalidateQueries({ queryKey: ["products"] });
-      onClose();
+      toast.success(t('productToasts.imageUpdateSuccess'))
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+      onClose()
     },
-    onError: () => toast.error(t("productToasts.imageUpdateError")),
-  });
+    onError: () => toast.error(t('productToasts.imageUpdateError')),
+  })
 
-  return mutation;
+  return mutation
 }
 
 export function useGetProductNames(id: string) {
   return useQuery({
-    queryKey: ["product-names", id],
+    queryKey: ['product-names', id],
     queryFn: async () => {
-      const res = await api.get(`/products/game/${id}`);
-      return res.data.data;
+      const res = await api.get(`/products/game/${id}`)
+      return res.data.data
     },
-  });
+  })
 }
 
 /** Produk per game — dipakai saat payload game (list/detail) tidak menyertakan `product`. */
 export function useProductsByGame(gameId: string, enabled: boolean) {
   return useQuery({
-    queryKey: ["products-by-game", gameId],
+    queryKey: ['products-by-game', gameId],
     queryFn: async (): Promise<Product[]> => {
-      const res = await api.get(`/products/game/${gameId}`);
-      const raw = res.data?.data;
-      return Array.isArray(raw) ? raw : [];
+      const res = await api.get(`/products/game/${gameId}`)
+      const raw = res.data?.data
+      return Array.isArray(raw) ? raw : []
     },
     enabled: Boolean(gameId && enabled),
     staleTime: 10_000,
-  });
+  })
 }
 
 export function useGetProductAnomaly(page: number, limit: number) {
   return useQuery({
-    queryKey: ["product-anomaly", page, limit],
+    queryKey: ['product-anomaly', page, limit],
     queryFn: async () => {
-      const res = await api.get("/products/anomaly", {
+      const res = await api.get('/products/anomaly', {
         params: {
           page,
           limit,
         },
-      });
-      return res.data;
+      })
+      return res.data
     },
-  });
+  })
 }

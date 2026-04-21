@@ -31,7 +31,7 @@ export function getBlogColumns(t: TFunction, onEdit: (blog: Blog) => void): Colu
         <img
           src={row.original.thumbnail}
           alt={row.original.title}
-          className="h-11 w-[4.5rem] rounded-md border border-border object-cover bg-muted"
+          className='h-11 w-[4.5rem] rounded-md border border-border object-cover bg-muted'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
@@ -42,10 +42,10 @@ export function getBlogColumns(t: TFunction, onEdit: (blog: Blog) => void): Colu
       accessorKey: 'title',
       header: t('blogTable.colTitle'),
       cell: ({ row }) => (
-        <div className="flex max-w-[14rem] flex-col gap-0.5">
-          <span className="truncate text-sm font-semibold text-foreground">{row.original.title}</span>
+        <div className='flex max-w-[14rem] flex-col gap-0.5'>
+          <span className='truncate text-sm font-semibold text-foreground'>{row.original.title}</span>
           <time
-            className="text-xs text-muted-foreground"
+            className='text-xs text-muted-foreground'
             dateTime={row.original.created_at}
           >
             {format(new Date(row.original.created_at), 'd MMM yyyy', { locale: dateLocale() })}
@@ -57,7 +57,7 @@ export function getBlogColumns(t: TFunction, onEdit: (blog: Blog) => void): Colu
       accessorKey: 'category',
       header: t('blogTable.colCategory'),
       cell: ({ row }) => (
-        <Badge variant="secondary" className="text-[10px] font-semibold uppercase tracking-wide">
+        <Badge variant='secondary' className='text-[10px] font-semibold uppercase tracking-wide'>
           {row.original.category?.trim() ? row.original.category : '—'}
         </Badge>
       ),
@@ -68,19 +68,19 @@ export function getBlogColumns(t: TFunction, onEdit: (blog: Blog) => void): Colu
       cell: ({ row }) => {
         const tags = row.original.tags || []
         return (
-          <div className="flex max-w-[10rem] flex-wrap gap-1">
+          <div className='flex max-w-[10rem] flex-wrap gap-1'>
             {tags.length > 0 ? (
               tags.map((tag, index) => (
                 <Badge
                   key={`${tag}-${index}`}
-                  variant="outline"
-                  className="border-primary/20 bg-primary/5 px-1.5 py-0 text-[9px] font-semibold uppercase text-primary"
+                  variant='outline'
+                  className='border-primary/20 bg-primary/5 px-1.5 py-0 text-[9px] font-semibold uppercase text-primary'
                 >
                   #{tag}
                 </Badge>
               ))
             ) : (
-              <span className="text-xs italic text-muted-foreground">{t('blogTable.noTags')}</span>
+              <span className='text-xs italic text-muted-foreground'>{t('blogTable.noTags')}</span>
             )}
           </div>
         )

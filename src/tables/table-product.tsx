@@ -20,7 +20,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
       const image = row.original.image?.trim() || DEFAULT_GAME_IMAGE
 
       return (
-        <div className="flex items-center">
+        <div className='flex items-center'>
           <ChangeImageModalProduct product={row.original} image={image} />
         </div>
       )
@@ -31,7 +31,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     header: t('productTable.colName'),
     cell: ({ row }) => (
       <div
-        className="max-w-[12rem] font-medium text-gray-900 sm:max-w-xs"
+        className='max-w-[12rem] font-medium text-gray-900 sm:max-w-xs'
         title={row.original.name}
       >
         {row.original.name}
@@ -61,14 +61,14 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     accessorKey: 'sku',
     header: t('productTable.colSku'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm font-medium text-foreground">{row.original.sku}</span>
+      <span className='tabular-nums text-sm font-medium text-foreground'>{row.original.sku}</span>
     ),
   },
   {
     accessorKey: 'additional_fee',
     header: t('productTable.colAdditionalFee'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm font-medium text-foreground">
+      <span className='tabular-nums text-sm font-medium text-foreground'>
         {formatRp(row.original.additional_fee)}
       </span>
     ),
@@ -77,7 +77,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     accessorKey: 'additional_percent',
     header: t('productTable.colPercent'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm font-medium text-foreground">
+      <span className='tabular-nums text-sm font-medium text-foreground'>
         {row.original.additional_percent} %
       </span>
     ),
@@ -86,7 +86,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     accessorKey: 'base_price',
     header: t('productTable.colBasePrice'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm font-medium text-foreground">
+      <span className='tabular-nums text-sm font-medium text-foreground'>
         {formatRp(row.original.base_price)}
       </span>
     ),
@@ -95,7 +95,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     accessorKey: 'selling_price',
     header: t('productTable.colSellingPrice'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm font-medium text-foreground">
+      <span className='tabular-nums text-sm font-medium text-foreground'>
         {formatRp(row.original.selling_price)}
       </span>
     ),
@@ -105,11 +105,11 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     header: t('productTable.colStock'),
     cell: ({ row }) =>
       row.original.is_unlimited_stock ? (
-        <Badge variant="outline" className="font-normal text-sm">
+        <Badge variant='outline' className='font-normal text-sm'>
           {t('productTable.stockUnlimited')}
         </Badge>
       ) : (
-        <span className="tabular-nums text-sm font-medium text-foreground">
+        <span className='tabular-nums text-sm font-medium text-foreground'>
           {row.original.stock_quantity}
         </span>
       ),
@@ -120,7 +120,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     cell: ({ row }) => (
       <Badge
         variant={row.original.is_active ? 'success' : 'secondary'}
-        className="font-normal text-sm"
+        className='font-normal text-sm'
       >
         {row.original.is_active ? t('productFilters.active') : t('productFilters.inactive')}
       </Badge>
@@ -142,7 +142,7 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
       return (
         <Badge
           variant={isAvailable ? 'success' : isEmpty ? 'secondary' : 'outline'}
-          className="max-w-[10rem] truncate font-normal text-sm"
+          className='max-w-[10rem] truncate font-normal text-sm'
           title={raw || undefined}
         >
           {label}
@@ -154,10 +154,10 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
     id: 'actions',
     header: t('productTable.colActions'),
     cell: ({ row }) => (
-      <div className="flex min-w-0 items-center">
+      <div className='flex min-w-0 items-center'>
         <div
-          className="inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm"
-          role="group"
+          className='inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm'
+          role='group'
           aria-label={t('productTable.rowActionsAria', { name: row.original.name })}
         >
           <UpdateProductPriceModal

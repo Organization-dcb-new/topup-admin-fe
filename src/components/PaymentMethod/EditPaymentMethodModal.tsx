@@ -81,33 +81,33 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
   return (
     <div>
       <Button
-        variant="ghost"
-        size="icon"
-        type="button"
+        variant='ghost'
+        size='icon'
+        type='button'
         onClick={() => setOpen(true)}
-        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+        className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
         aria-label={t('paymentMethodEdit.triggerAria', { name: paymentMethod.name })}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-3xl">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">{t('paymentMethodEdit.title')}</DialogTitle>
-            <p className="text-sm text-muted-foreground">
+        <DialogContent className='rounded-xl sm:max-w-3xl'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>{t('paymentMethodEdit.title')}</DialogTitle>
+            <p className='text-sm text-muted-foreground'>
               {t('paymentMethodEdit.description')}
             </p>
           </DialogHeader>
 
           <form
             onSubmit={handleSubmit((v) => updatePaymentMethodMutation.mutate(v))}
-            className="space-y-4"
+            className='space-y-4'
           >
-            <input type="hidden" {...register('icon_url', { required: t('paymentMethodEdit.iconRequired') })} />
+            <input type='hidden' {...register('icon_url', { required: t('paymentMethodEdit.iconRequired') })} />
 
-            <div className="flex w-full flex-col gap-5 md:flex-row">
-              <div className="flex w-full flex-col gap-3">
-                <div className="space-y-1">
+            <div className='flex w-full flex-col gap-5 md:flex-row'>
+              <div className='flex w-full flex-col gap-3'>
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-name-${paymentMethod.id}`}>{t('paymentMethodEdit.nameLabel')}</Label>
                   <Input
                     id={`pm-edit-name-${paymentMethod.id}`}
@@ -115,7 +115,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-code-${paymentMethod.id}`}>{t('paymentMethodEdit.codeLabel')}</Label>
                   <Input
                     id={`pm-edit-code-${paymentMethod.id}`}
@@ -123,7 +123,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-type-${paymentMethod.id}`}>{t('paymentMethodEdit.typeLabel')}</Label>
                   <Input
                     id={`pm-edit-type-${paymentMethod.id}`}
@@ -132,7 +132,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-provider-${paymentMethod.id}`}>{t('paymentMethodEdit.providerLabel')}</Label>
                   <Input
                     id={`pm-edit-provider-${paymentMethod.id}`}
@@ -141,11 +141,11 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   <Label>{t('paymentMethodEdit.iconLabel')}</Label>
 
                   <div
-                    role="button"
+                    role='button'
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -167,18 +167,18 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                     {preview ? (
                       <img
                         src={preview}
-                        alt=""
-                        className="h-full w-full rounded-lg object-contain"
+                        alt=''
+                        className='h-full w-full rounded-lg object-contain'
                       />
                     ) : (
-                      <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                        <UploadCloud className="h-6 w-6" aria-hidden />
-                        <span className="text-sm">{t('paymentMethodEdit.iconDropHint')}</span>
+                      <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                        <UploadCloud className='h-6 w-6' aria-hidden />
+                        <span className='text-sm'>{t('paymentMethodEdit.iconDropHint')}</span>
                       </div>
                     )}
 
                     {isUploading && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white">
+                      <div className='absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white'>
                         {t('paymentMethodEdit.uploading', { percent: uploadProgress })}
                       </div>
                     )}
@@ -186,9 +186,9 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
 
                   <Input
                     ref={inputRef}
-                    type="file"
-                    accept="image/*,.svg"
-                    className="hidden"
+                    type='file'
+                    accept='image/*,.svg'
+                    className='hidden'
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (!file) {
@@ -203,18 +203,18 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   {isUploading && <Progress value={uploadProgress} />}
 
                   {errors.icon_url && (
-                    <p className="text-xs text-destructive">{errors.icon_url.message}</p>
+                    <p className='text-xs text-destructive'>{errors.icon_url.message}</p>
                   )}
                 </div>
               </div>
 
-              <div className="flex w-full flex-col gap-3">
-                <div className="space-y-1">
+              <div className='flex w-full flex-col gap-3'>
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-fee-pct-${paymentMethod.id}`}>{t('paymentMethodEdit.feePercentLabel')}</Label>
                   <Input
                     id={`pm-edit-fee-pct-${paymentMethod.id}`}
-                    type="number"
-                    step="0.01"
+                    type='number'
+                    step='0.01'
                     {...register('fee_percentage', {
                       valueAsNumber: true,
                       min: 0,
@@ -222,11 +222,11 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-fee-fixed-${paymentMethod.id}`}>{t('paymentMethodEdit.feeFixedLabel')}</Label>
                   <Input
                     id={`pm-edit-fee-fixed-${paymentMethod.id}`}
-                    type="number"
+                    type='number'
                     {...register('fee_fixed', {
                       valueAsNumber: true,
                       min: 0,
@@ -234,11 +234,11 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-min-${paymentMethod.id}`}>{t('paymentMethodEdit.minAmountLabel')}</Label>
                   <Input
                     id={`pm-edit-min-${paymentMethod.id}`}
-                    type="number"
+                    type='number'
                     {...register('min_amount', {
                       valueAsNumber: true,
                       min: 0,
@@ -246,11 +246,11 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-max-${paymentMethod.id}`}>{t('paymentMethodEdit.maxAmountLabel')}</Label>
                   <Input
                     id={`pm-edit-max-${paymentMethod.id}`}
-                    type="number"
+                    type='number'
                     {...register('max_amount', {
                       valueAsNumber: true,
                       validate: (v, f) => v >= f.min_amount || t('paymentMethodEdit.maxMinValidation'),
@@ -258,23 +258,23 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   <Label htmlFor={`pm-edit-sort-${paymentMethod.id}`}>{t('paymentMethodEdit.sortOrderLabel')}</Label>
                   <Input
                     id={`pm-edit-sort-${paymentMethod.id}`}
-                    type="number"
+                    type='number'
                     {...register('sort_order', {
                       valueAsNumber: true,
                     })}
                   />
                 </div>
 
-                <div className="space-y-2">
+                <div className='space-y-2'>
                   <Label>{t('paymentMethodEdit.statusLabel')}</Label>
-                  <input type="hidden" {...register('is_active')} />
+                  <input type='hidden' {...register('is_active')} />
 
-                  <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
-                    <span className="text-sm font-medium">
+                  <div className='flex items-center justify-between rounded-lg border border-border/80 px-3 py-2'>
+                    <span className='text-sm font-medium'>
                       {watch('is_active') ? t('paymentMethodEdit.statusActive') : t('paymentMethodEdit.statusInactive')}
                     </span>
 
@@ -285,7 +285,7 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                     />
                   </div>
 
-                  <p className="text-xs text-muted-foreground">
+                  <p className='text-xs text-muted-foreground'>
                     {watch('is_active')
                       ? t('paymentMethodEdit.statusActiveHint')
                       : t('paymentMethodEdit.statusInactiveHint')}
@@ -294,18 +294,18 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" className="rounded-lg" onClick={() => setOpen(false)}>
+            <DialogFooter className='gap-2 sm:gap-0'>
+              <Button type='button' variant='outline' className='rounded-lg' onClick={() => setOpen(false)}>
                 {t('paymentMethodEdit.cancel')}
               </Button>
               <Button
-                type="submit"
-                className="rounded-lg font-semibold"
+                type='submit'
+                className='rounded-lg font-semibold'
                 disabled={updatePaymentMethodMutation.isPending || isUploading}
               >
                 {updatePaymentMethodMutation.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  <span className='flex items-center gap-2'>
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     {t('paymentMethodEdit.saving')}
                   </span>
                 ) : (

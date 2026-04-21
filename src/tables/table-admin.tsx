@@ -25,14 +25,14 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     accessorKey: 'username',
     header: t('adminTable.colUsername'),
     cell: ({ row }) => (
-      <div className="font-medium text-gray-900">{row.original.username}</div>
+      <div className='font-medium text-gray-900'>{row.original.username}</div>
     ),
   },
   {
     accessorKey: 'email',
     header: t('adminTable.colEmail'),
     cell: ({ row }) => (
-      <div className="max-w-[14rem] truncate font-medium text-gray-900 sm:max-w-xs">
+      <div className='max-w-[14rem] truncate font-medium text-gray-900 sm:max-w-xs'>
         {row.original.email}
       </div>
     ),
@@ -43,16 +43,16 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     cell: ({ row }) => {
       const role = row.original.role
       return (
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           {role === 'dev' && (
-            <ShieldAlert className="h-4 w-4 shrink-0 text-purple-600" aria-hidden />
+            <ShieldAlert className='h-4 w-4 shrink-0 text-purple-600' aria-hidden />
           )}
           {role === 'admin' && (
-            <ShieldCheck className="h-4 w-4 shrink-0 text-blue-600" aria-hidden />
+            <ShieldCheck className='h-4 w-4 shrink-0 text-blue-600' aria-hidden />
           )}
-          {role === 'noc' && <Shield className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />}
+          {role === 'noc' && <Shield className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />}
           <Badge
-            variant="outline"
+            variant='outline'
             className={cn('text-[10px] font-semibold uppercase tracking-wide', roleBadgeClass(role))}
           >
             {role}
@@ -67,11 +67,11 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     cell: ({ row }) => {
       const enabled = row.original.two_factor_enabled
       return enabled ? (
-        <Badge variant="success" className="font-medium">
+        <Badge variant='success' className='font-medium'>
           {t('adminTable.enabled')}
         </Badge>
       ) : (
-        <Badge variant="outline" className="border-border font-medium text-muted-foreground">
+        <Badge variant='outline' className='border-border font-medium text-muted-foreground'>
           {t('adminTable.disabled')}
         </Badge>
       )
@@ -81,7 +81,7 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     id: 'actions',
     header: t('adminTable.colActions'),
     cell: ({ row }) => (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className='flex flex-wrap items-center gap-2'>
         <UpdateAdminRole id={row.original.id} currentRole={row.original.role} />
         <DeleteAdminButton id={row.original.id} email={row.original.email} />
       </div>

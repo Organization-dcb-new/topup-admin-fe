@@ -30,16 +30,16 @@ export function SummaryFilter({
 }: FilterProps) {
   const { t } = useTranslation('common')
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm">
-      <div className="grid gap-2">
+    <div className='mb-6 flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm'>
+      <div className='grid gap-2'>
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
+              variant='outline'
               aria-label={t('summaryFilter.pickDateAria')}
               className={`w-65 justify-start text-left font-normal ${!date && 'text-muted-foreground'}`}
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
+              <CalendarIcon className='mr-2 h-4 w-4' />
               {date?.from ? (
                 date.to ? (
                   <>
@@ -54,10 +54,10 @@ export function SummaryFilter({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className='w-auto p-0' align='start'>
             <Calendar
               initialFocus
-              mode="range"
+              mode='range'
               selected={date}
               onSelect={setDate}
               numberOfMonths={2}
@@ -67,17 +67,17 @@ export function SummaryFilter({
       </div>
 
       <Select value={groupBy} onValueChange={setGroupBy}>
-        <SelectTrigger className="w-37.5" aria-label={t('summaryFilter.groupByPlaceholder')}>
+        <SelectTrigger className='w-37.5' aria-label={t('summaryFilter.groupByPlaceholder')}>
           <SelectValue placeholder={t('summaryFilter.groupByPlaceholder')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="hour">{t('summaryFilter.groupHour')}</SelectItem>
-          <SelectItem value="day">{t('summaryFilter.groupDay')}</SelectItem>
+          <SelectItem value='hour'>{t('summaryFilter.groupHour')}</SelectItem>
+          <SelectItem value='day'>{t('summaryFilter.groupDay')}</SelectItem>
         </SelectContent>
       </Select>
 
-      <Button variant="ghost" onClick={onReset} className="text-muted-foreground">
-        <FilterX className="mr-2 h-4 w-4" />
+      <Button variant='ghost' onClick={onReset} className='text-muted-foreground'>
+        <FilterX className='mr-2 h-4 w-4' />
         {t('summaryFilter.reset')}
       </Button>
     </div>

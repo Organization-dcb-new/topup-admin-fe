@@ -60,35 +60,35 @@ export function AddPaymentMethodToPaymentCategoryButton({ categoryId }: Props) {
     >
       <AlertDialogTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          type="button"
-          className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
-          aria-label="Tautkan metode pembayaran ke kategori"
+          variant='ghost'
+          size='icon'
+          type='button'
+          className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
+          aria-label='Tautkan metode pembayaran ke kategori'
         >
-          <Plus className="h-4 w-4" aria-hidden />
+          <Plus className='h-4 w-4' aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="rounded-xl sm:max-w-md">
-        <AlertDialogHeader className="space-y-1 text-left">
-          <AlertDialogTitle className="text-lg font-semibold tracking-tight">
+      <AlertDialogContent className='rounded-xl sm:max-w-md'>
+        <AlertDialogHeader className='space-y-1 text-left'>
+          <AlertDialogTitle className='text-lg font-semibold tracking-tight'>
             Tautkan metode pembayaran
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-muted-foreground">
+          <AlertDialogDescription className='text-sm text-muted-foreground'>
             Pilih metode yang masuk ke kategori ini. Centang untuk menambah; hapus centang untuk
             mengeluarkan dari daftar yang akan disimpan.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border/80 bg-muted/10 p-2">
+        <div className='max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border/80 bg-muted/10 p-2'>
           {isLoadingMethods ? (
-            <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
-              <p className="text-sm text-muted-foreground">Memuat daftar metode pembayaran…</p>
+            <div className='flex flex-col items-center justify-center gap-3 py-10 text-center'>
+              <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+              <p className='text-sm text-muted-foreground'>Memuat daftar metode pembayaran…</p>
             </div>
           ) : methods.length === 0 ? (
-            <p className="py-8 text-center text-sm text-muted-foreground">
+            <p className='py-8 text-center text-sm text-muted-foreground'>
               Belum ada metode pembayaran.
             </p>
           ) : (
@@ -96,7 +96,7 @@ export function AddPaymentMethodToPaymentCategoryButton({ categoryId }: Props) {
               <label
                 key={method.id}
                 htmlFor={`pm-assign-${categoryId}-${method.id}`}
-                className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-muted/60"
+                className='flex cursor-pointer items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-muted/60'
               >
                 <Checkbox
                   id={`pm-assign-${categoryId}-${method.id}`}
@@ -104,25 +104,25 @@ export function AddPaymentMethodToPaymentCategoryButton({ categoryId }: Props) {
                   onCheckedChange={() => toggle(method.id)}
                   disabled={mutation.isPending || isLoadingMethods}
                 />
-                <span className="text-sm font-medium text-foreground">{method.name}</span>
+                <span className='text-sm font-medium text-foreground'>{method.name}</span>
               </label>
             ))
           )}
         </div>
 
-        <AlertDialogFooter className="gap-2 sm:gap-0">
-          <AlertDialogCancel className="rounded-lg" type="button" disabled={mutation.isPending}>
+        <AlertDialogFooter className='gap-2 sm:gap-0'>
+          <AlertDialogCancel className='rounded-lg' type='button' disabled={mutation.isPending}>
             Batal
           </AlertDialogCancel>
           <Button
-            type="button"
-            className="rounded-lg font-semibold"
+            type='button'
+            className='rounded-lg font-semibold'
             onClick={handleSubmit}
             disabled={mutation.isPending || isLoadingMethods || methods.length === 0}
           >
             {mutation.isPending ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              <span className='flex items-center gap-2'>
+                <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                 Menyimpan…
               </span>
             ) : (
