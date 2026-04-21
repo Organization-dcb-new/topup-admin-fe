@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 export function BannerActionsHeader() {
   const { t } = useTranslation('common')
   return (
-    <span className="flex w-full min-w-[10rem] justify-end pr-1 text-right">
+    <span className='flex w-full min-w-[10rem] justify-end pr-1 text-right'>
       {t('bannerTable.actionsHeader')}
     </span>
   )
@@ -15,19 +15,19 @@ export function BannerActionsHeader() {
 export function BannerRowActions({ banner }: { banner: Banner }) {
   const { t } = useTranslation('common')
   return (
-    <div className="flex w-full min-w-[10rem] justify-end pr-0.5">
+    <div className='flex w-full min-w-[10rem] justify-end pr-0.5'>
       <div
-        className="inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35"
-        role="group"
+        className='inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35'
+        role='group'
         aria-label={t('bannerTable.rowActionsAria')}
       >
         <UpdateBanner
           banner={banner}
-          triggerClassName="border-0 bg-transparent shadow-none hover:bg-muted/70"
+          triggerClassName='border-0 bg-transparent shadow-none hover:bg-muted/70'
         />
         <DeleteBannerButton
           id={banner.id}
-          triggerClassName="border-0 bg-transparent shadow-none hover:bg-destructive/10"
+          triggerClassName='border-0 bg-transparent shadow-none hover:bg-destructive/10'
         />
       </div>
     </div>

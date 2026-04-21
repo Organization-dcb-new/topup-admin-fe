@@ -38,18 +38,18 @@ function PresetChipRow({
 }) {
   const list = kind === 'idr' ? IDR_PRESET_VALUES : PERCENT_PRESET_VALUES
   return (
-    <div className="grid gap-1.5 sm:grid-cols-[minmax(0,9.5rem)_1fr] sm:items-start sm:gap-3">
-      <span className="hidden pt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:block">
+    <div className='grid gap-1.5 sm:grid-cols-[minmax(0,9.5rem)_1fr] sm:items-start sm:gap-3'>
+      <span className='hidden pt-1 text-[10px] font-medium uppercase tracking-wide text-muted-foreground sm:block'>
         {presetLabel}
       </span>
-      <div className="flex min-w-0 flex-wrap gap-1.5">
+      <div className='flex min-w-0 flex-wrap gap-1.5'>
         {list.map((val) => (
           <Button
             key={val}
-            type="button"
-            variant="secondary"
-            size="xs"
-            className="h-7 shrink-0 px-2.5 text-[11px] font-medium tabular-nums"
+            type='button'
+            variant='secondary'
+            size='xs'
+            className='h-7 shrink-0 px-2.5 text-[11px] font-medium tabular-nums'
             onClick={() => onPick(val)}
           >
             {kind === 'idr' ? idrPresetLabel(val) : `${val}%`}
@@ -110,8 +110,8 @@ function FilterRow({
   allowDecimal?: boolean
 }) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[minmax(0,9.5rem)_1fr] sm:items-center sm:gap-3">
-      <Label className="text-xs leading-snug text-muted-foreground">{label}</Label>
+    <div className='grid gap-1 sm:grid-cols-[minmax(0,9.5rem)_1fr] sm:items-center sm:gap-3'>
+      <Label className='text-xs leading-snug text-muted-foreground'>{label}</Label>
       <Input
         className={cn('h-9 shadow-sm', mono && 'font-mono tabular-nums')}
         inputMode={allowDecimal ? 'decimal' : 'numeric'}
@@ -133,14 +133,14 @@ function FilterCard({
   children: ReactNode
 }) {
   return (
-    <div className="space-y-3 rounded-lg border border-border/70 bg-muted/10 p-4">
-      <div className="space-y-0.5">
-        <p className="text-sm font-medium text-foreground">{title}</p>
+    <div className='space-y-3 rounded-lg border border-border/70 bg-muted/10 p-4'>
+      <div className='space-y-0.5'>
+        <p className='text-sm font-medium text-foreground'>{title}</p>
         {description ? (
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className='text-xs text-muted-foreground'>{description}</p>
         ) : null}
       </div>
-      <div className="space-y-2.5">{children}</div>
+      <div className='space-y-2.5'>{children}</div>
     </div>
   )
 }
@@ -156,14 +156,14 @@ export function ProductAmountFilters({ value, onChange }: Props) {
   const p = (key: keyof ProductAmountFiltersState) => (v: string) => onChange({ [key]: v })
 
   return (
-    <section className="border-t border-gray-100 pt-4">
+    <section className='border-t border-gray-100 pt-4'>
       <button
-        type="button"
-        className="flex w-full items-start gap-2 rounded-lg py-1 text-left outline-none ring-offset-background transition-colors hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        type='button'
+        className='flex w-full items-start gap-2 rounded-lg py-1 text-left outline-none ring-offset-background transition-colors hover:bg-muted/35 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
         onClick={() => setNominalOpen((o) => !o)}
         aria-expanded={nominalOpen}
-        aria-controls="product-nominal-filters-panel"
-        id="product-nominal-filters-heading"
+        aria-controls='product-nominal-filters-panel'
+        id='product-nominal-filters-heading'
       >
         <ChevronDown
           className={cn(
@@ -172,11 +172,11 @@ export function ProductAmountFilters({ value, onChange }: Props) {
           )}
           aria-hidden
         />
-        <span className="min-w-0 flex-1 space-y-0.5">
-          <span className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <span className='min-w-0 flex-1 space-y-0.5'>
+          <span className='block text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
             {t('productFilters.nominalTitle')}
           </span>
-          <span className="block text-xs text-muted-foreground">
+          <span className='block text-xs text-muted-foreground'>
             {nominalOpen
               ? t('productFilters.nominalOpenHint')
               : t('productFilters.nominalClosedHint')}
@@ -186,16 +186,16 @@ export function ProductAmountFilters({ value, onChange }: Props) {
 
       {nominalOpen ? (
         <div
-          id="product-nominal-filters-panel"
-          role="region"
-          aria-labelledby="product-nominal-filters-heading"
-          className="mt-3 space-y-4"
+          id='product-nominal-filters-panel'
+          role='region'
+          aria-labelledby='product-nominal-filters-heading'
+          className='mt-3 space-y-4'
         >
-          <p className="text-xs text-muted-foreground">
+          <p className='text-xs text-muted-foreground'>
             {t('productFilters.nominalHelp')}
           </p>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className='grid gap-4 lg:grid-cols-2'>
         <FilterCard
           title={t('productFilters.additionalFeeTitle')}
           description={t('productFilters.additionalFeeDesc')}
@@ -206,7 +206,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             onChange={p('additionalFeeAbove')}
           />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ additionalFeeAbove: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -216,7 +216,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             onChange={p('additionalFeeBelow')}
           />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ additionalFeeBelow: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -233,7 +233,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             allowDecimal
           />
           <PresetChipRow
-            kind="percent"
+            kind='percent'
             onPick={(v) => onChange({ additionalPercentAbove: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -244,7 +244,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             allowDecimal
           />
           <PresetChipRow
-            kind="percent"
+            kind='percent'
             onPick={(v) => onChange({ additionalPercentBelow: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -256,13 +256,13 @@ export function ProductAmountFilters({ value, onChange }: Props) {
         >
           <FilterRow label={t('productFilters.above')} value={value.basePriceAbove} onChange={p('basePriceAbove')} />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ basePriceAbove: v })}
             presetLabel={t('productFilters.preset')}
           />
           <FilterRow label={t('productFilters.below')} value={value.basePriceBelow} onChange={p('basePriceBelow')} />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ basePriceBelow: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -279,7 +279,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             onChange={p('sellingPriceAbove')}
           />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ sellingPriceAbove: v })}
             presetLabel={t('productFilters.preset')}
           />
@@ -289,7 +289,7 @@ export function ProductAmountFilters({ value, onChange }: Props) {
             onChange={p('sellingPriceBelow')}
           />
           <PresetChipRow
-            kind="idr"
+            kind='idr'
             onPick={(v) => onChange({ sellingPriceBelow: v })}
             presetLabel={t('productFilters.preset')}
           />

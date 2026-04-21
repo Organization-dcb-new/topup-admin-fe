@@ -44,19 +44,19 @@ export default function ButtonManage({
   )
 
   return (
-    <div className="space-y-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+    <div className='space-y-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5'>
+      <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
         {t('blogPublish.sectionTitle')}
       </p>
 
-      <div className="space-y-2" role="radiogroup" aria-label={t('blogPublish.radiogroupAria')}>
+      <div className='space-y-2' role='radiogroup' aria-label={t('blogPublish.radiogroupAria')}>
         {statusOptions.map((item) => {
           const selected = currentStatusValue === item.id
           return (
             <button
               key={item.id}
-              type="button"
-              role="radio"
+              type='button'
+              role='radio'
               aria-checked={selected}
               onClick={() => onStatusChange(item.id)}
               className={cn(
@@ -72,9 +72,9 @@ export default function ButtonManage({
                   selected ? 'border-primary bg-primary' : 'border-muted-foreground/40 bg-background',
                 )}
               >
-                {selected && <span className="h-1.5 w-1.5 rounded-full bg-background" />}
+                {selected && <span className='h-1.5 w-1.5 rounded-full bg-background' />}
               </span>
-              <span className="min-w-0">
+              <span className='min-w-0'>
                 <span
                   className={cn(
                     'block text-xs font-semibold',
@@ -83,33 +83,33 @@ export default function ButtonManage({
                 >
                   {item.label}
                 </span>
-                <span className="block text-[10px] text-muted-foreground">{item.desc}</span>
+                <span className='block text-[10px] text-muted-foreground'>{item.desc}</span>
               </span>
             </button>
           )
         })}
       </div>
 
-      <div className="border-t border-border/60 pt-4">
+      <div className='border-t border-border/60 pt-4'>
         <Button
-          type="button"
+          type='button'
           disabled={isDisabled}
-          className="h-11 w-full text-xs font-semibold uppercase tracking-wide"
+          className='h-11 w-full text-xs font-semibold uppercase tracking-wide'
           onClick={() => handlePublish(currentStatusValue)}
         >
           {isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' aria-hidden />
               {t('blogPublish.processing')}
             </>
           ) : isEdit ? (
             <>
-              <Save className="mr-2 h-4 w-4" aria-hidden />
+              <Save className='mr-2 h-4 w-4' aria-hidden />
               {t('blogPublish.saveChanges')}
             </>
           ) : (
             <>
-              <Send className="mr-2 h-4 w-4" aria-hidden />
+              <Send className='mr-2 h-4 w-4' aria-hidden />
               {currentStatusValue === 'published' ? t('blogPublish.publish') : t('blogPublish.saveDraft')}
             </>
           )}

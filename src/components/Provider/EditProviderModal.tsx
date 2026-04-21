@@ -76,56 +76,56 @@ export function EditProviderModal({ provider }: Props) {
   return (
     <>
       <Button
-        type="button"
-        variant="ghost"
-        size="icon"
+        type='button'
+        variant='ghost'
+        size='icon'
         onClick={() => setOpen(true)}
-        className="cursor-pointer"
+        className='cursor-pointer'
         aria-label={t('providerEdit.triggerAria', { name: provider.name })}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-lg">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">{t('providerEdit.title')}</DialogTitle>
+        <DialogContent className='rounded-xl sm:max-w-lg'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>{t('providerEdit.title')}</DialogTitle>
             <DialogDescription>
               {t('providerEdit.description')}
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor={nameId} className="text-sm font-medium">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='space-y-2'>
+              <Label htmlFor={nameId} className='text-sm font-medium'>
                 {t('providerEdit.nameLabel')}
               </Label>
               <Input
                 id={nameId}
-                autoComplete="off"
-                className="rounded-lg"
+                autoComplete='off'
+                className='rounded-lg'
                 aria-invalid={!!errors.name}
                 {...register('name', { required: t('providerEdit.nameRequired') })}
               />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+              {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={codeId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={codeId} className='text-sm font-medium'>
                 {t('providerEdit.codeLabel')}
               </Label>
-              <Input id={codeId} disabled className="rounded-lg bg-muted/50 font-mono text-sm" {...register('code')} />
-              <p className="text-xs text-muted-foreground">{t('providerEdit.codeHint')}</p>
+              <Input id={codeId} disabled className='rounded-lg bg-muted/50 font-mono text-sm' {...register('code')} />
+              <p className='text-xs text-muted-foreground'>{t('providerEdit.codeHint')}</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={apiUrlId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={apiUrlId} className='text-sm font-medium'>
                 {t('providerEdit.apiUrlLabel')}
               </Label>
               <Input
                 id={apiUrlId}
-                autoComplete="off"
-                className="rounded-lg"
+                autoComplete='off'
+                className='rounded-lg'
                 aria-invalid={!!errors.api_url}
                 {...register('api_url', {
                   required: t('providerEdit.apiUrlRequired'),
@@ -136,58 +136,58 @@ export function EditProviderModal({ provider }: Props) {
                 })}
               />
               {errors.api_url && (
-                <p className="text-xs text-destructive">{errors.api_url.message}</p>
+                <p className='text-xs text-destructive'>{errors.api_url.message}</p>
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={apiKeyId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={apiKeyId} className='text-sm font-medium'>
                 {t('providerEdit.apiKeyLabel')}
               </Label>
-              <p className="text-xs text-muted-foreground">
+              <p className='text-xs text-muted-foreground'>
                 {t('providerEdit.apiKeyHint')}
               </p>
-              <div className="relative">
+              <div className='relative'>
                 <Input
                   id={apiKeyId}
                   type={showApiKey ? 'text' : 'password'}
-                  autoComplete="off"
-                  className="rounded-lg pr-10"
+                  autoComplete='off'
+                  className='rounded-lg pr-10'
                   placeholder={t('providerEdit.apiKeyPlaceholder')}
                   {...register('api_key_encrypted')}
                 />
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => setShowApiKey((prev) => !prev)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className='absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground'
                   aria-label={showApiKey ? t('providerEdit.hideApiKey') : t('providerEdit.showApiKey')}
                 >
-                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showApiKey ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
                 </button>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={priorityId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={priorityId} className='text-sm font-medium'>
                 {t('providerEdit.priorityLabel')}
               </Label>
               <Input
                 id={priorityId}
-                type="number"
+                type='number'
                 min={0}
-                className="rounded-lg"
+                className='rounded-lg'
                 {...register('priority', { valueAsNumber: true })}
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={configId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={configId} className='text-sm font-medium'>
                 {t('providerEdit.configLabel')}
               </Label>
               <Textarea
                 id={configId}
                 rows={4}
-                className="max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm"
+                className='max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm'
                 aria-invalid={!!errors.config}
                 {...register('config', {
                   required: t('providerEdit.configRequired'),
@@ -203,22 +203,22 @@ export function EditProviderModal({ provider }: Props) {
                 })}
               />
               {errors.config?.message && (
-                <p className="text-xs text-destructive">{errors.config.message}</p>
+                <p className='text-xs text-destructive'>{errors.config.message}</p>
               )}
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-2">
-              <Button type="button" variant="outline" className="rounded-xl" onClick={() => setOpen(false)}>
+            <DialogFooter className='gap-2 sm:gap-2'>
+              <Button type='button' variant='outline' className='rounded-xl' onClick={() => setOpen(false)}>
                 {t('providerEdit.cancel')}
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={mutation.isPending}
-                className="inline-flex items-center gap-2 rounded-xl"
+                className='inline-flex items-center gap-2 rounded-xl'
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('providerEdit.saving')}
                   </>
                 ) : (

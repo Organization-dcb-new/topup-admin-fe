@@ -82,20 +82,20 @@ export function EditMaintenanceModal({
   return (
     <>
       <Button
-        type="button"
-        variant="ghost"
-        size="icon"
+        type='button'
+        variant='ghost'
+        size='icon'
         className={cn('cursor-pointer', triggerClassName)}
         aria-label={t('maintenanceEditModal.triggerAria', { name: maintenance.name })}
         onClick={openDialog}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-lg">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
+        <DialogContent className='rounded-xl sm:max-w-lg'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>
               {t('maintenanceEditModal.title')}
             </DialogTitle>
             <DialogDescription>{t('maintenanceEditModal.description')}</DialogDescription>
@@ -109,26 +109,26 @@ export function EditMaintenanceModal({
               }
               mutation.mutate(toUpdatePayload(v))
             })}
-            className="space-y-4"
+            className='space-y-4'
           >
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label htmlFor={nameId}>{t('maintenanceForm.nameLabel')}</Label>
               <Input
                 id={nameId}
-                autoComplete="off"
-                className="rounded-lg"
+                autoComplete='off'
+                className='rounded-lg'
                 aria-invalid={!!formState.errors.name}
                 {...register('name', { required: t('maintenanceForm.nameRequired') })}
               />
               {formState.errors.name && (
-                <p className="text-xs text-destructive">{formState.errors.name.message}</p>
+                <p className='text-xs text-destructive'>{formState.errors.name.message}</p>
               )}
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5">
-              <div className="min-w-0 space-y-0.5">
-                <p className="text-sm font-medium">{t('maintenanceForm.modeLabel')}</p>
-                <p className="text-xs text-muted-foreground">{t('maintenanceForm.modeHint')}</p>
+            <div className='flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5'>
+              <div className='min-w-0 space-y-0.5'>
+                <p className='text-sm font-medium'>{t('maintenanceForm.modeLabel')}</p>
+                <p className='text-xs text-muted-foreground'>{t('maintenanceForm.modeHint')}</p>
               </div>
               <Switch
                 checked={watch('is_maintenance')}
@@ -137,31 +137,31 @@ export function EditMaintenanceModal({
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2 sm:col-span-2">
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2 sm:col-span-2'>
                 <Label htmlFor={startId}>{t('maintenanceForm.startLabel')}</Label>
-                <Input id={startId} type="datetime-local" className="rounded-lg" {...register('start_time')} />
+                <Input id={startId} type='datetime-local' className='rounded-lg' {...register('start_time')} />
               </div>
-              <div className="space-y-2 sm:col-span-2">
+              <div className='space-y-2 sm:col-span-2'>
                 <Label htmlFor={endId}>{t('maintenanceForm.endLabel')}</Label>
-                <Input id={endId} type="datetime-local" className="rounded-lg" {...register('end_time')} />
+                <Input id={endId} type='datetime-local' className='rounded-lg' {...register('end_time')} />
               </div>
             </div>
 
             {formState.errors.root?.message && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className='text-sm text-destructive' role='alert'>
                 {formState.errors.root.message}
               </p>
             )}
 
-            <DialogFooter className="gap-2 sm:gap-2">
-              <Button type="button" variant="outline" className="cursor-pointer" onClick={() => setOpen(false)}>
+            <DialogFooter className='gap-2 sm:gap-2'>
+              <Button type='button' variant='outline' className='cursor-pointer' onClick={() => setOpen(false)}>
                 {t('maintenanceForm.cancel')}
               </Button>
-              <Button type="submit" disabled={mutation.isPending} className="cursor-pointer gap-2">
+              <Button type='submit' disabled={mutation.isPending} className='cursor-pointer gap-2'>
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     {t('maintenanceForm.saving')}
                   </>
                 ) : (

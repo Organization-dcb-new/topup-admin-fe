@@ -30,7 +30,7 @@ export function DeleteBlogDialog({
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          type="button"
+          type='button'
           variant={inToolbar ? 'outline' : 'ghost'}
           size={inToolbar ? 'sm' : 'icon'}
           className={cn(
@@ -43,43 +43,43 @@ export function DeleteBlogDialog({
           disabled={deleteMutation.isPending}
           aria-label={t('deleteBlogModal.triggerAria')}
         >
-          <Trash2 className="h-4 w-4 shrink-0" aria-hidden />
-          {inToolbar ? <span className="hidden sm:inline">{t('deleteBlogModal.triggerLabel')}</span> : null}
+          <Trash2 className='h-4 w-4 shrink-0' aria-hidden />
+          {inToolbar ? <span className='hidden sm:inline'>{t('deleteBlogModal.triggerLabel')}</span> : null}
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="gap-0 overflow-hidden p-0 sm:max-w-lg">
-        <div className="border-b border-border bg-muted/30 px-6 py-5">
-          <AlertDialogHeader className="gap-1.5 text-left">
-            <div className="flex items-center gap-2">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
-                <Trash2 className="h-4 w-4" aria-hidden />
+      <AlertDialogContent className='gap-0 overflow-hidden p-0 sm:max-w-lg'>
+        <div className='border-b border-border bg-muted/30 px-6 py-5'>
+          <AlertDialogHeader className='gap-1.5 text-left'>
+            <div className='flex items-center gap-2'>
+              <span className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-destructive/10 text-destructive'>
+                <Trash2 className='h-4 w-4' aria-hidden />
               </span>
-              <AlertDialogTitle className="text-xl font-semibold tracking-tight">
+              <AlertDialogTitle className='text-xl font-semibold tracking-tight'>
                 {t('deleteBlogModal.title')}
               </AlertDialogTitle>
             </div>
-            <AlertDialogDescription className="text-left">
+            <AlertDialogDescription className='text-left'>
               {t('deleteBlogModal.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
 
-        <AlertDialogFooter className="gap-2 border-t border-border px-6 py-5 sm:pt-5">
+        <AlertDialogFooter className='gap-2 border-t border-border px-6 py-5 sm:pt-5'>
           <AlertDialogCancel
-            className="cursor-pointer sm:min-w-[5.5rem]"
+            className='cursor-pointer sm:min-w-[5.5rem]'
             disabled={deleteMutation.isPending}
           >
             {t('deleteBlogModal.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
-            className="inline-flex cursor-pointer items-center justify-center bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]"
+            className='inline-flex cursor-pointer items-center justify-center bg-destructive text-destructive-foreground hover:bg-destructive/90 sm:min-w-[5.5rem]'
             onClick={() => deleteMutation.mutate(blogId)}
             disabled={deleteMutation.isPending}
           >
             {deleteMutation.isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                <Loader2 className='mr-2 h-4 w-4 shrink-0 animate-spin' aria-hidden />
                 {t('deleteBlogModal.deleting')}
               </>
             ) : (

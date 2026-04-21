@@ -11,18 +11,18 @@ interface TransactionInputProps {
 export default function TransactionSearchInput({ value, onChange, id }: TransactionInputProps) {
   const { t } = useTranslation('common')
   return (
-    <div className="relative w-full min-w-0">
+    <div className='relative w-full min-w-0'>
       <Search
-        className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+        className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground'
         aria-hidden
       />
       <Input
         id={id}
-        type="search"
-        enterKeyHint="search"
-        autoComplete="off"
+        type='search'
+        enterKeyHint='search'
+        autoComplete='off'
         placeholder={t('transactionFilters.search.placeholder')}
-        className="h-10 pl-9"
+        className='h-10 pl-9'
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label={t('transactionFilters.search.ariaLabel')}

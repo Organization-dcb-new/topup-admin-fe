@@ -44,9 +44,9 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
     {
       accessorKey: 'id',
       header: () => (
-        <span className="font-medium">
+        <span className='font-medium'>
           {t('transactionTable.colTransactionId')}
-          <span className="mt-0.5 block text-[10px] font-normal normal-case tracking-normal text-muted-foreground">
+          <span className='mt-0.5 block text-[10px] font-normal normal-case tracking-normal text-muted-foreground'>
             {t('transactionTable.colTransactionIdSub')}
           </span>
         </span>
@@ -54,31 +54,31 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
       cell: ({ row }) => {
         const txId = row.original.id
         return (
-          <div className="flex max-w-[min(100%,18rem)] items-center gap-0.5">
+          <div className='flex max-w-[min(100%,18rem)] items-center gap-0.5'>
             <Link
               to={`/transactions/${txId}`}
-              className="group inline-flex min-w-0 flex-1 items-center gap-1 rounded-md py-0.5 pl-0.5 pr-1 text-left font-medium text-primary transition-colors hover:bg-primary/5 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              className='group inline-flex min-w-0 flex-1 items-center gap-1 rounded-md py-0.5 pl-0.5 pr-1 text-left font-medium text-primary transition-colors hover:bg-primary/5 focus-visible:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
               title={t('transactionTable.openDetailTitle', { id: txId })}
               aria-label={t('transactionTable.openDetailAria', { id: txId })}
             >
-              <span className="min-w-0 select-text truncate font-mono text-sm underline-offset-4 group-hover:underline">
+              <span className='min-w-0 select-text truncate font-mono text-sm underline-offset-4 group-hover:underline'>
                 {txId}
               </span>
               <ChevronRight
-                className="h-4 w-4 shrink-0 text-primary/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary"
+                className='h-4 w-4 shrink-0 text-primary/60 transition-transform group-hover:translate-x-0.5 group-hover:text-primary'
                 aria-hidden
               />
             </Link>
             <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+              type='button'
+              variant='ghost'
+              size='icon'
+              className='h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground'
               title={t('transactionTable.copyIdTitle')}
               aria-label={t('transactionTable.copyIdAria')}
               onClick={() => void copyTransactionId(txId)}
             >
-              <Copy className="h-3.5 w-3.5" aria-hidden />
+              <Copy className='h-3.5 w-3.5' aria-hidden />
             </Button>
           </div>
         )
@@ -86,36 +86,36 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
     },
     {
       accessorKey: 'payment_number',
-      header: () => <span className="font-medium">{t('transactionTable.colPayNumber')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colPayNumber')}</span>,
       cell: ({ row }) => (
-        <span className="font-mono text-sm tabular-nums text-foreground">
+        <span className='font-mono text-sm tabular-nums text-foreground'>
           {row.original.payment_number}
         </span>
       ),
     },
     {
       accessorKey: 'app_name',
-      header: () => <span className="font-medium">{t('transactionTable.colApp')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colApp')}</span>,
       cell: ({ row }) => (
-        <span className="max-w-[10rem] truncate text-sm" title={row.original.app_name}>
+        <span className='max-w-[10rem] truncate text-sm' title={row.original.app_name}>
           {row.original.app_name}
         </span>
       ),
     },
     {
       accessorKey: 'order_id',
-      header: () => <span className="font-medium">{t('transactionTable.colOrderId')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colOrderId')}</span>,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-muted-foreground">{row.original.order_id}</span>
+        <span className='font-mono text-sm text-muted-foreground'>{row.original.order_id}</span>
       ),
     },
     {
       accessorKey: 'amount',
       header: () => (
-        <span className="block text-right font-medium">{t('transactionTable.colAmount')}</span>
+        <span className='block text-right font-medium'>{t('transactionTable.colAmount')}</span>
       ),
       cell: ({ row }) => (
-        <span className="block text-right text-sm font-medium tabular-nums text-foreground">
+        <span className='block text-right text-sm font-medium tabular-nums text-foreground'>
           {formatIdr(row.original.amount)}
         </span>
       ),
@@ -123,40 +123,40 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
     {
       accessorKey: 'margin',
       header: () => (
-        <span className="block text-right font-medium">{t('transactionTable.colMargin')}</span>
+        <span className='block text-right font-medium'>{t('transactionTable.colMargin')}</span>
       ),
       cell: ({ row }) => (
-        <span className="block text-right text-sm tabular-nums text-muted-foreground">
+        <span className='block text-right text-sm tabular-nums text-muted-foreground'>
           {formatIdr(row.original.margin)}
         </span>
       ),
     },
     {
       accessorKey: 'payment_channel',
-      header: () => <span className="font-medium">{t('transactionTable.colChannel')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colChannel')}</span>,
       cell: ({ row }) => (
-        <span className="text-sm text-foreground">{row.original.payment_channel}</span>
+        <span className='text-sm text-foreground'>{row.original.payment_channel}</span>
       ),
     },
     {
       accessorKey: 'va_number',
-      header: () => <span className="font-medium">{t('transactionTable.colVa')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colVa')}</span>,
       cell: ({ row }) => (
-        <span className="font-mono text-sm tabular-nums text-muted-foreground">
+        <span className='font-mono text-sm tabular-nums text-muted-foreground'>
           {row.original.va_number || '—'}
         </span>
       ),
     },
     {
       accessorKey: 'status',
-      header: () => <span className="font-medium">{t('transactionTable.colStatus')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colStatus')}</span>,
       cell: ({ row }) => {
         const status = row.original.status
         const variant =
           status === 'PAID' ? 'success' : status === 'PENDING' ? 'outline' : 'destructive'
 
         return (
-          <Badge variant={variant} className="font-medium">
+          <Badge variant={variant} className='font-medium'>
             {statusLabel(status, t)}
           </Badge>
         )
@@ -164,11 +164,11 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
     },
     {
       accessorKey: 'created_at',
-      header: () => <span className="font-medium">{t('transactionTable.colCreated')}</span>,
+      header: () => <span className='font-medium'>{t('transactionTable.colCreated')}</span>,
       cell: ({ row }) => {
         const date = parseBackendDate(row.original.created_at)
         return (
-          <span className="whitespace-nowrap text-sm tabular-nums text-muted-foreground">
+          <span className='whitespace-nowrap text-sm tabular-nums text-muted-foreground'>
             {date ? format(date, 'dd MMM yyyy, HH:mm:ss', { locale: dateLocale() }) : '—'}
           </span>
         )

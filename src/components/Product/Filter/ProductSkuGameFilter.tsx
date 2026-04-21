@@ -35,35 +35,35 @@ export function ProductSkuGameFilter({
   const selectedGameLabel = games?.find((g: GameNames) => g.name === gameName)?.name
 
   return (
-    <div className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:items-end">
-      <div className="grid min-w-0 gap-1.5">
-        <span className="text-xs text-muted-foreground">{t('productFilters.skuLabel')}</span>
+    <div className='grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:items-end'>
+      <div className='grid min-w-0 gap-1.5'>
+        <span className='text-xs text-muted-foreground'>{t('productFilters.skuLabel')}</span>
         <Input
           placeholder={t('productFilters.skuPlaceholder')}
-          className="h-10 w-full min-w-0 shadow-sm"
+          className='h-10 w-full min-w-0 shadow-sm'
           value={sku}
           onChange={(e) => onSkuChange(e.target.value)}
           aria-label={t('productFilters.skuAria')}
         />
       </div>
-      <div className="grid min-w-0 gap-1.5">
-        <span className="text-xs text-muted-foreground">{t('productFilters.gameLabel')}</span>
+      <div className='grid min-w-0 gap-1.5'>
+        <span className='text-xs text-muted-foreground'>{t('productFilters.gameLabel')}</span>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
-              type="button"
-              variant="outline"
-              role="combobox"
+              type='button'
+              variant='outline'
+              role='combobox'
               aria-expanded={open}
-              className="h-10 w-full min-w-0 justify-between font-normal shadow-sm"
+              className='h-10 w-full min-w-0 justify-between font-normal shadow-sm'
             >
-              <span className="truncate">{selectedGameLabel || t('productFilters.gamePlaceholder')}</span>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" aria-hidden />
+              <span className='truncate'>{selectedGameLabel || t('productFilters.gamePlaceholder')}</span>
+              <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' aria-hidden />
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            className="w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0"
-            align="start"
+            className='w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0'
+            align='start'
           >
           <Command>
             <CommandInput placeholder={t('productFilters.gameSearchPlaceholder')} />
@@ -71,7 +71,7 @@ export function ProductSkuGameFilter({
               <CommandEmpty>{t('productFilters.gameEmpty')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
-                  value=""
+                  value=''
                   onSelect={() => {
                     onGameNameChange('')
                     setOpen(false)

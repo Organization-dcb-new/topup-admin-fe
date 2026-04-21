@@ -14,7 +14,7 @@ export function getBannerColumns(t: TFunction): ColumnDef<Banner>[] {
           <img
             src={src}
             alt={t('bannerTable.imageAlt')}
-            className="h-12 w-auto rounded border"
+            className='h-12 w-auto rounded border'
             onError={(e) => {
               e.currentTarget.src = '/placeholder.png'
             }}

@@ -29,43 +29,43 @@ export function DeleteGameModal({ id }: { id: string }) {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          type="button"
-          className="h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          variant='ghost'
+          size='icon'
+          type='button'
+          className='h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
           disabled={mutation.isPending}
           aria-label={t('deleteGameModal.triggerAria')}
         >
-          <Trash2 className="h-4 w-4" aria-hidden />
+          <Trash2 className='h-4 w-4' aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="rounded-xl">
-        <AlertDialogHeader className="space-y-1 text-left">
-          <AlertDialogTitle className="text-lg font-semibold">{t('deleteGameModal.title')}</AlertDialogTitle>
-          <AlertDialogDescription className="text-sm text-muted-foreground">
+      <AlertDialogContent className='rounded-xl'>
+        <AlertDialogHeader className='space-y-1 text-left'>
+          <AlertDialogTitle className='text-lg font-semibold'>{t('deleteGameModal.title')}</AlertDialogTitle>
+          <AlertDialogDescription className='text-sm text-muted-foreground'>
             {t('deleteGameModal.description')}
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <AlertDialogFooter className="mt-4 gap-3 sm:flex-row sm:justify-end sm:gap-4">
+        <AlertDialogFooter className='mt-4 gap-3 sm:flex-row sm:justify-end sm:gap-4'>
           <AlertDialogCancel
-            type="button"
-            className="h-10 rounded-lg px-5"
+            type='button'
+            className='h-10 rounded-lg px-5'
             disabled={mutation.isPending}
           >
             {t('deleteGameModal.cancel')}
           </AlertDialogCancel>
           <Button
-            type="button"
-            variant="destructive"
-            className="h-10 min-w-[6.5rem] rounded-lg px-5 font-semibold"
+            type='button'
+            variant='destructive'
+            className='h-10 min-w-[6.5rem] rounded-lg px-5 font-semibold'
             onClick={handleDelete}
             disabled={mutation.isPending}
           >
             {mutation.isPending ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+              <span className='flex items-center gap-2'>
+                <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                 {t('deleteGameModal.deleting')}
               </span>
             ) : (
