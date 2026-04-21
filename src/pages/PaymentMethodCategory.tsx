@@ -23,7 +23,10 @@ export default function PaymentMethodCategoryPage() {
     }
   }, [isSuccess, isError, isFetchedAfterMount, t])
 
-  const rows = data?.data ?? []
+  const rows = useMemo(
+    () => [...(data?.data ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+    [data?.data]
+  )
 
   return (
     <DashboardLayout>

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,54 +11,68 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Loader2, Plus, UploadCloud } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Loader2, Pencil, UploadCloud } from 'lucide-react'
 
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { useUpdatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
+import type { PaymentMethodCategory } from '@/types/payment-method-categories'
 
-import { useCreatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
-
-export type FormValuesPaymentCategory = {
+type FormValuesPaymentCategory = {
   name: string
   slug: string
   icon_url: string
   sort_order: number
+  is_active: boolean
 }
 
-export type PaymentCategoryPayload = {
-  name: string
-  slug: string
-  icon_url: string
-  sort_order: number
-}
-
-export function CreatePaymentCategoryModal() {
+export function EditPaymentCategoryModal({ category }: { category: PaymentMethodCategory }) {
   const [open, setOpen] = useState(false)
   const [preview, setPreview] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm<FormValuesPaymentCategory>({
-    defaultValues: { name: '', slug: '', icon_url: '', sort_order: 0 },
+    defaultValues: {
+      name: '',
+      slug: '',
+      icon_url: '',
+      sort_order: 0,
+      is_active: true,
+    },
   })
 
-  const applyOpen = (next: boolean) => {
-    setOpen(next)
-    if (!next) {
-      reset()
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
+  useEffect(() => {
+    if (!open) return
+    reset({
+      name: category.name,
+      slug: category.slug,
+      icon_url: category.icon_url,
+      sort_order: category.sort_order,
+      is_active: category.is_active,
+    })
+    setPreview(category.icon_url || null)
+    setUploadProgress(0)
+    setIsUploading(false)
+    if (inputRef.current) inputRef.current.value = ''
+  }, [open, category, reset])
+
+  const closeModal = () => {
+    setOpen(false)
+    setUploadProgress(0)
+    setIsUploading(false)
+    if (inputRef.current) inputRef.current.value = ''
   }
 
-  const mutation = useCreatePaymentCategory(reset, setPreview, applyOpen)
+  const mutation = useUpdatePaymentCategory(category.id, closeModal, reset, setPreview)
 
   const onSubmit = (values: FormValuesPaymentCategory) => {
     mutation.mutate(values)
@@ -80,58 +94,59 @@ export function CreatePaymentCategoryModal() {
   return (
     <>
       <Button
+        variant="ghost"
+        size="icon"
         type="button"
-        className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto"
-        onClick={() => applyOpen(true)}
+        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+        aria-label={`Edit kategori ${category.name}`}
+        onClick={() => setOpen(true)}
       >
-        <Plus className="h-4 w-4 shrink-0" aria-hidden />
-        Tambah kategori
+        <Pencil className="h-4 w-4" aria-hidden />
       </Button>
 
-      <Dialog open={open} onOpenChange={applyOpen}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="rounded-xl sm:max-w-md">
           <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Tambah kategori</DialogTitle>
+            <DialogTitle className="text-lg font-semibold tracking-tight">Edit kategori</DialogTitle>
             <p className="text-sm text-muted-foreground">
-              Nama, slug, dan ikon digunakan untuk menampilkan grup metode pembayaran.
+              Ubah informasi kategori metode pembayaran.
             </p>
           </DialogHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <input type="hidden" {...register('icon_url')} />
+
             <div className="space-y-2">
-              <Label htmlFor="pmc-name">Nama</Label>
+              <Label htmlFor={`pmc-name-edit-${category.id}`}>Nama</Label>
               <div className="space-y-1">
                 <Input
-                  id="pmc-name"
+                  id={`pmc-name-edit-${category.id}`}
                   {...register('name', { required: 'Nama wajib diisi' })}
                   placeholder="Contoh: E-wallet"
                   aria-invalid={!!errors.name}
                 />
-
                 {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pmc-slug">Slug</Label>
+              <Label htmlFor={`pmc-slug-edit-${category.id}`}>Slug</Label>
               <div className="space-y-1">
                 <Input
-                  id="pmc-slug"
+                  id={`pmc-slug-edit-${category.id}`}
                   {...register('slug', { required: 'Slug wajib diisi' })}
                   placeholder="ewallet"
                   aria-invalid={!!errors.slug}
                 />
-
                 {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pmc-sort-order">Sort order</Label>
+              <Label htmlFor={`pmc-sort-order-edit-${category.id}`}>Sort order</Label>
               <div className="space-y-1">
                 <Input
-                  id="pmc-sort-order"
+                  id={`pmc-sort-order-edit-${category.id}`}
                   type="number"
                   {...register('sort_order', {
                     required: 'Sort order wajib diisi',
@@ -141,10 +156,23 @@ export function CreatePaymentCategoryModal() {
                   placeholder="0"
                   aria-invalid={!!errors.sort_order}
                 />
-
                 {errors.sort_order && (
                   <p className="text-xs text-destructive">{errors.sort_order.message}</p>
                 )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
+                <Label htmlFor={`pmc-active-edit-${category.id}`} className="cursor-pointer">
+                  Aktif
+                </Label>
+                <Switch
+                  id={`pmc-active-edit-${category.id}`}
+                  checked={watch('is_active')}
+                  onCheckedChange={(checked) => setValue('is_active', checked)}
+                  disabled={mutation.isPending}
+                />
               </div>
             </div>
 
@@ -202,7 +230,7 @@ export function CreatePaymentCategoryModal() {
             />
 
             <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" className="rounded-lg" onClick={() => applyOpen(false)}>
+              <Button type="button" variant="outline" className="rounded-lg" onClick={closeModal}>
                 Batal
               </Button>
               <Button
@@ -213,7 +241,7 @@ export function CreatePaymentCategoryModal() {
                 {mutation.isPending ? (
                   <span className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                    Menyimpan…
+                    Menyimpan...
                   </span>
                 ) : (
                   'Simpan'

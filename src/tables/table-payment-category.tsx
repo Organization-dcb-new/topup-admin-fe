@@ -4,6 +4,7 @@ import type { TFunction } from 'i18next'
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
 import { DeletePaymentCategory } from '@/components/PaymentMethodCategory/Delete'
 import { AddPaymentMethodToPaymentCategoryButton } from '@/components/PaymentMethodCategory/Add'
+import { EditPaymentCategoryModal } from '@/components/PaymentMethodCategory/Edit'
 
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
@@ -47,6 +48,11 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
     ),
   },
   {
+    accessorKey: 'sort_order',
+    header: t('paymentMethodCategoryTable.colSortOrder'),
+    cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.sort_order}</span>,
+  },
+  {
     id: 'actions',
     header: t('paymentMethodCategoryTable.colActions'),
     cell: ({ row }) => (
@@ -57,6 +63,7 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
           aria-label={t('paymentMethodCategoryTable.rowActionsAria', { name: row.original.name })}
         >
           <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
+          <EditPaymentCategoryModal category={row.original} />
           <DeletePaymentCategory id={row.original.id} />
         </div>
       </div>
