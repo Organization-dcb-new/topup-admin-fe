@@ -21,12 +21,14 @@ export type FormValuesPaymentCategory = {
   name: string
   slug: string
   icon_url: string
+  sort_order: number
 }
 
 export type PaymentCategoryPayload = {
   name: string
   slug: string
   icon_url: string
+  sort_order: number
 }
 
 export function CreatePaymentCategoryModal() {
@@ -42,7 +44,7 @@ export function CreatePaymentCategoryModal() {
     reset,
     formState: { errors },
   } = useForm<FormValuesPaymentCategory>({
-    defaultValues: { name: '', slug: '', icon_url: '' },
+    defaultValues: { name: '', slug: '', icon_url: '', sort_order: 0 },
   })
 
   const applyOpen = (next: boolean) => {
@@ -125,7 +127,28 @@ export function CreatePaymentCategoryModal() {
               </div>
             </div>
 
-            <div className='space-y-2'>
+            <div className="space-y-2">
+              <Label htmlFor="pmc-sort-order">Sort order</Label>
+              <div className="space-y-1">
+                <Input
+                  id="pmc-sort-order"
+                  type="number"
+                  {...register('sort_order', {
+                    required: 'Sort order wajib diisi',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Sort order minimal 0' },
+                  })}
+                  placeholder="0"
+                  aria-invalid={!!errors.sort_order}
+                />
+
+                {errors.sort_order && (
+                  <p className="text-xs text-destructive">{errors.sort_order.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label>Ikon</Label>
 
               <div
