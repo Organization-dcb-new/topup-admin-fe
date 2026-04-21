@@ -4,7 +4,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,9 +14,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { useAdminMutation } from "@/hooks/useAdmin";
-import { useState } from "react";
+} from '@/components/ui/alert-dialog'
+import { useAdminMutation } from '@/hooks/useAdmin'
+import { useState } from 'react'
 
 export const UpdateAdminRole = ({
   id,
@@ -25,31 +25,31 @@ export const UpdateAdminRole = ({
   id: string
   currentRole: string
 }) => {
-  const { updateRole } = useAdminMutation();
-  const [open, setOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(currentRole);
+  const { updateRole } = useAdminMutation()
+  const [open, setOpen] = useState(false)
+  const [selectedRole, setSelectedRole] = useState(currentRole)
 
   const handleConfirm = () => {
-    updateRole.mutate({ id, role: selectedRole });
-    setOpen(false);
-  };
+    updateRole.mutate({ id, role: selectedRole })
+    setOpen(false)
+  }
 
   return (
     <>
       <Select
         value={currentRole}
         onValueChange={(value) => {
-          setSelectedRole(value);
-          setOpen(true);
+          setSelectedRole(value)
+          setOpen(true)
         }}
         disabled={updateRole.isPending}
       >
-        <SelectTrigger className="w-25 h-8 text-[10px] font-black uppercase ring-offset-0 focus:ring-0">
+        <SelectTrigger className='w-25 h-8 text-[10px] font-black uppercase ring-offset-0 focus:ring-0'>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="admin">ADMIN</SelectItem>
-          <SelectItem value="noc">NOC</SelectItem>
+          <SelectItem value='admin'>ADMIN</SelectItem>
+          <SelectItem value='noc'>NOC</SelectItem>
         </SelectContent>
       </Select>
 
@@ -64,12 +64,12 @@ export const UpdateAdminRole = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm} className="bg-indigo-600 hover:bg-indigo-700">
+            <AlertDialogAction onClick={handleConfirm} className='bg-indigo-600 hover:bg-indigo-700'>
               Ubah Role
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
-  );
-};
+  )
+}

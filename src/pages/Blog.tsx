@@ -24,28 +24,28 @@ export default function BlogPage() {
 
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <BookOpen className="h-5 w-5" aria-hidden />
+      <div className='mx-auto max-w-7xl space-y-6'>
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
+          <div className='flex gap-3'>
+            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+              <BookOpen className='h-5 w-5' aria-hidden />
             </div>
-            <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('blogPage.title')}</h1>
-              <p className="text-sm text-muted-foreground">{t('blogPage.subtitle')}</p>
+            <div className='min-w-0 space-y-1'>
+              <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>{t('blogPage.title')}</h1>
+              <p className='text-sm text-muted-foreground'>{t('blogPage.subtitle')}</p>
             </div>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5">
-          <div className="border-b border-gray-100 bg-muted/20 px-4 py-4 sm:px-5">
+        <div className='overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5'>
+          <div className='border-b border-gray-100 bg-muted/20 px-4 py-4 sm:px-5'>
             <HeaderBlog
-              className="mb-0"
+              className='mb-0'
               setView={(v) => (v === 'create' ? handleCreate() : setView(v))}
               view={view}
             />
           </div>
-          <div className="p-4 sm:p-6">
+          <div className='p-4 sm:p-6'>
             {view === 'list' ? (
               <BlogList onEdit={handleEdit} />
             ) : (

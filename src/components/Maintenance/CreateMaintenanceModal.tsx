@@ -73,15 +73,15 @@ export function CreateMaintenanceModal() {
 
   return (
     <>
-      <Button type="button" className="h-10 shrink-0 gap-2 shadow-sm" onClick={() => setOpen(true)}>
-        <Plus className="h-4 w-4" aria-hidden />
+      <Button type='button' className='h-10 shrink-0 gap-2 shadow-sm' onClick={() => setOpen(true)}>
+        <Plus className='h-4 w-4' aria-hidden />
         {t('maintenanceCreateModal.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-lg">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">
+        <DialogContent className='rounded-xl sm:max-w-lg'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>
               {t('maintenanceCreateModal.title')}
             </DialogTitle>
             <DialogDescription>{t('maintenanceCreateModal.description')}</DialogDescription>
@@ -95,15 +95,15 @@ export function CreateMaintenanceModal() {
               }
               mutation.mutate(toCreatePayload(v))
             })}
-            className="space-y-4"
+            className='space-y-4'
           >
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label htmlFor={nameId}>{t('maintenanceForm.nameLabel')}</Label>
               <Input
                 id={nameId}
-                autoComplete="off"
+                autoComplete='off'
                 placeholder={t('maintenanceForm.namePlaceholder')}
-                className="rounded-lg"
+                className='rounded-lg'
                 aria-invalid={!!formState.errors.name}
                 {...register('name', {
                   required: t('maintenanceForm.nameRequired'),
@@ -111,14 +111,14 @@ export function CreateMaintenanceModal() {
                 })}
               />
               {formState.errors.name && (
-                <p className="text-xs text-destructive">{formState.errors.name.message}</p>
+                <p className='text-xs text-destructive'>{formState.errors.name.message}</p>
               )}
             </div>
 
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5">
-              <div className="min-w-0 space-y-0.5">
-                <p className="text-sm font-medium">{t('maintenanceForm.modeLabel')}</p>
-                <p className="text-xs text-muted-foreground">{t('maintenanceForm.modeHint')}</p>
+            <div className='flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5'>
+              <div className='min-w-0 space-y-0.5'>
+                <p className='text-sm font-medium'>{t('maintenanceForm.modeLabel')}</p>
+                <p className='text-xs text-muted-foreground'>{t('maintenanceForm.modeHint')}</p>
               </div>
               <Switch
                 checked={watch('is_maintenance')}
@@ -127,49 +127,49 @@ export function CreateMaintenanceModal() {
               />
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2 sm:col-span-2">
+            <div className='grid gap-4 sm:grid-cols-2'>
+              <div className='space-y-2 sm:col-span-2'>
                 <Label htmlFor={startId}>{t('maintenanceForm.startLabel')}</Label>
                 <Input
                   id={startId}
-                  type="datetime-local"
-                  className="rounded-lg"
+                  type='datetime-local'
+                  className='rounded-lg'
                   aria-invalid={!!formState.errors.start_time}
                   {...register('start_time', { required: t('maintenanceForm.startRequired') })}
                 />
                 {formState.errors.start_time && (
-                  <p className="text-xs text-destructive">{formState.errors.start_time.message}</p>
+                  <p className='text-xs text-destructive'>{formState.errors.start_time.message}</p>
                 )}
               </div>
-              <div className="space-y-2 sm:col-span-2">
+              <div className='space-y-2 sm:col-span-2'>
                 <Label htmlFor={endId}>{t('maintenanceForm.endLabel')}</Label>
                 <Input
                   id={endId}
-                  type="datetime-local"
-                  className="rounded-lg"
+                  type='datetime-local'
+                  className='rounded-lg'
                   aria-invalid={!!formState.errors.end_time}
                   {...register('end_time', { required: t('maintenanceForm.endRequired') })}
                 />
                 {formState.errors.end_time && (
-                  <p className="text-xs text-destructive">{formState.errors.end_time.message}</p>
+                  <p className='text-xs text-destructive'>{formState.errors.end_time.message}</p>
                 )}
               </div>
             </div>
 
             {formState.errors.root?.message && (
-              <p className="text-sm text-destructive" role="alert">
+              <p className='text-sm text-destructive' role='alert'>
                 {formState.errors.root.message}
               </p>
             )}
 
-            <DialogFooter className="gap-2 sm:gap-2">
-              <Button type="button" variant="outline" className="cursor-pointer" onClick={() => setOpen(false)}>
+            <DialogFooter className='gap-2 sm:gap-2'>
+              <Button type='button' variant='outline' className='cursor-pointer' onClick={() => setOpen(false)}>
                 {t('maintenanceForm.cancel')}
               </Button>
-              <Button type="submit" disabled={mutation.isPending} className="cursor-pointer gap-2">
+              <Button type='submit' disabled={mutation.isPending} className='cursor-pointer gap-2'>
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     {t('maintenanceForm.saving')}
                   </>
                 ) : (

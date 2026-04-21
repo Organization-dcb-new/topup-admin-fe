@@ -28,36 +28,36 @@ export function AdminBriefSelect({ value, onChange }: Props) {
   const selectedName = value ? admins?.find((a) => a.id === value)?.name : undefined
 
   return (
-    <div className="grid min-w-0 w-full gap-1.5">
-      <Label htmlFor="admin-brief-trigger" className="text-xs text-muted-foreground">
+    <div className='grid min-w-0 w-full gap-1.5'>
+      <Label htmlFor='admin-brief-trigger' className='text-xs text-muted-foreground'>
         {t('gameFilters.updatedByLabel')}
       </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            id="admin-brief-trigger"
-            type="button"
-            variant="outline"
-            role="combobox"
+            id='admin-brief-trigger'
+            type='button'
+            variant='outline'
+            role='combobox'
             aria-expanded={open}
             disabled={isLoading || isError}
-            className="h-9 w-full min-w-0 justify-between px-3 font-normal shadow-sm"
+            className='h-9 w-full min-w-0 justify-between px-3 font-normal shadow-sm'
           >
-            <span className="truncate text-left">
+            <span className='truncate text-left'>
               {isLoading
                 ? t('gameFilters.loadingAdminsBrief')
                 : (selectedName ?? t('gameFilters.updatedByAll'))}
             </span>
             {isLoading ? (
-              <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin opacity-50" aria-hidden />
+              <Loader2 className='h-3.5 w-3.5 shrink-0 animate-spin opacity-50' aria-hidden />
             ) : (
-              <ChevronsUpDown className="h-3.5 w-3.5 shrink-0 opacity-50" aria-hidden />
+              <ChevronsUpDown className='h-3.5 w-3.5 shrink-0 opacity-50' aria-hidden />
             )}
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0"
-          align="start"
+          className='w-[var(--radix-popover-trigger-width)] min-w-[min(100%,18rem)] p-0'
+          align='start'
         >
           <Command>
             <CommandInput placeholder={t('gameFilters.searchAdminPlaceholder')} />
@@ -65,7 +65,7 @@ export function AdminBriefSelect({ value, onChange }: Props) {
               <CommandEmpty>{t('gameFilters.emptyAdminsBrief')}</CommandEmpty>
               <CommandGroup>
                 <CommandItem
-                  value="all admins"
+                  value='all admins'
                   keywords={['all', 'semua']}
                   onSelect={() => {
                     onChange('')
@@ -95,7 +95,7 @@ export function AdminBriefSelect({ value, onChange }: Props) {
                       )}
                       aria-hidden
                     />
-                    <span className="truncate">{a.name}</span>
+                    <span className='truncate'>{a.name}</span>
                   </CommandItem>
                 ))}
               </CommandGroup>
@@ -104,7 +104,7 @@ export function AdminBriefSelect({ value, onChange }: Props) {
         </PopoverContent>
       </Popover>
       {isError && (
-        <p className="text-xs text-destructive">{t('gameFilters.loadAdminsBriefError')}</p>
+        <p className='text-xs text-destructive'>{t('gameFilters.loadAdminsBriefError')}</p>
       )}
     </div>
   )

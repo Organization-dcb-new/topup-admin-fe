@@ -18,7 +18,7 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
       const image = row.original.thumbnail_url?.trim() || DEFAULT_GAME_IMAGE
 
       return (
-        <div className="flex min-w-[4.5rem] items-center py-0.5">
+        <div className='flex min-w-[4.5rem] items-center py-0.5'>
           <ChangeImageModal game={row.original} image={image} />
         </div>
       )
@@ -31,11 +31,11 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     cell: ({ row }) => (
       <Link
         to={`/games/${row.original.id}`}
-        className="group inline-flex max-w-[13rem] items-center gap-1 font-medium text-primary sm:max-w-xs"
+        className='group inline-flex max-w-[13rem] items-center gap-1 font-medium text-primary sm:max-w-xs'
       >
-        <span className="truncate group-hover:underline">{row.original.name}</span>
+        <span className='truncate group-hover:underline'>{row.original.name}</span>
         <ChevronRight
-          className="h-3.5 w-3.5 shrink-0 text-primary/50 transition-colors group-hover:text-primary/80"
+          className='h-3.5 w-3.5 shrink-0 text-primary/50 transition-colors group-hover:text-primary/80'
           aria-hidden
         />
       </Link>
@@ -45,7 +45,7 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     accessorKey: 'code',
     header: t('gameTable.colCode'),
     cell: ({ row }) => (
-      <code className="rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground">
+      <code className='rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground'>
         {row.original.code}
       </code>
     ),
@@ -57,17 +57,17 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
       const d = row.original.developer?.trim()
       const p = row.original.publisher?.trim()
       if (!d && !p) {
-        return <span className="text-sm text-muted-foreground">—</span>
+        return <span className='text-sm text-muted-foreground'>—</span>
       }
       return (
-        <div className="max-w-[10rem] space-y-0.5 text-sm text-muted-foreground">
+        <div className='max-w-[10rem] space-y-0.5 text-sm text-muted-foreground'>
           {d ? (
-            <div className="truncate" title={d}>
+            <div className='truncate' title={d}>
               {d}
             </div>
           ) : null}
           {p ? (
-            <div className="truncate text-xs text-muted-foreground/90" title={p}>
+            <div className='truncate text-xs text-muted-foreground/90' title={p}>
               {p}
             </div>
           ) : null}
@@ -79,7 +79,7 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     accessorKey: 'is_active',
     header: t('gameTable.colActive'),
     cell: ({ row }) => (
-      <div className="flex min-w-[7rem] items-center py-0.5">
+      <div className='flex min-w-[7rem] items-center py-0.5'>
         <ToggleGameStatus game={row.original} />
       </div>
     ),
@@ -90,12 +90,12 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     cell: ({ row }) => {
       const by = row.original.updated_by?.name?.trim()
       return (
-        <div className="max-w-[12rem] space-y-0.5">
-          <div className="whitespace-nowrap text-sm text-muted-foreground">
+        <div className='max-w-[12rem] space-y-0.5'>
+          <div className='whitespace-nowrap text-sm text-muted-foreground'>
             {formatBackendDateTime(row.original.updated_at)}
           </div>
           {by ? (
-            <div className="truncate text-xs text-muted-foreground/90" title={by}>
+            <div className='truncate text-xs text-muted-foreground/90' title={by}>
               {by}
             </div>
           ) : null}
@@ -107,10 +107,10 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     id: 'actions',
     header: t('gameTable.colActions'),
     cell: ({ row }) => (
-      <div className="flex min-w-0 items-center">
+      <div className='flex min-w-0 items-center'>
         <div
-          className="inline-flex flex-wrap items-center gap-1 rounded-lg border border-border/70 bg-muted/25 p-1 shadow-sm"
-          role="group"
+          className='inline-flex flex-wrap items-center gap-1 rounded-lg border border-border/70 bg-muted/25 p-1 shadow-sm'
+          role='group'
           aria-label={t('gameTable.rowActionsAria', { name: row.original.name })}
         >
           <GameTableActions game={row.original} />

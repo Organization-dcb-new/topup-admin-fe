@@ -67,8 +67,8 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
     status === 'published' ? t('blogTable.statusPublished') : t('blogTable.statusDraft')
 
   return (
-    <div className="grid animate-in grid-cols-1 gap-8 fade-in duration-500 lg:grid-cols-4">
-      <div className="space-y-6 lg:col-span-3">
+    <div className='grid animate-in grid-cols-1 gap-8 fade-in duration-500 lg:grid-cols-4'>
+      <div className='space-y-6 lg:col-span-3'>
         <Field
           formData={formData}
           handleEditorImageUpload={handleEditorImageUpload}
@@ -77,9 +77,9 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
 
         <Category formData={formData} listCategory={listCategory} updateField={updateField} />
 
-        <div className="space-y-2 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 sm:p-5">
-          <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="blog-excerpt" className="text-xs font-semibold text-muted-foreground">
+        <div className='space-y-2 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 sm:p-5'>
+          <div className='flex items-center justify-between gap-2'>
+            <Label htmlFor='blog-excerpt' className='text-xs font-semibold text-muted-foreground'>
               {t('blogManage.excerptLabel')}
             </Label>
             <span
@@ -94,18 +94,18 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
             </span>
           </div>
           <Textarea
-            id="blog-excerpt"
+            id='blog-excerpt'
             placeholder={t('blogManage.excerptPlaceholder')}
             value={formData.excerpt}
             maxLength={EXCERPT_MAX_LENGTH}
             onChange={(e) => updateField('excerpt', e.target.value)}
-            className="resize-none border-0 bg-transparent p-0 text-sm italic shadow-none focus-visible:ring-0"
+            className='resize-none border-0 bg-transparent p-0 text-sm italic shadow-none focus-visible:ring-0'
             rows={3}
           />
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className='space-y-6'>
         {isEdit && (
           <div
             className={cn(
@@ -115,7 +115,7 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
                 : 'border-amber-200/80 bg-amber-50/90 dark:border-amber-900/50 dark:bg-amber-950/40',
             )}
           >
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <span className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
               {t('blogManage.statusLabel')}
             </span>
             <Badge
@@ -143,8 +143,8 @@ export default function ManageBlog({ setView, initialData, isEdit = false }: Man
         <Thumbnail formData={formData} uploadMutation={uploadMutation} />
 
         {isEdit && (
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 ring-1 ring-gray-900/5">
-            <p className="text-xs leading-relaxed text-muted-foreground">
+          <div className='rounded-xl border border-primary/20 bg-primary/5 p-4 ring-1 ring-gray-900/5'>
+            <p className='text-xs leading-relaxed text-muted-foreground'>
               {t('blogManage.publishedChangesHint')}
             </p>
           </div>

@@ -24,17 +24,17 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
   const selectValue = value === '' ? ALL : value
 
   return (
-    <div className="flex w-full min-w-0 items-center gap-2">
-      <div className="min-w-0 flex-1">
+    <div className='flex w-full min-w-0 items-center gap-2'>
+      <div className='min-w-0 flex-1'>
         <Select
           value={selectValue}
           onValueChange={(v) => onChange(v === ALL ? '' : (v as Payment['status']))}
         >
           <SelectTrigger
-            className="h-10 w-full min-w-0 font-normal shadow-xs"
+            className='h-10 w-full min-w-0 font-normal shadow-xs'
             aria-label={t('transactionFilters.status.filterAria')}
           >
-            <ListFilter className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+            <ListFilter className='mr-2 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
             <SelectValue placeholder={t('transactionFilters.status.placeholderAll')} />
           </SelectTrigger>
           <SelectContent>
@@ -49,14 +49,14 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
       </div>
       {value !== '' && (
         <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground'
           onClick={() => onChange('')}
           aria-label={t('transactionFilters.status.clearAria')}
         >
-          <FilterX className="h-4 w-4" aria-hidden />
+          <FilterX className='h-4 w-4' aria-hidden />
         </Button>
       )}
     </div>

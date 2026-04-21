@@ -107,15 +107,15 @@ export function Sidebar({
           )}
         >
           {!railCollapsed && (
-            <span className="min-w-0 truncate font-bold text-base md:text-lg">
-              Pakar<span className="text-primary">Gaming</span>
+            <span className='min-w-0 truncate font-bold text-base md:text-lg'>
+              Pakar<span className='text-primary'>Gaming</span>
             </span>
           )}
 
           <Button
-            type="button"
-            variant="ghost"
-            size="icon"
+            type='button'
+            variant='ghost'
+            size='icon'
             onClick={onToggleCollapse}
             className={cn(
               'hidden shrink-0 cursor-pointer md:flex',
@@ -130,14 +130,14 @@ export function Sidebar({
           </Button>
 
           <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 md:hidden"
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='absolute right-2 top-1/2 -translate-y-1/2 md:hidden'
             onClick={onCloseMobile}
             aria-label={t('sidebar.closeMenu')}
           >
-            <X className="h-4 w-4" aria-hidden />
+            <X className='h-4 w-4' aria-hidden />
           </Button>
         </div>
 
@@ -155,11 +155,11 @@ export function Sidebar({
               )}
             >
               {!railCollapsed && section.title && (
-                <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                <p className='mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                   {tr(section.title)}
                 </p>
               )}
-              <div className="flex flex-col gap-1">
+              <div className='flex flex-col gap-1'>
                 {section.menus.map((menu) => (
                   <NavItem
                     key={menu.label}
@@ -215,8 +215,8 @@ export function Sidebar({
             </span>
           </div>
           <Button
-            type="button"
-            variant="outline"
+            type='button'
+            variant='outline'
             className={cn(
               'cursor-pointer gap-2 font-normal shadow-sm',
               railCollapsed
@@ -227,31 +227,31 @@ export function Sidebar({
             aria-label={t('sidebar.logoutAria')}
             title={railCollapsed ? t('sidebar.logout') : undefined}
           >
-            <LogOut className="h-4 w-4 shrink-0" aria-hidden />
+            <LogOut className='h-4 w-4 shrink-0' aria-hidden />
             {!railCollapsed && <span>{t('sidebar.logout')}</span>}
           </Button>
         </div>
       </aside>
 
       <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
-        <DialogContent className="rounded-xl sm:max-w-md">
+        <DialogContent className='rounded-xl sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
             <DialogDescription>{t('sidebar.confirmLogoutDescription')}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className="gap-2 sm:gap-2">
+          <DialogFooter className='gap-2 sm:gap-2'>
             <Button
-              type="button"
-              variant="outline"
-              className="rounded-xl"
+              type='button'
+              variant='outline'
+              className='rounded-xl'
               onClick={() => setOpenLogoutModal(false)}
             >
               {t('sidebar.cancel')}
             </Button>
             <Button
-              type="button"
-              variant="destructive"
-              className="rounded-xl"
+              type='button'
+              variant='destructive'
+              className='rounded-xl'
               onClick={async () => {
                 await logout()
                 setOpenLogoutModal(false)
@@ -288,31 +288,31 @@ function NavItem({
       <Popover>
         <PopoverTrigger asChild>
           <button
-            type="button"
+            type='button'
             className={cn(
               'mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors',
               isChildActive
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-foreground hover:bg-gray-100',
             )}
-            aria-haspopup="dialog"
+            aria-haspopup='dialog'
             aria-label={tr(menu.label)}
             title={tr(menu.label)}
           >
-            <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
+            <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
           </button>
         </PopoverTrigger>
         <PopoverContent
-          side="right"
-          align="start"
+          side='right'
+          align='start'
           sideOffset={10}
-          className="z-[60] w-56 p-2"
+          className='z-[60] w-56 p-2'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <p className="border-b border-border/60 px-2 pb-2 text-xs font-semibold text-muted-foreground">
+          <p className='border-b border-border/60 px-2 pb-2 text-xs font-semibold text-muted-foreground'>
             {tr(menu.label)}
           </p>
-          <div className="mt-1 flex flex-col gap-0.5">
+          <div className='mt-1 flex flex-col gap-0.5'>
             {menu.children?.map((child) => (
               <NavLink
                 key={child.label}
@@ -338,9 +338,9 @@ function NavItem({
 
   if (hasChildren && !collapsed) {
     return (
-      <div className="space-y-1">
+      <div className='space-y-1'>
         <button
-          type="button"
+          type='button'
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
             'flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-100',
@@ -348,14 +348,14 @@ function NavItem({
           )}
           aria-expanded={isOpen}
         >
-          <div className="flex min-w-0 items-center gap-3">
-            <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
-            <span className="truncate">{tr(menu.label)}</span>
+          <div className='flex min-w-0 items-center gap-3'>
+            <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
+            <span className='truncate'>{tr(menu.label)}</span>
           </div>
           <ChevronDown className={cn('h-3 w-3 shrink-0 transition-transform', isOpen && 'rotate-180')} />
         </button>
         {isOpen && (
-          <div className="space-y-0.5 pl-4">
+          <div className='space-y-0.5 pl-4'>
             {menu.children?.map((child) => (
               <NavLink
                 key={child.label}
@@ -397,8 +397,8 @@ function NavItem({
         )
       }
     >
-      <menu.icon className="h-4 w-4 shrink-0" aria-hidden />
-      {!collapsed && <span className="min-w-0 truncate">{tr(menu.label)}</span>}
+      <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
+      {!collapsed && <span className='min-w-0 truncate'>{tr(menu.label)}</span>}
     </NavLink>
   )
 }

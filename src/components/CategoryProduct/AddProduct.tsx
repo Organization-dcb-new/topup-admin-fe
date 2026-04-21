@@ -60,17 +60,17 @@ export function AddProductToCategoryProductButton({
     >
       <AlertDialogTrigger asChild>
         <Button
-          type="button"
-          className="cursor-pointer"
-          variant="ghost"
-          size="icon"
+          type='button'
+          className='cursor-pointer'
+          variant='ghost'
+          size='icon'
           aria-label={t('categoryProductAddProducts.triggerAria')}
         >
-          <Plus className="h-4 w-4" aria-hidden />
+          <Plus className='h-4 w-4' aria-hidden />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="rounded-2xl">
+      <AlertDialogContent className='rounded-2xl'>
         <AlertDialogHeader>
           <AlertDialogTitle>{t('categoryProductAddProducts.title')}</AlertDialogTitle>
           <AlertDialogDescription>
@@ -78,16 +78,16 @@ export function AddProductToCategoryProductButton({
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border/60 bg-muted/10 p-2">
+        <div className='max-h-64 space-y-1 overflow-y-auto rounded-lg border border-border/60 bg-muted/10 p-2'>
           {isPending ? (
-            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+            <div className='flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground'>
+              <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
               {t('categoryProductAddProducts.loading')}
             </div>
           ) : isError ? (
-            <p className="py-6 text-center text-sm text-destructive">{t('categoryProductAddProducts.loadError')}</p>
+            <p className='py-6 text-center text-sm text-destructive'>{t('categoryProductAddProducts.loadError')}</p>
           ) : !products?.length ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
+            <p className='py-6 text-center text-sm text-muted-foreground'>
               {t('categoryProductAddProducts.empty')}
             </p>
           ) : (
@@ -96,14 +96,14 @@ export function AddProductToCategoryProductButton({
               return (
                 <div
                   key={product.id}
-                  className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/40"
+                  className='flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/40'
                 >
                   <Checkbox
                     id={checkboxId}
                     checked={selected.includes(product.id)}
                     onCheckedChange={() => toggle(product.id)}
                   />
-                  <Label htmlFor={checkboxId} className="flex-1 cursor-pointer text-sm font-normal">
+                  <Label htmlFor={checkboxId} className='flex-1 cursor-pointer text-sm font-normal'>
                     {product.name}
                   </Label>
                 </div>
@@ -113,15 +113,15 @@ export function AddProductToCategoryProductButton({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer rounded-xl">{t('categoryProductAddProducts.cancel')}</AlertDialogCancel>
+          <AlertDialogCancel className='cursor-pointer rounded-xl'>{t('categoryProductAddProducts.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleSubmit}
             disabled={!selected.length || mutation.isPending || isPending || isError}
-            className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+            className='inline-flex cursor-pointer items-center gap-2 rounded-xl'
           >
             {mutation.isPending ? (
               <>
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                 {t('categoryProductAddProducts.saving')}
               </>
             ) : (

@@ -10,21 +10,21 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
     {
       id: 'expand',
       header: () => (
-        <span className="block min-w-[2.75rem] text-xs font-medium text-muted-foreground">
+        <span className='block min-w-[2.75rem] text-xs font-medium text-muted-foreground'>
           {t('showTable.gameListColumn')}
         </span>
       ),
       cell: ({ row }) => {
         const count = row.original.games?.length ?? 0
         if (!count) {
-          return <span className="text-xs text-muted-foreground">—</span>
+          return <span className='text-xs text-muted-foreground'>—</span>
         }
         return (
           <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground'
             onClick={row.getToggleExpandedHandler()}
             aria-expanded={row.getIsExpanded()}
             aria-label={
@@ -34,9 +34,9 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
             }
           >
             {row.getIsExpanded() ? (
-              <ChevronDown className="h-4 w-4" aria-hidden />
+              <ChevronDown className='h-4 w-4' aria-hidden />
             ) : (
-              <ChevronRight className="h-4 w-4" aria-hidden />
+              <ChevronRight className='h-4 w-4' aria-hidden />
             )}
           </Button>
         )
@@ -58,7 +58,7 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
       cell: ({ row }) => {
         const n = row.original.games?.length ?? 0
         return (
-          <span className="inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium tabular-nums text-foreground">
+          <span className='inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-muted px-2 text-xs font-medium tabular-nums text-foreground'>
             {n}
           </span>
         )

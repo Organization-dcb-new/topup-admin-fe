@@ -44,13 +44,13 @@ export default function ImageComponent({
     })
   }
   return (
-    <div className="space-y-2">
+    <div className='space-y-2'>
       <Label>{title}</Label>
       <input
         ref={inputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
+        type='file'
+        accept='image/*'
+        className='hidden'
         onChange={(e) => {
           const file = e.target.files?.[0]
           if (file) handleFile(file)
@@ -69,17 +69,17 @@ export default function ImageComponent({
                 `}
       >
         {preview ? (
-          <img src={preview} className="h-full w-full rounded-lg object-contain" alt="" />
+          <img src={preview} className='h-full w-full rounded-lg object-contain' alt='' />
         ) : (
-          <div className="flex flex-col items-center gap-2 text-muted-foreground">
-            <UploadCloud className="h-6 w-6" aria-hidden />
-            <span className="text-sm">{t('gamePreviewImage.dropHint')}</span>
+          <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+            <UploadCloud className='h-6 w-6' aria-hidden />
+            <span className='text-sm'>{t('gamePreviewImage.dropHint')}</span>
           </div>
         )}
 
         {isUploading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-            <span className="text-sm">{t('gamePreviewImage.uploadingPercent', { percent: uploadProgress })}</span>
+          <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white'>
+            <span className='text-sm'>{t('gamePreviewImage.uploadingPercent', { percent: uploadProgress })}</span>
           </div>
         )}
       </div>

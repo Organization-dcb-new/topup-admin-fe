@@ -71,43 +71,43 @@ export default function EditGameModal({ game }: EditGameModalProps) {
   return (
     <>
       <Button
-        variant="ghost"
-        size="icon"
-        type="button"
+        variant='ghost'
+        size='icon'
+        type='button'
         onClick={() => setOpen(true)}
-        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+        className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
         aria-label={t('editGameModal.triggerAria', { name: game.name })}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-lg">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">{t('editGameModal.title')}</DialogTitle>
-            <p className="text-sm text-muted-foreground">{t('editGameModal.description')}</p>
+        <DialogContent className='rounded-xl sm:max-w-lg'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>{t('editGameModal.title')}</DialogTitle>
+            <p className='text-sm text-muted-foreground'>{t('editGameModal.description')}</p>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor={`edit-game-name-${gid}`} className="text-sm font-medium">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <Label htmlFor={`edit-game-name-${gid}`} className='text-sm font-medium'>
                   {t('editGameModal.nameLabel')}
                 </Label>
                 <Input
                   id={`edit-game-name-${gid}`}
                   {...register('name', { required: t('editGameModal.nameRequired') })}
                   placeholder={t('editGameModal.namePlaceholder')}
-                  className="rounded-lg"
-                  autoComplete="off"
+                  className='rounded-lg'
+                  autoComplete='off'
                 />
                 {errors.name && (
-                  <p className="text-xs text-destructive">{errors.name.message}</p>
+                  <p className='text-xs text-destructive'>{errors.name.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`edit-game-desc-${gid}`} className="text-sm font-medium">
+              <div className='space-y-2'>
+                <Label htmlFor={`edit-game-desc-${gid}`} className='text-sm font-medium'>
                   {t('editGameModal.descriptionLabel')}
                 </Label>
                 <Textarea
@@ -115,15 +115,15 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                   {...register('description', { required: t('editGameModal.descriptionRequired') })}
                   placeholder={t('editGameModal.descriptionPlaceholder')}
                   rows={4}
-                  className="max-h-40 min-h-[6rem] resize-y rounded-lg"
+                  className='max-h-40 min-h-[6rem] resize-y rounded-lg'
                 />
                 {errors.description && (
-                  <p className="text-xs text-destructive">{errors.description.message}</p>
+                  <p className='text-xs text-destructive'>{errors.description.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`edit-game-cat-${gid}`} className="text-sm font-medium">
+              <div className='space-y-2'>
+                <Label htmlFor={`edit-game-cat-${gid}`} className='text-sm font-medium'>
                   {t('editGameModal.categoryLabel')}
                 </Label>
                 <select
@@ -135,7 +135,7 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                     'disabled:cursor-not-allowed disabled:opacity-50',
                   )}
                 >
-                  <option value="">{t('editGameModal.categoryNone')}</option>
+                  <option value=''>{t('editGameModal.categoryNone')}</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -144,44 +144,44 @@ export default function EditGameModal({ game }: EditGameModalProps) {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor={`edit-game-pop-${gid}`} className="text-sm font-medium">
+              <div className='space-y-2'>
+                <Label htmlFor={`edit-game-pop-${gid}`} className='text-sm font-medium'>
                   {t('editGameModal.popularityLabel')}
                 </Label>
                 <Input
                   id={`edit-game-pop-${gid}`}
-                  type="number"
-                  step="1"
+                  type='number'
+                  step='1'
                   {...register('popularity_score', {
                     required: t('editGameModal.popularityRequired'),
                     valueAsNumber: true,
                   })}
                   placeholder={t('editGameModal.popularityPlaceholder')}
-                  className="rounded-lg"
+                  className='rounded-lg'
                 />
                 {errors.popularity_score && (
-                  <p className="text-xs text-destructive">{errors.popularity_score.message}</p>
+                  <p className='text-xs text-destructive'>{errors.popularity_score.message}</p>
                 )}
               </div>
             </div>
 
-            <DialogFooter className="mt-4 gap-3 sm:flex-row sm:justify-end sm:gap-4">
+            <DialogFooter className='mt-4 gap-3 sm:flex-row sm:justify-end sm:gap-4'>
               <Button
-                type="button"
-                variant="outline"
-                className="h-10 rounded-lg px-5"
+                type='button'
+                variant='outline'
+                className='h-10 rounded-lg px-5'
                 onClick={() => setOpen(false)}
               >
                 {t('editGameModal.cancel')}
               </Button>
               <Button
-                type="submit"
-                className="h-10 min-w-[6.5rem] rounded-lg px-5 font-semibold"
+                type='submit'
+                className='h-10 min-w-[6.5rem] rounded-lg px-5 font-semibold'
                 disabled={updateGameMutation.isPending}
               >
                 {updateGameMutation.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  <span className='flex items-center gap-2'>
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     {t('editGameModal.saving')}
                   </span>
                 ) : (

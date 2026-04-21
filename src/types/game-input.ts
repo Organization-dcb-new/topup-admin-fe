@@ -1,4 +1,4 @@
-import type { PaginationMeta } from "./game"
+import type { PaginationMeta } from './game'
 
 export interface GameInputOption {
   name: string
