@@ -23,6 +23,8 @@ import Setup2FAPage from "@/pages/SetupAuth";
 import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
 import MaintenancePage from "@/pages/Maintenance";
+import AdminLogPage from '@/pages/AdminLog'
+import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
@@ -216,6 +218,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={["dev"]}>
             <AdminManagementPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'admin-logs',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'admin-logs/:id',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogDetailPage />
           </RoleGuard>
         ),
       },
