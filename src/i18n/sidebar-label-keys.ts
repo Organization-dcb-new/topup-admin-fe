@@ -26,4 +26,5 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   'Pembatas laju': 'sidebar.menu.pembatasLaju',
   Pemeliharaan: 'sidebar.menu.pemeliharaan',
   Pengguna: 'sidebar.menu.pengguna',
+  'Log admin': 'sidebar.menu.logAdmin',
 }

@@ -7,18 +7,14 @@ export const authStorage = {
     return null;
   },
   setToken(_token: string) {},
-  async clearToken(): Promise<void> {
-    try {
-      await api.post("/admin/logout");
-    } catch {
-      /* ignore */
-    }
+  clearToken() {
+    api.post("/admin/logout").catch(() => {});
   },
 }
 
 export async function logout(): Promise<void> {
   try {
-    await authStorage.clearToken()
+    authStorage.clearToken()
     toast.success('Berhasil logout')
     window.location.href = '/login'
   } catch (error) {

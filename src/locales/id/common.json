@@ -35,7 +35,8 @@
       "twoFa": "2FA",
       "pembatasLaju": "Pembatas laju",
       "pemeliharaan": "Pemeliharaan",
-      "pengguna": "Pengguna"
+      "pengguna": "Pengguna",
+      "logAdmin": "Log admin"
     }
   },
   "transactionPage": {
@@ -1461,6 +1462,49 @@
     "enabled": "Aktif",
     "disabled": "Nonaktif",
     "colActions": "Aksi"
+  },
+  "adminLogPage": {
+    "title": "Log admin",
+    "subtitle": "Riwayat aktivitas administrator dari endpoint admin-logs.",
+    "total": "Total {{total}} log",
+    "listTitle": "Daftar log",
+    "listHint": "Menampilkan aktivitas terbaru. Gunakan paginasi untuk melihat data lainnya.",
+    "loadingBody": "Memuat data log admin…",
+    "pleaseWait": "Mohon tunggu sebentar.",
+    "loadError": "Gagal memuat data log admin.",
+    "emptyMessage": "Belum ada aktivitas admin yang tercatat."
+  },
+  "adminLogTable": {
+    "colId": "ID",
+    "colCreatedAt": "Waktu",
+    "colAction": "Aksi",
+    "colModule": "Modul",
+    "colDescription": "Deskripsi",
+    "colOldData": "Data lama",
+    "colNewData": "Data baru",
+    "colIpAddress": "IP address",
+    "colUserAgent": "User agent"
+  },
+  "adminLogDetailPage": {
+    "title": "Detail log admin",
+    "subtitle": "Detail lengkap aktivitas administrator.",
+    "pageHint": "Halaman ini membantu melacak siapa melakukan aksi apa, kapan, dan data apa yang berubah.",
+    "backButton": "Kembali ke daftar log",
+    "loading": "Memuat detail log admin…",
+    "missingId": "ID log admin tidak ditemukan di URL.",
+    "loadError": "Gagal memuat detail log admin.",
+    "readGuideTitle": "Panduan membaca log",
+    "readGuideBody": "Old data adalah nilai sebelum perubahan, sedangkan new data adalah nilai setelah perubahan. Jika salah satu kosong, berarti sistem tidak mengirim snapshot data pada sisi tersebut.",
+    "id": "ID log",
+    "adminId": "ID admin",
+    "createdAt": "Waktu",
+    "ipAddress": "IP address",
+    "description": "Deskripsi",
+    "oldData": "Data lama",
+    "oldDataHint": "Nilai sebelum aksi dijalankan.",
+    "newData": "Data baru",
+    "newDataHint": "Nilai setelah aksi berhasil dijalankan.",
+    "userAgent": "User agent"
   },
   "dashboardPage": {
     "title": "Dasbor"

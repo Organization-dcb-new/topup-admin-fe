@@ -23,6 +23,8 @@ import Setup2FAPage from "@/pages/SetupAuth";
 import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
 import MaintenancePage from "@/pages/Maintenance";
+import AdminLogPage from '@/pages/AdminLog'
+import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
@@ -30,50 +32,50 @@ import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
-    path: "/login",
+    path: '/login',
     element: <LoginPage />,
   },
   {
-    path: "/verify-otp",
+    path: '/verify-otp',
     element: <VerifyOtpPage />,
   },
   {
-    path: "/",
+    path: '/',
     children: [
       {
         index: true,
         element: (
-          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <DashboardPage />
           </RoleGuard>
         ),
       },
       {
-        path: "summary",
+        path: 'summary',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <SpendingPages />
           </RoleGuard>
         ),
       },
       {
-        path: "blog",
+        path: 'blog',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <BlogPage />
           </RoleGuard>
         ),
       },
       {
-        path: "shows",
+        path: 'shows',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <ShowPage />
           </RoleGuard>
         ),
       },
       {
-        path: "orders",
+        path: 'orders',
         element: (
           <RoleGuard allowedRoles={["dev", "admin"]}>
             <OrderPages />
@@ -81,141 +83,157 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "banners",
+        path: 'banners',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <BannerPage />
           </RoleGuard>
         ),
       },
       {
-        path: "transactions",
+        path: 'transactions',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <TransactionPage />
           </RoleGuard>
         ),
       },
 
       {
-        path: "transactions/:paymentId",
+        path: 'transactions/:paymentId',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin", "noc"]}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <PaymentDetailPage />
           </RoleGuard>
         ),
       },
       {
-        path: "input",
+        path: 'input',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <InputPages />
           </RoleGuard>
         ),
       },
       {
-        path: "games",
+        path: 'games',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <GamePage />
           </RoleGuard>
         ),
       },
       {
-        path: "games/:gameId",
+        path: 'games/:gameId',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <GameDetailPage />
           </RoleGuard>
         ),
       },
       {
-        path: "category-product",
+        path: 'category-product',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <CategoryProduct />
           </RoleGuard>
         ),
       },
       {
-        path: "categories",
+        path: 'categories',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <CategoryPage />
           </RoleGuard>
         ),
       },
       {
-        path: "products",
+        path: 'products',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <ProductPage />
           </RoleGuard>
         ),
       },
       {
-        path: "anomaly",
+        path: 'anomaly',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <AnomalyProduct />
           </RoleGuard>
         ),
       },
       {
-        path: "payment-methods",
+        path: 'payment-methods',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <PaymentMethodPage />
           </RoleGuard>
         ),
       },
       {
-        path: "payment-methods-categories",
+        path: 'payment-methods-categories',
 
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <PaymentMethodCategoryPages />
           </RoleGuard>
         ),
       },
       {
-        path: "provider",
+        path: 'provider',
 
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <ProviderPages />
           </RoleGuard>
         ),
       },
       {
-        path: "2fa-setup",
+        path: '2fa-setup',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <Setup2FAPage />
           </RoleGuard>
         ),
       },
       {
-        path: "rate-limit",
+        path: 'rate-limit',
         element: (
-          <RoleGuard allowedRoles={["dev"]}>
+          <RoleGuard allowedRoles={['dev']}>
             <RateLimitPage />
           </RoleGuard>
         ),
       },
       {
-        path: "maintenances",
+        path: 'maintenances',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard allowedRoles={['dev', 'admin']}>
             <MaintenancePage />
           </RoleGuard>
         ),
       },
       {
-        path: "admin",
+        path: 'admin',
         element: (
-          <RoleGuard allowedRoles={["dev"]}>
+          <RoleGuard allowedRoles={['dev']}>
             <AdminManagementPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'admin-logs',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'admin-logs/:id',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogDetailPage />
           </RoleGuard>
         ),
       },
@@ -224,14 +242,14 @@ export const router = createBrowserRouter([
         element: <UnauthorizedPage />,
       },
       {
-        path: "*",
+        path: '*',
         element: <NotFoundPage />,
       },
     ],
   },
-]);
+])
 const App: React.FC = () => {
-  return <RouterProvider router={router} />;
-};
+  return <RouterProvider router={router} />
+}
 
-export default App;
+export default App
