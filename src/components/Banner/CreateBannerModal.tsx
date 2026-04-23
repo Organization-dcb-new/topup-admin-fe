@@ -64,23 +64,23 @@ export function CreateBannerModal() {
   return (
     <>
       <Button
-        type="button"
-        className="w-full cursor-pointer gap-2 shadow-sm sm:w-auto"
+        type='button'
+        className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
         onClick={() => setOpen(true)}
       >
-        <Plus className="h-4 w-4 shrink-0" aria-hidden />
+        <Plus className='h-4 w-4 shrink-0' aria-hidden />
         {t('createBannerModal.trigger')}
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-lg">
-          <div className="border-b border-border bg-muted/30 px-6 py-5">
-            <DialogHeader className="gap-1.5 text-left">
-              <div className="flex items-center gap-2">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <ImagePlus className="h-4 w-4" aria-hidden />
+        <DialogContent className='gap-0 overflow-hidden p-0 sm:max-w-lg'>
+          <div className='border-b border-border bg-muted/30 px-6 py-5'>
+            <DialogHeader className='gap-1.5 text-left'>
+              <div className='flex items-center gap-2'>
+                <span className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                  <ImagePlus className='h-4 w-4' aria-hidden />
                 </span>
-                <DialogTitle className="text-xl font-semibold tracking-tight">
+                <DialogTitle className='text-xl font-semibold tracking-tight'>
                   {t('createBannerModal.title')}
                 </DialogTitle>
               </div>
@@ -88,34 +88,34 @@ export function CreateBannerModal() {
             </DialogHeader>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 px-6 py-5">
-            <div className="space-y-2">
-              <Label htmlFor="banner-redirect-link">{t('createBannerModal.redirectLabel')}</Label>
-              <div className="space-y-1">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-6 py-5'>
+            <div className='space-y-2'>
+              <Label htmlFor='banner-redirect-link'>{t('createBannerModal.redirectLabel')}</Label>
+              <div className='space-y-1'>
                 <Input
-                  id="banner-redirect-link"
+                  id='banner-redirect-link'
                   {...register('redirect_link', {
                     required: t('createBannerModal.redirectRequired'),
                   })}
-                  placeholder="https://..."
-                  inputMode="url"
-                  autoComplete="url"
+                  placeholder='https://...'
+                  inputMode='url'
+                  autoComplete='url'
                   aria-invalid={!!errors.redirect_link}
                 />
 
                 {errors.redirect_link && (
-                  <p className="text-xs text-destructive">{errors.redirect_link.message}</p>
+                  <p className='text-xs text-destructive'>{errors.redirect_link.message}</p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">{t('createBannerModal.redirectHint')}</p>
+              <p className='text-xs text-muted-foreground'>{t('createBannerModal.redirectHint')}</p>
             </div>
 
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>{t('createBannerModal.imageLabel')}</Label>
-              <p className="text-xs text-muted-foreground">{t('createBannerModal.imageHint')}</p>
+              <p className='text-xs text-muted-foreground'>{t('createBannerModal.imageHint')}</p>
 
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
                 aria-label={t('createBannerModal.uploadAria')}
                 onClick={() => inputRef.current?.click()}
@@ -142,36 +142,36 @@ export function CreateBannerModal() {
                     <img
                       src={preview}
                       alt={t('createBannerModal.previewAlt')}
-                      className="max-h-44 w-full rounded-lg object-contain"
+                      className='max-h-44 w-full rounded-lg object-contain'
                     />
                     {!isUploading && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
-                        <span className="rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm">
+                      <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100'>
+                        <span className='rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm'>
                           {t('createBannerModal.changeImage')}
                         </span>
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-center text-muted-foreground">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
-                      <UploadCloud className="h-6 w-6 text-primary" aria-hidden />
+                  <div className='flex flex-col items-center gap-2 text-center text-muted-foreground'>
+                    <span className='flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border'>
+                      <UploadCloud className='h-6 w-6 text-primary' aria-hidden />
                     </span>
-                    <span className="text-sm font-medium text-foreground">
+                    <span className='text-sm font-medium text-foreground'>
                       {t('createBannerModal.uploadTitle')}
                     </span>
-                    <span className="max-w-[16rem] text-xs leading-relaxed">
+                    <span className='max-w-[16rem] text-xs leading-relaxed'>
                       {t('createBannerModal.uploadDropHint')}
                     </span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
-                    <span className="text-sm font-medium text-foreground">
+                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
+                    <span className='text-sm font-medium text-foreground'>
                       {t('createBannerModal.uploading', { percent: uploadProgress })}
                     </span>
-                    <Progress value={uploadProgress} className="h-2 w-[min(100%,12rem)]" />
+                    <Progress value={uploadProgress} className='h-2 w-[min(100%,12rem)]' />
                   </div>
                 )}
               </div>
@@ -179,27 +179,27 @@ export function CreateBannerModal() {
 
             <input
               ref={inputRef}
-              type="file"
-              accept="image/*,.svg"
-              className="hidden"
+              type='file'
+              accept='image/*,.svg'
+              className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (file) handleFile(file)
               }}
             />
 
-            <DialogFooter className="gap-2 border-t border-border pt-5 sm:pt-5">
+            <DialogFooter className='gap-2 border-t border-border pt-5 sm:pt-5'>
               <Button
-                className="cursor-pointer sm:min-w-[5.5rem]"
-                variant="outline"
-                type="button"
+                className='cursor-pointer sm:min-w-[5.5rem]'
+                variant='outline'
+                type='button'
                 onClick={() => setOpen(false)}
               >
                 {t('createBannerModal.cancel')}
               </Button>
               <Button
-                className="cursor-pointer sm:min-w-[5.5rem]"
-                type="submit"
+                className='cursor-pointer sm:min-w-[5.5rem]'
+                type='submit'
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}

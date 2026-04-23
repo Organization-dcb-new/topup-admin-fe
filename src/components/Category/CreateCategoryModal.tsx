@@ -58,35 +58,35 @@ export function CreateCategoryModal() {
 
   return (
     <>
-      <Button className="cursor-pointer" onClick={() => setOpen(true)}>
+      <Button className='cursor-pointer' onClick={() => setOpen(true)}>
         + Create Category
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Create Category</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             {/* Name */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>Name</Label>
-              <div className="space-y-1">
+              <div className='space-y-1'>
                 <Input
                   {...register('name', {
                     required: 'Name is required',
                   })}
-                  placeholder="Name"
+                  placeholder='Name'
                   aria-invalid={!!errors.name}
                 />
 
-                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
               </div>
             </div>
 
             {/* Description */}
-            <div className="space-y-1 ">
+            <div className='space-y-1 '>
               <Label>Description</Label>
               <Textarea
                 {...register('description', {
@@ -96,7 +96,7 @@ export function CreateCategoryModal() {
                     message: 'Description must be at least 10 characters',
                   },
                 })}
-                placeholder="Description"
+                placeholder='Description'
                 className={`overflow-auto max-h-40 ${
                   errors.description ? 'border-destructive focus-visible:ring-destructive' : ''
                 }`}
@@ -104,12 +104,12 @@ export function CreateCategoryModal() {
               />
 
               {errors.description && (
-                <p className="text-xs text-destructive">{errors.description.message}</p>
+                <p className='text-xs text-destructive'>{errors.description.message}</p>
               )}
             </div>
 
             {/* Drag & Drop Zone */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>Icon</Label>
 
               <div
@@ -125,17 +125,17 @@ export function CreateCategoryModal() {
                 `}
               >
                 {preview ? (
-                  <img src={preview} className="h-full w-full rounded-lg object-contain" />
+                  <img src={preview} className='h-full w-full rounded-lg object-contain' />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" />
-                    <span className="text-sm">Click or Drop image</span>
+                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                    <UploadCloud className='h-6 w-6' />
+                    <span className='text-sm'>Click or Drop image</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-                    <span className="text-sm">Uploading {uploadProgress}%</span>
+                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white'>
+                    <span className='text-sm'>Uploading {uploadProgress}%</span>
                   </div>
                 )}
               </div>
@@ -147,9 +147,9 @@ export function CreateCategoryModal() {
             {/* Hidden Input */}
             <input
               ref={inputRef}
-              type="file"
-              accept="image/*,.svg"
-              className="hidden"
+              type='file'
+              accept='image/*,.svg'
+              className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (file) handleFile(file)
@@ -159,9 +159,9 @@ export function CreateCategoryModal() {
             {/* Save */}
             <DialogFooter>
               <Button
-                className="cursor-pointer"
-                variant="outline"
-                type="button"
+                className='cursor-pointer'
+                variant='outline'
+                type='button'
                 onClick={() => {
                   setOpen(false)
                 }}
@@ -169,8 +169,8 @@ export function CreateCategoryModal() {
                 Cancel
               </Button>
               <Button
-                className="cursor-pointer"
-                type="submit"
+                className='cursor-pointer'
+                type='submit'
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? 'Saving...' : 'Create'}

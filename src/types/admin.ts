@@ -14,7 +14,7 @@ export interface AdminUser {
   id: string;
   username: string;
   email: string;
-  role: "dev" | "admin" | "noc";
+  role: 'dev' | 'admin' | 'noc';
   two_factor_enabled: boolean;
   created_at: string;
 }

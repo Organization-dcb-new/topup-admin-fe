@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { QRCodeSVG } from "qrcode.react";
+import { useState } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { QRCodeSVG } from 'qrcode.react'
 import {
   Copy,
   Check,
@@ -9,26 +9,26 @@ import {
   ShieldOff,
   AlertTriangle,
   Loader2,
-} from "lucide-react";
-import toast from "react-hot-toast";
+} from 'lucide-react'
+import toast from 'react-hot-toast'
 
-import { api } from "@/api/axios";
-import { authStorage } from "@/lib/auth";
-import { copyTextToClipboard } from "@/lib/copy-to-clipboard";
-import { Button } from "@/components/ui/button";
+import { api } from '@/api/axios'
+import { authStorage } from '@/lib/auth'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from '@/components/ui/card'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
+} from '@/components/ui/input-otp'
 
 interface SetupData {
   qr_url: string;
@@ -36,128 +36,128 @@ interface SetupData {
 }
 
 const Setup2FA = () => {
-  const [setupData, setSetupData] = useState<SetupData | null>(null);
-  const [isConfirmingDeactivate, setIsConfirmingDeactivate] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [setupData, setSetupData] = useState<SetupData | null>(null)
+  const [isConfirmingDeactivate, setIsConfirmingDeactivate] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   const {
     data: profile,
     isLoading: isChecking,
     refetch: reloadProfile,
   } = useQuery({
-    queryKey: ["admin-me"],
+    queryKey: ['admin-me'],
     queryFn: async () => {
-      const res = await api.get("/admin/me");
-      return res.data.data;
+      const res = await api.get('/admin/me')
+      return res.data.data
     },
-  });
+  })
 
-  const isMfaActive = profile?.two_factor_enabled;
+  const isMfaActive = profile?.two_factor_enabled
 
   const { mutate: generateSetup, isPending: isGenerating } = useMutation({
     mutationFn: async () => {
-      const res = await api.get("/admin/setup-2fa");
-      return res.data.data;
+      const res = await api.get('/admin/setup-2fa')
+      return res.data.data
     },
     onSuccess: (data) => {
-      setSetupData(data);
-      toast.success("QR berhasil dibuat");
+      setSetupData(data)
+      toast.success('QR berhasil dibuat')
     },
-    onError: () => toast.error("Gagal membuat setup 2FA"),
-  });
+    onError: () => toast.error('Gagal membuat setup 2FA'),
+  })
 
   const { mutate: activateMfa, isPending: isActivating } = useMutation({
     mutationFn: async (code: string) => {
-      const res = await api.post("/admin/activate", { code });
-      return res.data;
+      const res = await api.post('/admin/activate', { code })
+      return res.data
     },
     onSuccess: (res) => {
-      toast.success("2FA berhasil diaktifkan");
-      if (res.token) authStorage.setToken(res.token);
-      setSetupData(null);
-      reloadProfile();
+      toast.success('2FA berhasil diaktifkan')
+      if (res.token) authStorage.setToken(res.token)
+      setSetupData(null)
+      reloadProfile()
     },
     onError: (err: unknown) => {
       const msg = (
         err as { response?: { data?: { message?: string } } }
       )?.response?.data?.message
-      toast.error(msg || "Kode OTP tidak valid")
+      toast.error(msg || 'Kode OTP tidak valid')
     },
-  });
+  })
 
   const { mutate: deactivateMfa, isPending: isDeactivating } = useMutation({
     mutationFn: async (code: string) => {
-      const res = await api.post("/admin/deactivate", { code });
-      return res.data;
+      const res = await api.post('/admin/deactivate', { code })
+      return res.data
     },
     onSuccess: (res) => {
-      toast.success("2FA berhasil dinonaktifkan");
-      if (res.token) authStorage.setToken(res.token);
-      setIsConfirmingDeactivate(false);
-      reloadProfile();
+      toast.success('2FA berhasil dinonaktifkan')
+      if (res.token) authStorage.setToken(res.token)
+      setIsConfirmingDeactivate(false)
+      reloadProfile()
     },
     onError: (err: unknown) => {
       const msg = (
         err as { response?: { data?: { message?: string } } }
       )?.response?.data?.message
-      toast.error(msg || "Gagal menonaktifkan 2FA")
+      toast.error(msg || 'Gagal menonaktifkan 2FA')
     },
-  });
+  })
 
   const handleCopyCodes = async () => {
-    if (!setupData) return;
-    const text = setupData.recovery_codes.join("\n");
+    if (!setupData) return
+    const text = setupData.recovery_codes.join('\n')
     try {
-      await copyTextToClipboard(text);
+      await copyTextToClipboard(text)
     } catch {
-      toast.error("Gagal menyalin kode cadangan");
-      return;
+      toast.error('Gagal menyalin kode cadangan')
+      return
     }
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    toast.success("Kode cadangan disalin");
-  };
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+    toast.success('Kode cadangan disalin')
+  }
 
   if (isChecking)
     return (
       <div
-        className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12"
-        role="status"
-        aria-live="polite"
-        aria-busy="true"
+        className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
+        role='status'
+        aria-live='polite'
+        aria-busy='true'
       >
-        <Loader2 className="h-11 w-11 animate-spin text-primary" aria-hidden />
-        <div className="text-center">
-          <p className="text-sm font-medium text-foreground">
+        <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
+        <div className='text-center'>
+          <p className='text-sm font-medium text-foreground'>
             Memeriksa status keamanan…
           </p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className='mt-1 text-xs text-muted-foreground'>
             Mohon tunggu sebentar.
           </p>
         </div>
       </div>
-    );
+    )
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <ShieldCheck className="h-5 w-5" aria-hidden />
+    <div className='space-y-6'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <div className='flex gap-3'>
+          <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+            <ShieldCheck className='h-5 w-5' aria-hidden />
           </div>
-          <div className="min-w-0 space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+          <div className='min-w-0 space-y-1'>
+            <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
               Keamanan akun
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className='text-sm text-muted-foreground'>
               Kelola autentikasi dua faktor (2FA) untuk akun admin Anda.
             </p>
           </div>
         </div>
         {isMfaActive && (
-          <div className="flex items-center gap-2 self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 sm:self-auto">
+          <div className='flex items-center gap-2 self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 sm:self-auto'>
             <span
-              className="h-2 w-2 shrink-0 rounded-full bg-emerald-500"
+              className='h-2 w-2 shrink-0 rounded-full bg-emerald-500'
               aria-hidden
             />
             2FA aktif
@@ -166,51 +166,51 @@ const Setup2FA = () => {
       </div>
 
       {isMfaActive ? (
-        <Card className="overflow-hidden rounded-xl border border-red-100/80 bg-red-50/10 shadow-sm ring-1 ring-gray-900/5">
-          <CardHeader className="border-b border-red-100/80 bg-white px-4 py-4 sm:px-5">
-            <CardTitle className="flex items-center gap-2 text-base font-semibold text-red-800">
-              <ShieldOff className="h-5 w-5 shrink-0" aria-hidden />
+        <Card className='overflow-hidden rounded-xl border border-red-100/80 bg-red-50/10 shadow-sm ring-1 ring-gray-900/5'>
+          <CardHeader className='border-b border-red-100/80 bg-white px-4 py-4 sm:px-5'>
+            <CardTitle className='flex items-center gap-2 text-base font-semibold text-red-800'>
+              <ShieldOff className='h-5 w-5 shrink-0' aria-hidden />
               Kelola 2FA
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className='text-sm text-muted-foreground'>
               Akun Anda saat ini dilindungi verifikasi dua langkah.
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="flex flex-col items-center space-y-8 py-10 sm:py-12">
+          <CardContent className='flex flex-col items-center space-y-8 py-10 sm:py-12'>
             {!isConfirmingDeactivate ? (
-              <div className="space-y-6 text-center">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-red-100 shadow-inner">
+              <div className='space-y-6 text-center'>
+                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-red-100 shadow-inner'>
                   <AlertTriangle
-                    className="h-10 w-10 text-red-600"
+                    className='h-10 w-10 text-red-600'
                     aria-hidden
                   />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold text-gray-900">
+                <div className='space-y-2'>
+                  <h3 className='text-xl font-semibold text-gray-900'>
                     Nonaktifkan perlindungan?
                   </h3>
-                  <p className="mx-auto max-w-sm text-sm text-muted-foreground">
+                  <p className='mx-auto max-w-sm text-sm text-muted-foreground'>
                     Tindakan ini meningkatkan risiko akses tidak sah. Pastikan
                     Anda memahami konsekuensinya.
                   </p>
                 </div>
                 <Button
-                  variant="destructive"
-                  size="lg"
+                  variant='destructive'
+                  size='lg'
                   onClick={() => setIsConfirmingDeactivate(true)}
-                  className="h-12 rounded-xl px-10 font-semibold transition-transform active:scale-[0.98]"
+                  className='h-12 rounded-xl px-10 font-semibold transition-transform active:scale-[0.98]'
                 >
                   Nonaktifkan 2FA
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col items-center space-y-6 duration-300 animate-in zoom-in-95">
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold text-red-800">
+              <div className='flex flex-col items-center space-y-6 duration-300 animate-in zoom-in-95'>
+                <div className='text-center'>
+                  <h3 className='text-lg font-semibold text-red-800'>
                     Verifikasi akhir
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className='text-sm text-muted-foreground'>
                     Masukkan kode OTP untuk mengonfirmasi
                   </p>
                 </div>
@@ -226,26 +226,26 @@ const Setup2FA = () => {
                       <InputOTPSlot
                         key={i}
                         index={i}
-                        className="w-12 h-16 bg-white text-xl font-black border-red-200 focus:border-red-500"
+                        className='w-12 h-16 bg-white text-xl font-black border-red-200 focus:border-red-500'
                       />
                     ))}
                   </InputOTPGroup>
                 </InputOTP>
 
-                <div className="flex flex-col items-center gap-3">
+                <div className='flex flex-col items-center gap-3'>
                   {isDeactivating ? (
-                    <p className="flex items-center gap-2 text-sm font-medium text-red-600">
+                    <p className='flex items-center gap-2 text-sm font-medium text-red-600'>
                       <Loader2
-                        className="h-4 w-4 animate-spin"
+                        className='h-4 w-4 animate-spin'
                         aria-hidden
                       />
                       Menonaktifkan…
                     </p>
                   ) : (
                     <Button
-                      variant="ghost"
+                      variant='ghost'
                       onClick={() => setIsConfirmingDeactivate(false)}
-                      className="text-xs text-muted-foreground hover:text-red-600"
+                      className='text-xs text-muted-foreground hover:text-red-600'
                     >
                       Batal, tetap aktifkan 2FA
                     </Button>
@@ -258,91 +258,91 @@ const Setup2FA = () => {
       ) : (
         <>
           {!setupData ? (
-            <Card className="flex flex-col items-center rounded-xl border border-dashed border-border/80 bg-muted/15 py-16 shadow-sm ring-1 ring-gray-900/5 sm:py-20">
-              <div className="mb-6 rounded-2xl border border-border/60 bg-white p-4 shadow-sm">
+            <Card className='flex flex-col items-center rounded-xl border border-dashed border-border/80 bg-muted/15 py-16 shadow-sm ring-1 ring-gray-900/5 sm:py-20'>
+              <div className='mb-6 rounded-2xl border border-border/60 bg-white p-4 shadow-sm'>
                 <RefreshCw
-                  className={`h-12 w-12 text-primary/70 ${isGenerating ? "animate-spin" : ""}`}
+                  className={`h-12 w-12 text-primary/70 ${isGenerating ? 'animate-spin' : ''}`}
                   aria-hidden
                 />
               </div>
-              <h3 className="mb-2 text-xl font-semibold tracking-tight text-gray-900">
+              <h3 className='mb-2 text-xl font-semibold tracking-tight text-gray-900'>
                 Perkuat keamanan akun
               </h3>
-              <p className="mb-8 max-w-xs px-4 text-center text-sm text-muted-foreground">
+              <p className='mb-8 max-w-xs px-4 text-center text-sm text-muted-foreground'>
                 Gunakan aplikasi autentikator untuk melindungi dashboard admin
                 dari akses tidak sah.
               </p>
               <Button
                 onClick={() => generateSetup()}
                 disabled={isGenerating}
-                size="lg"
-                className="h-12 rounded-xl px-10 text-base font-semibold shadow-sm transition-transform active:scale-[0.98]"
+                size='lg'
+                className='h-12 rounded-xl px-10 text-base font-semibold shadow-sm transition-transform active:scale-[0.98]'
               >
                 {isGenerating ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  <span className='flex items-center gap-2'>
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     Menyiapkan…
                   </span>
                 ) : (
-                  "Aktifkan 2FA"
+                  'Aktifkan 2FA'
                 )}
               </Button>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 gap-4 duration-500 animate-in slide-in-from-bottom-4 sm:gap-6 lg:grid-cols-3">
-              <Card className="rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5">
-                <CardHeader className="pb-2 pt-4">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className='grid grid-cols-1 gap-4 duration-500 animate-in slide-in-from-bottom-4 sm:gap-6 lg:grid-cols-3'>
+              <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
+                <CardHeader className='pb-2 pt-4'>
+                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
                     1. Pindai QR
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex justify-center py-4 sm:py-6">
-                  <div className="rounded-2xl border-2 border-dashed border-border/80 bg-white p-4 shadow-inner">
+                <CardContent className='flex justify-center py-4 sm:py-6'>
+                  <div className='rounded-2xl border-2 border-dashed border-border/80 bg-white p-4 shadow-inner'>
                     <QRCodeSVG value={setupData.qr_url} size={180} />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5">
-                <CardHeader className="pb-2 pt-4">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
+                <CardHeader className='pb-2 pt-4'>
+                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
                     2. Kode cadangan
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4 py-4 sm:py-6">
-                  <div className="grid grid-cols-2 gap-2">
+                <CardContent className='space-y-4 py-4 sm:py-6'>
+                  <div className='grid grid-cols-2 gap-2'>
                     {setupData.recovery_codes.map((code) => (
                       <div
                         key={code}
-                        className="rounded-lg border border-border/80 bg-muted/30 p-2 text-center font-mono text-[11px] font-semibold text-foreground shadow-sm"
+                        className='rounded-lg border border-border/80 bg-muted/30 p-2 text-center font-mono text-[11px] font-semibold text-foreground shadow-sm'
                       >
                         {code}
                       </div>
                     ))}
                   </div>
                   <Button
-                    variant="secondary"
-                    size="sm"
-                    className="w-full gap-2 font-semibold"
+                    variant='secondary'
+                    size='sm'
+                    className='w-full gap-2 font-semibold'
                     onClick={handleCopyCodes}
                   >
                     {copied ? (
-                      <Check className="h-4 w-4 text-emerald-600" aria-hidden />
+                      <Check className='h-4 w-4 text-emerald-600' aria-hidden />
                     ) : (
-                      <Copy className="h-4 w-4" aria-hidden />
+                      <Copy className='h-4 w-4' aria-hidden />
                     )}
-                    {copied ? "Disalin" : "Salin semua kode"}
+                    {copied ? 'Disalin' : 'Salin semua kode'}
                   </Button>
                 </CardContent>
               </Card>
 
-              <Card className="rounded-xl border border-primary/20 shadow-sm ring-2 ring-primary/10">
-                <CardHeader className="pb-2 pt-4">
-                  <CardTitle className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <Card className='rounded-xl border border-primary/20 shadow-sm ring-2 ring-primary/10'>
+                <CardHeader className='pb-2 pt-4'>
+                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
                     3. Aktivasi
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center space-y-6 pt-6 sm:space-y-8 sm:pt-8">
+                <CardContent className='flex flex-col items-center space-y-6 pt-6 sm:space-y-8 sm:pt-8'>
                   <InputOTP
                     maxLength={6}
                     disabled={isActivating}
@@ -353,14 +353,14 @@ const Setup2FA = () => {
                         <InputOTPSlot
                           key={i}
                           index={i}
-                          className="h-14 w-10 border-border bg-muted/30 text-xl font-semibold focus-visible:ring-primary/30"
+                          className='h-14 w-10 border-border bg-muted/30 text-xl font-semibold focus-visible:ring-primary/30'
                         />
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
                   {isActivating && (
-                    <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+                    <p className='flex items-center gap-2 text-xs font-medium text-muted-foreground'>
+                      <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden />
                       Memverifikasi…
                     </p>
                   )}
@@ -373,19 +373,19 @@ const Setup2FA = () => {
 
       {/* Info Warning */}
       {setupData && !isMfaActive && (
-        <Alert className="rounded-xl border-amber-200 border-l-4 bg-amber-50/90 shadow-sm ring-1 ring-amber-900/5">
-          <AlertTriangle className="h-5 w-5 text-amber-600" aria-hidden />
-          <AlertTitle className="font-semibold text-amber-950">
+        <Alert className='rounded-xl border-amber-200 border-l-4 bg-amber-50/90 shadow-sm ring-1 ring-amber-900/5'>
+          <AlertTriangle className='h-5 w-5 text-amber-600' aria-hidden />
+          <AlertTitle className='font-semibold text-amber-950'>
             Sebelum aktivasi
           </AlertTitle>
-          <AlertDescription className="text-xs text-amber-900/90">
+          <AlertDescription className='text-xs text-amber-900/90'>
             Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun
             sulit dilakukan jika aplikasi autentikator hilang.
           </AlertDescription>
         </Alert>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Setup2FA;
+export default Setup2FA

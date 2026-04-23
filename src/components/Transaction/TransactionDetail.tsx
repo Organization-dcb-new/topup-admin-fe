@@ -14,7 +14,14 @@ import i18n from '@/i18n'
 import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
 import { format, isValid } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
-import { ArrowLeft, Check, Copy, CreditCard, Loader2, Receipt } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  Copy,
+  CreditCard,
+  Loader2,
+  Receipt,
+} from 'lucide-react'
 import {
   type Dispatch,
   type FC,
@@ -28,52 +35,55 @@ import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 export interface PaymentDetail {
-  id: string
-  payment_number: string
-  order_id: string
-  amount: number
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED'
-  payment_method_id: string
-  payment_channel: 'gopay' | 'va' | 'qris' | 'shopeepay'
-  payment_url: string
-  qr_code_url: string
-  va_number: string
-  created_at: string
-  email: string
-  sku: string
-  margin: number
-  order: Order
-  order_item: OrderItem
+  id: string;
+  payment_number: string;
+  order_id: string;
+  amount: number;
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED';
+  payment_method_id: string;
+  payment_channel: 'gopay' | 'va' | 'qris' | 'shopeepay';
+  payment_url: string;
+  qr_code_url: string;
+  va_number: string;
+  created_at: string;
+  email: string;
+  sku: string;
+  tid: string;
+  meta_data: Record<string, unknown>;
+  ip_address: string;
+  margin: number;
+  order: Order;
+  order_item: OrderItem;
 }
 
 export interface OrderItem {
-  id: string
-  product_id: string
-  product_name: string
-  product_sku: string
-  quantity: number
-  unit_price: number
-  subtotal: number
-  voucher_code?: string
+  id: string;
+  product_id: string;
+  product_name: string;
+  product_sku: string;
+  quantity: number;
+  unit_price: number;
+  subtotal: number;
+  voucher_code?: string;
 }
 
 export interface Order {
-  id: string
-  order_number: string
-  status: string
-  subtotal: number
-  discount_amount: number
-  loyalty_discount: number
-  tax_amount: number
-  total_amount: number
-  payment_method: string
-  created_at: string
+  id: string;
+  order_number: string;
+  status: string;
+  subtotal: number;
+  discount_amount: number;
+  loyalty_discount: number;
+  tax_amount: number;
+  total_amount: number;
+  payment_method: string;
+  created_at: string;
 }
 
 type Props = {
-  data: PaymentDetail
-  isLoading: boolean
-}
+  data: PaymentDetail;
+  isLoading: boolean;
+};
 
 function formatIdr(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -111,7 +121,8 @@ export default function PaymentDetail({ data, isLoading }: Props) {
   const EMAIL_KEY = 'emailCooldownExpire'
 
   const { mutateAsync, isPending: isResendingVoucher } = useResendVoucherCode()
-  const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } = useResendEmail()
+  const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } =
+    useResendEmail()
 
   const date = parseWIBDate(data.created_at)
 
@@ -170,52 +181,56 @@ export default function PaymentDetail({ data, isLoading }: Props) {
   }, [voucherCooldown, emailCooldown])
 
   const PaymentAction =
-    data.status === 'PENDING' ? paymentComponentMap[data.payment_channel] : null
+    data.status === 'PENDING'
+      ? paymentComponentMap[data.payment_channel]
+      : null
 
   return (
     <DashboardLayout>
-      <div className="min-w-0 -mx-4 -mt-4 flex w-full flex-col bg-muted/30 md:-mx-6 md:-mt-6">
-        <div className="w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-8">
-          <div className="w-full min-w-0 overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10">
-            <header className="border-b border-border/70 px-4 py-5 sm:px-6 md:px-8">
-              <div className="flex min-w-0 items-start gap-3">
+      <div className='min-w-0 -mx-4 -mt-4 flex w-full flex-col bg-muted/30 md:-mx-6 md:-mt-6'>
+        <div className='w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-8'>
+          <div className='w-full min-w-0 overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'>
+            <header className='border-b border-border/70 px-4 py-5 sm:px-6 md:px-8'>
+              <div className='flex min-w-0 items-start gap-3'>
                 <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
+                  type='button'
+                  variant='ghost'
+                  size='icon'
                   onClick={() => navigate(-1)}
-                  className="mt-0.5 shrink-0 rounded-full"
+                  className='mt-0.5 shrink-0 rounded-full'
                   aria-label={t('transactionDetail.backAria')}
                 >
-                  <ArrowLeft className="h-5 w-5" aria-hidden />
+                  <ArrowLeft className='h-5 w-5' aria-hidden />
                 </Button>
-                <div className="flex min-w-0 gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Receipt className="h-5 w-5" aria-hidden />
+                <div className='flex min-w-0 gap-3'>
+                  <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                    <Receipt className='h-5 w-5' aria-hidden />
                   </div>
-                  <div className="min-w-0 space-y-1">
-                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                  <div className='min-w-0 space-y-1'>
+                    <h1 className='text-2xl font-semibold tracking-tight text-foreground'>
                       {t('transactionDetail.pageTitle')}
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className='text-sm text-muted-foreground'>
                       {data.status === 'PENDING'
                         ? t('transactionDetail.subtitlePending')
                         : t('transactionDetail.subtitleDefault')}
                     </p>
-                    <p className="font-mono text-xs text-muted-foreground tabular-nums">{data.id}</p>
+                    <p className='font-mono text-xs text-muted-foreground tabular-nums'>
+                      {data.id}
+                    </p>
                   </div>
                 </div>
               </div>
             </header>
 
-            <div className="border-b border-border/70 bg-muted/20 px-4 py-6 sm:px-6 md:px-8 md:py-8">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
-                <div className="min-w-0 space-y-2">
+            <div className='border-b border-border/70 bg-muted/20 px-4 py-6 sm:px-6 md:px-8 md:py-8'>
+              <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8'>
+                <div className='min-w-0 space-y-2'>
                   <PaymentStatusBadge status={data.status} />
-                  <p className="text-3xl font-bold tabular-nums tracking-tight text-foreground sm:text-4xl">
+                  <p className='text-3xl font-bold tabular-nums tracking-tight text-foreground sm:text-4xl'>
                     {formatIdr(data.amount)}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className='text-sm text-muted-foreground'>
                     {t(`paymentChannel.${data.payment_channel}`)} ·{' '}
                     {data.payment_channel.toUpperCase()}
                   </p>
@@ -223,40 +238,40 @@ export default function PaymentDetail({ data, isLoading }: Props) {
 
                 {data.status === 'PENDING' && (
                   <Button
-                    type="button"
-                    size="lg"
-                    className="h-12 w-full shrink-0 gap-2 sm:w-auto sm:min-w-[14rem]"
+                    type='button'
+                    size='lg'
+                    className='h-12 w-full shrink-0 gap-2 sm:w-auto sm:min-w-[14rem]'
                     onClick={() => setPaymentModalOpen(true)}
                   >
-                    <CreditCard className="h-4 w-4 shrink-0" aria-hidden />
+                    <CreditCard className='h-4 w-4 shrink-0' aria-hidden />
                     {t('transactionDetail.payInstructions')}
                   </Button>
                 )}
 
                 {data.status === 'PAID' && (
-                  <p className="text-sm font-medium text-emerald-700 sm:max-w-xs sm:text-right">
+                  <p className='text-sm font-medium text-emerald-700 sm:max-w-xs sm:text-right'>
                     {t('transactionDetail.paymentReceived')}
                   </p>
                 )}
                 {data.status === 'FAILED' && (
-                  <p className="text-sm font-medium text-destructive sm:max-w-xs sm:text-right">
+                  <p className='text-sm font-medium text-destructive sm:max-w-xs sm:text-right'>
                     {t('transactionDetail.paymentFailed')}
                   </p>
                 )}
                 {data.status === 'EXPIRED' && (
-                  <p className="text-sm font-medium text-muted-foreground sm:max-w-xs sm:text-right">
+                  <p className='text-sm font-medium text-muted-foreground sm:max-w-xs sm:text-right'>
                     {t('transactionDetail.paymentExpired')}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="grid min-w-0 divide-y divide-border/70 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-              <section className="min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8">
-                <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className='grid min-w-0 divide-y divide-border/70 lg:grid-cols-2 lg:divide-x lg:divide-y-0'>
+              <section className='min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
+                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                   {t('transactionDetail.sectionPayment')}
                 </h2>
-                <dl className="space-y-0">
+                <dl className='space-y-0'>
                   <InfoRow
                     label={t('transactionDetail.labelTransactionNumber')}
                     value={data.id}
@@ -274,65 +289,117 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                     mono
                     muted
                   />
-                  <InfoRow label={t('transactionDetail.labelEmail')} value={data.email} breakAll />
+                  <InfoRow
+                    label={t('transactionDetail.labelEmail')}
+                    value={data.email}
+                    breakAll
+                  />
+                  {data.tid && (
+                    <InfoRow
+                      label={t('transactionDetail.labelTid')}
+                      value={data.tid}
+                      mono
+                      copyText={data.tid}
+                    />
+                  )}
+                  {data.ip_address && (
+                    <InfoRow
+                      label={t('transactionDetail.labelIpAddress')}
+                      value={data.ip_address}
+                      mono
+                    />
+                  )}
                 </dl>
               </section>
 
-              <section className="min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8">
-                <h2 className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <section className='min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
+                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                   {t('transactionDetail.sectionOrder')}
                 </h2>
-                <dl className="space-y-0">
+                <dl className='space-y-0'>
                   <InfoRow
                     label={t('transactionDetail.labelOrderNumber')}
                     value={data.order.order_number}
                     mono
                   />
-                  <InfoRow label={t('transactionDetail.labelSku')} value={data.sku} mono copyText={data.sku} />
+                  <InfoRow
+                    label={t('transactionDetail.labelSku')}
+                    value={data.sku}
+                    mono
+                    copyText={data.sku}
+                  />
                   <InfoRow
                     label={t('transactionDetail.labelProduct')}
                     value={data.order_item.product_name}
                   />
                   <InfoRow
                     label={t('transactionDetail.labelQuantity')}
-                    value={t('transactionDetail.itemCount', { count: data.order_item.quantity })}
+                    value={t('transactionDetail.itemCount', {
+                      count: data.order_item.quantity,
+                    })}
                   />
                   <InfoRow
                     label={t('transactionDetail.labelOrderStatus')}
                     value={<OrderStatusBadge status={data.order.status} />}
-                    valueClassName="sm:flex sm:justify-end"
+                    valueClassName='sm:flex sm:justify-end'
                   />
-                  <InfoRow label={t('transactionDetail.labelMargin')} value={formatIdr(data.margin)} mono />
+                  <InfoRow
+                    label={t('transactionDetail.labelMargin')}
+                    value={formatIdr(data.margin)}
+                    mono
+                  />
                 </dl>
               </section>
             </div>
 
-            <section className="border-t border-border/70 px-4 py-5 sm:px-6 md:px-8">
-              <p className="text-xs font-medium text-muted-foreground">
+            {data.meta_data && Object.keys(data.meta_data).length > 0 && (
+              <section className='border-t border-border/70 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
+                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                  {t('transactionDetail.sectionMetadata')}
+                </h2>
+                <dl className='space-y-0'>
+                  {Object.entries(data.meta_data).map(
+                    ([key, value]) => (
+                      <InfoRow
+                        key={key}
+                        label={key}
+                        value={String(value)}
+                        mono
+                      />
+                    ),
+                  )}
+                </dl>
+              </section>
+            )}
+
+            <section className='border-t border-border/70 px-4 py-5 sm:px-6 md:px-8'>
+              <p className='text-xs font-medium text-muted-foreground'>
                 {t('transactionDetail.created')}
               </p>
-              <p className="mt-1 tabular-nums text-sm text-foreground">
+              <p className='mt-1 tabular-nums text-sm text-foreground'>
                 {date && isValid(date)
-                  ? format(date, 'dd MMM yyyy, HH:mm', { locale: detailDateLocale() })
+                  ? format(date, 'dd MMM yyyy, HH:mm', {
+                      locale: detailDateLocale(),
+                    })
                   : '—'}{' '}
-                <span className="text-xs text-muted-foreground">
+                <span className='text-xs text-muted-foreground'>
                   {t('transactionDetail.wibSuffix')}
                 </span>
               </p>
             </section>
 
             {!isLoading && data.status === 'PAID' && (
-              <div className="flex flex-col gap-4 border-t border-border/70 bg-muted/15 px-4 py-6 sm:flex-row sm:flex-wrap sm:px-6 md:px-8">
+              <div className='flex flex-col gap-4 border-t border-border/70 bg-muted/15 px-4 py-6 sm:flex-row sm:flex-wrap sm:px-6 md:px-8'>
                 {data.order_item?.voucher_code && (
-                  <div className="min-w-0 flex-1 space-y-2 sm:min-w-[12rem]">
-                    <p className="text-xs font-medium text-muted-foreground">
+                  <div className='min-w-0 flex-1 space-y-2 sm:min-w-[12rem]'>
+                    <p className='text-xs font-medium text-muted-foreground'>
                       {t('transactionDetail.voucherCode')}
                     </p>
                     <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      className="w-full sm:w-auto"
+                      type='button'
+                      variant='secondary'
+                      size='sm'
+                      className='w-full sm:w-auto'
                       onClick={() => handleResendVoucherCodeEmail(data.id)}
                       disabled={isResendingVoucher || voucherCooldown > 0}
                     >
@@ -344,15 +411,15 @@ export default function PaymentDetail({ data, isLoading }: Props) {
                     </Button>
                   </div>
                 )}
-                <div className="min-w-0 flex-1 space-y-2 sm:min-w-[12rem]">
-                  <p className="text-xs font-medium text-muted-foreground">
+                <div className='min-w-0 flex-1 space-y-2 sm:min-w-[12rem]'>
+                  <p className='text-xs font-medium text-muted-foreground'>
                     {t('transactionDetail.paymentEmail')}
                   </p>
                   <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    className="w-full sm:w-auto"
+                    type='button'
+                    variant='secondary'
+                    size='sm'
+                    className='w-full sm:w-auto'
                     onClick={() => handleResendPaymentEmail(data.id)}
                     disabled={isResendingEmail || emailCooldown > 0}
                   >
@@ -371,18 +438,20 @@ export default function PaymentDetail({ data, isLoading }: Props) {
 
       <Dialog open={paymentModalOpen} onOpenChange={setPaymentModalOpen}>
         <DialogContent
-          className="max-h-[min(90vh,40rem)] gap-0 overflow-y-auto p-0 sm:max-w-lg"
+          className='max-h-[min(90vh,40rem)] gap-0 overflow-y-auto p-0 sm:max-w-lg'
           showCloseButton
         >
-          <DialogHeader className="border-b border-border/80 px-6 py-4 text-left">
-            <DialogTitle>{t('transactionDetail.dialogPaymentTitle')}</DialogTitle>
+          <DialogHeader className='border-b border-border/80 px-6 py-4 text-left'>
+            <DialogTitle>
+              {t('transactionDetail.dialogPaymentTitle')}
+            </DialogTitle>
             <DialogDescription>
               {t('transactionDetail.dialogPaymentDescription', {
                 channel: t(`paymentChannel.${data.payment_channel}`),
               })}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center px-6 py-6">
+          <div className='flex flex-col items-center px-6 py-6'>
             {isLoading && <PaymentActionSpinner />}
             {!isLoading && PaymentAction && <PaymentAction data={data} />}
           </div>
@@ -392,9 +461,12 @@ export default function PaymentDetail({ data, isLoading }: Props) {
   )
 }
 
-type PaymentChannel = PaymentDetail['payment_channel']
+type PaymentChannel = PaymentDetail['payment_channel'];
 
-const paymentComponentMap: Record<PaymentChannel, FC<{ data: PaymentDetail }>> = {
+const paymentComponentMap: Record<
+  PaymentChannel,
+  FC<{ data: PaymentDetail }>
+> = {
   gopay: GopayPayment,
   qris: QrisPayment,
   shopeepay: ShopeepayPayment,
@@ -404,23 +476,23 @@ const paymentComponentMap: Record<PaymentChannel, FC<{ data: PaymentDetail }>> =
 function GopayPayment({ data }: { data: PaymentDetail }) {
   const { t } = useTranslation('common')
   return (
-    <div className="w-full max-w-sm space-y-4">
+    <div className='w-full max-w-sm space-y-4'>
       {data.qr_code_url && (
-        <div className="flex flex-col items-center gap-2">
+        <div className='flex flex-col items-center gap-2'>
           <img
             src={data.qr_code_url}
             alt={t('transactionDetail.gopay.qrAlt')}
-            className="h-52 w-52 rounded-lg border object-contain sm:h-56 sm:w-56"
+            className='h-52 w-52 rounded-lg border object-contain sm:h-56 sm:w-56'
           />
-          <p className="text-center text-sm text-muted-foreground">
+          <p className='text-center text-sm text-muted-foreground'>
             {t('transactionDetail.gopay.scanHint')}
           </p>
         </div>
       )}
       {data.payment_url && (
         <Button
-          type="button"
-          className="w-full"
+          type='button'
+          className='w-full'
           onClick={() => window.open(data.payment_url, '_blank')}
         >
           {t('transactionDetail.gopay.openButton')}
@@ -433,17 +505,19 @@ function GopayPayment({ data }: { data: PaymentDetail }) {
 function ShopeepayPayment({ data }: { data: PaymentDetail }) {
   const { t } = useTranslation('common')
   return (
-    <div className="w-full max-w-sm space-y-4 text-center">
-      <p className="text-sm text-muted-foreground">{t('transactionDetail.shopeepay.redirectHint')}</p>
+    <div className='w-full max-w-sm space-y-4 text-center'>
+      <p className='text-sm text-muted-foreground'>
+        {t('transactionDetail.shopeepay.redirectHint')}
+      </p>
       <Button
-        type="button"
-        className="w-full"
+        type='button'
+        className='w-full'
         onClick={() => window.open(data.payment_url, '_blank')}
         disabled={!data.payment_url}
       >
         {t('transactionDetail.shopeepay.openButton')}
       </Button>
-      <p className="text-xs text-amber-600 dark:text-amber-500">
+      <p className='text-xs text-amber-600 dark:text-amber-500'>
         {t('transactionDetail.shopeepay.footnote')}
       </p>
     </div>
@@ -453,14 +527,16 @@ function ShopeepayPayment({ data }: { data: PaymentDetail }) {
 function QrisPayment({ data }: { data: PaymentDetail }) {
   const { t } = useTranslation('common')
   return (
-    <div className="w-full max-w-sm space-y-4 text-center">
-      <p className="text-sm text-muted-foreground">{t('transactionDetail.qris.scanHint')}</p>
+    <div className='w-full max-w-sm space-y-4 text-center'>
+      <p className='text-sm text-muted-foreground'>
+        {t('transactionDetail.qris.scanHint')}
+      </p>
       <img
         src={data.qr_code_url}
         alt={t('transactionDetail.qris.qrAlt')}
-        className="mx-auto max-h-[min(55vh,18rem)] w-auto max-w-full rounded-xl border object-contain"
+        className='mx-auto max-h-[min(55vh,18rem)] w-auto max-w-full rounded-xl border object-contain'
       />
-      <p className="text-xs text-amber-600 dark:text-amber-500">
+      <p className='text-xs text-amber-600 dark:text-amber-500'>
         {t('transactionDetail.qris.waitingHint')}
       </p>
     </div>
@@ -470,12 +546,16 @@ function QrisPayment({ data }: { data: PaymentDetail }) {
 function VaPayment({ data }: { data: PaymentDetail }) {
   const { t } = useTranslation('common')
   return (
-    <div className="w-full max-w-sm space-y-3 text-center">
-      <p className="text-sm text-muted-foreground">{t('transactionDetail.va.label')}</p>
-      <div className="rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-lg tabular-nums">
+    <div className='w-full max-w-sm space-y-3 text-center'>
+      <p className='text-sm text-muted-foreground'>
+        {t('transactionDetail.va.label')}
+      </p>
+      <div className='rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-lg tabular-nums'>
         {data.va_number || '—'}
       </div>
-      <p className="text-xs text-amber-600 dark:text-amber-500">{t('transactionDetail.va.hint')}</p>
+      <p className='text-xs text-amber-600 dark:text-amber-500'>
+        {t('transactionDetail.va.hint')}
+      </p>
     </div>
   )
 }
@@ -499,17 +579,21 @@ function CopyInlineButton({ text }: { text: string }) {
 
   return (
     <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
+      type='button'
+      variant='ghost'
+      size='icon'
+      className='h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground'
       onClick={handleCopy}
-      aria-label={copied ? t('transactionDetail.copy.ariaCopied') : t('transactionDetail.copy.ariaCopy')}
+      aria-label={
+        copied
+          ? t('transactionDetail.copy.ariaCopied')
+          : t('transactionDetail.copy.ariaCopy')
+      }
     >
       {copied ? (
-        <Check className="h-4 w-4 text-emerald-600" aria-hidden />
+        <Check className='h-4 w-4 text-emerald-600' aria-hidden />
       ) : (
-        <Copy className="h-4 w-4" aria-hidden />
+        <Copy className='h-4 w-4' aria-hidden />
       )}
     </Button>
   )
@@ -524,19 +608,19 @@ function InfoRow({
   valueClassName,
   copyText,
 }: {
-  label: string
-  value: ReactNode
-  mono?: boolean
-  muted?: boolean
-  breakAll?: boolean
-  valueClassName?: string
-  copyText?: string
+  label: string;
+  value: ReactNode;
+  mono?: boolean;
+  muted?: boolean;
+  breakAll?: boolean;
+  valueClassName?: string;
+  copyText?: string;
 }) {
   const showCopy = copyText != null && copyText !== ''
 
   return (
-    <div className="grid grid-cols-1 gap-1 border-b border-border/50 py-3 last:border-0 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4">
-      <dt className="text-sm text-muted-foreground">{label}</dt>
+    <div className='grid grid-cols-1 gap-1 border-b border-border/50 py-3 last:border-0 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4'>
+      <dt className='text-sm text-muted-foreground'>{label}</dt>
       <dd
         className={cn(
           'min-w-0 text-sm font-medium text-foreground sm:text-right',
@@ -547,7 +631,7 @@ function InfoRow({
         )}
       >
         {showCopy ? (
-          <div className="flex min-w-0 items-start justify-end gap-1 sm:gap-2">
+          <div className='flex min-w-0 items-start justify-end gap-1 sm:gap-2'>
             <span
               className={cn(
                 'min-w-0 flex-1 text-sm font-medium text-foreground sm:text-right',
@@ -579,7 +663,10 @@ function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
   return (
     <Badge
       variant={variant}
-      className={cn(status === 'PAID' && 'border-transparent bg-emerald-600 hover:bg-emerald-600')}
+      className={cn(
+        status === 'PAID' &&
+          'border-transparent bg-emerald-600 hover:bg-emerald-600',
+      )}
     >
       {t(`paymentStatus.${status}`)}
     </Badge>
@@ -588,7 +675,10 @@ function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
 
 function OrderStatusBadge({ status }: { status: string }) {
   return (
-    <Badge variant="secondary" className="max-w-full truncate font-normal sm:max-w-[14rem]">
+    <Badge
+      variant='secondary'
+      className='max-w-full truncate font-normal sm:max-w-[14rem]'
+    >
       {status}
     </Badge>
   )
@@ -597,9 +687,9 @@ function OrderStatusBadge({ status }: { status: string }) {
 function PaymentActionSpinner() {
   const { t } = useTranslation('common')
   return (
-    <div className="flex flex-col items-center gap-3 py-8 text-muted-foreground">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
-      <p className="text-sm">{t('transactionDetail.loadingInstructions')}</p>
+    <div className='flex flex-col items-center gap-3 py-8 text-muted-foreground'>
+      <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+      <p className='text-sm'>{t('transactionDetail.loadingInstructions')}</p>
     </div>
   )
 }

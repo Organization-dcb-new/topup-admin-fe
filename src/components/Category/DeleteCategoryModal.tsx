@@ -20,12 +20,12 @@ export function DeleteCategoryButton({ id }: { id: string }) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className="text-destructive hover:bg-destructive/10 cursor-pointer"
+          variant='ghost'
+          size='icon'
+          className='text-destructive hover:bg-destructive/10 cursor-pointer'
           disabled={mutation.isPending}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className='h-4 w-4' />
         </Button>
       </AlertDialogTrigger>
 
@@ -38,9 +38,9 @@ export function DeleteCategoryButton({ id }: { id: string }) {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="cursor-pointer">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className='cursor-pointer'>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            className="bg-destructive hover:bg-destructive/90 cursor-pointer"
+            className='bg-destructive hover:bg-destructive/90 cursor-pointer'
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending}
           >

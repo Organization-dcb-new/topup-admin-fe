@@ -108,18 +108,18 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
   return (
     <>
       <Button
-        type="button"
-        variant="ghost"
-        size="icon"
+        type='button'
+        variant='ghost'
+        size='icon'
         onClick={() => setOpen(true)}
-        className="cursor-pointer"
+        className='cursor-pointer'
         aria-label={t('productPriceModal.openAria', { name: productName })}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
+        <DialogContent className='rounded-xl sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>{t('productPriceModal.title')}</DialogTitle>
             <DialogDescription>
@@ -127,28 +127,28 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <input type="hidden" {...register('id')} />
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <input type='hidden' {...register('id')} />
 
-            <div className="space-y-2">
-              <Label htmlFor={typeId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={typeId} className='text-sm font-medium'>
                 {t('productPriceModal.typeLabel')}
               </Label>
               <select id={typeId} {...register('type', { required: true })} className={selectClass}>
-                <option value="fee">{t('productPriceModal.typeFee')}</option>
-                <option value="percent">{t('productPriceModal.typePercent')}</option>
+                <option value='fee'>{t('productPriceModal.typeFee')}</option>
+                <option value='percent'>{t('productPriceModal.typePercent')}</option>
               </select>
             </div>
 
             {type === 'fee' && (
-              <div className="space-y-2">
-                <Label htmlFor={feeId} className="text-sm font-medium">
+              <div className='space-y-2'>
+                <Label htmlFor={feeId} className='text-sm font-medium'>
                   {t('productPriceModal.feeLabel')}
                 </Label>
                 <Input
                   id={feeId}
-                  type="number"
-                  className="rounded-lg font-mono tabular-nums"
+                  type='number'
+                  className='rounded-lg font-mono tabular-nums'
                   {...register('additional_fee', {
                     required: true,
                     min: 0,
@@ -158,10 +158,10 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                   aria-invalid={!!errors.additional_fee}
                 />
                 {errors.additional_fee && (
-                  <p className="text-xs text-destructive">{t('productPriceModal.invalidFee')}</p>
+                  <p className='text-xs text-destructive'>{t('productPriceModal.invalidFee')}</p>
                 )}
                 {isFeeOverLimit && (
-                  <p className="text-xs text-amber-600 dark:text-amber-500">
+                  <p className='text-xs text-amber-600 dark:text-amber-500'>
                     {t('productPriceModal.feeMax')}
                   </p>
                 )}
@@ -169,15 +169,15 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
             )}
 
             {type === 'percent' && (
-              <div className="space-y-2">
-                <Label htmlFor={percentId} className="text-sm font-medium">
+              <div className='space-y-2'>
+                <Label htmlFor={percentId} className='text-sm font-medium'>
                   {t('productPriceModal.percentLabel')}
                 </Label>
                 <Input
                   id={percentId}
-                  type="number"
-                  step="0.01"
-                  className="rounded-lg font-mono tabular-nums"
+                  type='number'
+                  step='0.01'
+                  className='rounded-lg font-mono tabular-nums'
                   {...register('additional_percent', {
                     required: true,
                     min: 0,
@@ -187,46 +187,46 @@ export default function UpdateProductPriceModal({ productId, basePrice, productN
                   aria-invalid={!!errors.additional_percent}
                 />
                 {errors.additional_percent && (
-                  <p className="text-xs text-destructive">{t('productPriceModal.invalidPercent')}</p>
+                  <p className='text-xs text-destructive'>{t('productPriceModal.invalidPercent')}</p>
                 )}
                 {isPercentOverLimit && (
-                  <p className="text-xs text-amber-600 dark:text-amber-500">{t('productPriceModal.percentMax')}</p>
+                  <p className='text-xs text-amber-600 dark:text-amber-500'>{t('productPriceModal.percentMax')}</p>
                 )}
               </div>
             )}
 
-            <div className="space-y-2 rounded-lg border border-border/80 bg-muted/30 p-4 text-sm">
-              <div className="flex items-center justify-between gap-4 text-muted-foreground">
+            <div className='space-y-2 rounded-lg border border-border/80 bg-muted/30 p-4 text-sm'>
+              <div className='flex items-center justify-between gap-4 text-muted-foreground'>
                 <span>{t('productPriceModal.basePrice')}</span>
-                <span className="font-mono tabular-nums text-foreground">
+                <span className='font-mono tabular-nums text-foreground'>
                   Rp {basePrice?.toLocaleString('id-ID')}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-4 border-t border-border/60 pt-2 font-semibold text-foreground">
+              <div className='flex items-center justify-between gap-4 border-t border-border/60 pt-2 font-semibold text-foreground'>
                 <span>{t('productPriceModal.sellingEstimate')}</span>
-                <span className="font-mono tabular-nums">
+                <span className='font-mono tabular-nums'>
                   Rp {sellingPrice?.toLocaleString('id-ID')}
                 </span>
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-2">
+            <DialogFooter className='gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => setOpen(false)}
-                className="cursor-pointer rounded-xl"
+                className='cursor-pointer rounded-xl'
               >
                 {t('productPriceModal.cancel')}
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={mutation.isPending || isOverLimit}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+                className='inline-flex cursor-pointer items-center gap-2 rounded-xl'
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('productPriceModal.saving')}
                   </>
                 ) : (

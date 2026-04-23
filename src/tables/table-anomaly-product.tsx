@@ -30,7 +30,7 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     accessorKey: 'name',
     header: t('anomalyProductTable.colProductName'),
     cell: ({ row }) => (
-      <div className="max-w-[14rem] font-medium text-gray-900 sm:max-w-xs">{row.original.name}</div>
+      <div className='max-w-[14rem] font-medium text-gray-900 sm:max-w-xs'>{row.original.name}</div>
     ),
   },
   {
@@ -39,10 +39,10 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     cell: ({ row }) => {
       const issues = getAnomalyIssueLabels(row.original, t)
       if (!issues.length) {
-        return <span className="text-xs text-muted-foreground">{t('anomalyProductTable.noIssuesFromCriteria')}</span>
+        return <span className='text-xs text-muted-foreground'>{t('anomalyProductTable.noIssuesFromCriteria')}</span>
       }
       return (
-        <ul className="max-w-[16rem] list-disc space-y-0.5 pl-3.5 text-xs leading-snug text-amber-900 dark:text-amber-100">
+        <ul className='max-w-[16rem] list-disc space-y-0.5 pl-3.5 text-xs leading-snug text-amber-900 dark:text-amber-100'>
           {issues.map((text) => (
             <li key={text}>{text}</li>
           ))}
@@ -54,7 +54,7 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     id: 'game',
     header: t('anomalyProductTable.colGame'),
     cell: ({ row }) => (
-      <span className="max-w-[10rem] truncate text-sm text-foreground sm:max-w-[12rem]">
+      <span className='max-w-[10rem] truncate text-sm text-foreground sm:max-w-[12rem]'>
         {row.original.game?.name ?? '—'}
       </span>
     ),
@@ -63,7 +63,7 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     accessorKey: 'sku',
     header: t('anomalyProductTable.colSku'),
     cell: ({ row }) => (
-      <span className="font-mono text-xs tabular-nums text-muted-foreground">{row.original.sku}</span>
+      <span className='font-mono text-xs tabular-nums text-muted-foreground'>{row.original.sku}</span>
     ),
   },
   {
@@ -106,7 +106,7 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     accessorKey: 'base_price',
     header: t('anomalyProductTable.colBasePrice'),
     cell: ({ row }) => (
-      <span className="tabular-nums text-sm text-foreground">{formatRp(row.original.base_price)}</span>
+      <span className='tabular-nums text-sm text-foreground'>{formatRp(row.original.base_price)}</span>
     ),
   },
   {
@@ -131,9 +131,9 @@ export const getAnomalyProductColumns = (t: TFunction): ColumnDef<Product>[] => 
     header: t('anomalyProductTable.colStock'),
     cell: ({ row }) =>
       row.original.is_unlimited_stock ? (
-        <span className="text-sm text-muted-foreground">{t('anomalyProductTable.stockUnlimited')}</span>
+        <span className='text-sm text-muted-foreground'>{t('anomalyProductTable.stockUnlimited')}</span>
       ) : (
-        <span className="tabular-nums text-sm font-medium text-foreground">
+        <span className='tabular-nums text-sm font-medium text-foreground'>
           {row.original.stock_quantity}
         </span>
       ),

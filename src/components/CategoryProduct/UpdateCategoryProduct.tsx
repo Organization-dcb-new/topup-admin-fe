@@ -40,18 +40,18 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
   return (
     <>
       <Button
-        type="button"
-        variant="ghost"
-        size="icon"
+        type='button'
+        variant='ghost'
+        size='icon'
         onClick={() => setOpen(true)}
-        className="cursor-pointer"
+        className='cursor-pointer'
         aria-label={t('categoryProductUpdate.triggerAria', { name: category.name })}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
+        <Pencil className='h-4 w-4' aria-hidden />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
+        <DialogContent className='rounded-xl sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>{t('categoryProductUpdate.title')}</DialogTitle>
             <DialogDescription>
@@ -59,30 +59,30 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className='space-y-4'>
+            <div className='space-y-2'>
               <Label htmlFor={nameId}>{t('categoryProductUpdate.nameLabel')}</Label>
-              <Input id={nameId} autoComplete="off" {...register('name', { required: true })} />
+              <Input id={nameId} autoComplete='off' {...register('name', { required: true })} />
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-2">
+            <DialogFooter className='gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => setOpen(false)}
-                className="cursor-pointer rounded-xl"
+                className='cursor-pointer rounded-xl'
               >
                 {t('categoryProductUpdate.cancel')}
               </Button>
 
               <Button
-                type="submit"
+                type='submit'
                 disabled={mutation.isPending}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+                className='inline-flex cursor-pointer items-center gap-2 rounded-xl'
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('categoryProductUpdate.saving')}
                   </>
                 ) : (

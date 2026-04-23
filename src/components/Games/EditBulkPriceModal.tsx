@@ -104,69 +104,69 @@ export default function UpdateBulkProductPriceModal({ gameId }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40"
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-40'
           disabled={mutation.isPending}
           aria-label={t('bulkPriceModal.triggerAria')}
         >
-          <DollarSign className="h-4 w-4" aria-hidden />
+          <DollarSign className='h-4 w-4' aria-hidden />
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="rounded-xl sm:max-w-md">
-        <DialogHeader className="space-y-1 text-left">
-          <DialogTitle className="text-lg font-semibold tracking-tight">
+      <DialogContent className='rounded-xl sm:max-w-md'>
+        <DialogHeader className='space-y-1 text-left'>
+          <DialogTitle className='text-lg font-semibold tracking-tight'>
             {t('bulkPriceModal.title')}
           </DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <p className='text-sm text-muted-foreground'>
             {t('bulkPriceModal.description', { max: String(BULK_MAX_PERCENT) })}
           </p>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <input type="hidden" {...register('game_id')} />
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <input type='hidden' {...register('game_id')} />
 
           {open && isLoadingProducts ? (
             <div
-              className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-10 text-center"
-              role="status"
-              aria-live="polite"
-              aria-busy="true"
+              className='flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-10 text-center'
+              role='status'
+              aria-live='polite'
+              aria-busy='true'
             >
-              <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden />
-              <p className="text-sm text-muted-foreground">{t('bulkPriceModal.loadingProducts')}</p>
+              <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+              <p className='text-sm text-muted-foreground'>{t('bulkPriceModal.loadingProducts')}</p>
             </div>
           ) : open && isProductsError ? (
-            <div className="space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-4 text-center">
-              <p className="text-sm text-destructive">{t('bulkPriceModal.loadProductsError')}</p>
+            <div className='space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-4 text-center'>
+              <p className='text-sm text-destructive'>{t('bulkPriceModal.loadProductsError')}</p>
               <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="rounded-lg"
+                type='button'
+                variant='outline'
+                size='sm'
+                className='rounded-lg'
                 onClick={() => void refetchProducts()}
               >
                 {t('bulkPriceModal.retry')}
               </Button>
             </div>
           ) : !hasProducts ? (
-            <p className="rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-4 text-center text-sm text-muted-foreground">
+            <p className='rounded-lg border border-dashed border-border/80 bg-muted/20 px-3 py-4 text-center text-sm text-muted-foreground'>
               {t('bulkPriceModal.emptyProducts')}
             </p>
           ) : (
-            <div className="space-y-2">
-              <Label htmlFor={`bulk-price-pct-${gameId}`} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label htmlFor={`bulk-price-pct-${gameId}`} className='text-sm font-medium'>
                 {t('bulkPriceModal.percentLabel')}
               </Label>
               <Input
                 id={`bulk-price-pct-${gameId}`}
-                type="number"
-                step="0.01"
+                type='number'
+                step='0.01'
                 min={0}
                 max={BULK_MAX_PERCENT}
-                className="rounded-lg"
+                className='rounded-lg'
                 {...register('additional_percent', {
                   required: t('bulkPriceModal.percentRequired'),
                   min: { value: 0, message: t('bulkPriceModal.percentMin') },
@@ -175,35 +175,35 @@ export default function UpdateBulkProductPriceModal({ gameId }: Props) {
                 })}
               />
               {errors.additional_percent && (
-                <p className="text-xs text-destructive">{errors.additional_percent.message}</p>
+                <p className='text-xs text-destructive'>{errors.additional_percent.message}</p>
               )}
               {isOverLimit && !errors.additional_percent && (
-                <p className="text-xs text-amber-700">{t('bulkPriceModal.overLimit')}</p>
+                <p className='text-xs text-amber-700'>{t('bulkPriceModal.overLimit')}</p>
               )}
-              <p className="text-xs text-muted-foreground">
+              <p className='text-xs text-muted-foreground'>
                 {t('bulkPriceModal.productCount', { count: products.length })}
               </p>
             </div>
           )}
 
-          <DialogFooter className="gap-2 sm:gap-3 sm:justify-end">
+          <DialogFooter className='gap-2 sm:gap-3 sm:justify-end'>
             <Button
-              type="button"
-              variant="outline"
-              className="rounded-lg"
+              type='button'
+              variant='outline'
+              className='rounded-lg'
               onClick={() => setOpen(false)}
               disabled={mutation.isPending}
             >
               {t('bulkPriceModal.cancel')}
             </Button>
             <Button
-              type="submit"
-              className="rounded-lg font-semibold"
+              type='submit'
+              className='rounded-lg font-semibold'
               disabled={mutation.isPending || !formReady || isOverLimit}
             >
               {mutation.isPending ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <span className='flex items-center gap-2'>
+                  <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                   {t('bulkPriceModal.updating')}
                 </span>
               ) : (

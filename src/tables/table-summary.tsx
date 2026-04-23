@@ -21,12 +21,12 @@ export function getSummaryColumns(t: TFunction): ColumnDef<SummaryItem>[] {
   return [
     {
       accessorKey: 'time_key',
-      header: () => <span className="font-medium">{t('summaryTable.colTime')}</span>,
+      header: () => <span className='font-medium'>{t('summaryTable.colTime')}</span>,
       cell: ({ row }) => {
         const raw = row.getValue('time_key') as string
         const date = new Date(raw)
         return (
-          <span className="whitespace-nowrap tabular-nums text-sm text-foreground">
+          <span className='whitespace-nowrap tabular-nums text-sm text-foreground'>
             {format(date, 'dd MMM yyyy, HH:00', { locale: dateLocale() })}
           </span>
         )
@@ -35,12 +35,12 @@ export function getSummaryColumns(t: TFunction): ColumnDef<SummaryItem>[] {
     {
       accessorKey: 'total_amount_pg',
       header: () => (
-        <span className="block text-right font-medium">{t('summaryTable.colTotalPg')}</span>
+        <span className='block text-right font-medium'>{t('summaryTable.colTotalPg')}</span>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('total_amount_pg') as string)
         return (
-          <span className="block text-right tabular-nums text-sm font-medium text-foreground">
+          <span className='block text-right tabular-nums text-sm font-medium text-foreground'>
             {formatIdr(amount)}
           </span>
         )
@@ -49,12 +49,12 @@ export function getSummaryColumns(t: TFunction): ColumnDef<SummaryItem>[] {
     {
       accessorKey: 'total_amount_provider',
       header: () => (
-        <span className="block text-right font-medium">{t('summaryTable.colModalProvider')}</span>
+        <span className='block text-right font-medium'>{t('summaryTable.colModalProvider')}</span>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('total_amount_provider') as string)
         return (
-          <span className="block text-right tabular-nums text-sm text-muted-foreground">
+          <span className='block text-right tabular-nums text-sm text-muted-foreground'>
             {formatIdr(amount)}
           </span>
         )
@@ -63,7 +63,7 @@ export function getSummaryColumns(t: TFunction): ColumnDef<SummaryItem>[] {
     {
       accessorKey: 'gross_profit',
       header: () => (
-        <span className="block text-right font-medium">{t('summaryTable.colGrossProfit')}</span>
+        <span className='block text-right font-medium'>{t('summaryTable.colGrossProfit')}</span>
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('gross_profit') as string)

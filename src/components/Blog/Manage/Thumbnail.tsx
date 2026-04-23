@@ -15,13 +15,13 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
   const isUploading = uploadMutation.isPending
 
   return (
-    <div className="rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 transition-shadow hover:shadow-md">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+    <div className='rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 transition-shadow hover:shadow-md'>
+      <div className='mb-3 flex items-center justify-between gap-2'>
+        <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
           {t('blogThumbnail.label')}
         </p>
         {formData.thumbnail && !isUploading && (
-          <Badge variant="secondary" className="text-[10px] font-normal">
+          <Badge variant='secondary' className='text-[10px] font-normal'>
             {t('blogThumbnail.ratioBadge')}
           </Badge>
         )}
@@ -45,7 +45,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
             )}
           />
         ) : (
-          <div className="px-4 text-center">
+          <div className='px-4 text-center'>
             <UploadCloud
               className={cn(
                 'mx-auto mb-2 h-8 w-8',
@@ -53,24 +53,24 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
               )}
               aria-hidden
             />
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className='text-xs font-medium text-muted-foreground'>
               {isUploading ? t('blogThumbnail.uploading') : t('blogThumbnail.uploadHint')}
             </p>
           </div>
         )}
 
         {isUploading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-[2px]">
-            <Loader2 className="mb-2 h-7 w-7 animate-spin text-primary" aria-hidden />
-            <div className="h-1 w-24 overflow-hidden rounded-full bg-muted">
-              <div className="h-full w-1/2 animate-pulse rounded-full bg-primary" />
+          <div className='absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-[2px]'>
+            <Loader2 className='mb-2 h-7 w-7 animate-spin text-primary' aria-hidden />
+            <div className='h-1 w-24 overflow-hidden rounded-full bg-muted'>
+              <div className='h-full w-1/2 animate-pulse rounded-full bg-primary' />
             </div>
           </div>
         )}
 
         <input
-          type="file"
-          accept="image/*"
+          type='file'
+          accept='image/*'
           disabled={isUploading}
           className={cn(
             'absolute inset-0 cursor-pointer opacity-0',
@@ -84,7 +84,7 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
         />
       </div>
 
-      <p className="mt-2 text-center text-[10px] text-muted-foreground">{t('blogThumbnail.sizeHint')}</p>
+      <p className='mt-2 text-center text-[10px] text-muted-foreground'>{t('blogThumbnail.sizeHint')}</p>
     </div>
   )
 }

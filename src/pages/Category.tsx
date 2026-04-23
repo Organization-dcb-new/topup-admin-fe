@@ -42,7 +42,7 @@ export default function CategoryPage() {
 
   return (
     <DashboardLayout>
-      <div className="flex justify-between mb-4">
+      <div className='flex justify-between mb-4'>
         <CategoriesSearchInput value={search} onChange={setSearch} />
         <CreateCategoryModal />
       </div>
@@ -56,7 +56,7 @@ export default function CategoryPage() {
             emptyMessage={t('categoryPage.emptyMessage')}
           />{' '}
           <Pagination page={page} totalPage={data?.meta?.total_page} onChange={setPage} />
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className='mt-2 text-sm text-muted-foreground'>
             {t('categoryPage.totalCount', {
               total: (data?.meta?.total_data ?? 0).toLocaleString(
                 i18n.language.startsWith('id') ? 'id-ID' : 'en-US',

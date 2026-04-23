@@ -1,18 +1,18 @@
-import { api } from "@/api/axios";
-import type { SummaryReportResponse } from "@/types/summary";
-import { useQuery } from "@tanstack/react-query";
+import { api } from '@/api/axios'
+import type { SummaryReportResponse } from '@/types/summary'
+import { useQuery } from '@tanstack/react-query'
 
 export const useGetSummary = (
   page: number,
   limit: number,
   startDate?: string,
   endDate?: string,
-  groupBy: string = "hour",
+  groupBy: string = 'hour',
 ) =>
   useQuery<SummaryReportResponse>({
-    queryKey: ["summary", page, limit, startDate, endDate, groupBy],
+    queryKey: ['summary', page, limit, startDate, endDate, groupBy],
     queryFn: async () => {
-      const res = await api.get("/summary/report", {
+      const res = await api.get('/summary/report', {
         params: {
           page,
           limit,
@@ -20,7 +20,7 @@ export const useGetSummary = (
           end_date: endDate,
           group_by: groupBy,
         },
-      });
-      return res.data;
+      })
+      return res.data
     },
-  });
+  })

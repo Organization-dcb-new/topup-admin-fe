@@ -15,8 +15,8 @@ export function ProductSkuGameImageRow({
   onGameNameChange,
 }: ProductSkuGameImageRowProps) {
   return (
-    <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
-      <div className="min-w-0 flex-1">
+    <div className='flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4'>
+      <div className='min-w-0 flex-1'>
         <ProductSkuGameFilter
           sku={sku}
           onSkuChange={onSkuChange}
@@ -24,7 +24,7 @@ export function ProductSkuGameImageRow({
           onGameNameChange={onGameNameChange}
         />
       </div>
-      <div className="flex shrink-0 justify-stretch sm:justify-start">
+      <div className='flex shrink-0 justify-stretch sm:justify-start'>
         <ChangeImageByGame />
       </div>
     </div>

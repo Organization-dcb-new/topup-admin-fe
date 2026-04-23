@@ -70,7 +70,7 @@ export function CreateGameModal() {
 
   return (
     <div>
-      <Button onClick={() => setOpen(true)} className="cursor-pointer">
+      <Button onClick={() => setOpen(true)} className='cursor-pointer'>
         {t('createGameModal.trigger')}
       </Button>
       <Dialog
@@ -79,14 +79,14 @@ export function CreateGameModal() {
           setOpen(false)
         }}
       >
-        <DialogContent className="sm:max-w-4xl">
+        <DialogContent className='sm:max-w-4xl'>
           <DialogHeader>
             <DialogTitle>{t('createGameModal.title')}</DialogTitle>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 ">
-            <div className="flex flex-row gap-4">
-              <div className="flex gap-4 flex-col w-full">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-6 '>
+            <div className='flex flex-row gap-4'>
+              <div className='flex gap-4 flex-col w-full'>
                 <GameInput
                   categories={categories!}
                   providers={providers!}
@@ -94,7 +94,7 @@ export function CreateGameModal() {
                   setValue={setValue}
                 />
               </div>
-              <div className="w-full">
+              <div className='w-full'>
                 <GameInputForm
                   addInput={addInput}
                   inputs={inputs}
@@ -105,18 +105,18 @@ export function CreateGameModal() {
             </div>
 
             {/* Action */}
-            <div className="flex justify-end gap-2">
+            <div className='flex justify-end gap-2'>
               <Button
-                className="cursor-pointer"
-                type="button"
-                variant="ghost"
+                className='cursor-pointer'
+                type='button'
+                variant='ghost'
                 onClick={() => {
                   setOpen(false)
                 }}
               >
                 {t('createGameModal.cancel')}
               </Button>
-              <Button type="submit" disabled={isPending} className="cursor-pointer">
+              <Button type='submit' disabled={isPending} className='cursor-pointer'>
                 {isPending ? t('createGameModal.saving') : t('createGameModal.save')}
               </Button>
             </div>

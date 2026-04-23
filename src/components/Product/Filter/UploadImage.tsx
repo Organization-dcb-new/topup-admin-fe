@@ -90,7 +90,7 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
   return (
     <>
       <div
-        role="button"
+        role='button'
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -103,26 +103,26 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
           e.stopPropagation()
           applyOpen(true)
         }}
-        className="group relative h-10 w-10 shrink-0 cursor-pointer rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring"
+        className='group relative h-10 w-10 shrink-0 cursor-pointer rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring'
         aria-label={t('productImageModal.openAria', { name: product.name })}
       >
         <img
           src={image}
-          alt=""
-          className="h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5"
-          loading="lazy"
+          alt=''
+          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+          loading='lazy'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
         />
 
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100">
-          <Pencil className="h-4 w-4 text-white" aria-hidden />
+        <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100'>
+          <Pencil className='h-4 w-4 text-white' aria-hidden />
         </div>
       </div>
 
       <Dialog open={open} onOpenChange={applyOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
+        <DialogContent className='rounded-xl sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>{t('productImageModal.title')}</DialogTitle>
             <DialogDescription>
@@ -130,21 +130,21 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <input
-              type="hidden"
+              type='hidden'
               {...register('image', {
                 required: t('productImageModal.required'),
               })}
             />
 
-            <div className="space-y-2">
-              <Label id={uploadLabelId} className="text-sm font-medium">
+            <div className='space-y-2'>
+              <Label id={uploadLabelId} className='text-sm font-medium'>
                 {t('productImageModal.label')}
               </Label>
               <div
                 aria-labelledby={uploadLabelId}
-                role="button"
+                role='button'
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -166,16 +166,16 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
                 )}
               >
                 {preview ? (
-                  <img src={preview} alt="" className="h-full w-full rounded-lg object-contain" />
+                  <img src={preview} alt='' className='h-full w-full rounded-lg object-contain' />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" aria-hidden />
-                    <span className="text-sm">{t('productImageModal.dropHint')}</span>
+                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                    <UploadCloud className='h-6 w-6' aria-hidden />
+                    <span className='text-sm'>{t('productImageModal.dropHint')}</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white'>
                     {t('productImageModal.uploading', { percent: uploadProgress })}
                   </div>
                 )}
@@ -183,9 +183,9 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
 
               <Input
                 ref={inputRef}
-                type="file"
-                accept="image/*,.svg"
-                className="hidden"
+                type='file'
+                accept='image/*,.svg'
+                className='hidden'
                 onChange={(e) => {
                   const file = e.target.files?.[0]
                   if (file) handleFile(file)
@@ -195,27 +195,27 @@ export function ChangeImageModalProduct({ product, image }: PropsImageProducts) 
 
               {isUploading && <Progress value={uploadProgress} />}
 
-              {errors.image && <p className="text-xs text-destructive">{errors.image.message}</p>}
+              {errors.image && <p className='text-xs text-destructive'>{errors.image.message}</p>}
             </div>
 
-            <DialogFooter className="gap-2 sm:gap-2">
+            <DialogFooter className='gap-2 sm:gap-2'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => applyOpen(false)}
                 disabled={updateImageMutation.isPending}
-                className="cursor-pointer rounded-xl"
+                className='cursor-pointer rounded-xl'
               >
                 {t('productImageModal.cancel')}
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={updateImageMutation.isPending || isUploading}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl"
+                className='inline-flex cursor-pointer items-center gap-2 rounded-xl'
               >
                 {updateImageMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 shrink-0 animate-spin" aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
                     {t('productImageModal.saving')}
                   </>
                 ) : (

@@ -41,9 +41,9 @@ export function SingleInputForm({
         e.stopPropagation()
         handleSubmit(onSubmit)(e)
       }}
-      className="border rounded-lg p-3 space-y-2"
+      className='border rounded-lg p-3 space-y-2'
     >
-      <div className="space-y-1">
+      <div className='space-y-1'>
         <Label htmlFor={`label-${input.id}`}>Label</Label>
         <Input
           id={`label-${input.id}`}
@@ -56,9 +56,9 @@ export function SingleInputForm({
             }
           }}
         />
-        {errors.label && <p className="text-xs text-destructive">{errors.label.message}</p>}
+        {errors.label && <p className='text-xs text-destructive'>{errors.label.message}</p>}
       </div>
-      <div className="space-y-1">
+      <div className='space-y-1'>
         <Label htmlFor={`placeholder-${input.id}`}>Placeholder</Label>
         <Input
           id={`placeholder-${input.id}`}
@@ -68,8 +68,8 @@ export function SingleInputForm({
       </div>
 
       <Button
-        type="submit"
-        size="sm"
+        type='submit'
+        size='sm'
         disabled={!isDirty || updateMutation.isPending}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}

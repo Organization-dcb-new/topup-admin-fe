@@ -25,6 +25,6 @@ export interface SummaryReportData {
 
 export interface SummaryReportResponse {
   data: SummaryReportData;
-  status: "success" | "error";
+  status: 'success' | 'error';
   message?: string; 
 }

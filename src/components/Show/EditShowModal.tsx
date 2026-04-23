@@ -113,25 +113,25 @@ export function UpdateShowModal({
   return (
     <>
       <Button
-        variant="outline"
-        size="sm"
+        variant='outline'
+        size='sm'
         onClick={openDialog}
         className={cn('cursor-pointer gap-1.5', triggerClassName)}
         aria-label={t('editShowModal.triggerAria')}
       >
-        <Pencil className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="hidden sm:inline">{t('editShowModal.triggerShort')}</span>
+        <Pencil className='h-4 w-4 shrink-0' aria-hidden />
+        <span className='hidden sm:inline'>{t('editShowModal.triggerShort')}</span>
       </Button>
 
       <Dialog open={open} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[min(90vh,40rem)] gap-0 overflow-hidden overflow-y-auto p-0 sm:max-w-lg">
-          <div className="border-b border-border bg-muted/30 px-6 py-5">
-            <DialogHeader className="gap-1.5 text-left">
-              <div className="flex items-center gap-2">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Pencil className="h-4 w-4" aria-hidden />
+        <DialogContent className='max-h-[min(90vh,40rem)] gap-0 overflow-hidden overflow-y-auto p-0 sm:max-w-lg'>
+          <div className='border-b border-border bg-muted/30 px-6 py-5'>
+            <DialogHeader className='gap-1.5 text-left'>
+              <div className='flex items-center gap-2'>
+                <span className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                  <Pencil className='h-4 w-4' aria-hidden />
                 </span>
-                <DialogTitle className="text-xl font-semibold tracking-tight">
+                <DialogTitle className='text-xl font-semibold tracking-tight'>
                   {t('editShowModal.title')}
                 </DialogTitle>
               </div>
@@ -141,46 +141,46 @@ export function UpdateShowModal({
 
           <form
             onSubmit={handleSubmit((values) => mutation.mutate(values))}
-            className="space-y-5 px-6 py-5"
+            className='space-y-5 px-6 py-5'
           >
-            <div className="space-y-2">
-              <Label htmlFor="edit-show-name">{t('editShowModal.nameLabel')}</Label>
-              <div className="space-y-1">
+            <div className='space-y-2'>
+              <Label htmlFor='edit-show-name'>{t('editShowModal.nameLabel')}</Label>
+              <div className='space-y-1'>
                 <Input
-                  id="edit-show-name"
+                  id='edit-show-name'
                   {...register('name', { required: t('editShowModal.nameRequired') })}
                   placeholder={t('editShowModal.namePlaceholder')}
                   aria-invalid={!!formState.errors.name}
                 />
                 {formState.errors.name && (
-                  <p className="text-xs text-destructive">{formState.errors.name.message}</p>
+                  <p className='text-xs text-destructive'>{formState.errors.name.message}</p>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="edit-show-alias">{t('editShowModal.aliasLabel')}</Label>
+            <div className='space-y-2'>
+              <Label htmlFor='edit-show-alias'>{t('editShowModal.aliasLabel')}</Label>
               <Input
-                id="edit-show-alias"
+                id='edit-show-alias'
                 {...register('alias', { required: t('editShowModal.aliasRequired') })}
                 placeholder={t('editShowModal.aliasPlaceholder')}
-                autoComplete="off"
+                autoComplete='off'
                 aria-invalid={!!formState.errors.alias}
               />
               {formState.errors.alias && (
-                <p className="text-xs text-destructive">{formState.errors.alias.message}</p>
+                <p className='text-xs text-destructive'>{formState.errors.alias.message}</p>
               )}
-              <p className="text-xs text-muted-foreground">{t('editShowModal.aliasHint')}</p>
+              <p className='text-xs text-muted-foreground'>{t('editShowModal.aliasHint')}</p>
             </div>
 
-            <input type="hidden" {...register('image')} />
+            <input type='hidden' {...register('image')} />
 
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>{t('editShowModal.imageLabel')}</Label>
-              <p className="text-xs text-muted-foreground">{t('createBannerModal.imageHint')}</p>
+              <p className='text-xs text-muted-foreground'>{t('createBannerModal.imageHint')}</p>
 
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
                 aria-label={t('editShowModal.uploadAria')}
                 onClick={() => inputRef.current?.click()}
@@ -207,45 +207,45 @@ export function UpdateShowModal({
                     <img
                       src={preview}
                       alt={t('editShowModal.previewAlt')}
-                      className="max-h-44 w-full rounded-lg object-contain"
+                      className='max-h-44 w-full rounded-lg object-contain'
                     />
                     {!isUploading && (
-                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100">
-                        <span className="rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm">
+                      <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100'>
+                        <span className='rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm'>
                           {t('createBannerModal.changeImage')}
                         </span>
                       </div>
                     )}
                   </>
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-center text-muted-foreground">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border">
-                      <UploadCloud className="h-6 w-6 text-primary" aria-hidden />
+                  <div className='flex flex-col items-center gap-2 text-center text-muted-foreground'>
+                    <span className='flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border'>
+                      <UploadCloud className='h-6 w-6 text-primary' aria-hidden />
                     </span>
-                    <span className="text-sm font-medium text-foreground">
+                    <span className='text-sm font-medium text-foreground'>
                       {t('createBannerModal.uploadTitle')}
                     </span>
-                    <span className="max-w-[16rem] text-xs leading-relaxed">
+                    <span className='max-w-[16rem] text-xs leading-relaxed'>
                       {t('createBannerModal.uploadDropHint')}
                     </span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]">
-                    <span className="text-sm font-medium text-foreground">
+                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
+                    <span className='text-sm font-medium text-foreground'>
                       {t('createBannerModal.uploading', { percent: uploadProgress })}
                     </span>
-                    <Progress value={uploadProgress} className="h-2 w-[min(100%,12rem)]" />
+                    <Progress value={uploadProgress} className='h-2 w-[min(100%,12rem)]' />
                   </div>
                 )}
               </div>
 
               <input
                 ref={inputRef}
-                type="file"
-                accept="image/*,.svg"
-                className="hidden"
+                type='file'
+                accept='image/*,.svg'
+                className='hidden'
                 onChange={(e) => {
                   const file = e.target.files?.[0]
                   if (!file) {
@@ -258,25 +258,25 @@ export function UpdateShowModal({
               />
             </div>
 
-            <div className="space-y-3 rounded-xl border border-border/80 bg-muted/15 p-4">
+            <div className='space-y-3 rounded-xl border border-border/80 bg-muted/15 p-4'>
               <div>
-                <p className="text-sm font-semibold text-foreground">{t('editShowModal.flagsTitle')}</p>
-                <p className="text-xs text-muted-foreground">{t('editShowModal.flagsHint')}</p>
+                <p className='text-sm font-semibold text-foreground'>{t('editShowModal.flagsTitle')}</p>
+                <p className='text-xs text-muted-foreground'>{t('editShowModal.flagsHint')}</p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className='grid gap-3 sm:grid-cols-2'>
                 {flagFields.map(({ key, label, description }) => (
                   <label
                     key={key}
-                    className="flex cursor-pointer gap-3 rounded-lg border border-transparent p-2 transition-colors hover:bg-muted/50"
+                    className='flex cursor-pointer gap-3 rounded-lg border border-transparent p-2 transition-colors hover:bg-muted/50'
                   >
                     <Checkbox
                       checked={watch(key)}
                       onCheckedChange={(v) => setValue(key, !!v)}
                       aria-describedby={`${key}-hint`}
                     />
-                    <span className="min-w-0 space-y-0.5">
-                      <span className="block text-sm font-medium leading-none">{label}</span>
-                      <span id={`${key}-hint`} className="block text-xs text-muted-foreground">
+                    <span className='min-w-0 space-y-0.5'>
+                      <span className='block text-sm font-medium leading-none'>{label}</span>
+                      <span id={`${key}-hint`} className='block text-xs text-muted-foreground'>
                         {description}
                       </span>
                     </span>
@@ -285,19 +285,19 @@ export function UpdateShowModal({
               </div>
             </div>
 
-            <DialogFooter className="gap-2 border-t border-border pt-5 sm:pt-5">
+            <DialogFooter className='gap-2 border-t border-border pt-5 sm:pt-5'>
               <Button
-                type="button"
-                variant="outline"
+                type='button'
+                variant='outline'
                 onClick={() => setDialogOpen(false)}
-                className="cursor-pointer sm:min-w-[5.5rem]"
+                className='cursor-pointer sm:min-w-[5.5rem]'
               >
                 {t('createBannerModal.cancel')}
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={mutation.isPending || isUploading}
-                className="cursor-pointer sm:min-w-[5.5rem]"
+                className='cursor-pointer sm:min-w-[5.5rem]'
               >
                 {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
               </Button>

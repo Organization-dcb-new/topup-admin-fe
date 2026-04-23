@@ -92,22 +92,22 @@ export default function TransactionDateFilter({
   }
 
   return (
-    <div className="flex w-full min-w-0 items-center gap-2">
-      <div className="min-w-0 flex-1">
+    <div className='flex w-full min-w-0 items-center gap-2'>
+      <div className='min-w-0 flex-1'>
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              type="button"
-              variant="outline"
+              type='button'
+              variant='outline'
               aria-label={t('transactionFilters.date.pickAria')}
               className={cn(
                 'h-10 w-full min-w-0 justify-start text-left text-xs font-normal shadow-xs sm:text-sm',
                 !date?.from && 'text-muted-foreground',
               )}
             >
-            <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
+            <CalendarIcon className='mr-2 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
             {rangeLabel ? (
-              <span className="truncate tabular-nums" title={rangeLabel}>
+              <span className='truncate tabular-nums' title={rangeLabel}>
                 {rangeLabel}
               </span>
             ) : (
@@ -116,46 +116,46 @@ export default function TransactionDateFilter({
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className="w-auto overflow-hidden rounded-xl border p-0 shadow-md ring-1 ring-gray-900/5"
-          align="start"
+          className='w-auto overflow-hidden rounded-xl border p-0 shadow-md ring-1 ring-gray-900/5'
+          align='start'
         >
           <Calendar
             initialFocus
-            mode="range"
+            mode='range'
             selected={calendarSelected}
             onSelect={handleCalendarSelect}
             numberOfMonths={2}
           />
           {date?.from && (
-            <div className="grid gap-3 border-t border-border/80 bg-muted/20 p-3 sm:grid-cols-2">
-              <div className="grid gap-1.5">
+            <div className='grid gap-3 border-t border-border/80 bg-muted/20 p-3 sm:grid-cols-2'>
+              <div className='grid gap-1.5'>
                 <Label
-                  htmlFor="tx-filter-start-time"
-                  className="text-xs font-medium text-muted-foreground"
+                  htmlFor='tx-filter-start-time'
+                  className='text-xs font-medium text-muted-foreground'
                 >
                   {t('transactionFilters.date.startTime')}
                 </Label>
                 <Input
-                  id="tx-filter-start-time"
-                  type="time"
+                  id='tx-filter-start-time'
+                  type='time'
                   step={1}
-                  className="h-10 bg-background"
+                  className='h-10 bg-background'
                   value={timeInputValue(date.from)}
                   onChange={handleStartTimeChange}
                 />
               </div>
-              <div className="grid gap-1.5">
+              <div className='grid gap-1.5'>
                 <Label
-                  htmlFor="tx-filter-end-time"
-                  className="text-xs font-medium text-muted-foreground"
+                  htmlFor='tx-filter-end-time'
+                  className='text-xs font-medium text-muted-foreground'
                 >
                   {t('transactionFilters.date.endTime')}
                 </Label>
                 <Input
-                  id="tx-filter-end-time"
-                  type="time"
+                  id='tx-filter-end-time'
+                  type='time'
                   step={1}
-                  className="h-10 bg-background"
+                  className='h-10 bg-background'
                   value={timeInputValue(date.to ?? date.from)}
                   onChange={handleEndTimeChange}
                 />
@@ -167,14 +167,14 @@ export default function TransactionDateFilter({
       </div>
       {date?.from && (
         <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground"
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground'
           onClick={() => onChange(undefined)}
           aria-label={t('transactionFilters.date.clearAria')}
         >
-          <FilterX className="h-4 w-4" aria-hidden />
+          <FilterX className='h-4 w-4' aria-hidden />
         </Button>
       )}
     </div>

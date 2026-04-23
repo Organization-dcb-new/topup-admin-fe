@@ -59,8 +59,8 @@ export function EditCategoryModal({ category }: PropsEditModal) {
 
   return (
     <div>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)} className="cursor-pointer">
-        <Pencil className="h-4 w-4" />
+      <Button variant='ghost' size='icon' onClick={() => setOpen(true)} className='cursor-pointer'>
+        <Pencil className='h-4 w-4' />
       </Button>
 
       <Dialog
@@ -69,27 +69,27 @@ export function EditCategoryModal({ category }: PropsEditModal) {
           setOpen(false)
         }}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className='sm:max-w-md'>
           <DialogHeader>
             <DialogTitle>Edit Category</DialogTitle>
           </DialogHeader>
 
           <form
             onSubmit={handleSubmit((v) => updateCategoryMutation.mutate(v))}
-            className="space-y-4"
+            className='space-y-4'
           >
             {/* Name */}
-            <div className="space-y-1">
+            <div className='space-y-1'>
               <Label>Name</Label>
               <Input
                 {...register('name', { required: 'Name is required' })}
                 className={errors.name ? 'border-destructive' : ''}
               />
-              {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+              {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
             </div>
 
             {/* Description */}
-            <div className="space-y-1">
+            <div className='space-y-1'>
               <Label>Description</Label>
               <Textarea
                 {...register('description', {
@@ -100,15 +100,15 @@ export function EditCategoryModal({ category }: PropsEditModal) {
                 }`}
               />
               {errors.description && (
-                <p className="text-xs text-destructive">{errors.description.message}</p>
+                <p className='text-xs text-destructive'>{errors.description.message}</p>
               )}
             </div>
 
             {/* Icon (register hidden) */}
-            <input type="hidden" {...register('icon_url')} />
+            <input type='hidden' {...register('icon_url')} />
 
             {/* Drag Upload */}
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>Icon</Label>
 
               <div
@@ -127,28 +127,28 @@ export function EditCategoryModal({ category }: PropsEditModal) {
                 {preview ? (
                   <img
                     src={preview}
-                    alt="preview"
-                    className="h-full w-full rounded-lg object-contain"
+                    alt='preview'
+                    className='h-full w-full rounded-lg object-contain'
                   />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" />
-                    <span className="text-sm">Click or Drop image</span>
+                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                    <UploadCloud className='h-6 w-6' />
+                    <span className='text-sm'>Click or Drop image</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-white">
-                    <span className="text-sm font-medium">Uploading {uploadProgress}%</span>
+                  <div className='absolute inset-0 flex items-center justify-center bg-black/50 text-white'>
+                    <span className='text-sm font-medium'>Uploading {uploadProgress}%</span>
                   </div>
                 )}
               </div>
 
               <Input
                 ref={inputRef}
-                type="file"
-                accept="image/*,.svg"
-                className="hidden"
+                type='file'
+                accept='image/*,.svg'
+                className='hidden'
                 onChange={(e) => {
                   const file = e.target.files?.[0]
                   if (!file) {
@@ -165,19 +165,19 @@ export function EditCategoryModal({ category }: PropsEditModal) {
 
             <DialogFooter>
               <Button
-                variant="outline"
-                type="button"
+                variant='outline'
+                type='button'
                 onClick={() => {
                   setOpen(false)
                 }}
-                className="cursor-pointer"
+                className='cursor-pointer'
               >
                 Cancel
               </Button>
               <Button
-                type="submit"
+                type='submit'
                 disabled={updateCategoryMutation.isPending || isUploading}
-                className="cursor-pointer"
+                className='cursor-pointer'
               >
                 {updateCategoryMutation.isPending ? 'Saving...' : 'Update'}
               </Button>

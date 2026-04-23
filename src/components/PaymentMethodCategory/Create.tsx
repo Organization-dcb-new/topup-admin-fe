@@ -21,12 +21,14 @@ export type FormValuesPaymentCategory = {
   name: string
   slug: string
   icon_url: string
+  sort_order: number
 }
 
 export type PaymentCategoryPayload = {
   name: string
   slug: string
   icon_url: string
+  sort_order: number
 }
 
 export function CreatePaymentCategoryModal() {
@@ -42,7 +44,7 @@ export function CreatePaymentCategoryModal() {
     reset,
     formState: { errors },
   } = useForm<FormValuesPaymentCategory>({
-    defaultValues: { name: '', slug: '', icon_url: '' },
+    defaultValues: { name: '', slug: '', icon_url: '', sort_order: 0 },
   })
 
   const applyOpen = (next: boolean) => {
@@ -78,50 +80,71 @@ export function CreatePaymentCategoryModal() {
   return (
     <>
       <Button
-        type="button"
-        className="w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto"
+        type='button'
+        className='w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto'
         onClick={() => applyOpen(true)}
       >
-        <Plus className="h-4 w-4 shrink-0" aria-hidden />
+        <Plus className='h-4 w-4 shrink-0' aria-hidden />
         Tambah kategori
       </Button>
 
       <Dialog open={open} onOpenChange={applyOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Tambah kategori</DialogTitle>
-            <p className="text-sm text-muted-foreground">
+        <DialogContent className='rounded-xl sm:max-w-md'>
+          <DialogHeader className='space-y-1 text-left'>
+            <DialogTitle className='text-lg font-semibold tracking-tight'>Tambah kategori</DialogTitle>
+            <p className='text-sm text-muted-foreground'>
               Nama, slug, dan ikon digunakan untuk menampilkan grup metode pembayaran.
             </p>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <input type="hidden" {...register('icon_url')} />
-            <div className="space-y-2">
-              <Label htmlFor="pmc-name">Nama</Label>
-              <div className="space-y-1">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <input type='hidden' {...register('icon_url')} />
+            <div className='space-y-2'>
+              <Label htmlFor='pmc-name'>Nama</Label>
+              <div className='space-y-1'>
                 <Input
-                  id="pmc-name"
+                  id='pmc-name'
                   {...register('name', { required: 'Nama wajib diisi' })}
-                  placeholder="Contoh: E-wallet"
+                  placeholder='Contoh: E-wallet'
                   aria-invalid={!!errors.name}
                 />
 
-                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <Label htmlFor='pmc-slug'>Slug</Label>
+              <div className='space-y-1'>
+                <Input
+                  id='pmc-slug'
+                  {...register('slug', { required: 'Slug wajib diisi' })}
+                  placeholder='ewallet'
+                  aria-invalid={!!errors.slug}
+                />
+
+                {errors.slug && <p className='text-xs text-destructive'>{errors.slug.message}</p>}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="pmc-slug">Slug</Label>
+              <Label htmlFor="pmc-sort-order">Sort order</Label>
               <div className="space-y-1">
                 <Input
-                  id="pmc-slug"
-                  {...register('slug', { required: 'Slug wajib diisi' })}
-                  placeholder="ewallet"
-                  aria-invalid={!!errors.slug}
+                  id="pmc-sort-order"
+                  type="number"
+                  {...register('sort_order', {
+                    required: 'Sort order wajib diisi',
+                    valueAsNumber: true,
+                    min: { value: 0, message: 'Sort order minimal 0' },
+                  })}
+                  placeholder="0"
+                  aria-invalid={!!errors.sort_order}
                 />
 
-                {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+                {errors.sort_order && (
+                  <p className="text-xs text-destructive">{errors.sort_order.message}</p>
+                )}
               </div>
             </div>
 
@@ -129,7 +152,7 @@ export function CreatePaymentCategoryModal() {
               <Label>Ikon</Label>
 
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -149,16 +172,16 @@ export function CreatePaymentCategoryModal() {
                 } border-border/80`}
               >
                 {preview ? (
-                  <img src={preview} alt="" className="h-full w-full rounded-lg object-contain" />
+                  <img src={preview} alt='' className='h-full w-full rounded-lg object-contain' />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" aria-hidden />
-                    <span className="text-sm">Klik atau letakkan gambar di sini</span>
+                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
+                    <UploadCloud className='h-6 w-6' aria-hidden />
+                    <span className='text-sm'>Klik atau letakkan gambar di sini</span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white'>
                     Mengunggah {uploadProgress}%
                   </div>
                 )}
@@ -169,27 +192,27 @@ export function CreatePaymentCategoryModal() {
 
             <input
               ref={inputRef}
-              type="file"
-              accept="image/*,.svg"
-              className="hidden"
+              type='file'
+              accept='image/*,.svg'
+              className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (file) handleFile(file)
               }}
             />
 
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" className="rounded-lg" onClick={() => applyOpen(false)}>
+            <DialogFooter className='gap-2 sm:gap-0'>
+              <Button type='button' variant='outline' className='rounded-lg' onClick={() => applyOpen(false)}>
                 Batal
               </Button>
               <Button
-                type="submit"
-                className="rounded-lg font-semibold"
+                type='submit'
+                className='rounded-lg font-semibold'
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  <span className='flex items-center gap-2'>
+                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
                     Menyimpan…
                   </span>
                 ) : (
