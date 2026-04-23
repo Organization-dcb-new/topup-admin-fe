@@ -35,7 +35,8 @@
       "twoFa": "2FA",
       "pembatasLaju": "Rate limit",
       "pemeliharaan": "Maintenance",
-      "pengguna": "Users"
+      "pengguna": "Users",
+      "logAdmin": "Admin logs"
     }
   },
   "transactionPage": {
@@ -1461,6 +1462,49 @@
     "enabled": "Active",
     "disabled": "Inactive",
     "colActions": "Actions"
+  },
+  "adminLogPage": {
+    "title": "Admin logs",
+    "subtitle": "Administrator activity history from the admin-logs endpoint.",
+    "total": "Total {{total}} logs",
+    "listTitle": "Log list",
+    "listHint": "Shows recent activities. Use pagination to browse other pages.",
+    "loadingBody": "Loading admin logs…",
+    "pleaseWait": "Please wait a moment.",
+    "loadError": "Failed to load admin logs.",
+    "emptyMessage": "No admin activity has been recorded yet."
+  },
+  "adminLogTable": {
+    "colId": "ID",
+    "colCreatedAt": "Time",
+    "colAction": "Action",
+    "colModule": "Module",
+    "colDescription": "Description",
+    "colOldData": "Old data",
+    "colNewData": "New data",
+    "colIpAddress": "IP address",
+    "colUserAgent": "User agent"
+  },
+  "adminLogDetailPage": {
+    "title": "Admin log detail",
+    "subtitle": "Complete detail of administrator activity.",
+    "pageHint": "This page helps users understand who performed an action, when it happened, and what data changed.",
+    "backButton": "Back to log list",
+    "loading": "Loading admin log detail…",
+    "missingId": "Admin log ID is missing in the URL.",
+    "loadError": "Failed to load admin log detail.",
+    "readGuideTitle": "How to read this log",
+    "readGuideBody": "Old data contains values before the action, while new data contains values after the action. If one side is empty, the system did not provide that snapshot.",
+    "id": "Log ID",
+    "adminId": "Admin ID",
+    "createdAt": "Time",
+    "ipAddress": "IP address",
+    "description": "Description",
+    "oldData": "Old data",
+    "oldDataHint": "Values before the action was executed.",
+    "newData": "New data",
+    "newDataHint": "Values after the action was successfully executed.",
+    "userAgent": "User agent"
   },
   "dashboardPage": {
     "title": "Dashboard"

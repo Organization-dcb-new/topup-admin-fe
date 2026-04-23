@@ -1,32 +1,34 @@
-import React from 'react'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import LoginPage from '../pages/Login'
-import DashboardPage from '@/pages/Dashboard'
-import TransactionPage from '@/pages/Transaction'
-import GamePage from '@/pages/Game'
-import GameDetailPage from '@/pages/GameDetail'
-import CategoryPage from '@/pages/Category'
-import ProductPage from '@/pages/Product'
-import PaymentMethodPage from '@/pages/PaymentMethod'
-import ProviderPages from '@/pages/Provider'
-import PaymentDetailPage from '@/pages/TransactionDetail'
-import BannerPage from '@/pages/Banner'
-import ShowPage from '@/pages/Show'
-import InputPages from '@/pages/Input'
-import OrderPages from '@/pages/Order'
-import CategoryProduct from '@/pages/CategoryProduct'
-import PaymentMethodCategoryPages from '@/pages/PaymentMethodCategory'
-import SpendingPages from '@/pages/Summary'
-import BlogPage from '@/pages/Blog'
-import VerifyOtpPage from '@/pages/VerifyOTP'
-import Setup2FAPage from '@/pages/SetupAuth'
-import RateLimitPage from '@/pages/RateLimit'
-import AdminManagementPage from '@/pages/Admin'
-import MaintenancePage from '@/pages/Maintenance'
-import { RoleGuard } from '@/components/Auth/RoleGuard'
-import UnauthorizedPage from '@/pages/Unauthorized'
-import AnomalyProduct from '@/pages/AnomalyProduct'
-import NotFoundPage from '@/pages/NotFound'
+import React from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LoginPage from "../pages/Login";
+import DashboardPage from "@/pages/Dashboard";
+import TransactionPage from "@/pages/Transaction";
+import GamePage from "@/pages/Game";
+import GameDetailPage from "@/pages/GameDetail";
+import CategoryPage from "@/pages/Category";
+import ProductPage from "@/pages/Product";
+import PaymentMethodPage from "@/pages/PaymentMethod";
+import ProviderPages from "@/pages/Provider";
+import PaymentDetailPage from "@/pages/TransactionDetail";
+import BannerPage from "@/pages/Banner";
+import ShowPage from "@/pages/Show";
+import InputPages from "@/pages/Input";
+import OrderPages from "@/pages/Order";
+import CategoryProduct from "@/pages/CategoryProduct";
+import PaymentMethodCategoryPages from "@/pages/PaymentMethodCategory";
+import SpendingPages from "@/pages/Summary";
+import BlogPage from "@/pages/Blog";
+import VerifyOtpPage from "@/pages/VerifyOTP";
+import Setup2FAPage from "@/pages/SetupAuth";
+import RateLimitPage from "@/pages/RateLimit";
+import AdminManagementPage from "@/pages/Admin";
+import MaintenancePage from "@/pages/Maintenance";
+import AdminLogPage from '@/pages/AdminLog'
+import AdminLogDetailPage from '@/pages/AdminLogDetail'
+import { RoleGuard } from "@/components/Auth/RoleGuard";
+import UnauthorizedPage from "@/pages/Unauthorized";
+import AnomalyProduct from "@/pages/AnomalyProduct";
+import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
@@ -220,7 +222,23 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: 'unauthorized',
+        path: 'admin-logs',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'admin-logs/:id',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <AdminLogDetailPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "unauthorized",
         element: <UnauthorizedPage />,
       },
       {
