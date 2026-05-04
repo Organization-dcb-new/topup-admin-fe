@@ -82,6 +82,7 @@ export const sidebarMenus: SidebarSection[] = [
           { label: 'Produk anomali', icon: AlertTriangle, path: '/anomaly' },
           { label: 'Kategori', icon: FolderTree, path: '/categories' },
           { label: 'Field input', icon: FormInput, path: '/input' },
+          { label: 'Log callback produk', icon: ClipboardList, path: '/products/callback-logs' },
         ],
       },
       {
