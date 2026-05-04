@@ -769,7 +769,9 @@
     "toastSuccess": "Berhasil memuat log callback",
     "toastError": "Gagal memuat log callback",
     "totalLogs": "Total {{count}} log",
-    "emptyPage": "Tidak ada log callback produk."
+    "emptyPage": "Tidak ada log callback produk.",
+    "filterPanelTitle": "Panel Filter",
+    "applyFilters": "Terapkan Filter"
   },
   "productCallbackLogTable": {
     "colId": "ID",

@@ -17,6 +17,7 @@ import {
   Filter,
   Coins,
   SortAsc,
+  Check,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -36,58 +37,65 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useDebounce } from '@/hooks/useDebounce'
 
 export default function ProductCallbackLogPage() {
   const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('all')
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
-  const [sortBy, setSortBy] = useState('created_at')
-  const [sortOrder, setSortOrder] = useState('desc')
+
+  // Applied states (used for fetching)
+  const [appliedFilters, setAppliedFilters] = useState({
+    dateRange: undefined as DateRange | undefined,
+    search: '',
+    status: 'all',
+    minPrice: '',
+    maxPrice: '',
+    sortBy: 'created_at',
+    sortOrder: 'desc',
+  })
+
+  // Local UI states (unapplied)
+  const [localFilters, setLocalFilters] = useState({ ...appliedFilters })
+
   const limit = 30
-
-  const debouncedSearch = useDebounce(search, 500)
-  const debouncedMinPrice = useDebounce(minPrice, 400)
-  const debouncedMaxPrice = useDebounce(maxPrice, 400)
-
   const datetimePattern = 'yyyy-MM-dd HH:mm:ss'
 
   const { startDate, endDate } = useMemo(() => {
-    const from = dateRange?.from ? format(dateRange.from, datetimePattern) : undefined
-    const to = dateRange?.to ? format(dateRange.to, datetimePattern) : undefined
+    const from = appliedFilters.dateRange?.from ? format(appliedFilters.dateRange.from, datetimePattern) : undefined
+    const to = appliedFilters.dateRange?.to ? format(appliedFilters.dateRange.to, datetimePattern) : undefined
     return { startDate: from, endDate: to }
-  }, [dateRange])
+  }, [appliedFilters.dateRange])
 
-  const handleReset = () => {
+  const handleApply = () => {
     setPage(1)
-    setDateRange(undefined)
-    setSearch('')
-    setStatus('all')
-    setMinPrice('')
-    setMaxPrice('')
-    setSortBy('created_at')
-    setSortOrder('desc')
+    setAppliedFilters({ ...localFilters })
   }
 
-  useEffect(() => {
+  const handleReset = () => {
+    const defaultFilters = {
+      dateRange: undefined,
+      search: '',
+      status: 'all',
+      minPrice: '',
+      maxPrice: '',
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+    }
     setPage(1)
-  }, [startDate, endDate, debouncedSearch, status, debouncedMinPrice, debouncedMaxPrice, sortBy, sortOrder])
+    setLocalFilters(defaultFilters)
+    setAppliedFilters(defaultFilters)
+  }
 
   const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetProductCallbackLogs(
     page,
     limit,
     startDate,
     endDate,
-    debouncedSearch,
-    status === 'all' ? undefined : status,
-    debouncedMinPrice,
-    debouncedMaxPrice,
-    sortBy,
-    sortOrder
+    appliedFilters.search,
+    appliedFilters.status === 'all' ? undefined : appliedFilters.status,
+    appliedFilters.minPrice,
+    appliedFilters.maxPrice,
+    appliedFilters.sortBy,
+    appliedFilters.sortOrder
   )
 
   useEffect(() => {
@@ -150,7 +158,7 @@ export default function ProductCallbackLogPage() {
         <div className='rounded-2xl border border-border bg-card shadow-sm'>
           <div className='flex items-center gap-2 border-b border-gray-100 bg-gray-50/50 px-5 py-3'>
             <Settings2 className='h-4 w-4 text-primary' />
-            <span className='text-sm font-bold text-gray-900'>Panel Filter</span>
+            <span className='text-sm font-bold text-gray-900'>{t('productCallbackLogPage.filterPanelTitle')}</span>
           </div>
           <div className='p-5'>
             <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4'>
@@ -164,9 +172,9 @@ export default function ProductCallbackLogPage() {
                     </Label>
                     <Input
                       placeholder={t('productCallbackLogPage.searchPlaceholder')}
-                      value={search}
+                      value={localFilters.search}
                       className='h-9'
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => setLocalFilters(prev => ({ ...prev, search: e.target.value }))}
                     />
                   </div>
                   <div className='flex flex-col gap-1.5'>
@@ -174,7 +182,10 @@ export default function ProductCallbackLogPage() {
                       <Calendar className='h-3 w-3' />
                       {t('transactionPage.dateTimeRange')}
                     </Label>
-                    <TransactionDateFilter date={dateRange} onChange={setDateRange} />
+                    <TransactionDateFilter
+                      date={localFilters.dateRange}
+                      onChange={(range) => setLocalFilters(prev => ({ ...prev, dateRange: range }))}
+                    />
                   </div>
                 </div>
               </div>
@@ -185,7 +196,10 @@ export default function ProductCallbackLogPage() {
                   <Filter className='h-3 w-3' />
                   {t('transactionFilters.status.filterAria')}
                 </Label>
-                <Select value={status} onValueChange={setStatus}>
+                <Select
+                  value={localFilters.status}
+                  onValueChange={(val) => setLocalFilters(prev => ({ ...prev, status: val }))}
+                >
                   <SelectTrigger className='h-9'>
                     <SelectValue placeholder={t('transactionFilters.status.placeholderAll')} />
                   </SelectTrigger>
@@ -203,7 +217,10 @@ export default function ProductCallbackLogPage() {
                   {t('productCallbackLogPage.sortLabel')}
                 </Label>
                 <div className='flex gap-2'>
-                  <Select value={sortBy} onValueChange={setSortBy}>
+                  <Select
+                    value={localFilters.sortBy}
+                    onValueChange={(val) => setLocalFilters(prev => ({ ...prev, sortBy: val }))}
+                  >
                     <SelectTrigger className='h-9 flex-1'>
                       <SelectValue />
                     </SelectTrigger>
@@ -213,7 +230,10 @@ export default function ProductCallbackLogPage() {
                       <SelectItem value='product_code'>{t('productCallbackLogPage.sortOptionProductCode')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Select value={sortOrder} onValueChange={setSortOrder}>
+                  <Select
+                    value={localFilters.sortOrder}
+                    onValueChange={(val) => setLocalFilters(prev => ({ ...prev, sortOrder: val }))}
+                  >
                     <SelectTrigger className='h-9 w-[100px]'>
                       <SelectValue />
                     </SelectTrigger>
@@ -225,9 +245,9 @@ export default function ProductCallbackLogPage() {
                 </div>
               </div>
 
-              {/* Group 3: Price Range & Reset */}
-              <div className='lg:col-span-3'>
-                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+              {/* Group 3: Price Range & Action Buttons */}
+              <div className='lg:col-span-4'>
+                <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
                   <div className='flex flex-col gap-1.5'>
                     <Label className='flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground'>
                       <Coins className='h-3 w-3' />
@@ -238,9 +258,9 @@ export default function ProductCallbackLogPage() {
                       <Input
                         type='number'
                         placeholder='0'
-                        value={minPrice}
+                        value={localFilters.minPrice}
                         className='h-9 pl-8'
-                        onChange={(e) => setMinPrice(e.target.value)}
+                        onChange={(e) => setLocalFilters(prev => ({ ...prev, minPrice: e.target.value }))}
                       />
                     </div>
                   </div>
@@ -254,20 +274,27 @@ export default function ProductCallbackLogPage() {
                       <Input
                         type='number'
                         placeholder='0'
-                        value={maxPrice}
+                        value={localFilters.maxPrice}
                         className='h-9 pl-8'
-                        onChange={(e) => setMaxPrice(e.target.value)}
+                        onChange={(e) => setLocalFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
                       />
                     </div>
                   </div>
-                  <div className='flex items-end'>
+                  <div className='flex items-end gap-2 sm:col-span-2'>
                     <Button
                       variant='ghost'
-                      className='h-9 w-full gap-2 font-bold text-muted-foreground hover:bg-destructive/5 hover:text-destructive'
+                      className='h-9 flex-1 gap-2 font-bold text-muted-foreground hover:bg-destructive/5 hover:text-destructive'
                       onClick={handleReset}
                     >
                       <RotateCcw className='h-3.5 w-3.5' />
                       {t('transactionPage.resetFilters')}
+                    </Button>
+                    <Button
+                      className='h-9 flex-1 gap-2 font-bold'
+                      onClick={handleApply}
+                    >
+                      <Check className='h-3.5 w-3.5' />
+                      {t('productCallbackLogPage.applyFilters')}
                     </Button>
                   </div>
                 </div>

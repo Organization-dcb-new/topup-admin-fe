@@ -769,7 +769,9 @@
     "toastSuccess": "Callback logs loaded",
     "toastError": "Failed to load callback logs",
     "totalLogs": "Total {{count}} logs",
-    "emptyPage": "No product callback logs found."
+    "emptyPage": "No product callback logs found.",
+    "filterPanelTitle": "Filter Panel",
+    "applyFilters": "Apply Filters"
   },
   "productCallbackLogTable": {
     "colId": "ID",
