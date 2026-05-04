@@ -6,14 +6,9 @@ import {
   ChevronLeft,
   Loader2,
   AlertCircle,
-  Code2,
-  Copy,
-  Check,
 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
-import toast from 'react-hot-toast'
 
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 
@@ -22,16 +17,8 @@ export default function ProductCallbackLogDetailPage() {
   const navigate = useNavigate()
   const { t } = useTranslation('common')
   const { data, isLoading, isError } = useGetProductCallbackLogById(id ?? '')
-  const [copied, setCopied] = useState(false)
 
   const log = data?.data
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(true)
-    toast.success(t('transactionDetail.copy.ariaCopied'))
-    setTimeout(() => setCopied(false), 2000)
-  }
 
   return (
     <DashboardLayout>
@@ -136,30 +123,6 @@ export default function ProductCallbackLogDetailPage() {
                     <p className='text-[10px] font-bold text-muted-foreground uppercase'>{t('productCallbackLogTable.colMetaTimestamp')}</p>
                     <p className='text-sm font-mono'>{log.meta_timestamp}</p>
                   </div>
-                </div>
-              </div>
-
-              {/* Original Payload section */}
-              <div className='space-y-4 pt-6 border-t border-border'>
-                <div className='flex items-center justify-between'>
-                  <h2 className='text-sm font-semibold flex items-center gap-2'>
-                    <Code2 className='h-4 w-4 text-muted-foreground' />
-                    {t('productCallbackLogPage.sectionPayload')}
-                  </h2>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    className='h-7 gap-1.5 text-xs'
-                    onClick={() => handleCopy(JSON.stringify(log.original_payload, null, 2))}
-                  >
-                    {copied ? <Check className='h-3.5 w-3.5' /> : <Copy className='h-3.5 w-3.5' />}
-                    {copied ? 'Copied' : 'Copy JSON'}
-                  </Button>
-                </div>
-                <div className='rounded-lg border border-border bg-muted/20 p-4'>
-                  <pre className='max-h-96 overflow-auto text-xs font-mono text-muted-foreground leading-relaxed'>
-                    {JSON.stringify(log.original_payload, null, 2)}
-                  </pre>
                 </div>
               </div>
             </div>
