@@ -110,6 +110,19 @@ export default function ProductCallbackLogPage() {
   const rows = data?.data ?? []
   const columns = useMemo(() => getProductCallbackLogColumns(t), [t])
 
+  const isFilterChanged = useMemo(() => {
+    return (
+      localFilters.search !== appliedFilters.search ||
+      localFilters.status !== appliedFilters.status ||
+      localFilters.minPrice !== appliedFilters.minPrice ||
+      localFilters.maxPrice !== appliedFilters.maxPrice ||
+      localFilters.sortBy !== appliedFilters.sortBy ||
+      localFilters.sortOrder !== appliedFilters.sortOrder ||
+      localFilters.dateRange?.from?.getTime() !== appliedFilters.dateRange?.from?.getTime() ||
+      localFilters.dateRange?.to?.getTime() !== appliedFilters.dateRange?.to?.getTime()
+    )
+  }, [localFilters, appliedFilters])
+
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-7xl space-y-6'>
@@ -292,6 +305,7 @@ export default function ProductCallbackLogPage() {
                     <Button
                       className='h-9 flex-1 gap-2 font-bold'
                       onClick={handleApply}
+                      disabled={!isFilterChanged}
                     >
                       <Check className='h-3.5 w-3.5' />
                       {t('productCallbackLogPage.applyFilters')}
