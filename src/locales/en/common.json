@@ -36,7 +36,8 @@
       "pembatasLaju": "Rate limit",
       "pemeliharaan": "Maintenance",
       "pengguna": "Users",
-      "logAdmin": "Admin logs"
+      "logAdmin": "Admin logs",
+      "productCallbackLog": "Product callback logs"
     }
   },
   "transactionPage": {
@@ -744,6 +745,45 @@
     "above": "Above (>=)",
     "below": "Below (<=)",
     "exact": "Exact (=)"
+  },
+  "productCallbackLogPage": {
+    "title": "Product Callback Logs",
+    "subtitle": "List of product callback logs from providers.",
+    "detailTitle": "Callback Log Detail — {{id}}",
+    "detailSubtitle": "Full information about the callback log from provider.",
+    "sectionGeneral": "General Information",
+    "sectionProduct": "Product Information",
+    "sectionMeta": "Provider Metadata",
+    "sectionPayload": "Original Payload (Provider)",
+    "searchLabel": "Search Product Code",
+    "searchPlaceholder": "Example: ML-100...",
+    "minPriceLabel": "Min Price",
+    "maxPriceLabel": "Max Price",
+    "sortLabel": "Sort By",
+    "orderLabel": "Sort Order",
+    "sortOptionCreatedAt": "Created Date",
+    "sortOptionPrice": "Price",
+    "sortOptionProductCode": "Product Code",
+    "orderOptionDesc": "Newest / Largest",
+    "orderOptionAsc": "Oldest / Smallest",
+    "toastSuccess": "Callback logs loaded",
+    "toastError": "Failed to load callback logs",
+    "totalLogs": "Total {{count}} logs",
+    "emptyPage": "No product callback logs found.",
+    "filterPanelTitle": "Filter Panel",
+    "applyFilters": "Apply Filters"
+  },
+  "productCallbackLogTable": {
+    "colId": "ID",
+    "colProductCode": "Product Code",
+    "colProductName": "Product Name",
+    "colProviderCode": "Provider Code",
+    "colPrice": "Price",
+    "colStatus": "Status",
+    "colMetaLevel": "Meta Level",
+    "colMetaTimestamp": "Meta Timestamp",
+    "colCreatedAt": "Created At",
+    "colPreviousPrice": "Previous Price"
   },
   "productTable": {
     "colImage": "Image",

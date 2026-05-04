@@ -28,6 +28,8 @@ import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
+import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
+import ProductCallbackLogDetailPage from "@/pages/ProductCallbackLogDetail";
 import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
@@ -152,6 +154,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard allowedRoles={['dev', 'admin']}>
             <ProductPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'products/callback-logs',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <ProductCallbackLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'products/callback-logs/:id',
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin']}>
+            <ProductCallbackLogDetailPage />
           </RoleGuard>
         ),
       },

@@ -36,7 +36,8 @@
       "pembatasLaju": "Pembatas laju",
       "pemeliharaan": "Pemeliharaan",
       "pengguna": "Pengguna",
-      "logAdmin": "Log admin"
+      "logAdmin": "Log admin",
+      "productCallbackLog": "Log callback produk"
     }
   },
   "transactionPage": {
@@ -744,6 +745,45 @@
     "above": "Di atas (>=)",
     "below": "Di bawah (<=)",
     "exact": "Tepat (=)"
+  },
+  "productCallbackLogPage": {
+    "title": "Log Callback Produk",
+    "subtitle": "Daftar log callback produk dari provider.",
+    "detailTitle": "Detail Log Callback — {{id}}",
+    "detailSubtitle": "Informasi lengkap mengenai log callback dari provider.",
+    "sectionGeneral": "Informasi Umum",
+    "sectionProduct": "Informasi Produk",
+    "sectionMeta": "Metadata Provider",
+    "sectionPayload": "Payload Asli (Provider)",
+    "searchLabel": "Cari Kode Produk",
+    "searchPlaceholder": "Contoh: ML-100...",
+    "minPriceLabel": "Harga Minimal",
+    "maxPriceLabel": "Harga Maksimal",
+    "sortLabel": "Urutkan Berdasarkan",
+    "orderLabel": "Arah Urutan",
+    "sortOptionCreatedAt": "Tanggal Dibuat",
+    "sortOptionPrice": "Harga",
+    "sortOptionProductCode": "Kode Produk",
+    "orderOptionDesc": "Terbaru / Terbesar",
+    "orderOptionAsc": "Terlama / Terkecil",
+    "toastSuccess": "Berhasil memuat log callback",
+    "toastError": "Gagal memuat log callback",
+    "totalLogs": "Total {{count}} log",
+    "emptyPage": "Tidak ada log callback produk.",
+    "filterPanelTitle": "Panel Filter",
+    "applyFilters": "Terapkan Filter"
+  },
+  "productCallbackLogTable": {
+    "colId": "ID",
+    "colProductCode": "Kode Produk",
+    "colProductName": "Nama Produk",
+    "colProviderCode": "Kode Provider",
+    "colPrice": "Harga",
+    "colStatus": "Status",
+    "colMetaLevel": "Meta Level",
+    "colMetaTimestamp": "Timestamp Meta",
+    "colCreatedAt": "Dibuat",
+    "colPreviousPrice": "Harga Sebelumnya"
   },
   "productTable": {
     "colImage": "Gambar",
