@@ -949,7 +949,14 @@
     "empty": "No products for this game.",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "searchPlaceholder": "Search products...",
+    "sortName": "Sort Name",
+    "selected": "Selected",
+    "selectAll": "All",
+    "deselectAll": "Clear",
+    "noMatch": "No matching products",
+    "retry": "Retry"
   },
   "anomalyProductPage": {
     "toastSuccess": "Anomaly products loaded",
