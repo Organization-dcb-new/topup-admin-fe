@@ -728,6 +728,11 @@
     "gameLabel": "Game",
     "gamePlaceholder": "Pilih game…",
     "gameSearchPlaceholder": "Cari game…",
+    "lastUpdatedByLabel": "Terakhir diperbarui",
+    "lastUpdatedByPlaceholder": "Terakhir diperbarui oleh",
+    "system": "System",
+    "process": "Process",
+    "admin": "Admin",
     "gameEmpty": "Tidak ada game.",
     "allGames": "Semua game",
     "changeImageByGame": "Ubah gambar per game",
@@ -803,6 +808,7 @@
     "providerAvailable": "Tersedia",
     "providerEmpty": "Kosong",
     "colActions": "Aksi",
+    "colLastUpdatedBy": "Diperbarui oleh",
     "rowActionsAria": "Aksi untuk produk {{name}}"
   },
   "productImageModal": {

@@ -728,6 +728,11 @@
     "gameLabel": "Game",
     "gamePlaceholder": "Select game…",
     "gameSearchPlaceholder": "Search games…",
+    "lastUpdatedByLabel": "Last updated by",
+    "lastUpdatedByPlaceholder": "Last updated by",
+    "system": "System",
+    "process": "Process",
+    "admin": "Admin",
     "gameEmpty": "No games.",
     "allGames": "All games",
     "changeImageByGame": "Change image by game",
@@ -803,6 +808,7 @@
     "providerAvailable": "Available",
     "providerEmpty": "Empty",
     "colActions": "Actions",
+    "colLastUpdatedBy": "Last updated by",
     "rowActionsAria": "Actions for product {{name}}"
   },
   "productImageModal": {

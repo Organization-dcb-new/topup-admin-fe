@@ -26,6 +26,7 @@ export interface Product {
   additional_fee: number
   additional_percent: number
   game?: Game
+  last_updated_by: string
 }
 
 export interface ProductResponse {
