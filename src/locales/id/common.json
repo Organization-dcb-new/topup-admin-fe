@@ -412,6 +412,8 @@
     "loadingShort": "Memuat…",
     "loadFailedShort": "Gagal memuat",
     "totalGames": "Total {{count}} game",
+    "totalGamesActive": "Aktif {{count}}",
+    "totalGamesShow": "Etalase {{count}}",
     "listTitle": "Daftar game",
     "listHint": "Cari, filter status/tanggal, atau pilih game. {{limit}} game per halaman.",
     "tableLoadingTitle": "Memuat daftar game…",

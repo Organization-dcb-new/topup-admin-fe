@@ -412,6 +412,8 @@
     "loadingShort": "Loading…",
     "loadFailedShort": "Failed to load",
     "totalGames": "Total {{count}} games",
+    "totalGamesActive": "Active {{count}}",
+    "totalGamesShow": "Showcase {{count}}",
     "listTitle": "Game list",
     "listHint": "Search, filter by flags and dates, or pick a game. {{limit}} games per page.",
     "tableLoadingTitle": "Loading game list…",
