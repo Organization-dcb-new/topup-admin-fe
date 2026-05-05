@@ -145,6 +145,16 @@ export default function GamePage() {
     i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
   )
 
+  const totalActiveRaw = data?.meta?.game_active ?? 0
+  const totalActiveFormatted = totalActiveRaw.toLocaleString(
+    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+  )
+
+  const totalShowRaw = data?.meta?.game_show ?? 0
+  const totalShowFormatted = totalShowRaw.toLocaleString(
+    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+  )
+
   const totalPage = data?.meta?.total_page ?? 1
   const rangeFrom = totalRaw === 0 ? 0 : (page - 1) * limit + 1
   const rangeTo = Math.min(page * limit, totalRaw)
@@ -481,9 +491,19 @@ export default function GamePage() {
                     </Badge>
                   ) : null}
                 </div>
-                <span className='sm:ml-auto tabular-nums text-xs text-muted-foreground'>
-                  {t('gamePage.totalGames', { count: totalFormatted })}
-                </span>
+                <div className='flex items-center gap-3 sm:ml-auto'>
+                  <span className='tabular-nums text-xs text-muted-foreground'>
+                    {t('gamePage.totalGames', { count: totalFormatted })}
+                  </span>
+                  <span className='h-3 w-px bg-border' aria-hidden='true' />
+                  <span className='tabular-nums text-xs text-muted-foreground'>
+                    {t('gamePage.totalGamesActive', { count: totalActiveFormatted })}
+                  </span>
+                  <span className='h-3 w-px bg-border' aria-hidden='true' />
+                  <span className='tabular-nums text-xs text-muted-foreground'>
+                    {t('gamePage.totalGamesShow', { count: totalShowFormatted })}
+                  </span>
+                </div>
               </div>
             )}
           </div>

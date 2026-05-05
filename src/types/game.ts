@@ -67,6 +67,8 @@ export interface PaginationMeta {
   total_page: number
   has_next: boolean
   has_prev: boolean
+  game_active: number
+  game_show: number
 }
 
 export type GameInputPayload = {
