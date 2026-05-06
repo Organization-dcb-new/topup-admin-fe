@@ -67,7 +67,13 @@
     "tableLoadingTitle": "Loading transactions…",
     "tableLoadingHint": "Please wait a moment.",
     "loadErrorDetail": "Failed to load transactions. Check your connection or try reloading the page.",
-    "emptyPage": "No transactions on this page."
+    "emptyPage": "No transactions on this page.",
+    "exportCSV": "Export CSV",
+    "exportCSVTitle": "Export Transactions to CSV",
+    "exportCSVDesc": "Select a date range to filter the transactions you want to export.",
+    "generateCSV": "Generate CSV",
+    "exportSuccess": "CSV exported successfully",
+    "exportError": "Failed to export CSV"
   },
   "paymentStatus": {
     "PAID": "Paid",
