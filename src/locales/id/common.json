@@ -67,12 +67,20 @@
     "tableLoadingTitle": "Memuat transaksi…",
     "tableLoadingHint": "Mohon tunggu sebentar.",
     "loadErrorDetail": "Gagal memuat transaksi. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Tidak ada transaksi pada halaman ini."
+    "emptyPage": "Tidak ada transaksi pada halaman ini.",
+    "exportCSV": "Export CSV",
+    "exportCSVTitle": "Export Transaksi ke CSV",
+    "exportCSVDesc": "Pilih rentang tanggal, status, dan metode pembayaran untuk menyaring transaksi yang ingin di export.",
+    "generateCSV": "Generate CSV",
+    "generating": "Memproses…",
+    "exportSuccess": "Berhasil mengekspor CSV",
+    "exportError": "Gagal mengekspor CSV"
   },
   "paymentStatus": {
     "PAID": "Lunas",
     "PENDING": "Menunggu",
     "FAILED": "Gagal",
+    "PROCESSING": "Diproses",
     "EXPIRED": "Kadaluarsa"
   },
   "paymentChannel": {
@@ -163,6 +171,7 @@
     "colChannel": "Kanal",
     "colVa": "Nomor VA",
     "colStatus": "Status",
+    "colStatusProvider": "Status Provider",
     "colCreated": "Dibuat"
   },
   "transactionDetail": {

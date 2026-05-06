@@ -10,6 +10,7 @@ import TransactionGameFilter from '@/components/Transaction/TransactionGameFilte
 import TransactionPaymentMethodFilter from '@/components/Transaction/TransactionPaymentMethodFilter'
 import TransactionSearchInput from '@/components/Transaction/SearchTransaction'
 import TransactionStatusFilter from '@/components/Transaction/TransactionStatusFilter'
+import TransactionExportModal from '@/components/Transaction/TransactionExportModal'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetTransactions } from '@/hooks/useTransaction'
 import { getPaymentColumns } from '@/tables/table-transaction'
@@ -225,18 +226,21 @@ export default function TransactionPage() {
                 aria-hidden
               />
             </button>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='h-9 shrink-0 shadow-xs sm:self-center'
-              disabled={!hasActiveFilters}
-              onClick={resetFilters}
-              aria-label={t('transactionPage.resetFiltersAria')}
-            >
-              <RotateCcw className='mr-2 h-3.5 w-3.5' aria-hidden />
-              {t('transactionPage.resetFilters')}
-            </Button>
+            <div className='flex gap-2 sm:self-center'>
+              <TransactionExportModal />
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                className='h-9 shrink-0 shadow-xs'
+                disabled={!hasActiveFilters}
+                onClick={resetFilters}
+                aria-label={t('transactionPage.resetFiltersAria')}
+              >
+                <RotateCcw className='mr-2 h-3.5 w-3.5' aria-hidden />
+                {t('transactionPage.resetFilters')}
+              </Button>
+            </div>
           </div>
           <div
             id='tx-filters-panel'

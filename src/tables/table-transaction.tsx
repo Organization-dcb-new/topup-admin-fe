@@ -153,11 +153,38 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
       cell: ({ row }) => {
         const status = row.original.status
         const variant =
-          status === 'PAID' ? 'success' : status === 'PENDING' ? 'outline' : 'destructive'
+          status === 'PAID'
+            ? 'success'
+            : status === 'PROCESSING'
+              ? 'secondary'
+              : status === 'PENDING'
+                ? 'outline'
+                : 'destructive'
 
         return (
           <Badge variant={variant} className='font-medium'>
             {statusLabel(status, t)}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: 'status_provider',
+      header: () => <span className='font-medium'>{t('transactionTable.colStatusProvider')}</span>,
+      cell: ({ row }) => {
+        const sp = row.original.status_provider
+        if (!sp) return <span className='text-sm text-muted-foreground'>—</span>
+
+        const variant =
+          sp === 'SUCCESS'
+            ? 'success'
+            : sp === 'PENDING' || sp === 'PROCESS'
+              ? 'outline'
+              : 'destructive'
+
+        return (
+          <Badge variant={variant} className='font-medium'>
+            {sp}
           </Badge>
         )
       },

@@ -10,9 +10,10 @@ export interface Payment {
   payment_number: string;
   order_id: string;
   amount: number;
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED';
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'PROCESSING' | 'EXPIRED';
   payment_method_id: string;
   payment_channel: string;
+  status_provider: string;
   payment_url: string;
   qr_code_url: string;
   qr_string: string;

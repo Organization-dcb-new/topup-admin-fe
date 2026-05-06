@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 const ALL = '__all__'
 
-const STATUS_ORDER: Payment['status'][] = ['PAID', 'PENDING', 'FAILED', 'EXPIRED']
+const STATUS_ORDER: Payment['status'][] = ['PAID', 'PENDING', 'FAILED', 'PROCESSING', 'EXPIRED']
 
 interface TransactionStatusFilterProps {
   value: '' | Payment['status']
