@@ -67,7 +67,13 @@
     "tableLoadingTitle": "Memuat transaksi…",
     "tableLoadingHint": "Mohon tunggu sebentar.",
     "loadErrorDetail": "Gagal memuat transaksi. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Tidak ada transaksi pada halaman ini."
+    "emptyPage": "Tidak ada transaksi pada halaman ini.",
+    "exportCSV": "Export CSV",
+    "exportCSVTitle": "Export Transaksi ke CSV",
+    "exportCSVDesc": "Pilih rentang tanggal untuk menyaring transaksi yang ingin di export.",
+    "generateCSV": "Generate CSV",
+    "exportSuccess": "Berhasil mengekspor CSV",
+    "exportError": "Gagal mengekspor CSV"
   },
   "paymentStatus": {
     "PAID": "Lunas",
