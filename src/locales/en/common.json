@@ -171,6 +171,7 @@
     "colChannel": "Channel",
     "colVa": "VA number",
     "colStatus": "Status",
+    "colStatusProvider": "Provider Status",
     "colCreated": "Created"
   },
   "transactionDetail": {

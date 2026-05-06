@@ -171,6 +171,7 @@
     "colChannel": "Kanal",
     "colVa": "Nomor VA",
     "colStatus": "Status",
+    "colStatusProvider": "Status Provider",
     "colCreated": "Dibuat"
   },
   "transactionDetail": {
