@@ -153,7 +153,13 @@ export function getPaymentColumns(t: TFunction): ColumnDef<Payment>[] {
       cell: ({ row }) => {
         const status = row.original.status
         const variant =
-          status === 'PAID' ? 'success' : status === 'PENDING' ? 'outline' : 'destructive'
+          status === 'PAID'
+            ? 'success'
+            : status === 'PROCESSING'
+              ? 'secondary'
+              : status === 'PENDING'
+                ? 'outline'
+                : 'destructive'
 
         return (
           <Badge variant={variant} className='font-medium'>

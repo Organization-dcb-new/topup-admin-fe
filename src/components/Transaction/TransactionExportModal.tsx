@@ -11,6 +11,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Download, Loader2, CalendarRange } from 'lucide-react'
 import TransactionDateFilter from './TransactionDateFilter'
+import TransactionStatusFilter from './TransactionStatusFilter'
+import TransactionPaymentMethodFilter from './TransactionPaymentMethodFilter'
+import type { Payment } from '@/types/transaction'
 import type { DateRange } from 'react-day-picker'
 import { format } from 'date-fns'
 import { api } from '@/api/axios'
@@ -21,6 +24,8 @@ export default function TransactionExportModal() {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
+  const [status, setStatus] = useState<'' | Payment['status']>('')
+  const [paymentMethodId, setPaymentMethodId] = useState('')
   const [isExporting, setIsExporting] = useState(false)
 
   const datetimePattern = 'yyyy-MM-dd HH:mm:ss'
@@ -34,7 +39,11 @@ export default function TransactionExportModal() {
   }, [dateRange])
 
   const handleOpenChange = (val: boolean) => {
-    if (!val) setDateRange(undefined)
+    if (!val) {
+      setDateRange(undefined)
+      setStatus('')
+      setPaymentMethodId('')
+    }
     setOpen(val)
   }
 
@@ -45,6 +54,8 @@ export default function TransactionExportModal() {
         params: {
           ...(startDate && { start_date: startDate }),
           ...(endDate && { end_date: endDate }),
+          ...(status && { status }),
+          ...(paymentMethodId && { payment_method: paymentMethodId }),
         },
         responseType: 'blob',
       })
@@ -112,12 +123,28 @@ export default function TransactionExportModal() {
 
         {/* ── Body ── overflow-visible agar kalender bisa render ke luar modal */}
         <div className='overflow-visible px-6 py-5'>
-          <div className='space-y-2'>
-            <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-              {t('transactionPage.dateTimeRange')}
-            </p>
-            <div className='overflow-visible'>
-              <TransactionDateFilter date={dateRange} onChange={setDateRange} />
+          <div className='flex flex-col gap-6'>
+            <div className='space-y-2'>
+              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                {t('transactionPage.dateTimeRange')}
+              </p>
+              <div className='overflow-visible'>
+                <TransactionDateFilter date={dateRange} onChange={setDateRange} />
+              </div>
+            </div>
+
+            <div className='space-y-2'>
+              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                {t('transactionPage.status')}
+              </p>
+              <TransactionStatusFilter value={status} onChange={setStatus} />
+            </div>
+
+            <div className='space-y-2'>
+              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                {t('transactionPage.paymentMethod')}
+              </p>
+              <TransactionPaymentMethodFilter value={paymentMethodId} onChange={setPaymentMethodId} />
             </div>
           </div>
         </div>

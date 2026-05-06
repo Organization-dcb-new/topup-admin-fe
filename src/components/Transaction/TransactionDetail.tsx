@@ -39,7 +39,7 @@ export interface PaymentDetail {
   payment_number: string;
   order_id: string;
   amount: number;
-  status: 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED';
+  status: 'PENDING' | 'PAID' | 'FAILED' | 'PROCESSING' | 'EXPIRED';
   payment_method_id: string;
   payment_channel: 'gopay' | 'va' | 'qris' | 'shopeepay';
   payment_url: string;
@@ -657,9 +657,11 @@ function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
   const variant =
     status === 'PAID'
       ? 'success'
-      : status === 'PENDING'
-        ? 'outline'
-        : 'destructive'
+      : status === 'PROCESSING'
+        ? 'secondary'
+        : status === 'PENDING'
+          ? 'outline'
+          : 'destructive'
   return (
     <Badge
       variant={variant}
