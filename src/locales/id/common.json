@@ -70,8 +70,9 @@
     "emptyPage": "Tidak ada transaksi pada halaman ini.",
     "exportCSV": "Export CSV",
     "exportCSVTitle": "Export Transaksi ke CSV",
-    "exportCSVDesc": "Pilih rentang tanggal untuk menyaring transaksi yang ingin di export.",
+    "exportCSVDesc": "Pilih rentang tanggal, status, dan metode pembayaran untuk menyaring transaksi yang ingin di export.",
     "generateCSV": "Generate CSV",
+    "generating": "Memproses…",
     "exportSuccess": "Berhasil mengekspor CSV",
     "exportError": "Gagal mengekspor CSV"
   },
@@ -79,6 +80,7 @@
     "PAID": "Lunas",
     "PENDING": "Menunggu",
     "FAILED": "Gagal",
+    "PROCESSING": "Diproses",
     "EXPIRED": "Kadaluarsa"
   },
   "paymentChannel": {
