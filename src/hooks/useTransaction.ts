@@ -51,5 +51,9 @@ export const useGetTransactions = (
       })
       return res.data
     },
+    // Auto-refetch tiap 10 detik supaya list transaksi selalu up-to-date
+    // tanpa user harus reload manual. Dijeda saat tab tidak aktif.
+    refetchInterval: 10_000,
+    refetchIntervalInBackground: false,
   })
 }
