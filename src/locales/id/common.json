@@ -737,6 +737,11 @@
     "gameLabel": "Game",
     "gamePlaceholder": "Pilih game…",
     "gameSearchPlaceholder": "Cari game…",
+    "lastUpdatedByLabel": "Terakhir diperbarui",
+    "lastUpdatedByPlaceholder": "Terakhir diperbarui oleh",
+    "system": "System",
+    "process": "Process",
+    "admin": "Admin",
     "gameEmpty": "Tidak ada game.",
     "allGames": "Semua game",
     "changeImageByGame": "Ubah gambar per game",
@@ -812,6 +817,7 @@
     "providerAvailable": "Tersedia",
     "providerEmpty": "Kosong",
     "colActions": "Aksi",
+    "colLastUpdatedBy": "Diperbarui oleh",
     "rowActionsAria": "Aksi untuk produk {{name}}"
   },
   "productImageModal": {
@@ -958,7 +964,14 @@
     "empty": "Tidak ada produk untuk game ini.",
     "cancel": "Batal",
     "save": "Simpan",
-    "saving": "Menyimpan…"
+    "saving": "Menyimpan…",
+    "searchPlaceholder": "Cari produk...",
+    "sortName": "Urutkan Nama",
+    "selected": "Terpilih",
+    "selectAll": "Semua",
+    "deselectAll": "Hapus",
+    "noMatch": "Tidak ada produk yang sesuai",
+    "retry": "Coba lagi"
   },
   "anomalyProductPage": {
     "toastSuccess": "Berhasil memuat produk anomali",

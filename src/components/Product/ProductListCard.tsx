@@ -5,6 +5,10 @@ import {
 import { ProductNameSearchInput } from '@/components/Product/Filter/ProductNameSearchInput'
 import { ProductSkuGameImageRow } from '@/components/Product/Filter/ProductSkuGameImageRow'
 import {
+  ProductLastUpdatedByFilter,
+  type ProductLastUpdatedByFilterValue,
+} from '@/components/Product/Filter/ProductLastUpdatedByFilter'
+import {
   ProductProviderStatusFilter,
   type ProductProviderStatusFilterValue,
 } from '@/components/Product/Filter/ProductProviderStatusFilter'
@@ -25,6 +29,8 @@ export type ProductListCardProps = {
   onProductStatusChange: (value: ProductStatusFilterValue) => void
   providerStatus: ProductProviderStatusFilterValue
   onProviderStatusChange: (value: ProductProviderStatusFilterValue) => void
+  lastUpdatedBy: ProductLastUpdatedByFilterValue
+  onLastUpdatedByChange: (value: ProductLastUpdatedByFilterValue) => void
   sku: string
   onSkuChange: (value: string) => void
   gameName: string
@@ -43,6 +49,8 @@ export function ProductListCard({
   onProductStatusChange,
   providerStatus,
   onProviderStatusChange,
+  lastUpdatedBy,
+  onLastUpdatedByChange,
   sku,
   onSkuChange,
   gameName,
@@ -113,13 +121,19 @@ export function ProductListCard({
             />
 
             <div className='grid w-full min-w-0 grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end lg:gap-4'>
-              <div className='min-w-0 lg:col-span-3'>
+              <div className='min-w-0 lg:col-span-2'>
                 <ProductStatusFilter value={productStatus} onChange={onProductStatusChange} />
               </div>
-              <div className='min-w-0 lg:col-span-3'>
+              <div className='min-w-0 lg:col-span-2'>
                 <ProductProviderStatusFilter
                   value={providerStatus}
                   onChange={onProviderStatusChange}
+                />
+              </div>
+              <div className='min-w-0 lg:col-span-2'>
+                <ProductLastUpdatedByFilter
+                  value={lastUpdatedBy}
+                  onChange={onLastUpdatedByChange}
                 />
               </div>
               <div className='min-w-0 lg:col-span-6'>

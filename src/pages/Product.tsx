@@ -3,6 +3,7 @@ import {
   defaultProductAmountFilters,
   type ProductAmountFiltersState,
 } from '@/components/Product/Filter/ProductAmountFilters'
+import type { ProductLastUpdatedByFilterValue } from '@/components/Product/Filter/ProductLastUpdatedByFilter'
 import type { ProductProviderStatusFilterValue } from '@/components/Product/Filter/ProductProviderStatusFilter'
 import type { ProductStatusFilterValue } from '@/components/Product/Filter/ProductStatusFilter'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
@@ -23,6 +24,7 @@ export default function ProductPage() {
   const [productNameSearch, setProductNameSearch] = useState('')
   const [productStatus, setProductStatus] = useState<ProductStatusFilterValue>('all')
   const [providerStatus, setProviderStatus] = useState<ProductProviderStatusFilterValue>('all')
+  const [lastUpdatedBy, setLastUpdatedBy] = useState<ProductLastUpdatedByFilterValue>('all')
   const [sku, setSku] = useState('')
   const [gameName, setGameName] = useState('')
   const [amountFilters, setAmountFilters] = useState<ProductAmountFiltersState>(() =>
@@ -46,6 +48,7 @@ export default function ProductPage() {
       game_name: gameName,
       ...(is_active !== undefined && { is_active }),
       ...(providerStatus !== 'all' && { provider_status: providerStatus }),
+      ...(lastUpdatedBy !== 'all' && { last_updated_by: lastUpdatedBy }),
       ...(debouncedAmount.additionalFeeAbove && {
         additional_fee_above: debouncedAmount.additionalFeeAbove,
       }),
@@ -77,6 +80,7 @@ export default function ProductPage() {
     gameName,
     productStatus,
     providerStatus,
+    lastUpdatedBy,
     debouncedAmount,
   ])
 
@@ -84,6 +88,7 @@ export default function ProductPage() {
     productNameSearch.trim() !== '' ||
     productStatus !== 'all' ||
     providerStatus !== 'all' ||
+    lastUpdatedBy !== 'all' ||
     sku.trim() !== '' ||
     gameName !== '' ||
     Object.values(amountFilters).some((v) => v.trim() !== '')
@@ -92,6 +97,7 @@ export default function ProductPage() {
     setProductNameSearch('')
     setProductStatus('all')
     setProviderStatus('all')
+    setLastUpdatedBy('all')
     setSku('')
     setGameName('')
     setAmountFilters(defaultProductAmountFilters())
@@ -106,6 +112,7 @@ export default function ProductPage() {
     gameName,
     productStatus,
     providerStatus,
+    lastUpdatedBy,
     debouncedAmount,
   ])
 
@@ -179,6 +186,8 @@ export default function ProductPage() {
           onProductStatusChange={setProductStatus}
           providerStatus={providerStatus}
           onProviderStatusChange={setProviderStatus}
+          lastUpdatedBy={lastUpdatedBy}
+          onLastUpdatedByChange={setLastUpdatedBy}
           sku={sku}
           onSkuChange={setSku}
           gameName={gameName}
