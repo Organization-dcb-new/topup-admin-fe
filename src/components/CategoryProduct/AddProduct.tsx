@@ -34,7 +34,16 @@ type ProductName = {
   id: string;
   name: string;
   provider_status: string;
+  price: number;
 };
+
+const formatIDR = (value: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
 
 export function AddProductToCategoryProductButton({
   id,
@@ -52,7 +61,7 @@ export function AddProductToCategoryProductButton({
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState<{
-    key: "name" | "provider_status";
+    key: "name" | "provider_status" | "price";
     direction: "asc" | "desc";
   }>({ key: "name", direction: "asc" });
 
@@ -98,7 +107,7 @@ export function AddProductToCategoryProductButton({
     setSelected((prev) => prev.filter((id) => !allFilteredIds.includes(id)));
   };
 
-  const toggleSort = (key: "name" | "provider_status") => {
+  const toggleSort = (key: "name" | "provider_status" | "price") => {
     setSortConfig((prev) => ({
       key,
       direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
@@ -153,11 +162,24 @@ export function AddProductToCategoryProductButton({
             <Button
               variant="outline"
               size="sm"
-              className="h-10 px-3 rounded-xl text-xs gap-2 font-medium border-border/50 hover:bg-muted/50 transition-all whitespace-nowrap"
+              className={`h-10 px-3 rounded-xl text-xs gap-2 font-medium border-border/50 hover:bg-muted/50 transition-all whitespace-nowrap ${
+                sortConfig.key === "name" ? "bg-primary/10 border-primary/30" : ""
+              }`}
               onClick={() => toggleSort("name")}
             >
               <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
               {t("categoryProductAddProducts.sortName")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={`h-10 px-3 rounded-xl text-xs gap-2 font-medium border-border/50 hover:bg-muted/50 transition-all whitespace-nowrap ${
+                sortConfig.key === "price" ? "bg-primary/10 border-primary/30" : ""
+              }`}
+              onClick={() => toggleSort("price")}
+            >
+              <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
+              {t("categoryProductAddProducts.sortPrice")}
             </Button>
           </div>
 
@@ -257,10 +279,10 @@ export function AddProductToCategoryProductButton({
                     />
                     <Label
                       htmlFor={checkboxId}
-                      className="flex flex-1 items-center justify-between min-w-0 cursor-pointer"
+                      className="flex flex-1 items-center justify-between min-w-0 cursor-pointer gap-2"
                     >
                       <span
-                        className={`text-sm transition-all truncate pr-4 ${
+                        className={`text-sm transition-all truncate ${
                           isSelected
                             ? "font-bold text-foreground"
                             : "font-medium text-foreground/80"
@@ -268,14 +290,19 @@ export function AddProductToCategoryProductButton({
                       >
                         {product.name}
                       </span>
-                      <Badge
-                        variant={isEmpty ? "destructive" : "success"}
-                        className={`shrink-0 uppercase text-[9px] font-black px-2 py-0.5 tracking-tighter ${
-                          isEmpty ? "animate-pulse" : ""
-                        }`}
-                      >
-                        {product.provider_status}
-                      </Badge>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs font-semibold text-muted-foreground tabular-nums">
+                          {formatIDR(product.price)}
+                        </span>
+                        <Badge
+                          variant={isEmpty ? "destructive" : "success"}
+                          className={`uppercase text-[9px] font-black px-2 py-0.5 tracking-tighter ${
+                            isEmpty ? "animate-pulse" : ""
+                          }`}
+                        >
+                          {product.provider_status}
+                        </Badge>
+                      </div>
                     </Label>
                   </div>
                 </div>
