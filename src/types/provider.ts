@@ -38,3 +38,11 @@ export interface ProviderResponse {
   message: string
   status: string
 }
+
+export interface LapakGamingBalanceResponse {
+  status: string
+  message: string
+  data: {
+    balance: number
+  }
+}

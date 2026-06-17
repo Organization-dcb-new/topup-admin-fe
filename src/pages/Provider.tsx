@@ -2,6 +2,7 @@ import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { DataTable } from '@/components/Layout/table-data'
 import { CreateProviderModal } from '@/components/Provider/CreateProviderModal'
+import { LapakGamingBalance } from '@/components/Provider/LapakGamingBalance'
 import { useGetProvider } from '@/hooks/useProvider'
 import { getProviderColumns } from '@/tables/table-provider'
 import i18n from '@/i18n'
@@ -73,7 +74,10 @@ export default function ProviderPages() {
                 {t('providerPage.listHint')}
               </p>
             </div>
-            <CreateProviderModal />
+            <div className='flex items-center gap-3'>
+              <LapakGamingBalance />
+              <CreateProviderModal />
+            </div>
           </div>
 
           <div className='p-3 sm:p-4'>
