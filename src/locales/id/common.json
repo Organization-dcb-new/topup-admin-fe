@@ -1020,6 +1020,11 @@
     "loadErrorDetail": "Gagal memuat penyedia. Periksa koneksi atau coba muat ulang halaman.",
     "emptyPage": "Belum ada penyedia. Tambahkan lewat tombol di atas."
   },
+  "lapakGamingBalance": {
+    "label": "Saldo Lapak Gaming",
+    "loading": "Memuat…",
+    "error": "Gagal memuat"
+  },
   "providerTable": {
     "colName": "Nama",
     "colCode": "Kode",

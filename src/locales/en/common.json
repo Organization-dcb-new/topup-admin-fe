@@ -1020,6 +1020,11 @@
     "loadErrorDetail": "Failed to load providers. Check your connection or try reloading the page.",
     "emptyPage": "No providers yet. Add one with the button above."
   },
+  "lapakGamingBalance": {
+    "label": "Lapak Gaming Balance",
+    "loading": "Loading…",
+    "error": "Failed to load"
+  },
   "providerTable": {
     "colName": "Name",
     "colCode": "Code",

@@ -1,5 +1,10 @@
 import { api } from '@/api/axios'
-import type { Provider, ProviderPayload, ProviderResponse } from '@/types/provider'
+import type {
+  LapakGamingBalanceResponse,
+  Provider,
+  ProviderPayload,
+  ProviderResponse,
+} from '@/types/provider'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +15,16 @@ export const useGetProvider = () =>
     queryKey: ['providers'],
     queryFn: async () => {
       const res = await api.get('/providers')
+      return res.data
+    },
+  })
+
+// Get Lapak Gaming balance
+export const useGetLapakGamingBalance = () =>
+  useQuery<LapakGamingBalanceResponse>({
+    queryKey: ['lapak-gaming-balance'],
+    queryFn: async () => {
+      const res = await api.get('/lapak-gaming/balance')
       return res.data
     },
   })
