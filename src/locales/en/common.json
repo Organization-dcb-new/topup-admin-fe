@@ -1579,6 +1579,84 @@
   "dashboardPage": {
     "title": "Dashboard"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Live operational transaction overview (WIB).",
+    "rangeLabel": "Time range",
+    "pickDateAria": "Pick a date range",
+    "pickDateRange": "Pick a date range",
+    "pickDatePrompt": "Pick a date range to display data.",
+    "loadError": "Failed to load dashboard data. Check your connection or try again.",
+    "range": {
+      "today": "Today",
+      "last7d": "Last 7 days",
+      "last30d": "Last 30 days",
+      "thisMonth": "This month",
+      "custom": "Custom"
+    },
+    "granularity": {
+      "second": "Per second",
+      "minute": "Per minute",
+      "hour": "Hourly",
+      "day": "Daily",
+      "week": "Weekly",
+      "month": "Monthly"
+    },
+    "kpi": {
+      "vsPrev": "vs previous",
+      "totalOrders": "Total orders",
+      "revenue": "Revenue",
+      "margin": "Margin",
+      "avgOrderValue": "Avg order value",
+      "successRate": "Success rate"
+    },
+    "chart": {
+      "title": "Transaction trend",
+      "metricLabel": "Select metric",
+      "granularityLabel": "Select granularity",
+      "loadError": "Failed to load chart.",
+      "empty": "No data for this range.",
+      "metric": {
+        "count": "Order count",
+        "revenue": "Revenue",
+        "margin": "Margin"
+      }
+    },
+    "status": {
+      "title": "Status breakdown",
+      "orders": "orders",
+      "successRate": "Success rate"
+    },
+    "orderStatus": {
+      "PENDING": "Pending",
+      "PAID": "Paid",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed",
+      "EXPIRED": "Expired",
+      "REFUNDED": "Refunded"
+    },
+    "pending": {
+      "title": "Aging pending orders",
+      "hourShort": "h",
+      "minShort": "m",
+      "stuckSuffix": "pending > {{minutes}} min",
+      "oldest": "Oldest: {{duration}}",
+      "none": "No stuck pending orders."
+    },
+    "failed": {
+      "title": "Failure reasons",
+      "empty": "No failed transactions."
+    },
+    "top": {
+      "products": "Top products",
+      "games": "Top games",
+      "paymentMethods": "Top payment methods",
+      "empty": "No data yet.",
+      "productMeta": "{{sku}} · {{qty}} sold",
+      "ordersMeta": "{{count}} orders"
+    }
+  },
   "unauthorizedPage": {
     "title": "403 - Block Access",
     "subtitle": "User does not have access.",

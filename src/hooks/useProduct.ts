@@ -143,7 +143,7 @@ export function useGetProductNames(id: string) {
   return useQuery({
     queryKey: ["product-names", id],
     queryFn: async () => {
-      const res = await api.get(`/products/game/${id}`);
+      const res = await api.get(`/products/game/${id}/available`);
       return res.data.data;
     },
   });

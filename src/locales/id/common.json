@@ -1579,6 +1579,84 @@
   "dashboardPage": {
     "title": "Dasbor"
   },
+  "dashboard": {
+    "title": "Dasbor",
+    "subtitle": "Ringkasan transaksi operasional secara langsung (WIB).",
+    "rangeLabel": "Rentang waktu",
+    "pickDateAria": "Pilih rentang tanggal",
+    "pickDateRange": "Pilih rentang tanggal",
+    "pickDatePrompt": "Pilih rentang tanggal untuk menampilkan data.",
+    "loadError": "Gagal memuat data dasbor. Periksa koneksi atau coba lagi.",
+    "range": {
+      "today": "Hari ini",
+      "last7d": "7 hari terakhir",
+      "last30d": "30 hari terakhir",
+      "thisMonth": "Bulan ini",
+      "custom": "Kustom"
+    },
+    "granularity": {
+      "second": "Per detik",
+      "minute": "Per menit",
+      "hour": "Per jam",
+      "day": "Per hari",
+      "week": "Per minggu",
+      "month": "Per bulan"
+    },
+    "kpi": {
+      "vsPrev": "vs sebelumnya",
+      "totalOrders": "Total transaksi",
+      "revenue": "Pendapatan",
+      "margin": "Margin",
+      "avgOrderValue": "Rata-rata nilai order",
+      "successRate": "Tingkat sukses"
+    },
+    "chart": {
+      "title": "Tren transaksi",
+      "metricLabel": "Pilih metrik",
+      "granularityLabel": "Pilih granularity",
+      "loadError": "Gagal memuat grafik.",
+      "empty": "Tidak ada data pada rentang ini.",
+      "metric": {
+        "count": "Jumlah transaksi",
+        "revenue": "Pendapatan",
+        "margin": "Margin"
+      }
+    },
+    "status": {
+      "title": "Komposisi status",
+      "orders": "order",
+      "successRate": "Tingkat sukses"
+    },
+    "orderStatus": {
+      "PENDING": "Menunggu",
+      "PAID": "Dibayar",
+      "PROCESSING": "Diproses",
+      "COMPLETED": "Selesai",
+      "FAILED": "Gagal",
+      "EXPIRED": "Kedaluwarsa",
+      "REFUNDED": "Dikembalikan"
+    },
+    "pending": {
+      "title": "Order pending menua",
+      "hourShort": "j",
+      "minShort": "m",
+      "stuckSuffix": "pending > {{minutes}} mnt",
+      "oldest": "Tertua: {{duration}}",
+      "none": "Tidak ada order pending yang nyangkut."
+    },
+    "failed": {
+      "title": "Alasan gagal",
+      "empty": "Tidak ada transaksi gagal."
+    },
+    "top": {
+      "products": "Produk terlaris",
+      "games": "Game terlaris",
+      "paymentMethods": "Metode bayar terpopuler",
+      "empty": "Belum ada data.",
+      "productMeta": "{{sku}} · {{qty}} terjual",
+      "ordersMeta": "{{count}} order"
+    }
+  },
   "unauthorizedPage": {
     "title": "403 - Akses diblokir",
     "subtitle": "Pengguna tidak memiliki akses.",
