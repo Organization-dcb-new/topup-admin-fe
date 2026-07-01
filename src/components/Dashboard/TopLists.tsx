@@ -5,6 +5,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
+import { formatPaymentChannel } from '@/lib/dashboard'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import type { TopGame, TopPaymentMethod, TopProduct } from '@/types/dashboard'
 import { useTranslation } from 'react-i18next'
@@ -76,7 +77,7 @@ export function TopLists({ topProducts, topGames, topPaymentMethods }: TopListsP
   }))
   const methods: TopItem[] = topPaymentMethods.map((m) => ({
     id: m.payment_method,
-    name: m.payment_method,
+    name: formatPaymentChannel(m.payment_method),
     meta: t('dashboard.top.ordersMeta', { count: formatNumber(m.order_count) }),
     revenue: m.revenue,
   }))

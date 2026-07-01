@@ -123,6 +123,14 @@ export function formatBucketLabel(
   }
 }
 
+/**
+ * Rapikan kode channel pembayaran dari `payments.payment_channel`
+ * (mis. `qris` → `QRIS`, `indomaret_otc` → `INDOMARET OTC`).
+ */
+export function formatPaymentChannel(channel: string): string {
+  return channel.replace(/[_-]+/g, ' ').trim().toUpperCase()
+}
+
 /** Label lengkap untuk tooltip (tanggal + jam, WIB). */
 export function formatBucketFull(timeKey: string, locale: string): string {
   return new Date(timeKey).toLocaleString(locale, {
