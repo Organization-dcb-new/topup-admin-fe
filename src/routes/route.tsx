@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
       {
         path: 'blog',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <BlogPage />
           </RoleGuard>
         ),
@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
       {
         path: 'shows',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <ShowPage />
           </RoleGuard>
         ),
@@ -87,7 +87,7 @@ export const router = createBrowserRouter([
       {
         path: 'banners',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <BannerPage />
           </RoleGuard>
         ),
@@ -112,7 +112,7 @@ export const router = createBrowserRouter([
       {
         path: 'input',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <InputPages />
           </RoleGuard>
         ),
@@ -120,7 +120,7 @@ export const router = createBrowserRouter([
       {
         path: 'games',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <GamePage />
           </RoleGuard>
         ),
@@ -128,7 +128,7 @@ export const router = createBrowserRouter([
       {
         path: 'games/:gameId',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <GameDetailPage />
           </RoleGuard>
         ),
@@ -136,7 +136,7 @@ export const router = createBrowserRouter([
       {
         path: 'category-product',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <CategoryProduct />
           </RoleGuard>
         ),
@@ -152,7 +152,7 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <ProductPage />
           </RoleGuard>
         ),
@@ -176,7 +176,7 @@ export const router = createBrowserRouter([
       {
         path: 'anomaly',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
             <AnomalyProduct />
           </RoleGuard>
         ),
