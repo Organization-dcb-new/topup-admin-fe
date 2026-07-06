@@ -54,7 +54,7 @@ export function Sidebar({
   const railCollapsed = collapsed && isMdUp
   const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
 
-  const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Ikhtisar']
+  const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Ikhtisar', 'Konten', 'Banner', 'Acara', 'Artikel', 'Inventaris', 'Game', 'Produk', 'Kategori produk', 'Produk anomali', 'Field input']
   const DEV_ONLY_LABELS = ['Pembatas laju', 'Pengguna']
 
   const filteredMenus = sidebarMenus
