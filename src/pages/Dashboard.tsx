@@ -5,6 +5,7 @@ import { DashboardSkeleton } from '@/components/Dashboard/DashboardSkeleton'
 import { FailedReasonsCard } from '@/components/Dashboard/FailedReasonsCard'
 import { KpiCards } from '@/components/Dashboard/KpiCards'
 import { PendingAgingCard } from '@/components/Dashboard/PendingAgingCard'
+import { ServerHealthAlert } from '@/components/Dashboard/ServerHealthAlert'
 import { StatusBreakdown } from '@/components/Dashboard/StatusBreakdown'
 import { TopLists } from '@/components/Dashboard/TopLists'
 import { TransactionChart } from '@/components/Dashboard/TransactionChart'
@@ -32,6 +33,8 @@ export default function DashboardPage() {
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-7xl space-y-4'>
+        <ServerHealthAlert />
+
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex items-center gap-3'>
             <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
