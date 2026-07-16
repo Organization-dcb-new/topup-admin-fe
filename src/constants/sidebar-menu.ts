@@ -1,7 +1,7 @@
 import type { ElementType } from 'react'
 import {
   AlertTriangle,
-  Banknote,
+  // Banknote,
   Boxes,
   Building2,
   Construction,
@@ -50,7 +50,7 @@ export const sidebarMenus: SidebarSection[] = [
         icon: Wallet,
         children: [
           { label: 'Ikhtisar', path: '/transactions', icon: LayoutDashboard },
-          { label: 'Rekap', path: '/summary', icon: Banknote },
+          // { label: 'Rekap', path: '/summary', icon: Banknote },
           { label: 'Pesanan', path: '/orders', icon: ListOrdered },
         ],
       },
