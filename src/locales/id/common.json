@@ -15,6 +15,7 @@
       "transaksi": "Transaksi",
       "ikhtisar": "Ikhtisar",
       "rekap": "Rekap",
+      "cashflow": "Cashflow",
       "pesanan": "Pesanan",
       "konten": "Konten",
       "banner": "Banner",
@@ -246,6 +247,37 @@
     "detailSectionTitle": "Detail per periode",
     "detailSectionHint": "Data sesuai filter tanggal dan pengelompokan. Gunakan paginasi di bawah.",
     "emptyPage": "Tidak ada data ringkasan pada halaman ini."
+  },
+  "cashflowPage": {
+    "title": "Cashflow",
+    "subtitle": "Daftar arus kas dari penyedia layanan (provider) dan gerbang pembayaran (payment gateway). Paginasi {{limit}} baris per halaman.",
+    "loadingShort": "Memuat…",
+    "loadFailedShort": "Gagal memuat",
+    "totalRows": "Total {{count}} rekaman",
+    "tableLoadingTitle": "Memuat data cashflow…",
+    "tableLoadingHint": "Mohon tunggu sebentar.",
+    "loadErrorDetail": "Gagal memuat data cashflow. Periksa koneksi atau coba muat ulang halaman.",
+    "emptyPage": "Tidak ada data cashflow pada halaman ini.",
+    "statsTitle": "Ringkasan Arus Kas Keluar",
+    "statsDescription": "Akumulasi pengeluaran berdasarkan filter tipe.",
+    "totalOutProvider": "Total Biaya Provider",
+    "totalOutPG": "Total Biaya Gateway",
+    "totalOutflow": "Total Pengeluaran"
+  },
+  "cashflowFilter": {
+    "all": "Semua Tipe",
+    "provider": "Provider",
+    "pg": "Payment Gateway"
+  },
+  "cashflowTable": {
+    "colDate": "Waktu",
+    "colType": "Tipe",
+    "colAmount": "Jumlah",
+    "colNotes": "Catatan",
+    "colOrderId": "ID Pesanan",
+    "colPaymentId": "ID Pembayaran",
+    "copySuccess": "ID berhasil disalin",
+    "copyError": "Gagal menyalin ID"
   },
   "summaryCard": {
     "title": "Ringkasan agregat",
