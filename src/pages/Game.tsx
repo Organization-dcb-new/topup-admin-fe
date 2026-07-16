@@ -22,7 +22,7 @@ import { useGetGameNamesWithType, useGetGames, type GetGamesParams } from '@/hoo
 import { getGameColumns } from '@/tables/table-game'
 import i18n from '@/i18n'
 import { Gamepad2, Inbox, Loader2, RefreshCw, RotateCcw, Search, SearchX } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -42,19 +42,74 @@ function triToOptionalBool(v: TriBool): boolean | undefined {
 
 export default function GamePage() {
   const { t } = useTranslation('common')
-  const [page, setPage] = useState(1)
-  const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>('all')
-  const [gameId, setGameId] = useState('')
-  const [searchInput, setSearchInput] = useState('')
+
+  const [page, setPage] = useState(() => {
+    const saved = sessionStorage.getItem('game_page_list_page')
+    return saved ? parseInt(saved, 10) : 1
+  })
+  const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>(() => {
+    return (sessionStorage.getItem('game_page_list_activeFilter') as GameActiveFilterValue) || 'all'
+  })
+  const [gameId, setGameId] = useState(() => {
+    return sessionStorage.getItem('game_page_list_gameId') || ''
+  })
+  const [searchInput, setSearchInput] = useState(() => {
+    return sessionStorage.getItem('game_page_list_searchInput') || ''
+  })
   const debouncedSearch = useDebounce(searchInput, 500)
-  const [imageFilter, setImageFilter] = useState<'all' | 'no_image'>('all')
-  const [showFilter, setShowFilter] = useState<TriBool>('all')
-  const [checkIdFilter, setCheckIdFilter] = useState<TriBool>('all')
-  const [updatedByUserId, setUpdatedByUserId] = useState('')
-  const [updatedFromLocal, setUpdatedFromLocal] = useState('')
-  const [updatedToLocal, setUpdatedToLocal] = useState('')
-  const [sortField, setSortField] = useState<'' | 'name' | 'updated_at'>('')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [imageFilter, setImageFilter] = useState<'all' | 'no_image'>(() => {
+    return (sessionStorage.getItem('game_page_list_imageFilter') as 'all' | 'no_image') || 'all'
+  })
+  const [showFilter, setShowFilter] = useState<TriBool>(() => {
+    return (sessionStorage.getItem('game_page_list_showFilter') as TriBool) || 'all'
+  })
+  const [checkIdFilter, setCheckIdFilter] = useState<TriBool>(() => {
+    return (sessionStorage.getItem('game_page_list_checkIdFilter') as TriBool) || 'all'
+  })
+  const [updatedByUserId, setUpdatedByUserId] = useState(() => {
+    return sessionStorage.getItem('game_page_list_updatedByUserId') || ''
+  })
+  const [updatedFromLocal, setUpdatedFromLocal] = useState(() => {
+    return sessionStorage.getItem('game_page_list_updatedFromLocal') || ''
+  })
+  const [updatedToLocal, setUpdatedToLocal] = useState(() => {
+    return sessionStorage.getItem('game_page_list_updatedToLocal') || ''
+  })
+  const [sortField, setSortField] = useState<'' | 'name' | 'updated_at'>(() => {
+    return (sessionStorage.getItem('game_page_list_sortField') as '' | 'name' | 'updated_at') || ''
+  })
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => {
+    return (sessionStorage.getItem('game_page_list_sortOrder') as 'asc' | 'desc') || 'asc'
+  })
+
+  // Sync to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('game_page_list_page', page.toString())
+    sessionStorage.setItem('game_page_list_activeFilter', activeFilter)
+    sessionStorage.setItem('game_page_list_gameId', gameId)
+    sessionStorage.setItem('game_page_list_searchInput', searchInput)
+    sessionStorage.setItem('game_page_list_imageFilter', imageFilter)
+    sessionStorage.setItem('game_page_list_showFilter', showFilter)
+    sessionStorage.setItem('game_page_list_checkIdFilter', checkIdFilter)
+    sessionStorage.setItem('game_page_list_updatedByUserId', updatedByUserId)
+    sessionStorage.setItem('game_page_list_updatedFromLocal', updatedFromLocal)
+    sessionStorage.setItem('game_page_list_updatedToLocal', updatedToLocal)
+    sessionStorage.setItem('game_page_list_sortField', sortField)
+    sessionStorage.setItem('game_page_list_sortOrder', sortOrder)
+  }, [
+    page,
+    activeFilter,
+    gameId,
+    searchInput,
+    imageFilter,
+    showFilter,
+    checkIdFilter,
+    updatedByUserId,
+    updatedFromLocal,
+    updatedToLocal,
+    sortField,
+    sortOrder,
+  ])
 
   const limit = 20
 
@@ -93,9 +148,52 @@ export default function GamePage() {
     sortOrder,
   ])
 
+  const initialFilters = useRef({
+    activeFilter,
+    gameId,
+    debouncedSearch,
+    imageFilter,
+    showFilter,
+    checkIdFilter,
+    updatedByUserId,
+    updatedFromLocal,
+    updatedToLocal,
+    sortField,
+    sortOrder,
+  })
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter
-    setPage(1)
+    const filters = initialFilters.current
+    const hasChanged =
+      activeFilter !== filters.activeFilter ||
+      gameId !== filters.gameId ||
+      debouncedSearch !== filters.debouncedSearch ||
+      imageFilter !== filters.imageFilter ||
+      showFilter !== filters.showFilter ||
+      checkIdFilter !== filters.checkIdFilter ||
+      updatedByUserId !== filters.updatedByUserId ||
+      updatedFromLocal !== filters.updatedFromLocal ||
+      updatedToLocal !== filters.updatedToLocal ||
+      sortField !== filters.sortField ||
+      sortOrder !== filters.sortOrder
+
+    if (hasChanged) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter
+      setPage(1)
+      initialFilters.current = {
+        activeFilter,
+        gameId,
+        debouncedSearch,
+        imageFilter,
+        showFilter,
+        checkIdFilter,
+        updatedByUserId,
+        updatedFromLocal,
+        updatedToLocal,
+        sortField,
+        sortOrder,
+      }
+    }
   }, [
     activeFilter,
     gameId,
