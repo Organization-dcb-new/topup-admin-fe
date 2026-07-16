@@ -52,17 +52,32 @@ export function getCashflowColumns(t: TFunction): ColumnDef<CashflowItem>[] {
       header: () => <span className='font-medium'>{t('cashflowTable.colType')}</span>,
       cell: ({ row }) => {
         const type = row.original.type
-        const isProvider = type === 'PROVIDER'
+        if (type === 'PROVIDER') {
+          return (
+            <Badge
+              variant='secondary'
+              className='bg-blue-50 text-blue-700 border-blue-200/60 hover:bg-blue-50'
+            >
+              {t('cashflowFilter.provider')}
+            </Badge>
+          )
+        }
+        if (type === 'PAYMENT_GATEWAY') {
+          return (
+            <Badge
+              variant='secondary'
+              className='bg-amber-50 text-amber-700 border-amber-200/60 hover:bg-amber-50'
+            >
+              {t('cashflowFilter.pg')}
+            </Badge>
+          )
+        }
         return (
           <Badge
             variant='secondary'
-            className={
-              isProvider
-                ? 'bg-blue-50 text-blue-700 border-blue-200/60 hover:bg-blue-50'
-                : 'bg-emerald-50 text-emerald-700 border-emerald-200/60 hover:bg-emerald-50'
-            }
+            className='bg-emerald-50 text-emerald-700 border-emerald-200/60 hover:bg-emerald-50'
           >
-            {isProvider ? t('cashflowFilter.provider') : t('cashflowFilter.pg')}
+            {t('cashflowFilter.revenue')}
           </Badge>
         )
       },

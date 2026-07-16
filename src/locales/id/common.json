@@ -258,16 +258,23 @@
     "tableLoadingHint": "Mohon tunggu sebentar.",
     "loadErrorDetail": "Gagal memuat data cashflow. Periksa koneksi atau coba muat ulang halaman.",
     "emptyPage": "Tidak ada data cashflow pada halaman ini.",
-    "statsTitle": "Ringkasan Arus Kas Keluar",
-    "statsDescription": "Akumulasi pengeluaran berdasarkan filter tipe.",
-    "totalOutProvider": "Total Biaya Provider",
-    "totalOutPG": "Total Biaya Gateway",
-    "totalOutflow": "Total Pengeluaran"
+    "statsTitle": "Ringkasan Keuangan",
+    "statsDescription": "Akumulasi pendapatan, pengeluaran, laba bersih, dan selisih PG.",
+    "totalRevenue": "Total Pendapatan",
+    "totalOutProvider": "Biaya Provider",
+    "totalOutPG": "Biaya Gateway",
+    "totalOutflow": "Total Pengeluaran",
+    "netProfit": "Laba Bersih",
+    "selisihPg": "Selisih PG"
   },
   "cashflowFilter": {
     "all": "Semua Tipe",
     "provider": "Provider",
-    "pg": "Payment Gateway"
+    "pg": "Payment Gateway",
+    "revenue": "Pendapatan (Revenue)",
+    "pickDateRange": "Pilih Rentang Tanggal",
+    "pickDateAria": "Pilih rentang tanggal arus kas",
+    "reset": "Reset"
   },
   "cashflowTable": {
     "colDate": "Waktu",

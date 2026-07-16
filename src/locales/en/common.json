@@ -258,16 +258,23 @@
     "tableLoadingHint": "Please wait a moment.",
     "loadErrorDetail": "Failed to load cashflow data. Check your connection or try reloading the page.",
     "emptyPage": "No cashflow data on this page.",
-    "statsTitle": "Cash Outflow Summary",
-    "statsDescription": "Accumulated outflows based on type filter.",
-    "totalOutProvider": "Total Provider Cost",
-    "totalOutPG": "Total Gateway Fee",
-    "totalOutflow": "Total Outflow"
+    "statsTitle": "Financial Summary",
+    "statsDescription": "Accumulated revenue, outflows, net profit, and PG difference from transactions.",
+    "totalRevenue": "Total Revenue",
+    "totalOutProvider": "Provider Cost",
+    "totalOutPG": "Gateway Fee",
+    "totalOutflow": "Total Outflow",
+    "netProfit": "Net Profit",
+    "selisihPg": "PG Discrepancy"
   },
   "cashflowFilter": {
     "all": "All Types",
     "provider": "Provider",
-    "pg": "Payment Gateway"
+    "pg": "Payment Gateway",
+    "revenue": "Revenue",
+    "pickDateRange": "Select Date Range",
+    "pickDateAria": "Select cashflow date range",
+    "reset": "Reset"
   },
   "cashflowTable": {
     "colDate": "Date & Time",

@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Card,
   CardContent,
@@ -19,9 +21,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { AlertCircle, Banknote, CheckCircle2, Loader2, FilterX } from 'lucide-react'
+import { AlertCircle, Banknote, CheckCircle2, Loader2, FilterX, CalendarIcon } from 'lucide-react'
+import type { DateRange } from 'react-day-picker'
+import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 const PAGE_LIMIT = 10
 
@@ -37,22 +42,30 @@ export default function CashflowPage() {
   const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const [cashflowType, setCashflowType] = useState<string>('all')
+  const [date, setDate] = useState<DateRange | undefined>(undefined)
 
   const queryType = cashflowType === 'all' ? '' : cashflowType
+  const startDateStr = date?.from ? format(date.from, 'yyyy-MM-dd') : ''
+  const endDateStr = date?.to ? format(date.to, 'yyyy-MM-dd') : ''
 
   const { data, isLoading, isSuccess, isError } = useGetCashflows(
     page,
     PAGE_LIMIT,
     queryType,
+    startDateStr,
+    endDateStr,
   )
 
   const handleReset = () => {
     setPage(1)
     setCashflowType('all')
+    setDate(undefined)
   }
 
   const tableRows = data?.data ?? []
   const columns = useMemo(() => getCashflowColumns(t), [t])
+
+  const showReset = cashflowType !== 'all' || !!date
 
   return (
     <DashboardLayout>
@@ -98,49 +111,131 @@ export default function CashflowPage() {
         </div>
 
         {/* Stats Cards */}
-        {isSuccess && data?.stats && (
-          <Card className='w-full overflow-hidden rounded-xl border shadow-sm ring-1 ring-gray-900/5 border-l-4 border-l-primary bg-white'>
-            <CardHeader className='border-b border-gray-100 pb-4'>
-              <CardTitle className='text-lg font-semibold tracking-tight text-gray-900'>
-                {t('cashflowPage.statsTitle')}
-              </CardTitle>
-              <CardDescription className='text-xs'>
-                {t('cashflowPage.statsDescription')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className='grid grid-cols-1 gap-6 pt-6 md:grid-cols-3 md:gap-8'>
-              <div className='space-y-2'>
-                <p className='text-sm font-medium text-muted-foreground'>
-                  {t('cashflowPage.totalOutProvider')}
-                </p>
-                <p className='text-2xl font-semibold tabular-nums text-foreground'>
-                  {formatCurrency(data.stats.total_out_provider)}
-                </p>
-              </div>
+        {isSuccess && data?.stats && (() => {
+          const netProfit = data.stats.net_profit
+          const isPositiveProfit = netProfit >= 0
+          return (
+            <Card className='w-full overflow-hidden rounded-xl border shadow-sm ring-1 ring-gray-900/5 border-l-4 border-l-primary bg-white'>
+              <CardHeader className='border-b border-gray-100 pb-4'>
+                <CardTitle className='text-lg font-semibold tracking-tight text-gray-900'>
+                  {t('cashflowPage.statsTitle')}
+                </CardTitle>
+                <CardDescription className='text-xs'>
+                  {t('cashflowPage.statsDescription')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='space-y-6 pt-6'>
+                {/* Row 1: Key Financials */}
+                <div className='grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-8'>
+                  <div className='space-y-2'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.totalRevenue')}
+                    </p>
+                    <p className='text-2xl font-bold tabular-nums text-emerald-600'>
+                      {formatCurrency(data.stats.total_revenue)}
+                    </p>
+                  </div>
 
-              <div className='space-y-2 md:border-l md:border-border/80 md:pl-8'>
-                <p className='text-sm font-medium text-muted-foreground'>
-                  {t('cashflowPage.totalOutPG')}
-                </p>
-                <p className='text-2xl font-semibold tabular-nums text-foreground'>
-                  {formatCurrency(data.stats.total_out_pg)}
-                </p>
-              </div>
+                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.totalOutflow')}
+                    </p>
+                    <p className='text-2xl font-bold tabular-nums text-amber-600'>
+                      {formatCurrency(data.stats.total_outflow)}
+                    </p>
+                  </div>
 
-              <div className='space-y-2 md:border-l md:border-border/80 md:pl-8'>
-                <p className='text-sm font-medium text-muted-foreground'>
-                  {t('cashflowPage.totalOutflow')}
-                </p>
-                <p className='text-2xl font-bold tabular-nums text-primary'>
-                  {formatCurrency(data.stats.total_outflow)}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.netProfit')}
+                    </p>
+                    <p
+                      className={cn(
+                        'text-2xl font-extrabold tabular-nums',
+                        isPositiveProfit ? 'text-emerald-600' : 'text-destructive',
+                      )}
+                    >
+                      {formatCurrency(netProfit)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className='border-t border-gray-100' />
+
+                {/* Row 2: Breakdown & Margins */}
+                <div className='grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-8'>
+                  <div className='space-y-2'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.totalOutProvider')}
+                    </p>
+                    <p className='text-2xl font-semibold tabular-nums text-gray-900'>
+                      {formatCurrency(data.stats.total_out_provider)}
+                    </p>
+                  </div>
+
+                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.totalOutPG')}
+                    </p>
+                    <p className='text-2xl font-semibold tabular-nums text-gray-900'>
+                      {formatCurrency(data.stats.total_out_pg)}
+                    </p>
+                  </div>
+
+                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
+                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+                      {t('cashflowPage.selisihPg')}
+                    </p>
+                    <p className='text-2xl font-bold tabular-nums text-primary'>
+                      {formatCurrency(data.stats.selisih_pg)}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })()}
 
         {/* Filter Toolbar */}
         <div className='flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm'>
+          {/* Date Picker Filter */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant='outline'
+                aria-label={t('cashflowFilter.pickDateAria')}
+                className={`w-65 justify-start text-left font-normal ${!date && 'text-muted-foreground'}`}
+              >
+                <CalendarIcon className='mr-2 h-4 w-4' />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
+                    </>
+                  ) : (
+                    format(date.from, 'LLL dd, y')
+                  )
+                ) : (
+                  <span>{t('cashflowFilter.pickDateRange')}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className='w-auto p-0' align='start'>
+              <Calendar
+                initialFocus
+                mode='range'
+                selected={date}
+                onSelect={(d) => {
+                  setDate(d)
+                  setPage(1)
+                }}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+
+          {/* Type Filter */}
           <Select
             value={cashflowType}
             onValueChange={(val) => {
@@ -155,6 +250,7 @@ export default function CashflowPage() {
               <SelectItem value='all'>{t('cashflowFilter.all')}</SelectItem>
               <SelectItem value='PROVIDER'>{t('cashflowFilter.provider')}</SelectItem>
               <SelectItem value='PAYMENT_GATEWAY'>{t('cashflowFilter.pg')}</SelectItem>
+              <SelectItem value='REVENUE'>{t('cashflowFilter.revenue')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -162,10 +258,10 @@ export default function CashflowPage() {
             variant='ghost'
             onClick={handleReset}
             className='text-muted-foreground'
-            disabled={cashflowType === 'all'}
+            disabled={!showReset}
           >
             <FilterX className='mr-2 h-4 w-4' />
-            Reset
+            {t('cashflowFilter.reset')}
           </Button>
         </div>
 
