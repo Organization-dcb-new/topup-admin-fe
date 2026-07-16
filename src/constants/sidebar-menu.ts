@@ -50,7 +50,7 @@ export const sidebarMenus: SidebarSection[] = [
         icon: Wallet,
         children: [
           { label: 'Ikhtisar', path: '/transactions', icon: LayoutDashboard },
-          { label: 'Rekap', path: '/summary', icon: Banknote },
+          { label: 'Cashflow', path: '/cashflow', icon: Banknote },
           { label: 'Pesanan', path: '/orders', icon: ListOrdered },
         ],
       },

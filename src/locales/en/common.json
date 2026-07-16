@@ -15,6 +15,7 @@
       "transaksi": "Transactions",
       "ikhtisar": "Overview",
       "rekap": "Summary",
+      "cashflow": "Cashflow",
       "pesanan": "Orders",
       "konten": "Content",
       "banner": "Banner",
@@ -246,6 +247,44 @@
     "detailSectionTitle": "Details by period",
     "detailSectionHint": "Data matches the date filter and grouping. Use pagination below.",
     "emptyPage": "No summary data on this page."
+  },
+  "cashflowPage": {
+    "title": "Cashflow",
+    "subtitle": "List of cashflows from service providers (provider) and payment gateways (payment gateway). {{limit}} rows per page.",
+    "loadingShort": "Loading…",
+    "loadFailedShort": "Failed to load",
+    "totalRows": "Total {{count}} records",
+    "tableLoadingTitle": "Loading cashflow data…",
+    "tableLoadingHint": "Please wait a moment.",
+    "loadErrorDetail": "Failed to load cashflow data. Check your connection or try reloading the page.",
+    "emptyPage": "No cashflow data on this page.",
+    "statsTitle": "Financial Summary",
+    "statsDescription": "Accumulated revenue, outflows, net profit, and PG difference from transactions.",
+    "totalRevenue": "Total Revenue",
+    "totalOutProvider": "Provider Cost",
+    "totalOutPG": "Gateway Fee",
+    "totalOutflow": "Total Outflow",
+    "netProfit": "Net Profit",
+    "selisihPg": "PG Discrepancy"
+  },
+  "cashflowFilter": {
+    "all": "All Types",
+    "provider": "Provider",
+    "pg": "Payment Gateway",
+    "revenue": "Revenue",
+    "pickDateRange": "Select Date Range",
+    "pickDateAria": "Select cashflow date range",
+    "reset": "Reset"
+  },
+  "cashflowTable": {
+    "colDate": "Date & Time",
+    "colType": "Type",
+    "colAmount": "Amount",
+    "colNotes": "Notes",
+    "colOrderId": "Order ID",
+    "colPaymentId": "Payment ID",
+    "copySuccess": "ID successfully copied",
+    "copyError": "Failed to copy ID"
   },
   "summaryCard": {
     "title": "Aggregate summary",
