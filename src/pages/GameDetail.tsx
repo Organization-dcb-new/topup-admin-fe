@@ -11,6 +11,17 @@ import { useProductsByGame } from '@/hooks/useProduct'
 import { Switch } from '@/components/ui/switch'
 import { ChangeImageModal } from '@/components/Games/UploadImageModal'
 import EditGameModal from '@/components/Games/EditGameModal'
+import { useForm } from 'react-hook-form'
+import { useUpdateGameInput } from '@/hooks/useGameInput'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -50,6 +61,106 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 import { Link, useParams } from 'react-router-dom'
+
+function EditGameInputModal({ input }: { input: GameInput }) {
+  const [open, setOpen] = useState(false)
+  const updateMutation = useUpdateGameInput()
+
+  const { register, handleSubmit, reset } = useForm<{
+    label: string
+    placeholder: string
+  }>()
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        label: input.label,
+        placeholder: input.placeholder ?? '',
+      })
+    }
+  }, [open, input, reset])
+
+  const onSubmit = (values: { label: string; placeholder: string }) => {
+    updateMutation.mutate(
+      {
+        id: input.id,
+        label: values.label,
+        placeholder: values.placeholder,
+      },
+      {
+        onSuccess: () => setOpen(false),
+      }
+    )
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          type='button'
+          variant='ghost'
+          size='icon'
+          className='h-7 w-7 text-slate-400 hover:text-foreground hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-lg cursor-pointer'
+          title='Edit Input Field'
+        >
+          <Pencil className='h-3.5 w-3.5' />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950'>
+        <DialogHeader className='text-left'>
+          <DialogTitle className='font-bold text-slate-900 dark:text-white'>Edit Field Input</DialogTitle>
+          <p className='text-xs text-slate-500 dark:text-slate-400'>
+            Update the display label and placeholder for key <code className='font-mono bg-slate-100 dark:bg-zinc-900 px-1 py-0.5 rounded text-primary'>{input.key}</code>
+          </p>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 mt-2'>
+          <div className='space-y-3'>
+            <div className='space-y-1.5'>
+              <Label htmlFor='label' className='text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider'>
+                Label
+              </Label>
+              <Input
+                id='label'
+                {...register('label', { required: true })}
+                placeholder='Enter field label'
+                className='rounded-xl border-slate-200 dark:border-zinc-800'
+              />
+            </div>
+            <div className='space-y-1.5'>
+              <Label htmlFor='placeholder' className='text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider'>
+                Placeholder
+              </Label>
+              <Input
+                id='placeholder'
+                {...register('placeholder')}
+                placeholder='Enter field placeholder'
+                className='rounded-xl border-slate-200 dark:border-zinc-800'
+              />
+            </div>
+          </div>
+          <DialogFooter className='gap-2 sm:gap-0 border-t border-slate-100 dark:border-zinc-900 pt-3 mt-4'>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setOpen(false)}
+              className='rounded-xl border-slate-200 dark:border-zinc-800'
+            >
+              Cancel
+            </Button>
+            <Button
+              type='submit'
+              disabled={updateMutation.isPending}
+              className='rounded-xl gap-2 font-semibold'
+            >
+              {updateMutation.isPending && <Loader2 className='h-3.5 w-3.5 animate-spin' />}
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 const detailPageCardClass =
   'overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'
@@ -523,6 +634,7 @@ function GameDetailView({ game }: { game: Game }) {
                         <th scope='col' className='px-4 py-3'>{t('gameDetailPage.inputType')}</th>
                         <th scope='col' className='px-4 py-3'>{t('gameDetailPage.inputRequired')}</th>
                         <th scope='col' className='px-4 py-3'>{t('gameDetailPage.inputPlaceholder')}</th>
+                        <th scope='col' className='px-4 py-3 text-right pr-6'>{t('gameDetailPage.actions') || 'Actions'}</th>
                       </tr>
                     </thead>
                     <tbody className='divide-y divide-border/60'>
@@ -549,6 +661,9 @@ function GameDetailView({ game }: { game: Game }) {
                           </td>
                           <td className='max-w-[12rem] truncate px-4 py-3 text-muted-foreground'>
                             {row.placeholder || <span className='italic text-muted-foreground/40'>{t('gameDetailPage.emptyValue')}</span>}
+                          </td>
+                          <td className='px-4 py-3 text-right pr-5'>
+                            <EditGameInputModal input={row} />
                           </td>
                         </tr>
                       ))}
