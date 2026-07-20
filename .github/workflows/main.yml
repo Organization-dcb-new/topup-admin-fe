@@ -85,7 +85,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: [self-hosted, prod]
+    runs-on: [self-hosted, prod, pakargaming-production]
 
     steps:
       - name: Deploy
