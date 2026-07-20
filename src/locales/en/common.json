@@ -661,6 +661,7 @@
     "confirmDelete": "Delete"
   },
   "gameImageModal": {
+    "changeImages": "Change Images",
     "openAria": "Change image for {{name}}",
     "title": "Change game images",
     "description": "Game: {{name}}. Update thumbnail and banner. Files upload automatically after selection. Images or SVG supported.",

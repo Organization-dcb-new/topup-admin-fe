@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next'
 type PropsImageGame = {
   game: Game
   image: string
+  children?: React.ReactNode
 }
 
 export type FormValuesChangeImage = {
@@ -60,7 +61,7 @@ function revokeBlobUrl(url: string | null | undefined) {
   if (url?.startsWith('blob:')) URL.revokeObjectURL(url)
 }
 
-export function ChangeImageModal({ game, image }: PropsImageGame) {
+export function ChangeImageModal({ game, image, children }: PropsImageGame) {
   const { t } = useTranslation('common')
   const inputThumbnailRef = useRef<HTMLInputElement>(null)
   const inputBannerRef = useRef<HTMLInputElement>(null)
@@ -338,29 +339,41 @@ export function ChangeImageModal({ game, image }: PropsImageGame) {
 
   return (
     <>
-      <button
-        type='button'
-        onClick={(e) => {
-          e.stopPropagation()
-          setOpen(true)
-        }}
-        className='group relative h-10 w-10 shrink-0 rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring'
-        aria-label={t('gameImageModal.openAria', { name: game.name })}
-      >
-        <img
-          src={image}
-          alt=''
-          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
-          loading='lazy'
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.png'
+      {children ? (
+        <div
+          onClick={(e) => {
+            e.stopPropagation()
+            setOpen(true)
           }}
-        />
+          className='inline-block min-w-0 shrink-0'
+        >
+          {children}
+        </div>
+      ) : (
+        <button
+          type='button'
+          onClick={(e) => {
+            e.stopPropagation()
+            setOpen(true)
+          }}
+          className='group relative h-10 w-10 shrink-0 rounded-md outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-ring'
+          aria-label={t('gameImageModal.openAria', { name: game.name })}
+        >
+          <img
+            src={image}
+            alt=''
+            className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+            loading='lazy'
+            onError={(e) => {
+              e.currentTarget.src = '/placeholder.png'
+            }}
+          />
 
-        <span className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100'>
-          <Pencil className='h-4 w-4 text-white' aria-hidden />
-        </span>
-      </button>
+          <span className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-md bg-black/40 opacity-0 transition group-hover:opacity-100 group-focus-visible:opacity-100'>
+            <Pencil className='h-4 w-4 text-white' aria-hidden />
+          </span>
+        </button>
+      )}
 
       <Dialog open={open} onOpenChange={handleMainOpenChange}>
         <DialogContent className='rounded-xl sm:max-w-lg'>

@@ -196,14 +196,21 @@ export function useGetGameNamesWithType() {
 }
 
 export function useToggleGameShow(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (is_show: boolean) => api.put(`/games/${id}`, { is_show }),
 
     onSuccess: () => {
+      toast.success(t('gameToasts.gameUpdateSuccess') || 'Game updated')
       queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['game', id] })
       queryClient.invalidateQueries({ queryKey: ['shows'] })
+    },
+    onError: (err: any) => {
+      const errMsg = err?.response?.data?.message || err?.message || t('gameToasts.gameUpdateError') || 'Failed to update game'
+      toast.error(errMsg)
     },
   })
 }
@@ -217,6 +224,7 @@ export function useToggleGameStatus(id: string) {
     onSuccess: () => {
       toast.success(t('gameToasts.statusToggleSuccess'))
       queryClient.invalidateQueries({ queryKey: ['games'] })
+      queryClient.invalidateQueries({ queryKey: ['game', id] })
     },
     onError: () => toast.error(t('gameToasts.statusToggleError')),
   })
