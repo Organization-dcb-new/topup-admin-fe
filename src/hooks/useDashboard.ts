@@ -28,11 +28,12 @@ function isRangeReady({ range, startDate, endDate }: DashboardRangeParams) {
 interface OverviewOptions {
   topLimit?: number
   pendingThresholdMinutes?: number
+  refetchInterval?: number | false
 }
 
 export const useDashboardOverview = (
   params: DashboardRangeParams,
-  { topLimit, pendingThresholdMinutes }: OverviewOptions = {},
+  { topLimit, pendingThresholdMinutes, refetchInterval }: OverviewOptions = {},
 ) =>
   useQuery<DashboardOverviewResponse>({
     queryKey: [
@@ -62,7 +63,7 @@ export const useDashboardOverview = (
     enabled: isRangeReady(params),
     // overview relatif berat — dokumen menyarankan refresh >= 30 detik
     staleTime: 30_000,
-    refetchInterval: 60_000,
+    refetchInterval: refetchInterval !== undefined ? refetchInterval : 60_000,
     refetchIntervalInBackground: false,
   })
 

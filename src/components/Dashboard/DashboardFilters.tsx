@@ -15,9 +15,10 @@ import {
 import { RANGE_OPTIONS } from '@/lib/dashboard'
 import type { DashboardRange } from '@/types/dashboard'
 import { format } from 'date-fns'
-import { CalendarIcon } from 'lucide-react'
+import { CalendarIcon, RotateCw } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 import { useTranslation } from 'react-i18next'
+import { cn } from '@/lib/utils'
 
 const RANGE_LABEL_KEY: Record<DashboardRange, string> = {
   today: 'dashboard.range.today',
@@ -32,6 +33,10 @@ interface DashboardFiltersProps {
   onRangeChange: (range: DashboardRange) => void
   date: DateRange | undefined
   onDateChange: (date: DateRange | undefined) => void
+  pollingInterval: number | false
+  onPollingIntervalChange: (v: number | false) => void
+  onRefresh: () => void
+  isRefreshing?: boolean
 }
 
 export function DashboardFilters({
@@ -39,13 +44,49 @@ export function DashboardFilters({
   onRangeChange,
   date,
   onDateChange,
+  pollingInterval,
+  onPollingIntervalChange,
+  onRefresh,
+  isRefreshing,
 }: DashboardFiltersProps) {
   const { t } = useTranslation('common')
 
   return (
-    <div className='flex flex-wrap items-center gap-3'>
+    <div className='flex flex-wrap items-center gap-2 sm:gap-3'>
+      {/* Auto Refresh dropdown selector */}
+      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold text-slate-600 dark:text-slate-400'>
+        <span>Auto Refresh:</span>
+        <select
+          value={pollingInterval === false ? 'off' : pollingInterval}
+          onChange={(e) => {
+            const val = e.target.value
+            if (val === 'off') onPollingIntervalChange(false)
+            else onPollingIntervalChange(Number(val))
+          }}
+          className='bg-transparent border-none focus:outline-hidden font-bold text-primary cursor-pointer'
+        >
+          <option value='off'>Off</option>
+          <option value='30000'>30s</option>
+          <option value='60000'>1m</option>
+          <option value='300000'>5m</option>
+        </select>
+      </div>
+
+      {/* Manual Refresh Trigger */}
+      <Button
+        type='button'
+        variant='outline'
+        size='icon'
+        onClick={onRefresh}
+        disabled={isRefreshing}
+        className='h-9 w-9 rounded-lg border-slate-200 dark:border-zinc-800 text-slate-550 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-zinc-900 cursor-pointer shadow-2xs'
+        title='Refresh data'
+      >
+        <RotateCw className={cn('h-4 w-4 text-slate-500', isRefreshing && 'animate-spin')} />
+      </Button>
+
       <Select value={range} onValueChange={(v) => onRangeChange(v as DashboardRange)}>
-        <SelectTrigger className='w-44' aria-label={t('dashboard.rangeLabel')}>
+        <SelectTrigger className='w-44 border-slate-200 dark:border-zinc-800' aria-label={t('dashboard.rangeLabel')}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -63,7 +104,7 @@ export function DashboardFilters({
             <Button
               variant='outline'
               aria-label={t('dashboard.pickDateAria')}
-              className={`w-64 justify-start text-left font-normal ${!date?.from && 'text-muted-foreground'}`}
+              className={`w-64 justify-start text-left font-normal border-slate-200 dark:border-zinc-800 ${!date?.from && 'text-muted-foreground'}`}
             >
               <CalendarIcon className='mr-2 h-4 w-4' aria-hidden />
               {date?.from ? (
