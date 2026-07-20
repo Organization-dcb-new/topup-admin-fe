@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, dev ]
     outputs:
       new_tag: ${{ steps.bump.outputs.new_tag }}
       repo_lower: ${{ steps.repo_lower.outputs.repo }}
