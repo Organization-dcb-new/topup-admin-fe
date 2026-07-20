@@ -10,28 +10,27 @@ import {
 } from '@/components/ui/dialog'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
-import i18n from '@/i18n'
 import { useResendEmail, useResendVoucherCode } from '@/hooks/useEmail'
 import { format, isValid } from 'date-fns'
-import { enUS, id as idLocale } from 'date-fns/locale'
 import {
   ArrowLeft,
   Check,
   Copy,
   CreditCard,
   Loader2,
-  Receipt,
+  User,
+  ShoppingBag,
+  ExternalLink,
+  ShieldCheck,
 } from 'lucide-react'
 import {
   type Dispatch,
   type FC,
-  type ReactNode,
   type SetStateAction,
   useEffect,
   useState,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 
 export interface PaymentDetail {
@@ -52,6 +51,7 @@ export interface PaymentDetail {
   meta_data: Record<string, unknown>;
   ip_address: string;
   margin: number;
+  status_provider?: string;
   order: Order;
   order_item: OrderItem;
 }
@@ -83,6 +83,7 @@ export interface Order {
 type Props = {
   data: PaymentDetail;
   isLoading: boolean;
+  hideLayout?: boolean;
 };
 
 function formatIdr(value: number) {
@@ -106,11 +107,89 @@ const parseWIBDate = (dateString: string) => {
   return new Date(noMs.replace(' ', 'T'))
 }
 
-function detailDateLocale() {
-  return i18n.language.startsWith('id') ? idLocale : enUS
+function CopyInlineButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    try {
+      await copyTextToClipboard(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
+  }
+
+  return (
+    <Button
+      type='button'
+      variant='ghost'
+      size='icon'
+      className='h-6 w-6 shrink-0 text-slate-400 hover:text-foreground hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-md cursor-pointer'
+      onClick={handleCopy}
+      aria-label='Copy value'
+    >
+      {copied ? (
+        <Check className='h-3.5 w-3.5 text-emerald-500' aria-hidden />
+      ) : (
+        <Copy className='h-3.5 w-3.5 text-slate-400' aria-hidden />
+      )}
+    </Button>
+  )
 }
 
-export default function PaymentDetail({ data, isLoading }: Props) {
+function StepProgressTimeline({ status, createdAt }: { status: PaymentDetail['status']; createdAt: string }) {
+  const date = parseWIBDate(createdAt)
+  const formattedDate = date && isValid(date) ? format(date, 'MMM dd, yyyy, HH:mm') : ''
+
+  const steps = [
+    { key: 'created', label: 'Order Created', done: true, active: false, desc: formattedDate },
+    {
+      key: 'processing',
+      label: 'Processing Payment',
+      done: status === 'PAID' || status === 'PROCESSING' || status === 'FAILED',
+      active: status === 'PROCESSING' || status === 'PENDING',
+      desc: status === 'PENDING' ? 'Awaiting customer payment' : 'Verifying through provider'
+    },
+    {
+      key: 'completed',
+      label: status === 'FAILED' ? 'Transaction Failed' : status === 'EXPIRED' ? 'Transaction Expired' : 'Completed',
+      done: status === 'PAID' || status === 'FAILED' || status === 'EXPIRED',
+      active: status === 'PAID' || status === 'FAILED' || status === 'EXPIRED',
+      desc: status === 'PAID' ? 'Payment confirmed successfully' : status === 'FAILED' ? 'Payment declined' : status === 'EXPIRED' ? 'Payment window closed' : 'Waiting for completion'
+    }
+  ]
+
+  return (
+    <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs'>
+      <h3 className='text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-6'>Step Progress Timeline</h3>
+      <div className='relative flex flex-col gap-6 pl-6 border-l-2 border-slate-100 dark:border-zinc-900 ml-3'>
+        {steps.map((step) => (
+          <div key={step.key} className='relative flex flex-col gap-1'>
+            {/* Pulsing indicator node */}
+            <span
+              className={cn(
+                'absolute -left-9.5 top-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
+                step.active
+                  ? 'bg-blue-500 text-white border-blue-500 ring-4 ring-blue-500/10'
+                  : step.done
+                    ? 'bg-emerald-500 text-white border-emerald-500'
+                    : 'bg-white dark:bg-zinc-950 text-slate-300 border-slate-200 dark:border-zinc-800'
+              )}
+            >
+              {step.done ? <Check className='h-3 w-3' /> : <span className='h-1.5 w-1.5 rounded-full bg-slate-300' />}
+            </span>
+            <span className={cn('text-sm font-bold', step.done ? 'text-slate-900 dark:text-white' : 'text-slate-400')}>
+              {step.label}
+            </span>
+            {step.desc && <span className='text-xs text-slate-400 dark:text-slate-500'>{step.desc}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function PaymentDetail({ data, isLoading, hideLayout }: Props) {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
   const [voucherCooldown, setVoucherCooldown] = useState(0)
@@ -123,8 +202,6 @@ export default function PaymentDetail({ data, isLoading }: Props) {
   const { mutateAsync, isPending: isResendingVoucher } = useResendVoucherCode()
   const { mutateAsync: resendEmailMutateAsync, isPending: isResendingEmail } =
     useResendEmail()
-
-  const date = parseWIBDate(data.created_at)
 
   const handleResendVoucherCodeEmail = async (paymentId: string) => {
     await mutateAsync(paymentId)
@@ -185,267 +262,313 @@ export default function PaymentDetail({ data, isLoading }: Props) {
       ? paymentComponentMap[data.payment_channel]
       : null
 
-  return (
-    <DashboardLayout>
-      <div className='min-w-0 -mx-4 -mt-4 flex w-full flex-col bg-muted/30 md:-mx-6 md:-mt-6'>
-        <div className='w-full min-w-0 px-4 py-6 sm:px-6 md:px-8 md:py-8'>
-          <div className='w-full min-w-0 overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'>
-            <header className='border-b border-border/70 px-4 py-5 sm:px-6 md:px-8'>
-              <div className='flex min-w-0 items-start gap-3'>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  onClick={() => navigate(-1)}
-                  className='mt-0.5 shrink-0 rounded-full'
-                  aria-label={t('transactionDetail.backAria')}
-                >
-                  <ArrowLeft className='h-5 w-5' aria-hidden />
-                </Button>
-                <div className='flex min-w-0 gap-3'>
-                  <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                    <Receipt className='h-5 w-5' aria-hidden />
-                  </div>
-                  <div className='min-w-0 space-y-1'>
-                    <h1 className='text-2xl font-semibold tracking-tight text-foreground'>
-                      {t('transactionDetail.pageTitle')}
-                    </h1>
-                    <p className='text-sm text-muted-foreground'>
-                      {data.status === 'PENDING'
-                        ? t('transactionDetail.subtitlePending')
-                        : t('transactionDetail.subtitleDefault')}
-                    </p>
-                    <p className='font-mono text-xs text-muted-foreground tabular-nums'>
-                      {data.id}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </header>
+  const isPaid = data.status === 'PAID'
+  const isProcessing = data.status === 'PROCESSING'
+  const isPending = data.status === 'PENDING'
+  const isFailed = data.status === 'FAILED'
+  const isExpired = data.status === 'EXPIRED'
 
-            <div className='border-b border-border/70 bg-muted/20 px-4 py-6 sm:px-6 md:px-8 md:py-8'>
-              <div className='flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8'>
-                <div className='min-w-0 space-y-2'>
-                  <PaymentStatusBadge status={data.status} />
-                  <p className='text-3xl font-bold tabular-nums tracking-tight text-foreground sm:text-4xl'>
+  const date = parseWIBDate(data.created_at)
+  const formattedDate = date && isValid(date) ? format(date, 'MMMM dd, yyyy, HH:mm') : '—'
+
+  const layoutContent = (
+    <>
+      <div className='min-w-0 -mx-4 -mt-4 flex w-full flex-col bg-slate-50/50 dark:bg-zinc-950/20 md:-mx-6 md:-mt-6 space-y-6'>
+        {/* Navbar-style header bar */}
+        <div className='w-full min-w-0 px-4 pt-6 sm:px-6 md:px-8 flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              onClick={() => navigate(-1)}
+              className='gap-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-900 rounded-xl cursor-pointer'
+            >
+              <ArrowLeft className='h-4 w-4' />
+              {t('transactionDetailPage.backButton') || 'Back'}
+            </Button>
+          </div>
+          <div className='flex items-center gap-2 font-mono text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-zinc-900/60 px-3 py-1.5 rounded-full border border-slate-200 dark:border-zinc-800/80'>
+            <span>TX_ID:</span>
+            <span className='font-bold text-slate-650 dark:text-slate-350'>{data.id}</span>
+            <CopyInlineButton text={data.id} />
+          </div>
+        </div>
+
+        <div className='w-full min-w-0 px-4 pb-16 sm:px-6 md:px-8 space-y-6'>
+          {/* Top Invoice Summary & Timeline Grid */}
+          <div className='grid gap-6 md:grid-cols-3'>
+            {/* Invoice Summary Card */}
+            <div className='md:col-span-2 relative overflow-hidden rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs flex flex-col justify-between min-h-[14rem] transition-all duration-300 hover:border-slate-300 dark:hover:border-zinc-700'>
+              {/* Soft decorative background glow */}
+              <div className='absolute -right-12 -top-12 h-36 w-36 rounded-full bg-primary/5 blur-3xl' />
+              
+              <div className='space-y-2'>
+                <p className='text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Invoice Summary</p>
+                <div className='space-y-1.5'>
+                  <p className='text-xs font-semibold text-slate-400 dark:text-slate-500'>Total Amount</p>
+                  <p className='text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight filter drop-shadow-xs'>
                     {formatIdr(data.amount)}
                   </p>
-                  <p className='text-sm text-muted-foreground'>
-                    {t(`paymentChannel.${data.payment_channel}`)} ·{' '}
-                    {data.payment_channel.toUpperCase()}
-                  </p>
+                </div>
+              </div>
+
+              <div className='grid grid-cols-3 gap-4 border-t border-slate-100 dark:border-zinc-900 pt-4 mt-6'>
+                <div className='space-y-0.5'>
+                  <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Status</span>
+                  <div className='flex items-center gap-1.5 mt-0.5'>
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-xs',
+                        isPaid && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+                        isProcessing && 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+                        isPending && 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+                        (isFailed || isExpired) && 'bg-rose-500/10 text-rose-600 dark:text-rose-455 border-rose-500/20'
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'h-1.5 w-1.5 shrink-0 rounded-full',
+                          isPaid && 'bg-emerald-500',
+                          isProcessing && 'bg-blue-500 animate-pulse',
+                          isPending && 'bg-amber-500 animate-pulse',
+                          (isFailed || isExpired) && 'bg-rose-500'
+                        )}
+                      />
+                      {t(`paymentStatus.${data.status}`)}
+                    </span>
+                  </div>
                 </div>
 
-                {data.status === 'PENDING' && (
-                  <Button
-                    type='button'
-                    size='lg'
-                    className='h-12 w-full shrink-0 gap-2 sm:w-auto sm:min-w-[14rem]'
-                    onClick={() => setPaymentModalOpen(true)}
-                  >
-                    <CreditCard className='h-4 w-4 shrink-0' aria-hidden />
-                    {t('transactionDetail.payInstructions')}
-                  </Button>
-                )}
+                <div className='space-y-0.5'>
+                  <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Date</span>
+                  <p className='text-xs font-bold text-slate-800 dark:text-slate-200 mt-1.5'>{formattedDate}</p>
+                </div>
 
-                {data.status === 'PAID' && (
-                  <p className='text-sm font-medium text-emerald-700 sm:max-w-xs sm:text-right'>
-                    {t('transactionDetail.paymentReceived')}
-                  </p>
-                )}
-                {data.status === 'FAILED' && (
-                  <p className='text-sm font-medium text-destructive sm:max-w-xs sm:text-right'>
-                    {t('transactionDetail.paymentFailed')}
-                  </p>
-                )}
-                {data.status === 'EXPIRED' && (
-                  <p className='text-sm font-medium text-muted-foreground sm:max-w-xs sm:text-right'>
-                    {t('transactionDetail.paymentExpired')}
-                  </p>
-                )}
+                <div className='space-y-0.5'>
+                  <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Payment Channel</span>
+                  <p className='text-xs font-extrabold text-slate-800 dark:text-slate-200 mt-1.5 uppercase'>{data.payment_channel}</p>
+                </div>
               </div>
             </div>
 
-            <div className='grid min-w-0 divide-y divide-border/70 lg:grid-cols-2 lg:divide-x lg:divide-y-0'>
-              <section className='min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
-                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                  {t('transactionDetail.sectionPayment')}
-                </h2>
-                <dl className='space-y-0'>
-                  <InfoRow
-                    label={t('transactionDetail.labelTransactionNumber')}
-                    value={data.id}
-                    mono
-                    copyText={data.id}
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelPayNumber')}
-                    value={data.payment_number}
-                    mono
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelOrderId')}
-                    value={data.order_id}
-                    mono
-                    muted
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelEmail')}
-                    value={data.email}
-                    breakAll
-                  />
-                  {data.tid && (
-                    <InfoRow
-                      label={t('transactionDetail.labelTid')}
-                      value={data.tid}
-                      mono
-                      copyText={data.tid}
-                    />
-                  )}
-                  {data.ip_address && (
-                    <InfoRow
-                      label={t('transactionDetail.labelIpAddress')}
-                      value={data.ip_address}
-                      mono
-                    />
-                  )}
-                </dl>
-              </section>
+            {/* Stepper Timeline Card */}
+            <div className='md:col-span-1'>
+              <StepProgressTimeline status={data.status} createdAt={data.created_at} />
+            </div>
+          </div>
 
-              <section className='min-w-0 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
-                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                  {t('transactionDetail.sectionOrder')}
-                </h2>
-                <dl className='space-y-0'>
-                  <InfoRow
-                    label={t('transactionDetail.labelOrderNumber')}
-                    value={data.order.order_number}
-                    mono
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelSku')}
-                    value={data.sku}
-                    mono
-                    copyText={data.sku}
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelProduct')}
-                    value={data.order_item.product_name}
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelQuantity')}
-                    value={t('transactionDetail.itemCount', {
-                      count: data.order_item.quantity,
-                    })}
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelOrderStatus')}
-                    value={<OrderStatusBadge status={data.order.status} />}
-                    valueClassName='sm:flex sm:justify-end'
-                  />
-                  <InfoRow
-                    label={t('transactionDetail.labelMargin')}
-                    value={formatIdr(data.margin)}
-                    mono
-                  />
-                </dl>
-              </section>
+          {/* Bottom Split Details Grid */}
+          <div className='grid gap-6 md:grid-cols-3'>
+            {/* Product Information (Left Col-span-2) */}
+            <div className='md:col-span-2 space-y-6'>
+              <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs space-y-5 transition-all duration-300 hover:border-slate-300 dark:hover:border-zinc-700'>
+                <div className='flex items-center gap-2 border-b border-slate-100 dark:border-zinc-900 pb-4'>
+                  <ShoppingBag className='h-4 w-4 text-primary' />
+                  <h3 className='text-sm font-extrabold text-slate-900 dark:text-white'>Product Information</h3>
+                </div>
+
+                <div className='overflow-x-auto'>
+                  <table className='w-full text-left text-xs'>
+                    <thead className='text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-zinc-900'>
+                      <tr>
+                        <th scope='col' className='pb-3 font-bold'>Item Description</th>
+                        <th scope='col' className='pb-3 font-bold text-center'>Qty</th>
+                        <th scope='col' className='pb-3 font-bold text-right'>Unit Price</th>
+                        <th scope='col' className='pb-3 font-bold text-right'>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className='divide-y divide-slate-100 dark:divide-zinc-900'>
+                      <tr>
+                        <td className='py-4 pr-4 align-top'>
+                          <div className='space-y-1'>
+                            <p className='text-sm font-bold text-slate-900 dark:text-white'>{data.order_item.product_name}</p>
+                            <p className='font-mono text-[10px] text-slate-400 dark:text-slate-500'>SKU: {data.sku}</p>
+                          </div>
+                        </td>
+                        <td className='py-4 text-center align-top font-bold text-slate-800 dark:text-slate-250 tabular-nums'>{data.order_item.quantity}</td>
+                        <td className='py-4 text-right align-top font-semibold text-slate-800 dark:text-slate-250 tabular-nums'>{formatIdr(data.amount)}</td>
+                        <td className='py-4 text-right align-top font-bold text-slate-900 dark:text-white tabular-nums'>{formatIdr(data.amount)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Subtotals & Margin summary details */}
+                <div className='border-t border-slate-100 dark:border-zinc-900 pt-4 flex flex-col gap-2.5 items-end text-xs'>
+                  <div className='flex justify-between w-64 text-slate-500'>
+                    <span>Order ID:</span>
+                    <span className='font-mono font-bold text-slate-700 dark:text-slate-300'>{data.order.order_number}</span>
+                  </div>
+                  <div className='flex justify-between w-64 text-slate-500'>
+                    <span>Profit Margin:</span>
+                    <span className='font-bold text-emerald-600 dark:text-emerald-450 tabular-nums'>{formatIdr(data.margin)}</span>
+                  </div>
+                  <div className='flex justify-between w-64 border-t border-slate-100 dark:border-zinc-900 pt-2.5 text-sm font-black text-slate-900 dark:text-white'>
+                    <span>Grand Total:</span>
+                    <span className='tabular-nums'>{formatIdr(data.amount)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Game Metadata Widgets */}
+              {data.meta_data && Object.keys(data.meta_data).length > 0 && (
+                <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 p-6 shadow-xs space-y-4'>
+                  <div className='flex items-center gap-2 border-b border-slate-100 dark:border-zinc-900 pb-3'>
+                    <ShieldCheck className='h-4.5 w-4.5 text-primary' />
+                    <h3 className='text-sm font-extrabold text-slate-900 dark:text-white'>Metadata Game</h3>
+                  </div>
+                  <div className='grid gap-4 sm:grid-cols-2'>
+                    {Object.entries(data.meta_data).map(([key, value]) => (
+                      <div key={key} className='flex items-center justify-between p-3 rounded-xl border border-slate-100 dark:border-zinc-900 bg-slate-50/50 dark:bg-zinc-900/10'>
+                        <div className='min-w-0 space-y-0.5'>
+                          <span className='text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>{key}</span>
+                          <p className='text-sm font-bold text-slate-900 dark:text-white font-mono truncate' title={String(value)}>{String(value)}</p>
+                        </div>
+                        <CopyInlineButton text={String(value)} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {data.meta_data && Object.keys(data.meta_data).length > 0 && (
-              <section className='border-t border-border/70 px-4 py-6 sm:px-6 md:px-8 lg:py-8'>
-                <h2 className='mb-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                  {t('transactionDetail.sectionMetadata')}
-                </h2>
-                <dl className='space-y-0'>
-                  {Object.entries(data.meta_data).map(
-                    ([key, value]) => (
-                      <InfoRow
-                        key={key}
-                        label={key}
-                        value={String(value)}
-                        mono
-                      />
-                    ),
+            {/* Customer & Payment source panel (Right Col-span-1) */}
+            <div className='md:col-span-1 space-y-6'>
+              {/* Customer Information */}
+              <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs space-y-4 transition-all duration-300 hover:border-slate-300 dark:hover:border-zinc-700'>
+                <div className='flex items-center gap-2 border-b border-slate-100 dark:border-zinc-900 pb-3'>
+                  <User className='h-4 w-4 text-primary' />
+                  <h3 className='text-sm font-extrabold text-slate-900 dark:text-white'>Customer Information</h3>
+                </div>
+
+                <div className='space-y-4 text-xs'>
+                  <div className='space-y-1'>
+                    <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Customer Email</span>
+                    <div className='flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-100 dark:border-zinc-900'>
+                      <span className='font-semibold text-slate-800 dark:text-slate-250 truncate'>{data.email}</span>
+                      <CopyInlineButton text={data.email} />
+                    </div>
+                  </div>
+
+                  <div className='space-y-1'>
+                    <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>IP Address</span>
+                    <p className='font-mono font-bold text-slate-800 dark:text-slate-200'>{data.ip_address || '—'}</p>
+                  </div>
+
+                  {data.tid && (
+                    <div className='space-y-1'>
+                      <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>TID / Reference Code</span>
+                      <div className='flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-100 dark:border-zinc-900'>
+                        <span className='font-mono font-bold text-slate-800 dark:text-slate-250 truncate'>{data.tid}</span>
+                        <CopyInlineButton text={data.tid} />
+                      </div>
+                    </div>
                   )}
-                </dl>
-              </section>
-            )}
+                </div>
+              </div>
 
-            <section className='border-t border-border/70 px-4 py-5 sm:px-6 md:px-8'>
-              <p className='text-xs font-medium text-muted-foreground'>
-                {t('transactionDetail.created')}
-              </p>
-              <p className='mt-1 tabular-nums text-sm text-foreground'>
-                {date && isValid(date)
-                  ? format(date, 'dd MMM yyyy, HH:mm', {
-                      locale: detailDateLocale(),
-                    })
-                  : '—'}{' '}
-                <span className='text-xs text-muted-foreground'>
-                  {t('transactionDetail.wibSuffix')}
-                </span>
-              </p>
-            </section>
+              {/* Payment details / source info card */}
+              <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 p-6 shadow-xs space-y-4 transition-all duration-300 hover:border-slate-300 dark:hover:border-zinc-700'>
+                <div className='flex items-center gap-2 border-b border-slate-100 dark:border-zinc-900 pb-3'>
+                  <CreditCard className='h-4 w-4 text-primary' />
+                  <h3 className='text-sm font-extrabold text-slate-900 dark:text-white'>Payment Details</h3>
+                </div>
 
-            {!isLoading && data.status === 'PAID' && (
-              <div className='flex flex-col gap-4 border-t border-border/70 bg-muted/15 px-4 py-6 sm:flex-row sm:flex-wrap sm:px-6 md:px-8'>
-                {data.order_item?.voucher_code && (
-                  <div className='min-w-0 flex-1 space-y-2 sm:min-w-[12rem]'>
-                    <p className='text-xs font-medium text-muted-foreground'>
-                      {t('transactionDetail.voucherCode')}
-                    </p>
+                <div className='space-y-4 text-xs'>
+                  <div className='space-y-1'>
+                    <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Payment Number</span>
+                    <div className='flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-100 dark:border-zinc-900'>
+                      <span className='font-mono font-bold text-slate-850 dark:text-slate-200 truncate'>{data.payment_number}</span>
+                      <CopyInlineButton text={data.payment_number} />
+                    </div>
+                  </div>
+
+                  {data.va_number && (
+                    <div className='space-y-1'>
+                      <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>VA Number</span>
+                      <div className='flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-zinc-900/50 border border-slate-100 dark:border-zinc-900'>
+                        <span className='font-mono font-bold text-slate-850 dark:text-slate-250 truncate'>{data.va_number}</span>
+                        <CopyInlineButton text={data.va_number} />
+                      </div>
+                    </div>
+                  )}
+
+                  <div className='space-y-1'>
+                    <span className='text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>Provider Status</span>
+                    <Badge variant={data.status_provider === 'SUCCESS' ? 'success' : 'outline'} className='font-bold uppercase text-[9px] mt-1'>
+                      {data.status_provider || '—'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons Dashboard */}
+              {(!isLoading || data.status === 'PENDING') && (
+                <div className='rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6 shadow-xs space-y-4'>
+                  <h3 className='text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Actions</h3>
+                  
+                  {data.status === 'PENDING' && (
                     <Button
                       type='button'
-                      variant='secondary'
-                      size='sm'
-                      className='w-full sm:w-auto'
-                      onClick={() => handleResendVoucherCodeEmail(data.id)}
-                      disabled={isResendingVoucher || voucherCooldown > 0}
+                      size='lg'
+                      className='w-full h-11 rounded-xl gap-2 font-bold cursor-pointer transition-transform duration-150 active:scale-[0.98]'
+                      onClick={() => setPaymentModalOpen(true)}
                     >
-                      {voucherCooldown > 0
-                        ? t('transactionDetail.waitTime', {
-                            time: formatTime(voucherCooldown),
-                          })
-                        : t('transactionDetail.resendVoucher')}
+                      <ExternalLink className='h-4 w-4 shrink-0' />
+                      {t('transactionDetail.payInstructions') || 'Pay Instructions'}
                     </Button>
-                  </div>
-                )}
-                <div className='min-w-0 flex-1 space-y-2 sm:min-w-[12rem]'>
-                  <p className='text-xs font-medium text-muted-foreground'>
-                    {t('transactionDetail.paymentEmail')}
-                  </p>
-                  <Button
-                    type='button'
-                    variant='secondary'
-                    size='sm'
-                    className='w-full sm:w-auto'
-                    onClick={() => handleResendPaymentEmail(data.id)}
-                    disabled={isResendingEmail || emailCooldown > 0}
-                  >
-                    {emailCooldown > 0
-                      ? t('transactionDetail.waitTime', {
-                          time: formatTime(emailCooldown),
-                        })
-                      : t('transactionDetail.resendEmail')}
-                  </Button>
+                  )}
+
+                  {data.status === 'PAID' && (
+                    <div className='flex flex-col gap-3'>
+                      {data.order_item?.voucher_code && (
+                        <div className='space-y-1.5'>
+                          <p className='text-[10px] font-bold text-slate-400 uppercase tracking-wider'>Voucher Code</p>
+                          <Button
+                            type='button'
+                            variant='outline'
+                            size='sm'
+                            className='w-full h-10 rounded-xl font-bold border-slate-200 dark:border-zinc-800 cursor-pointer'
+                            onClick={() => handleResendVoucherCodeEmail(data.id)}
+                            disabled={isResendingVoucher || voucherCooldown > 0}
+                          >
+                            {voucherCooldown > 0 ? `Wait ${formatTime(voucherCooldown)}` : 'Resend Voucher'}
+                          </Button>
+                        </div>
+                      )}
+                      <div className='space-y-1.5'>
+                        <p className='text-[10px] font-bold text-slate-400 uppercase tracking-wider'>Customer Invoice Receipt</p>
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          className='w-full h-10 rounded-xl font-bold border-slate-200 dark:border-zinc-800 cursor-pointer'
+                          onClick={() => handleResendPaymentEmail(data.id)}
+                          disabled={isResendingEmail || emailCooldown > 0}
+                        >
+                          {emailCooldown > 0 ? `Wait ${formatTime(emailCooldown)}` : 'Resend Receipt Email'}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
 
       <Dialog open={paymentModalOpen} onOpenChange={setPaymentModalOpen}>
         <DialogContent
-          className='max-h-[min(90vh,40rem)] gap-0 overflow-y-auto p-0 sm:max-w-lg'
+          className='max-h-[min(90vh,40rem)] gap-0 overflow-y-auto p-0 sm:max-w-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 focus:outline-hidden'
           showCloseButton
         >
-          <DialogHeader className='border-b border-border/80 px-6 py-4 text-left'>
-            <DialogTitle>
+          <DialogHeader className='border-b border-slate-100 dark:border-zinc-900 px-6 py-4 text-left'>
+            <DialogTitle className='font-bold text-slate-900 dark:text-white'>
               {t('transactionDetail.dialogPaymentTitle')}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className='text-xs text-slate-500'>
               {t('transactionDetail.dialogPaymentDescription', {
                 channel: t(`paymentChannel.${data.payment_channel}`),
               })}
@@ -457,8 +580,14 @@ export default function PaymentDetail({ data, isLoading }: Props) {
           </div>
         </DialogContent>
       </Dialog>
-    </DashboardLayout>
+    </>
   )
+
+  if (hideLayout) {
+    return layoutContent
+  }
+
+  return <DashboardLayout>{layoutContent}</DashboardLayout>
 }
 
 type PaymentChannel = PaymentDetail['payment_channel'];
@@ -546,143 +675,17 @@ function QrisPayment({ data }: { data: PaymentDetail }) {
 function VaPayment({ data }: { data: PaymentDetail }) {
   const { t } = useTranslation('common')
   return (
-    <div className='w-full max-w-sm space-y-3 text-center'>
+    <div className='w-full max-w-sm space-y-4 text-center'>
       <p className='text-sm text-muted-foreground'>
-        {t('transactionDetail.va.label')}
+        {t('transactionDetail.va.instruction')}
       </p>
-      <div className='rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-lg tabular-nums'>
-        {data.va_number || '—'}
+      <div className='rounded-lg bg-muted p-4 font-mono text-lg font-bold tabular-nums text-foreground'>
+        {data.va_number || t('transactionDetail.va.notAvailable')}
       </div>
-      <p className='text-xs text-amber-600 dark:text-amber-500'>
-        {t('transactionDetail.va.hint')}
+      <p className='text-xs text-muted-foreground'>
+        {t('transactionDetail.va.footnote')}
       </p>
     </div>
-  )
-}
-
-function CopyInlineButton({ text }: { text: string }) {
-  const { t } = useTranslation('common')
-  const [copied, setCopied] = useState(false)
-
-  if (!text) return null
-
-  const handleCopy = async () => {
-    try {
-      await copyTextToClipboard(text)
-    } catch {
-      toast.error(t('transactionDetail.copy.failed'))
-      return
-    }
-    setCopied(true)
-    window.setTimeout(() => setCopied(false), 2000)
-  }
-
-  return (
-    <Button
-      type='button'
-      variant='ghost'
-      size='icon'
-      className='h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground'
-      onClick={handleCopy}
-      aria-label={
-        copied
-          ? t('transactionDetail.copy.ariaCopied')
-          : t('transactionDetail.copy.ariaCopy')
-      }
-    >
-      {copied ? (
-        <Check className='h-4 w-4 text-emerald-600' aria-hidden />
-      ) : (
-        <Copy className='h-4 w-4' aria-hidden />
-      )}
-    </Button>
-  )
-}
-
-function InfoRow({
-  label,
-  value,
-  mono,
-  muted,
-  breakAll,
-  valueClassName,
-  copyText,
-}: {
-  label: string;
-  value: ReactNode;
-  mono?: boolean;
-  muted?: boolean;
-  breakAll?: boolean;
-  valueClassName?: string;
-  copyText?: string;
-}) {
-  const showCopy = copyText != null && copyText !== ''
-
-  return (
-    <div className='grid grid-cols-1 gap-1 border-b border-border/50 py-3 last:border-0 sm:grid-cols-[minmax(0,11rem)_1fr] sm:items-start sm:gap-4'>
-      <dt className='text-sm text-muted-foreground'>{label}</dt>
-      <dd
-        className={cn(
-          'min-w-0 text-sm font-medium text-foreground sm:text-right',
-          !showCopy && mono && 'font-mono tabular-nums',
-          !showCopy && muted && 'text-muted-foreground',
-          !showCopy && breakAll && 'break-all',
-          valueClassName,
-        )}
-      >
-        {showCopy ? (
-          <div className='flex min-w-0 items-start justify-end gap-1 sm:gap-2'>
-            <span
-              className={cn(
-                'min-w-0 flex-1 text-sm font-medium text-foreground sm:text-right',
-                mono && 'font-mono tabular-nums',
-                muted && 'text-muted-foreground',
-                breakAll && 'break-all',
-              )}
-            >
-              {value}
-            </span>
-            <CopyInlineButton text={copyText} />
-          </div>
-        ) : (
-          value
-        )}
-      </dd>
-    </div>
-  )
-}
-
-function PaymentStatusBadge({ status }: { status: PaymentDetail['status'] }) {
-  const { t } = useTranslation('common')
-  const variant =
-    status === 'PAID'
-      ? 'success'
-      : status === 'PROCESSING'
-        ? 'secondary'
-        : status === 'PENDING'
-          ? 'outline'
-          : 'destructive'
-  return (
-    <Badge
-      variant={variant}
-      className={cn(
-        status === 'PAID' &&
-          'border-transparent bg-emerald-600 hover:bg-emerald-600',
-      )}
-    >
-      {t(`paymentStatus.${status}`)}
-    </Badge>
-  )
-}
-
-function OrderStatusBadge({ status }: { status: string }) {
-  return (
-    <Badge
-      variant='secondary'
-      className='max-w-full truncate font-normal sm:max-w-[14rem]'
-    >
-      {status}
-    </Badge>
   )
 }
 
