@@ -32,6 +32,7 @@
       "metode": "Methods",
       "kategoriPembayaran": "Payment categories",
       "penyedia": "Provider",
+      "referral": "Referral codes",
       "keamanan": "Security",
       "twoFa": "2FA",
       "pembatasLaju": "Rate limit",
@@ -1748,5 +1749,83 @@
     "errorMessage": "Failed to load transaction detail. Check your connection or try reloading this page.",
     "notFoundSubtitle": "Data not found.",
     "notFoundMessage": "Transaction data was not found."
+  },
+  "referralPage": {
+    "title": "Referral Codes",
+    "subtitle": "Manage discount referral codes for transaction promotions.",
+    "addBtn": "Add referral code",
+    "editBtn": "Edit",
+    "deleteBtn": "Delete",
+    "searchPlaceholder": "Search by name or code...",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "toastSuccess": "Referral codes loaded successfully",
+    "toastError": "Failed to load referral codes",
+    "emptyPage": "No referral codes registered",
+    "table": {
+      "name": "Name",
+      "code": "Code",
+      "percent": "Commission Percent (%)",
+      "status": "Status",
+      "actions": "Actions",
+      "createdAt": "Created At"
+    },
+    "form": {
+      "addTitle": "Add New Referral Code",
+      "editTitle": "Edit Referral Code",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Summer Promo",
+      "codeLabel": "Referral Code",
+      "codePlaceholder": "e.g. SUMMER50",
+      "percentLabel": "Commission Percent",
+      "percentPlaceholder": "e.g. 10",
+      "statusLabel": "Active Status",
+      "cancel": "Cancel",
+      "save": "Save",
+      "errors": {
+        "nameRequired": "Name is required",
+        "codeRequired": "Referral code is required",
+        "percentMin": "Commission percent must be at least 0",
+        "percentMax": "Commission percent cannot exceed 100"
+      }
+    },
+    "deleteConfirm": {
+      "title": "Delete Referral Code",
+      "description": "Are you sure you want to delete this referral code? This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "detail": {
+      "title": "Referral Code Details",
+      "subtitle": "Detailed information and list of transactions using this referral code.",
+      "backBtn": "Back",
+      "cardTitle": "Referral Code Information",
+      "name": "Name",
+      "code": "Code",
+      "percent": "Commission (%)",
+      "status": "Status",
+      "createdAt": "Created At",
+      "updatedAt": "Last Updated",
+      "txTitle": "Transaction History",
+      "txSubtitle": "List of transactions that used this referral code.",
+      "txEmpty": "No transactions have used this code yet.",
+      "table": {
+        "paymentNo": "Payment No.",
+        "orderId": "Order ID",
+        "amount": "Amount",
+        "method": "Payment Method",
+        "channel": "Channel",
+        "status": "Status",
+        "date": "Date"
+      }
+    }
+  },
+  "referralToasts": {
+    "createSuccess": "Referral code created successfully",
+    "createError": "Failed to create referral code",
+    "updateSuccess": "Referral code updated successfully",
+    "updateError": "Failed to update referral code",
+    "deleteSuccess": "Referral code deleted successfully",
+    "deleteError": "Failed to delete referral code"
   }
 }
