@@ -17,6 +17,7 @@ export const useGetTransactions = (
   maxAmount?: string,
   /** Selaras `PriceExact` — query `price` (=) */
   exactAmount?: string,
+  refetchInterval: number | false = 10_000,
 ) => {
   return useQuery({
     queryKey: [
@@ -51,9 +52,7 @@ export const useGetTransactions = (
       })
       return res.data
     },
-    // Auto-refetch tiap 10 detik supaya list transaksi selalu up-to-date
-    // tanpa user harus reload manual. Dijeda saat tab tidak aktif.
-    refetchInterval: 10_000,
+    refetchInterval,
     refetchIntervalInBackground: false,
   })
 }

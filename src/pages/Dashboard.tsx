@@ -21,18 +21,21 @@ export default function DashboardPage() {
   const { t } = useTranslation('common')
   const [range, setRange] = useState<DashboardRange>('today')
   const [date, setDate] = useState<DateRange | undefined>(undefined)
+  const [pollingInterval, setPollingInterval] = useState<number | false>(60_000)
 
   const startDate = date?.from ? format(date.from, 'yyyy-MM-dd') : undefined
   const endDate = date?.to ? format(date.to, 'yyyy-MM-dd') : undefined
   const params = { range, startDate, endDate }
   const needsDate = range === 'custom' && (!startDate || !endDate)
 
-  const { data, isLoading, isError } = useDashboardOverview(params)
+  const { data, isLoading, isError, refetch, isRefetching } = useDashboardOverview(params, {
+    refetchInterval: pollingInterval,
+  })
   const overview = data?.data
 
   return (
     <DashboardLayout>
-      <div className='mx-auto max-w-7xl space-y-4'>
+      <div className='w-full space-y-4'>
         <ServerHealthAlert />
 
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
@@ -41,7 +44,7 @@ export default function DashboardPage() {
               <LayoutDashboard className='h-5 w-5' aria-hidden />
             </div>
             <div className='min-w-0'>
-              <h1 className='text-xl font-semibold tracking-tight text-gray-900'>
+              <h1 className='text-xl font-semibold tracking-tight text-gray-900 dark:text-white'>
                 {t('dashboard.title')}
               </h1>
               <p className='text-sm text-muted-foreground'>{t('dashboard.subtitle')}</p>
@@ -52,6 +55,10 @@ export default function DashboardPage() {
             onRangeChange={setRange}
             date={date}
             onDateChange={setDate}
+            pollingInterval={pollingInterval}
+            onPollingIntervalChange={setPollingInterval}
+            onRefresh={() => void refetch()}
+            isRefreshing={isRefetching}
           />
         </div>
 

@@ -46,6 +46,9 @@ export default function TransactionPage() {
   const [exactAmountFilter, setExactAmountFilter] = useState('')
   const [filtersOpen, setFiltersOpen] = useState(false)
 
+  // Polling state (no drawer)
+  const [pollingInterval, setPollingInterval] = useState<number | false>(10_000)
+
   const limit = 20
   const debouncedSearch = useDebounce(search, 500)
   const debouncedMinAmount = useDebounce(minAmountFilter, 400)
@@ -88,6 +91,7 @@ export default function TransactionPage() {
     debouncedMinAmount || undefined,
     debouncedMaxAmount || undefined,
     debouncedExactAmount || undefined,
+    pollingInterval
   )
 
   useEffect(() => {
@@ -108,7 +112,33 @@ export default function TransactionPage() {
     }
   }, [isPending, isFetchedAfterMount, isSuccess, isError, t])
 
+  useEffect(() => {
+    return () => {
+      toast.dismiss(TX_LIST_TOAST_ID)
+    }
+  }, [])
+
   const rows = data?.data ?? []
+
+  // Stats calculation
+  const stats = useMemo(() => {
+    let totalVolume = 0
+    let paidCount = 0
+    let totalMargin = 0
+    const totalCount = rows.length
+
+    rows.forEach((row) => {
+      if (row.status === 'PAID') {
+        totalVolume += row.amount
+        paidCount++
+        totalMargin += row.margin
+      }
+    })
+
+    const successRate = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0
+
+    return { totalVolume, paidCount, totalMargin, successRate }
+  }, [rows])
 
   const hasActiveFilters = useMemo(
     () =>
@@ -148,14 +178,14 @@ export default function TransactionPage() {
 
   return (
     <DashboardLayout>
-      <div className='mx-auto min-w-0 max-w-7xl space-y-6'>
+      <div className='w-full space-y-6'>
         <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex gap-3'>
             <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
               <Receipt className='h-5 w-5' aria-hidden />
             </div>
             <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
+              <h1 className='text-2xl font-semibold tracking-tight text-gray-900 dark:text-white'>
                 {t('transactionPage.title')}
               </h1>
               <p className='text-sm text-muted-foreground'>
@@ -179,7 +209,7 @@ export default function TransactionPage() {
             {isSuccess && (
               <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
                 <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground'>
+                <span className='tabular-nums text-foreground dark:text-slate-350'>
                   {t('transactionPage.totalCount', {
                     count: (data?.meta?.total_data ?? 0).toLocaleString('id-ID'),
                   })}
@@ -189,27 +219,51 @@ export default function TransactionPage() {
           </div>
         </div>
 
+        {/* Quick Stats Overview */}
+        <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
+          {/* Card 1: Total Volume */}
+          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Total Volume (Page)</p>
+            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalVolume)}</p>
+          </div>
+          {/* Card 2: Total Paid */}
+          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Total Paid Count</p>
+            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.paidCount} <span className='text-xs font-normal text-slate-400'>txs</span></p>
+          </div>
+          {/* Card 3: Estimated Margin */}
+          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Est. Margin (Page)</p>
+            <p className='mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-450 tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalMargin)}</p>
+          </div>
+          {/* Card 4: Success Rate */}
+          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Success Rate</p>
+            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.successRate}%</p>
+          </div>
+        </div>
+
         <section
-          className='overflow-hidden rounded-xl border border-gray-200/90 bg-white shadow-sm ring-1 ring-gray-900/5'
+          className='overflow-hidden rounded-xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'
           aria-label={t('transactionPage.filtersRegionAria')}
         >
           <div
             className={cn(
-              'flex flex-col gap-2 bg-muted/25 p-2 sm:flex-row sm:items-center sm:gap-3 sm:p-2 sm:pl-3 sm:pr-4',
-              filtersOpen && 'border-b border-gray-100',
+              'flex flex-col gap-2 bg-muted/25 dark:bg-zinc-900/10 p-2 sm:flex-row sm:items-center sm:gap-3 sm:p-2 sm:pl-3 sm:pr-4',
+              filtersOpen && 'border-b border-gray-100 dark:border-zinc-900',
             )}
           >
             <button
               type='button'
               id='tx-filters-toggle'
-              className='flex min-h-10 min-w-0 flex-1 items-center justify-between gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-muted/50 sm:px-4'
+              className='flex min-h-10 min-w-0 flex-1 items-center justify-between gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-muted/50 dark:hover:bg-zinc-900/50 sm:px-4 cursor-pointer'
               aria-expanded={filtersOpen}
               aria-controls='tx-filters-panel'
               onClick={() => setFiltersOpen((o) => !o)}
             >
               <span className='flex min-w-0 items-center gap-2'>
                 <SlidersHorizontal className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
-                <span className='text-sm font-semibold text-gray-900'>
+                <span className='text-sm font-semibold text-gray-900 dark:text-white'>
                   {t('transactionPage.filterHeading')}
                 </span>
                 <span className='hidden text-xs text-muted-foreground sm:inline'>
@@ -226,13 +280,32 @@ export default function TransactionPage() {
                 aria-hidden
               />
             </button>
-            <div className='flex gap-2 sm:self-center'>
+            <div className='flex gap-2 sm:self-center items-center'>
+              {/* Auto Refresh dropdown selector */}
+              <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 text-xs font-semibold text-slate-600 dark:text-slate-400'>
+                <span>Auto Refresh:</span>
+                <select
+                  value={pollingInterval === false ? 'off' : pollingInterval}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    if (val === 'off') setPollingInterval(false)
+                    else setPollingInterval(Number(val))
+                  }}
+                  className='bg-transparent border-none focus:outline-hidden font-bold text-primary cursor-pointer'
+                >
+                  <option value='off'>Off</option>
+                  <option value='10000'>10s</option>
+                  <option value='30000'>30s</option>
+                  <option value='60000'>1m</option>
+                </select>
+              </div>
+
               <TransactionExportModal />
               <Button
                 type='button'
                 variant='outline'
                 size='sm'
-                className='h-9 shrink-0 shadow-xs'
+                className='h-9 shrink-0 shadow-xs border-slate-200 dark:border-zinc-850 hover:bg-slate-50 dark:hover:bg-zinc-900 rounded-lg'
                 disabled={!hasActiveFilters}
                 onClick={resetFilters}
                 aria-label={t('transactionPage.resetFiltersAria')}
@@ -265,7 +338,7 @@ export default function TransactionPage() {
                   />
                 </div>
 
-                <div className='h-px bg-border/70' aria-hidden />
+                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
 
                 <div className='space-y-4'>
                   <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
@@ -302,7 +375,7 @@ export default function TransactionPage() {
                   </div>
                 </div>
 
-                <div className='h-px bg-border/70' aria-hidden />
+                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
 
                 <div className='space-y-4'>
                   <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
@@ -322,10 +395,10 @@ export default function TransactionPage() {
           </div>
         </section>
 
-        <div className='overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5'>
-          <div className='border-b border-gray-100 px-4 py-3 sm:px-5'>
+        <div className='overflow-hidden rounded-xl bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800'>
+          <div className='border-b border-gray-100 dark:border-zinc-900 px-4 py-3 sm:px-5'>
             <div className='min-w-0 space-y-0.5'>
-              <h2 className='text-sm font-semibold text-gray-900'>{t('transactionPage.listTitle')}</h2>
+              <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>{t('transactionPage.listTitle')}</h2>
               <p className='text-xs text-muted-foreground'>{t('transactionPage.listHint')}</p>
             </div>
           </div>
