@@ -29,6 +29,7 @@ export const useUpdateGameInput = () => {
     onSuccess: () => {
       toast.success('Input berhasil diperbarui')
       queryClient.invalidateQueries({ queryKey: ['game-inputs'] })
+      queryClient.invalidateQueries({ queryKey: ['game'] })
     },
 
     onError: () => toast.error('Gagal memperbarui input'),

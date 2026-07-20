@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import type { SidebarProps } from '@/types/sidebar'
 import { logout, useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeft, LogOut, X, Gamepad2 } from 'lucide-react'
+import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
