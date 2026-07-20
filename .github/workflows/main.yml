@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build-and-push:
-    runs-on: [self-hosted, prod, pakargaming-production]
+    runs-on: [self-hosted, FE-Dashboard-Prod]
     outputs:
       new_tag: ${{ steps.bump.outputs.new_tag }}
       repo_lower: ${{ steps.repo_lower.outputs.repo }}
@@ -85,7 +85,7 @@ jobs:
 
   deploy:
     needs: build-and-push
-    runs-on: [self-hosted, prod, pakargaming-production]
+    runs-on: [self-hosted, FE-Dashboard-Prod]
 
     steps:
       - name: Deploy
