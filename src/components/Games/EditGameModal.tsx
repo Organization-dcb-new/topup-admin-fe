@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 interface EditGameModalProps {
   game: Game
+  children?: React.ReactNode
 }
 
 export interface FormValuesEditGame {
@@ -31,7 +32,7 @@ export interface FormValuesEditGame {
   popularity_score?: number
 }
 
-export default function EditGameModal({ game }: EditGameModalProps) {
+export default function EditGameModal({ game, children }: EditGameModalProps) {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
 
@@ -70,16 +71,22 @@ export default function EditGameModal({ game }: EditGameModalProps) {
 
   return (
     <>
-      <Button
-        variant='ghost'
-        size='icon'
-        type='button'
-        onClick={() => setOpen(true)}
-        className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
-        aria-label={t('editGameModal.triggerAria', { name: game.name })}
-      >
-        <Pencil className='h-4 w-4' aria-hidden />
-      </Button>
+      {children ? (
+        <div onClick={() => setOpen(true)} className='inline-block min-w-0 shrink-0 cursor-pointer'>
+          {children}
+        </div>
+      ) : (
+        <Button
+          variant='ghost'
+          size='icon'
+          type='button'
+          onClick={() => setOpen(true)}
+          className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
+          aria-label={t('editGameModal.triggerAria', { name: game.name })}
+        >
+          <Pencil className='h-4 w-4' aria-hidden />
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className='rounded-xl sm:max-w-lg'>

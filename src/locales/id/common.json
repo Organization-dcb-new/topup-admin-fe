@@ -661,6 +661,7 @@
     "confirmDelete": "Hapus"
   },
   "gameImageModal": {
+    "changeImages": "Ubah Gambar",
     "openAria": "Ubah gambar game {{name}}",
     "title": "Ubah gambar game",
     "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung gambar atau SVG.",
