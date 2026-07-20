@@ -22,6 +22,7 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   Metode: 'sidebar.menu.metode',
   'Kategori pembayaran': 'sidebar.menu.kategoriPembayaran',
   Penyedia: 'sidebar.menu.penyedia',
+  Referral: 'sidebar.menu.referral',
   Keamanan: 'sidebar.menu.keamanan',
   '2FA': 'sidebar.menu.twoFa',
   'Pembatas laju': 'sidebar.menu.pembatasLaju',

@@ -32,6 +32,7 @@
       "metode": "Metode",
       "kategoriPembayaran": "Kategori pembayaran",
       "penyedia": "Penyedia",
+      "referral": "Kode referral",
       "keamanan": "Keamanan",
       "twoFa": "2FA",
       "pembatasLaju": "Pembatas laju",
@@ -1748,5 +1749,83 @@
     "errorMessage": "Gagal memuat detail transaksi. Periksa koneksi atau coba muat ulang halaman.",
     "notFoundSubtitle": "Data tidak ditemukan.",
     "notFoundMessage": "Data transaksi tidak ditemukan."
+  },
+  "referralPage": {
+    "title": "Kode Referral",
+    "subtitle": "Kelola kode referral diskon untuk promosi transaksi.",
+    "addBtn": "Tambah kode referral",
+    "editBtn": "Ubah",
+    "deleteBtn": "Hapus",
+    "searchPlaceholder": "Cari berdasarkan nama atau kode...",
+    "statusActive": "Aktif",
+    "statusInactive": "Tidak Aktif",
+    "toastSuccess": "Kode referral berhasil dimuat",
+    "toastError": "Gagal memuat kode referral",
+    "emptyPage": "Belum ada kode referral terdaftar",
+    "table": {
+      "name": "Nama",
+      "code": "Kode",
+      "percent": "Persentase Komisi (%)",
+      "status": "Status",
+      "actions": "Aksi",
+      "createdAt": "Dibuat Pada"
+    },
+    "form": {
+      "addTitle": "Tambah Kode Referral Baru",
+      "editTitle": "Ubah Kode Referral",
+      "nameLabel": "Nama",
+      "namePlaceholder": "contoh: Promo Musim Panas",
+      "codeLabel": "Kode Referral",
+      "codePlaceholder": "contoh: SUMMER50",
+      "percentLabel": "Persentase Komisi",
+      "percentPlaceholder": "contoh: 10",
+      "statusLabel": "Status Aktif",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "errors": {
+        "nameRequired": "Nama wajib diisi",
+        "codeRequired": "Kode referral wajib diisi",
+        "percentMin": "Persentase komisi minimal 0",
+        "percentMax": "Persentase komisi maksimal 100"
+      }
+    },
+    "deleteConfirm": {
+      "title": "Hapus Kode Referral",
+      "description": "Apakah Anda yakin ingin menghapus kode referral ini? Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "confirm": "Hapus"
+    },
+    "detail": {
+      "title": "Detail Kode Referral",
+      "subtitle": "Informasi rinci dan daftar transaksi yang menggunakan kode referral ini.",
+      "backBtn": "Kembali",
+      "cardTitle": "Informasi Kode Referral",
+      "name": "Nama",
+      "code": "Kode",
+      "percent": "Komisi (%)",
+      "status": "Status",
+      "createdAt": "Tanggal Dibuat",
+      "updatedAt": "Terakhir Diubah",
+      "txTitle": "Riwayat Transaksi",
+      "txSubtitle": "Daftar transaksi yang menggunakan kode referral ini.",
+      "txEmpty": "Belum ada transaksi menggunakan kode ini.",
+      "table": {
+        "paymentNo": "No. Pembayaran",
+        "orderId": "Order ID",
+        "amount": "Jumlah",
+        "method": "Metode Pembayaran",
+        "channel": "Saluran",
+        "status": "Status",
+        "date": "Tanggal"
+      }
+    }
+  },
+  "referralToasts": {
+    "createSuccess": "Kode referral berhasil dibuat",
+    "createError": "Gagal membuat kode referral",
+    "updateSuccess": "Kode referral berhasil diubah",
+    "updateError": "Gagal mengubah kode referral",
+    "deleteSuccess": "Kode referral berhasil dihapus",
+    "deleteError": "Gagal menghapus kode referral"
   }
 }

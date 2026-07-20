@@ -23,6 +23,7 @@ import {
   Users,
   Wallet,
   WalletCards,
+  Percent,
 } from 'lucide-react'
 
 export type SidebarMenu = {
@@ -101,6 +102,11 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Penyedia',
         icon: Building2,
         path: '/provider',
+      },
+      {
+        label: 'Referral',
+        icon: Percent,
+        path: '/referral-codes',
       },
       {
         label: 'Keamanan',
