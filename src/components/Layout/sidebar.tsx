@@ -10,14 +10,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Switch } from '@/components/ui/switch'
 import type { SidebarProps } from '@/types/sidebar'
 import { logout, useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
+import { ChevronDown, ChevronLeft, LogOut, X, Gamepad2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
+import { SidebarHealthIndicator } from './SidebarHealthIndicator'
 
 function useSidebarCopy() {
   const { t } = useTranslation('common')
@@ -83,8 +83,8 @@ export function Sidebar({
     <>
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/40 md:hidden',
-          mobileOpen ? 'block' : 'hidden',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden transition-opacity duration-300',
+          mobileOpen ? 'opacity-100 block' : 'opacity-0 hidden',
         )}
         onClick={onCloseMobile}
         aria-hidden
@@ -92,7 +92,7 @@ export function Sidebar({
 
       <aside
         className={cn(
-          'z-50 flex min-h-0 flex-col overflow-hidden border-r bg-white transition-[width,transform] duration-300 ease-out',
+          'z-50 flex min-h-0 flex-col overflow-hidden border-r border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 transition-[width,transform] duration-300 ease-out',
           'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:max-h-[100dvh]',
           'w-64 max-md:max-w-[min(100vw-1rem,16rem)]',
           railCollapsed && 'md:w-20',
@@ -102,13 +102,13 @@ export function Sidebar({
       >
         <div
           className={cn(
-            'relative flex h-14 shrink-0 items-center border-b md:h-16',
-            railCollapsed ? 'justify-center px-2 md:px-1' : 'justify-between px-3 md:px-4',
+            'relative flex h-14 shrink-0 items-center border-b border-slate-200 dark:border-zinc-800 md:h-16',
+            railCollapsed ? 'justify-center px-2 md:px-1' : 'justify-between px-4',
           )}
         >
           {!railCollapsed && (
-            <span className='min-w-0 truncate font-bold text-base md:text-lg'>
-              Pakar<span className='text-primary'>Gaming</span>
+            <span className='min-w-0 truncate font-extrabold tracking-tight text-base md:text-lg text-slate-900 dark:text-white px-1'>
+              Pakar<span className='bg-linear-to-r from-primary to-indigo-500 bg-clip-text text-transparent'>Gaming</span>
             </span>
           )}
 
@@ -118,7 +118,7 @@ export function Sidebar({
             size='icon'
             onClick={onToggleCollapse}
             className={cn(
-              'hidden shrink-0 cursor-pointer md:flex',
+              'hidden shrink-0 cursor-pointer md:flex h-8 w-8 hover:bg-slate-200 dark:hover:bg-zinc-800',
               railCollapsed && 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
             )}
             aria-label={railCollapsed ? t('sidebar.expandRail') : t('sidebar.collapseRail')}
@@ -143,19 +143,19 @@ export function Sidebar({
 
         <nav
           className={cn(
-            'min-h-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden overscroll-y-contain py-3',
-            railCollapsed ? 'px-1.5 md:px-1' : 'px-2',
+            'min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden overscroll-y-contain py-4 custom-scrollbar',
+            railCollapsed ? 'px-2 md:px-1.5' : 'px-3',
           )}
         >
           {filteredMenus.map((section, idx) => (
             <div
               key={idx}
               className={cn(
-                railCollapsed && idx > 0 && 'border-t border-gray-100 pt-3 md:border-t md:pt-3',
+                railCollapsed && idx > 0 && 'border-t border-slate-200 dark:border-zinc-900 pt-3 md:border-t md:pt-3',
               )}
             >
               {!railCollapsed && section.title && (
-                <p className='mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+                <p className='mb-2.5 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
                   {tr(section.title)}
                 </p>
               )}
@@ -177,51 +177,62 @@ export function Sidebar({
 
         <div
           className={cn(
-            'shrink-0 border-t border-gray-100',
-            railCollapsed ? 'space-y-1.5 p-1.5 md:px-1 md:py-2' : 'space-y-2 p-2',
+            'shrink-0 border-t border-slate-200 dark:border-zinc-800 space-y-3 bg-slate-100/50 dark:bg-zinc-950/50',
+            railCollapsed ? 'p-2' : 'p-3.5',
           )}
         >
-          <div
-            className={cn(
-              'flex rounded-lg border border-input bg-background shadow-sm',
-              railCollapsed
-                ? 'mx-auto w-full max-w-[4.5rem] flex-col items-center gap-1 px-2 py-2'
-                : 'h-10 w-full items-center justify-center gap-3 px-2',
-            )}
-            title={railCollapsed ? t('sidebar.languageToggleAria') : undefined}
-          >
-            <span
-              className={cn(
-                'select-none tabular-nums text-xs',
-                isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
-              )}
+          <SidebarHealthIndicator collapsed={railCollapsed} />
+
+          {railCollapsed ? (
+            <Button
+              type='button'
+              variant='outline'
+              size='icon'
+              className='mx-auto h-10 w-10 shrink-0 font-bold text-xs select-none border-slate-200 dark:border-zinc-800'
+              onClick={() => i18n.changeLanguage(isIdLocale ? 'en' : 'id')}
+              title={t('sidebar.languageToggleAria')}
             >
-              ID
-            </span>
-            <Switch
-              checked={!isIdLocale}
-              onCheckedChange={(checked) => {
-                void i18n.changeLanguage(checked ? 'en' : 'id')
-              }}
-              aria-label={t('sidebar.languageToggleAria')}
-            />
-            <span
-              className={cn(
-                'select-none tabular-nums text-xs',
-                !isIdLocale ? 'font-semibold text-foreground' : 'text-muted-foreground',
-              )}
-            >
-              EN
-            </span>
-          </div>
+              {isIdLocale ? 'ID' : 'EN'}
+            </Button>
+          ) : (
+            <div className='relative flex items-center p-1 rounded-xl bg-slate-200/50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800/80 w-full overflow-hidden h-10'>
+              <div
+                className={cn(
+                  'absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-transform duration-300 ease-out',
+                  isIdLocale ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'
+                )}
+              />
+              <button
+                type='button'
+                onClick={() => i18n.changeLanguage('id')}
+                className={cn(
+                  'relative z-10 flex-1 text-center text-xs font-bold select-none transition-colors duration-200',
+                  isIdLocale ? 'text-primary dark:text-white' : 'text-slate-500 dark:text-slate-400'
+                )}
+              >
+                ID
+              </button>
+              <button
+                type='button'
+                onClick={() => i18n.changeLanguage('en')}
+                className={cn(
+                  'relative z-10 flex-1 text-center text-xs font-bold select-none transition-colors duration-200',
+                  !isIdLocale ? 'text-primary dark:text-white' : 'text-slate-500 dark:text-slate-400'
+                )}
+              >
+                EN
+              </button>
+            </div>
+          )}
+
           <Button
             type='button'
             variant='outline'
             className={cn(
-              'cursor-pointer gap-2 font-normal shadow-sm',
+              'cursor-pointer gap-2 font-semibold shadow-xs border-slate-200 dark:border-zinc-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/50',
               railCollapsed
-                ? 'mx-auto h-10 w-10 shrink-0 justify-center rounded-lg p-0 md:flex'
-                : 'h-10 w-full justify-start',
+                ? 'mx-auto h-10 w-10 shrink-0 justify-center rounded-xl p-0 md:flex'
+                : 'h-10 w-full justify-start rounded-xl',
             )}
             onClick={() => setOpenLogoutModal(true)}
             aria-label={t('sidebar.logoutAria')}
@@ -234,16 +245,16 @@ export function Sidebar({
       </aside>
 
       <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
-        <DialogContent className='rounded-xl sm:max-w-md'>
+        <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950'>
           <DialogHeader>
-            <DialogTitle>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
-            <DialogDescription>{t('sidebar.confirmLogoutDescription')}</DialogDescription>
+            <DialogTitle className='font-extrabold text-slate-900 dark:text-white'>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
+            <DialogDescription className='text-slate-500 dark:text-slate-400'>{t('sidebar.confirmLogoutDescription')}</DialogDescription>
           </DialogHeader>
-          <DialogFooter className='gap-2 sm:gap-2'>
+          <DialogFooter className='gap-2 sm:gap-0'>
             <Button
               type='button'
               variant='outline'
-              className='rounded-xl'
+              className='rounded-xl border-slate-200 dark:border-zinc-800'
               onClick={() => setOpenLogoutModal(false)}
             >
               {t('sidebar.cancel')}
@@ -251,7 +262,7 @@ export function Sidebar({
             <Button
               type='button'
               variant='destructive'
-              className='rounded-xl'
+              className='rounded-xl bg-red-600 hover:bg-red-700 text-white'
               onClick={async () => {
                 await logout()
                 setOpenLogoutModal(false)
@@ -290,29 +301,29 @@ function NavItem({
           <button
             type='button'
             className={cn(
-              'mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors',
+              'mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200',
               isChildActive
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-foreground hover:bg-gray-100',
+                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-105'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-zinc-900/60 hover:text-slate-950 dark:hover:text-white',
             )}
             aria-haspopup='dialog'
             aria-label={tr(menu.label)}
             title={tr(menu.label)}
           >
-            <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
+            <menu.icon className='h-4.5 w-4.5 shrink-0' aria-hidden />
           </button>
         </PopoverTrigger>
         <PopoverContent
           side='right'
           align='start'
-          sideOffset={10}
-          className='z-[60] w-56 p-2'
+          sideOffset={12}
+          className='z-[60] w-56 p-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <p className='border-b border-border/60 px-2 pb-2 text-xs font-semibold text-muted-foreground'>
+          <p className='border-b border-slate-100 dark:border-zinc-900 px-2 pb-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>
             {tr(menu.label)}
           </p>
-          <div className='mt-1 flex flex-col gap-0.5'>
+          <div className='mt-1.5 flex flex-col gap-1'>
             {menu.children?.map((child) => (
               <NavLink
                 key={child.label}
@@ -320,10 +331,10 @@ function NavItem({
                 onClick={onNavigate}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-md px-2 py-2 text-sm transition-colors',
+                    'rounded-lg px-2.5 py-2 text-xs transition-all duration-200',
                     isActive
-                      ? 'bg-primary/10 font-medium text-primary'
-                      : 'text-foreground hover:bg-muted',
+                      ? 'bg-primary/10 font-bold text-primary dark:text-primary-foreground'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-900 hover:text-slate-950 dark:hover:text-white',
                   )
                 }
               >
@@ -343,19 +354,19 @@ function NavItem({
           type='button'
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            'flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors hover:bg-gray-100',
-            isChildActive ? 'font-medium text-primary' : 'text-foreground',
+            'flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm transition-all duration-200 hover:bg-slate-200/50 dark:hover:bg-zinc-900/50',
+            isChildActive ? 'font-semibold text-primary dark:text-primary-foreground bg-primary/5 dark:bg-primary/10' : 'text-slate-700 dark:text-slate-300 hover:translate-x-0.5',
           )}
           aria-expanded={isOpen}
         >
           <div className='flex min-w-0 items-center gap-3'>
-            <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
+            <menu.icon className={cn('h-4.5 w-4.5 shrink-0 transition-transform duration-200', isChildActive ? 'text-primary' : 'text-slate-500 dark:text-slate-400')} aria-hidden />
             <span className='truncate'>{tr(menu.label)}</span>
           </div>
-          <ChevronDown className={cn('h-3 w-3 shrink-0 transition-transform', isOpen && 'rotate-180')} />
+          <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 transition-transform duration-355 text-slate-400 dark:text-slate-500', isOpen && 'rotate-180')} />
         </button>
         {isOpen && (
-          <div className='space-y-0.5 pl-4'>
+          <div className='relative ml-5 pl-3 border-l border-slate-200 dark:border-zinc-800/80 space-y-1 py-1'>
             {menu.children?.map((child) => (
               <NavLink
                 key={child.label}
@@ -363,10 +374,10 @@ function NavItem({
                 onClick={onNavigate}
                 className={({ isActive }) =>
                   cn(
-                    'block rounded-md py-2 pl-6 pr-2 text-xs transition-colors',
+                    'block rounded-lg py-1.5 pl-4 pr-2 text-xs transition-all duration-200',
                     isActive
-                      ? 'font-semibold text-primary'
-                      : 'text-muted-foreground hover:bg-gray-50 hover:text-primary',
+                      ? 'font-bold text-primary dark:text-primary-foreground bg-primary/8 dark:bg-primary/15'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200/40 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white hover:translate-x-0.5',
                   )
                 }
               >
@@ -387,18 +398,19 @@ function NavItem({
       aria-label={collapsed ? tr(menu.label) : undefined}
       className={({ isActive }) =>
         cn(
-          'flex items-center rounded-lg text-sm transition-colors',
+          'relative flex items-center transition-all duration-200',
           collapsed
-            ? 'mx-auto h-10 w-10 shrink-0 justify-center p-0'
-            : 'w-full gap-3 px-3 py-2',
+            ? 'mx-auto h-10 w-10 shrink-0 justify-center rounded-xl p-0'
+            : 'w-full gap-3 px-3 py-2 rounded-xl text-sm',
           isActive
-            ? 'bg-primary text-primary-foreground shadow-sm'
-            : 'text-foreground hover:bg-gray-100',
+            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold scale-102'
+            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-zinc-900/50 hover:text-slate-950 dark:hover:text-white hover:translate-x-0.5',
         )
       }
     >
-      <menu.icon className='h-4 w-4 shrink-0' aria-hidden />
+      <menu.icon className='h-4.5 w-4.5 shrink-0' aria-hidden />
       {!collapsed && <span className='min-w-0 truncate'>{tr(menu.label)}</span>}
     </NavLink>
   )
 }
+
