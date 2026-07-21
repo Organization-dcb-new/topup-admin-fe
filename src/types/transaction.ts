@@ -24,9 +24,16 @@ export interface Payment {
   created_at: string;
 }
 
+export interface TransactionPaginationMeta extends PaginationMeta {
+  total_volume?: number
+  total_paid_count?: number
+  total_margin?: number
+  success_rate?: number
+}
+
 export interface PaymentResponse {
   data: Payment[];
   message: string;
-  meta: PaginationMeta;
+  meta: TransactionPaginationMeta;
   status: string;
 }
