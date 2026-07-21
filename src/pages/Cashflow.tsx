@@ -21,12 +21,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { AlertCircle, Banknote, CheckCircle2, Loader2, FilterX, CalendarIcon } from 'lucide-react'
+import { AlertCircle, Banknote, CheckCircle2, Loader2, FilterX, CalendarIcon, Copy, ChevronRight } from 'lucide-react'
 import type { DateRange } from 'react-day-picker'
 import { format } from 'date-fns'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
+import toast from 'react-hot-toast'
+import { enUS, id as idLocale } from 'date-fns/locale'
+import { Link } from 'react-router-dom'
+import type { CashflowItem } from '@/types/cashflow'
 
 const PAGE_LIMIT = 10
 
@@ -42,7 +53,10 @@ export default function CashflowPage() {
   const { t } = useTranslation('common')
   const [page, setPage] = useState(1)
   const [cashflowType, setCashflowType] = useState<string>('all')
-  const [date, setDate] = useState<DateRange | undefined>(undefined)
+  const [date, setDate] = useState<DateRange | undefined>(() => {
+    const today = new Date()
+    return { from: today, to: today }
+  })
 
   const queryType = cashflowType === 'all' ? '' : cashflowType
   const startDateStr = date?.from ? format(date.from, 'yyyy-MM-dd') : ''
@@ -59,13 +73,33 @@ export default function CashflowPage() {
   const handleReset = () => {
     setPage(1)
     setCashflowType('all')
-    setDate(undefined)
+    const today = new Date()
+    setDate({ from: today, to: today })
+  }
+
+  const [selectedCashflow, setSelectedCashflow] = useState<CashflowItem | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+
+  const handleOpenDetail = (item: CashflowItem) => {
+    setSelectedCashflow(item)
+    setIsDetailOpen(true)
   }
 
   const tableRows = data?.data ?? []
-  const columns = useMemo(() => getCashflowColumns(t), [t])
+  const columns = useMemo(() => getCashflowColumns(t, handleOpenDetail), [t])
 
-  const showReset = cashflowType !== 'all' || !!date
+  const isToday = (d?: Date) => {
+    if (!d) return false
+    const today = new Date()
+    return (
+      d.getDate() === today.getDate() &&
+      d.getMonth() === today.getMonth() &&
+      d.getFullYear() === today.getFullYear()
+    )
+  }
+
+  const isDefaultDate = date?.from && date?.to && isToday(date.from) && isToday(date.to)
+  const showReset = cashflowType !== 'all' || !isDefaultDate
 
   return (
     <DashboardLayout>
@@ -209,7 +243,7 @@ export default function CashflowPage() {
               >
                 <CalendarIcon className='mr-2 h-4 w-4' />
                 {date?.from ? (
-                  date.to ? (
+                  date.to && format(date.from, 'yyyy-MM-dd') !== format(date.to, 'yyyy-MM-dd') ? (
                     <>
                       {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
                     </>
@@ -302,7 +336,165 @@ export default function CashflowPage() {
             </div>
           </div>
         )}
+
+        <CashflowDetailDialog
+          open={isDetailOpen}
+          onOpenChange={setIsDetailOpen}
+          item={selectedCashflow}
+        />
       </div>
     </DashboardLayout>
+  )
+}
+
+interface CashflowDetailDialogProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  item: CashflowItem | null
+}
+
+function CashflowDetailDialog({ open, onOpenChange, item }: CashflowDetailDialogProps) {
+  const { t, i18n } = useTranslation('common')
+  if (!item) return null
+
+  const dateLocale = () => {
+    return i18n.language.startsWith('id') ? idLocale : enUS
+  }
+
+  const typeColorClass =
+    item.type === 'PROVIDER'
+      ? 'bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/40 hover:bg-blue-50'
+      : item.type === 'PAYMENT_GATEWAY'
+        ? 'bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/40 hover:bg-amber-50'
+        : 'bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/40 hover:bg-emerald-50'
+
+  const typeLabel =
+    item.type === 'PROVIDER'
+      ? t('cashflowFilter.provider')
+      : item.type === 'PAYMENT_GATEWAY'
+        ? t('cashflowFilter.pg')
+        : t('cashflowFilter.revenue')
+
+  const copyId = async (value: string) => {
+    try {
+      await copyTextToClipboard(value)
+      toast.success(t('cashflowTable.copySuccess'))
+    } catch {
+      toast.error(t('cashflowTable.copyError'))
+    }
+  }
+
+  const dateObj = new Date(item.created_at)
+  const formattedDate = format(dateObj, 'dd MMM yyyy, HH:mm:ss', { locale: dateLocale() })
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='rounded-2xl sm:max-w-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6'>
+        <DialogHeader className='border-b border-gray-100 dark:border-zinc-900 pb-4'>
+          <DialogTitle className='text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2'>
+            <Banknote className='h-5 w-5 text-primary' />
+            {t('cashflowDetailDialog.title', { defaultValue: 'Detail Arus Kas' })}
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className='space-y-4 py-4 text-sm'>
+          {/* Amount and Type */}
+          <div className='flex items-center justify-between rounded-xl bg-slate-50 dark:bg-zinc-900/50 p-4 border border-slate-100 dark:border-zinc-800/80'>
+            <div>
+              <p className='text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1'>
+                {t('cashflowTable.colAmount')}
+              </p>
+              <p className='text-2xl font-bold tabular-nums text-slate-900 dark:text-white'>
+                {formatCurrency(item.amount)}
+              </p>
+            </div>
+            <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold border shrink-0', typeColorClass)}>
+              {typeLabel}
+            </span>
+          </div>
+
+          <div className='grid grid-cols-2 gap-4 border-b border-gray-100 dark:border-zinc-900 pb-4'>
+            <div>
+              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colDate')}</p>
+              <p className='font-medium text-slate-900 dark:text-white'>{formattedDate}</p>
+            </div>
+            <div>
+              <p className='text-xs text-muted-foreground font-medium mb-1'>ID</p>
+              <p className='font-mono text-xs text-slate-900 dark:text-white truncate' title={item.id}>
+                {item.id}
+              </p>
+            </div>
+          </div>
+
+          <div className='grid grid-cols-2 gap-4 border-b border-gray-100 dark:border-zinc-900 pb-4'>
+            <div>
+              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colOrderId')}</p>
+              <div className='flex items-center gap-1 font-mono text-xs'>
+                <span className='truncate max-w-[10rem] text-slate-900 dark:text-white' title={item.order_id}>
+                  {item.order_id}
+                </span>
+                <Button
+                  type='button'
+                  variant='ghost'
+                  size='icon'
+                  className='h-6 w-6 text-muted-foreground hover:text-foreground shrink-0'
+                  onClick={() => void copyId(item.order_id)}
+                  title={t('cashflowTable.colOrderId')}
+                >
+                  <Copy className='h-3 w-3' aria-hidden />
+                </Button>
+              </div>
+            </div>
+            <div>
+              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colPaymentId')}</p>
+              {item.payment_id ? (
+                <div className='flex items-center gap-1 font-mono text-xs'>
+                  <Link
+                    to={`/transactions/${item.payment_id}`}
+                    className='group inline-flex items-center gap-0.5 text-primary hover:underline truncate max-w-[10rem]'
+                    onClick={() => onOpenChange(false)}
+                  >
+                    <span className='truncate' title={item.payment_id}>
+                      {item.payment_id}
+                    </span>
+                    <ChevronRight className='h-3.5 w-3.5 opacity-60 group-hover:translate-x-0.5' />
+                  </Link>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    className='h-6 w-6 text-muted-foreground hover:text-foreground shrink-0'
+                    onClick={() => void copyId(item.payment_id!)}
+                    title={t('cashflowTable.colPaymentId')}
+                  >
+                    <Copy className='h-3 w-3' aria-hidden />
+                  </Button>
+                </div>
+              ) : (
+                <span className='text-muted-foreground'>—</span>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <p className='text-xs text-muted-foreground font-medium mb-1.5'>{t('cashflowTable.colNotes')}</p>
+            <div className='rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 p-3 text-sm text-slate-700 dark:text-slate-350 whitespace-pre-wrap break-words leading-relaxed max-h-48 overflow-y-auto'>
+              {item.notes || '—'}
+            </div>
+          </div>
+        </div>
+
+        <div className='flex justify-end gap-3 border-t border-gray-100 dark:border-zinc-900 pt-4 mt-2'>
+          <Button
+            type='button'
+            variant='outline'
+            onClick={() => onOpenChange(false)}
+            className='px-4'
+          >
+            {t('cashflowDetailDialog.btnClose', { defaultValue: 'Tutup' })}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }

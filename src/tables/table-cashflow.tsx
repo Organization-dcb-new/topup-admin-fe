@@ -7,7 +7,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import { format } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
-import { Copy, ChevronRight } from 'lucide-react'
+import { Copy, ChevronRight, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -23,7 +23,10 @@ function dateLocale() {
   return i18n.language.startsWith('id') ? idLocale : enUS
 }
 
-export function getCashflowColumns(t: TFunction): ColumnDef<CashflowItem>[] {
+export function getCashflowColumns(
+  t: TFunction,
+  onViewDetail: (item: CashflowItem) => void
+): ColumnDef<CashflowItem>[] {
   const copyId = async (value: string) => {
     try {
       await copyTextToClipboard(value)
@@ -100,7 +103,11 @@ export function getCashflowColumns(t: TFunction): ColumnDef<CashflowItem>[] {
       accessorKey: 'notes',
       header: () => <span className='font-medium'>{t('cashflowTable.colNotes')}</span>,
       cell: ({ row }) => (
-        <span className='text-sm text-muted-foreground break-words max-w-[20rem] block'>
+        <span
+          className='text-sm text-muted-foreground truncate max-w-[14rem] block cursor-pointer hover:text-primary hover:underline transition-all duration-200'
+          onClick={() => onViewDetail(row.original)}
+          title={row.original.notes}
+        >
           {row.original.notes}
         </span>
       ),
@@ -156,6 +163,22 @@ export function getCashflowColumns(t: TFunction): ColumnDef<CashflowItem>[] {
           </div>
         )
       },
+    },
+    {
+      id: 'actions',
+      header: () => <span className='font-medium'>{t('cashflowTable.colActions', { defaultValue: 'Aksi' })}</span>,
+      cell: ({ row }) => (
+        <Button
+          type='button'
+          variant='ghost'
+          size='sm'
+          className='h-8 px-2 text-primary hover:text-primary/80 hover:bg-primary/5 flex items-center gap-1 font-medium transition-all duration-200'
+          onClick={() => onViewDetail(row.original)}
+        >
+          <Eye className='h-4 w-4' />
+          <span>{t('cashflowTable.btnDetail', { defaultValue: 'Detail' })}</span>
+        </Button>
+      ),
     },
   ]
 }

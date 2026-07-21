@@ -118,10 +118,20 @@ export default function TransactionPage() {
     }
   }, [])
 
-  const rows = data?.data ?? []
+  const rows = useMemo(() => data?.data ?? [], [data?.data])
 
   // Stats calculation
   const stats = useMemo(() => {
+    if (data?.meta && data.meta.total_volume !== undefined) {
+      return {
+        totalVolume: data.meta.total_volume ?? 0,
+        paidCount: data.meta.total_paid_count ?? 0,
+        totalMargin: data.meta.total_margin ?? 0,
+        successRate: Math.round(data.meta.success_rate ?? 0),
+        isOverall: true,
+      }
+    }
+
     let totalVolume = 0
     let paidCount = 0
     let totalMargin = 0
@@ -137,8 +147,8 @@ export default function TransactionPage() {
 
     const successRate = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0
 
-    return { totalVolume, paidCount, totalMargin, successRate }
-  }, [rows])
+    return { totalVolume, paidCount, totalMargin, successRate, isOverall: false }
+  }, [data, rows])
 
   const hasActiveFilters = useMemo(
     () =>
@@ -223,7 +233,9 @@ export default function TransactionPage() {
         <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
           {/* Card 1: Total Volume */}
           <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Total Volume (Page)</p>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
+              {stats.isOverall ? 'Total Volume' : 'Total Volume (Page)'}
+            </p>
             <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalVolume)}</p>
           </div>
           {/* Card 2: Total Paid */}
@@ -233,7 +245,9 @@ export default function TransactionPage() {
           </div>
           {/* Card 3: Estimated Margin */}
           <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Est. Margin (Page)</p>
+            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
+              {stats.isOverall ? 'Est. Margin' : 'Est. Margin (Page)'}
+            </p>
             <p className='mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-450 tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalMargin)}</p>
           </div>
           {/* Card 4: Success Rate */}
