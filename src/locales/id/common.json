@@ -1810,6 +1810,7 @@
       "name": "Nama",
       "code": "Kode",
       "percent": "Komisi (%)",
+      "totalEarnings": "Total Pendapatan",
       "status": "Status",
       "createdAt": "Tanggal Dibuat",
       "updatedAt": "Terakhir Diubah",

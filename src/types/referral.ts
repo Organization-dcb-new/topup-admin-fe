@@ -8,6 +8,7 @@ export interface ReferralCode {
   is_active: boolean
   created_at: string
   updated_at: string
+  total_earnings?: number
   transactions?: Payment[]
 }
 
