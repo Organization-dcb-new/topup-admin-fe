@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useGetReferralCodeById, useUpdateReferralCode } from '@/hooks/useReferral'
 import { formatBackendDateTime, parseBackendDate } from '@/lib/backend-datetime'
-import { ArrowLeft, Loader2, Percent, Calendar, RefreshCw, BarChart2, TrendingUp, CheckCircle, Clock } from 'lucide-react'
+import { ArrowLeft, Loader2, Percent, Calendar, RefreshCw, BarChart2, TrendingUp, CheckCircle, Clock, Coins } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 import { DataTable } from '@/components/Layout/table-data'
@@ -203,7 +203,7 @@ export default function ReferralDetailPage() {
         {isSuccess && referral && (
           <>
             {/* Quick Metrics */}
-            <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
+            <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
               <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
                 <div className='flex items-center justify-between'>
                   <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Total Uses</p>
@@ -226,6 +226,14 @@ export default function ReferralDetailPage() {
                   <TrendingUp className='h-4 w-4 text-emerald-500' />
                 </div>
                 <p className='mt-2 text-xl font-extrabold text-emerald-600 tabular-nums'>{formatIdr(stats.totalVolume)}</p>
+              </div>
+
+              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
+                <div className='flex items-center justify-between'>
+                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>{t('referralPage.detail.totalEarnings')}</p>
+                  <Coins className='h-4 w-4 text-amber-500' />
+                </div>
+                <p className='mt-2 text-xl font-extrabold text-amber-600 tabular-nums'>{formatIdr(referral.total_earnings ?? 0)}</p>
               </div>
 
               <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
@@ -268,6 +276,13 @@ export default function ReferralDetailPage() {
                         {t('referralPage.detail.percent')}
                       </span>
                       <span className='font-bold text-slate-700'>{referral.percent}%</span>
+                    </div>
+
+                    <div>
+                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide'>
+                        {t('referralPage.detail.totalEarnings')}
+                      </span>
+                      <span className='font-bold text-amber-600'>{formatIdr(referral.total_earnings ?? 0)}</span>
                     </div>
 
                     <div className='flex items-center justify-between border-t border-b border-slate-50 py-3'>
