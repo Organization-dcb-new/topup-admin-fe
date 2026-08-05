@@ -1,6 +1,7 @@
 import { AdminBriefSelect } from '@/components/Admin/AdminBriefSelect'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
+import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
 import { GameActiveFilter, type GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
 import { GamePickerSelect } from '@/components/Games/GamePickerSelect'
 import Pagination from '@/components/Layout/Pagination'
@@ -322,13 +323,18 @@ export default function GamePage() {
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-7xl space-y-6'>
-        <div className='flex gap-3'>
-          <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-            <Gamepad2 className='h-5 w-5' aria-hidden />
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='flex gap-3'>
+            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+              <Gamepad2 className='h-5 w-5' aria-hidden />
+            </div>
+            <div className='min-w-0 space-y-1'>
+              <h1 className='text-2xl font-semibold tracking-tight text-foreground'>{t('gamePage.title')}</h1>
+              <p className='text-sm text-muted-foreground'>{t('gamePage.subtitle')}</p>
+            </div>
           </div>
-          <div className='min-w-0 space-y-1'>
-            <h1 className='text-2xl font-semibold tracking-tight text-foreground'>{t('gamePage.title')}</h1>
-            <p className='text-sm text-muted-foreground'>{t('gamePage.subtitle')}</p>
+          <div className='flex items-center gap-3 sm:justify-end'>
+            <EditBulkAllPriceModal />
           </div>
         </div>
 

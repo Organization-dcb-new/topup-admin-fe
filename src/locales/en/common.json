@@ -568,6 +568,8 @@
     "colImage": "Image",
     "colName": "Game name",
     "colCode": "Code",
+    "colAdditionalFee": "Additional fee",
+    "colPercent": "Percentage",
     "colCategory": "Category",
     "colDeveloper": "Developer",
     "colPublisher": "Publisher",
@@ -627,8 +629,25 @@
     "bulkStatusError": "Failed to update all games' status",
     "createGameSuccess": "Game added successfully",
     "bulkPriceSuccess": "Product prices updated",
-    "bulkPriceError": "Failed to update prices"
+    "bulkPriceError": "Failed to update prices",
+    "bulkAllPriceSuccess": "All game product prices updated",
+    "bulkAllPriceError": "Failed to update product prices for all games"
   },
+  "bulkAllPriceModal": {
+    "triggerBtn": "Update All Games Margin",
+    "title": "Bulk Price All Games (Percentage)",
+    "description": "Additional margin percentage will be applied to all products across all games. Maximum {{max}}%.",
+    "warningBanner": "Warning: This action will update the margin percentage for ALL products across ALL games simultaneously.",
+    "percentLabel": "Additional Margin Percentage (%)",
+    "percentRequired": "Percentage is required",
+    "percentMin": "Minimum 0%",
+    "percentMax": "Maximum 40%",
+    "overLimit": "Values above 40% are not allowed.",
+    "cancel": "Cancel",
+    "updating": "Updating…",
+    "applyAll": "Apply to All Games"
+  },
+
   "gameShowcase": {
     "label": "Showcase",
     "hideAria": "Hide {{name}} from showcase",

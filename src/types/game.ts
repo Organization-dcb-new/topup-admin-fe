@@ -26,6 +26,8 @@ export interface Game {
   is_active: boolean
   /** When true, customer ID is validated (e.g. against provider). */
   is_check_id?: boolean
+  additional_fee?: number
+  additional_percent?: number
   popularity_score: number
   created_at: string
   updated_at: string

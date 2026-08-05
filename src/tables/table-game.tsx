@@ -10,6 +10,11 @@ import { Link } from 'react-router-dom'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
+function formatRp(value: number | undefined | null) {
+  const n = value ?? 0
+  return `Rp ${n.toLocaleString('id-ID')}`
+}
+
 export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
   {
     id: 'thumbnail',
@@ -48,6 +53,24 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
       <code className='rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground'>
         {row.original.code}
       </code>
+    ),
+  },
+  {
+    accessorKey: 'additional_fee',
+    header: t('gameTable.colAdditionalFee'),
+    cell: ({ row }) => (
+      <span className='tabular-nums text-sm font-medium text-foreground'>
+        {formatRp(row.original.additional_fee)}
+      </span>
+    ),
+  },
+  {
+    accessorKey: 'additional_percent',
+    header: t('gameTable.colPercent'),
+    cell: ({ row }) => (
+      <span className='tabular-nums text-sm font-medium text-foreground'>
+        {row.original.additional_percent ?? 0} %
+      </span>
     ),
   },
   {

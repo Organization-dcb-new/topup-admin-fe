@@ -568,6 +568,8 @@
     "colImage": "Gambar",
     "colName": "Nama game",
     "colCode": "Kode",
+    "colAdditionalFee": "Biaya tambahan",
+    "colPercent": "Persentase",
     "colCategory": "Kategori",
     "colDeveloper": "Developer",
     "colPublisher": "Publisher",
@@ -627,8 +629,25 @@
     "bulkStatusError": "Gagal memperbarui status semua game",
     "createGameSuccess": "Game berhasil ditambahkan",
     "bulkPriceSuccess": "Harga produk berhasil diperbarui",
-    "bulkPriceError": "Gagal memperbarui harga"
+    "bulkPriceError": "Gagal memperbarui harga",
+    "bulkAllPriceSuccess": "Harga seluruh produk game berhasil diperbarui",
+    "bulkAllPriceError": "Gagal memperbarui harga produk semua game"
   },
+  "bulkAllPriceModal": {
+    "triggerBtn": "Update Margin Semua Game",
+    "title": "Harga Massal Semua Game (Persentase)",
+    "description": "Tambahan persentase margin akan diterapkan ke seluruh produk di semua game. Maksimal {{max}}%.",
+    "warningBanner": "Perhatian: Tindakan ini akan memperbarui persentase margin untuk SEMUA produk di SELURUH game sekaligus.",
+    "percentLabel": "Tambahan Persentase Margin (%)",
+    "percentRequired": "Persentase wajib diisi",
+    "percentMin": "Minimal 0%",
+    "percentMax": "Maksimal 40%",
+    "overLimit": "Nilai di atas 40% tidak diizinkan.",
+    "cancel": "Batal",
+    "updating": "Memperbarui…",
+    "applyAll": "Terapkan ke Semua Game"
+  },
+
   "gameShowcase": {
     "label": "Etalase",
     "hideAria": "Sembunyikan {{name}} dari etalase",

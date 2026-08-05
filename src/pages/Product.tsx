@@ -1,3 +1,4 @@
+import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
 import { ProductListCard } from '@/components/Product/ProductListCard'
 import {
   defaultProductAmountFilters,
@@ -151,31 +152,34 @@ export default function ProductPage() {
               <p className='text-sm text-muted-foreground'>{t('productPage.subtitle', { limit })}</p>
             </div>
           </div>
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
-            {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
-                {t('productPage.loadingShort')}
-              </p>
-            )}
-            {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
-                {t('productPage.loadFailedShort')}
-              </p>
-            )}
-            {isSuccess && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground'>
-                  {t('productPage.totalProducts', {
-                    count: (data?.meta?.total_data ?? 0).toLocaleString(
-                      i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
-                    ),
-                  })}
-                </span>
-              </p>
-            )}
+          <div className='flex flex-wrap items-center gap-3 sm:justify-end'>
+            <EditBulkAllPriceModal />
+            <div className='flex flex-col items-end gap-1 sm:text-right'>
+              {isLoading && (
+                <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
+                  <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
+                  {t('productPage.loadingShort')}
+                </p>
+              )}
+              {isError && (
+                <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
+                  <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
+                  {t('productPage.loadFailedShort')}
+                </p>
+              )}
+              {isSuccess && (
+                <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
+                  <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
+                  <span className='tabular-nums text-foreground'>
+                    {t('productPage.totalProducts', {
+                      count: (data?.meta?.total_data ?? 0).toLocaleString(
+                        i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
+                      ),
+                    })}
+                  </span>
+                </p>
+              )}
+            </div>
           </div>
         </div>
 
