@@ -15,15 +15,6 @@ import toast from 'react-hot-toast'
 import { api } from '@/api/axios'
 import { authStorage } from '@/lib/auth'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   InputOTP,
   InputOTPGroup,
@@ -34,6 +25,9 @@ interface SetupData {
   qr_url: string;
   recovery_codes: string[];
 }
+
+const STEP_HEAD_CLASS =
+  'flex items-center gap-2 border-b-4 border-[#111] px-4 py-2.5 text-xs font-black uppercase tracking-[0.18em]'
 
 const Setup2FA = () => {
   const [setupData, setSetupData] = useState<SetupData | null>(null)
@@ -121,17 +115,19 @@ const Setup2FA = () => {
   if (isChecking)
     return (
       <div
-        className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
+        className='nb nb-frame nb-frame-thick nb-sd-lg flex min-h-[16rem] flex-col items-center justify-center gap-4 bg-white py-12'
         role='status'
         aria-live='polite'
         aria-busy='true'
       >
-        <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
+        <div className='nb-frame nb-sd-sm flex h-16 w-16 items-center justify-center bg-[#6fe3f5]'>
+          <Loader2 className='h-8 w-8 animate-spin' strokeWidth={2.5} aria-hidden />
+        </div>
         <div className='text-center'>
-          <p className='text-sm font-medium text-foreground'>
+          <p className='text-sm font-black uppercase tracking-[0.15em]'>
             Memeriksa status keamanan…
           </p>
-          <p className='mt-1 text-xs text-muted-foreground'>
+          <p className='mt-1 text-xs font-bold text-[#111]/60'>
             Mohon tunggu sebentar.
           </p>
         </div>
@@ -139,250 +135,241 @@ const Setup2FA = () => {
     )
 
   return (
-    <div className='space-y-6'>
+    <div className='nb space-y-6'>
+      {/* Judul halaman */}
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-        <div className='flex gap-3'>
-          <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-            <ShieldCheck className='h-5 w-5' aria-hidden />
+        <div className='flex gap-4'>
+          <div className='nb-frame nb-sd-sm flex h-12 w-12 shrink-0 -rotate-3 items-center justify-center bg-[#c9f24d]'>
+            <ShieldCheck className='h-6 w-6' strokeWidth={2.5} aria-hidden />
           </div>
-          <div className='min-w-0 space-y-1'>
-            <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
+          <div className='min-w-0 space-y-1.5'>
+            <h1 className='text-2xl font-black uppercase leading-none tracking-tight'>
               Keamanan akun
             </h1>
-            <p className='text-sm text-muted-foreground'>
+            <p className='text-sm font-bold text-[#111]/70'>
               Kelola autentikasi dua faktor (2FA) untuk akun admin Anda.
             </p>
           </div>
         </div>
         {isMfaActive && (
-          <div className='flex items-center gap-2 self-start rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 sm:self-auto'>
-            <span
-              className='h-2 w-2 shrink-0 rounded-full bg-emerald-500'
-              aria-hidden
-            />
+          <div className='nb-frame nb-sd-sm flex items-center gap-2 self-start bg-[#c9f24d] px-3 py-1.5 text-xs font-black uppercase tracking-[0.15em] sm:self-auto'>
+            <span className='nb-frame nb-frame-thin nb-round h-2.5 w-2.5 shrink-0 bg-[#111]' aria-hidden />
             2FA aktif
           </div>
         )}
       </div>
 
       {isMfaActive ? (
-        <Card className='overflow-hidden rounded-xl border border-red-100/80 bg-red-50/10 shadow-sm ring-1 ring-gray-900/5'>
-          <CardHeader className='border-b border-red-100/80 bg-white px-4 py-4 sm:px-5'>
-            <CardTitle className='flex items-center gap-2 text-base font-semibold text-red-800'>
-              <ShieldOff className='h-5 w-5 shrink-0' aria-hidden />
-              Kelola 2FA
-            </CardTitle>
-            <CardDescription className='text-sm text-muted-foreground'>
-              Akun Anda saat ini dilindungi verifikasi dua langkah.
-            </CardDescription>
-          </CardHeader>
+        <div className='nb-frame nb-frame-thick nb-sd-lg bg-white'>
+          <div className={`${STEP_HEAD_CLASS} bg-[#ff4d3d] text-white`}>
+            <ShieldOff className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
+            Kelola 2FA
+          </div>
 
-          <CardContent className='flex flex-col items-center space-y-8 py-10 sm:py-12'>
+          <div className='flex flex-col items-center space-y-8 px-4 py-10 sm:py-12'>
             {!isConfirmingDeactivate ? (
-              <div className='space-y-6 text-center'>
-                <div className='mx-auto flex h-20 w-20 items-center justify-center rounded-full border-4 border-white bg-red-100 shadow-inner'>
-                  <AlertTriangle
-                    className='h-10 w-10 text-red-600'
-                    aria-hidden
-                  />
+              <div className='flex flex-col items-center space-y-6 text-center'>
+                <div className='nb-frame nb-sd flex h-20 w-20 rotate-3 items-center justify-center bg-[#ffd84d]'>
+                  <AlertTriangle className='h-10 w-10' strokeWidth={2.5} aria-hidden />
                 </div>
                 <div className='space-y-2'>
-                  <h3 className='text-xl font-semibold text-gray-900'>
+                  <h3 className='text-xl font-black uppercase tracking-tight'>
                     Nonaktifkan perlindungan?
                   </h3>
-                  <p className='mx-auto max-w-sm text-sm text-muted-foreground'>
+                  <p className='mx-auto max-w-sm text-sm font-bold text-[#111]/70'>
                     Tindakan ini meningkatkan risiko akses tidak sah. Pastikan
                     Anda memahami konsekuensinya.
                   </p>
                 </div>
-                <Button
-                  variant='destructive'
-                  size='lg'
+                <button
+                  type='button'
                   onClick={() => setIsConfirmingDeactivate(true)}
-                  className='h-12 rounded-xl px-10 font-semibold transition-transform active:scale-[0.98]'
+                  className='nb-frame nb-sd nb-press h-12 bg-[#ff4d3d] px-10 text-sm font-black uppercase tracking-[0.15em] text-white'
                 >
                   Nonaktifkan 2FA
-                </Button>
+                </button>
               </div>
             ) : (
               <div className='flex flex-col items-center space-y-6 duration-300 animate-in zoom-in-95'>
                 <div className='text-center'>
-                  <h3 className='text-lg font-semibold text-red-800'>
+                  <h3 className='text-lg font-black uppercase tracking-tight'>
                     Verifikasi akhir
                   </h3>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className='text-sm font-bold text-[#111]/70'>
                     Masukkan kode OTP untuk mengonfirmasi
                   </p>
                 </div>
 
-                <InputOTP
-                  maxLength={6}
-                  disabled={isDeactivating}
-                  onComplete={(v) => deactivateMfa(v)}
-                  autoFocus
-                >
-                  <InputOTPGroup>
-                    {[...Array(6)].map((_, i) => (
-                      <InputOTPSlot
-                        key={i}
-                        index={i}
-                        className='w-12 h-16 bg-white text-xl font-black border-red-200 focus:border-red-500'
-                      />
-                    ))}
-                  </InputOTPGroup>
-                </InputOTP>
+                <div className='w-full overflow-x-auto py-2'>
+                  <InputOTP
+                    maxLength={6}
+                    disabled={isDeactivating}
+                    onComplete={(v) => deactivateMfa(v)}
+                    containerClassName='mx-auto w-max'
+                    autoFocus
+                  >
+                    <InputOTPGroup className='gap-1.5 sm:gap-2'>
+                      {[...Array(6)].map((_, i) => (
+                        <InputOTPSlot
+                          key={i}
+                          index={i}
+                          className='nb-otp nb-frame nb-sd-sm h-12 w-9 bg-white text-lg font-black text-[#111] sm:h-14 sm:w-11 sm:text-xl'
+                        />
+                      ))}
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
 
                 <div className='flex flex-col items-center gap-3'>
                   {isDeactivating ? (
-                    <p className='flex items-center gap-2 text-sm font-medium text-red-600'>
-                      <Loader2
-                        className='h-4 w-4 animate-spin'
-                        aria-hidden
-                      />
+                    <p className='flex items-center gap-2 text-xs font-black uppercase tracking-[0.15em]'>
+                      <Loader2 className='h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
                       Menonaktifkan…
                     </p>
                   ) : (
-                    <Button
-                      variant='ghost'
+                    <button
+                      type='button'
                       onClick={() => setIsConfirmingDeactivate(false)}
-                      className='text-xs text-muted-foreground hover:text-red-600'
+                      className='text-xs font-black uppercase tracking-[0.15em] underline decoration-[3px] underline-offset-4 hover:bg-[#ffd84d]'
                     >
                       Batal, tetap aktifkan 2FA
-                    </Button>
+                    </button>
                   )}
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
         <>
           {!setupData ? (
-            <Card className='flex flex-col items-center rounded-xl border border-dashed border-border/80 bg-muted/15 py-16 shadow-sm ring-1 ring-gray-900/5 sm:py-20'>
-              <div className='mb-6 rounded-2xl border border-border/60 bg-white p-4 shadow-sm'>
+            <div className='nb-frame nb-frame-thick nb-sd-lg flex flex-col items-center bg-white px-4 py-16 sm:py-20'>
+              <div className='nb-frame nb-sd mb-7 flex h-20 w-20 -rotate-3 items-center justify-center bg-[#6fe3f5]'>
                 <RefreshCw
-                  className={`h-12 w-12 text-primary/70 ${isGenerating ? 'animate-spin' : ''}`}
+                  className={`h-10 w-10 ${isGenerating ? 'animate-spin' : ''}`}
+                  strokeWidth={2.5}
                   aria-hidden
                 />
               </div>
-              <h3 className='mb-2 text-xl font-semibold tracking-tight text-gray-900'>
+              <h3 className='mb-2 text-xl font-black uppercase tracking-tight'>
                 Perkuat keamanan akun
               </h3>
-              <p className='mb-8 max-w-xs px-4 text-center text-sm text-muted-foreground'>
+              <p className='mb-8 max-w-xs px-4 text-center text-sm font-bold text-[#111]/70'>
                 Gunakan aplikasi autentikator untuk melindungi dashboard admin
                 dari akses tidak sah.
               </p>
-              <Button
+              <button
+                type='button'
                 onClick={() => generateSetup()}
                 disabled={isGenerating}
-                size='lg'
-                className='h-12 rounded-xl px-10 text-base font-semibold shadow-sm transition-transform active:scale-[0.98]'
+                className='nb-frame nb-sd nb-press flex h-12 items-center gap-2 bg-[#c9f24d] px-10 text-sm font-black uppercase tracking-[0.15em] disabled:cursor-not-allowed disabled:opacity-60'
               >
                 {isGenerating ? (
-                  <span className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+                  <>
+                    <Loader2 className='h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
                     Menyiapkan…
-                  </span>
+                  </>
                 ) : (
                   'Aktifkan 2FA'
                 )}
-              </Button>
-            </Card>
+              </button>
+            </div>
           ) : (
-            <div className='grid grid-cols-1 gap-4 duration-500 animate-in slide-in-from-bottom-4 sm:gap-6 lg:grid-cols-3'>
-              <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
-                <CardHeader className='pb-2 pt-4'>
-                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    1. Pindai QR
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className='flex justify-center py-4 sm:py-6'>
-                  <div className='rounded-2xl border-2 border-dashed border-border/80 bg-white p-4 shadow-inner'>
+            <div className='grid grid-cols-1 gap-5 duration-500 animate-in slide-in-from-bottom-4 sm:gap-6 lg:grid-cols-3'>
+              {/* 1. QR */}
+              <div className='nb-frame nb-frame-thick nb-sd-lg bg-white'>
+                <div className={`${STEP_HEAD_CLASS} bg-[#6fe3f5]`}>
+                  1. Pindai QR
+                </div>
+                <div className='flex justify-center px-4 py-6'>
+                  <div className='nb-frame nb-sd-sm bg-white p-4'>
                     <QRCodeSVG value={setupData.qr_url} size={180} />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
-                <CardHeader className='pb-2 pt-4'>
-                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    2. Kode cadangan
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className='space-y-4 py-4 sm:py-6'>
+              {/* 2. Kode cadangan */}
+              <div className='nb-frame nb-frame-thick nb-sd-lg bg-white'>
+                <div className={`${STEP_HEAD_CLASS} bg-[#ff9ed2]`}>
+                  2. Kode cadangan
+                </div>
+                <div className='space-y-4 px-4 py-6'>
                   <div className='grid grid-cols-2 gap-2'>
                     {setupData.recovery_codes.map((code) => (
                       <div
                         key={code}
-                        className='rounded-lg border border-border/80 bg-muted/30 p-2 text-center font-mono text-[11px] font-semibold text-foreground shadow-sm'
+                        className='nb-frame nb-frame-thin bg-[#f5f1e8] p-2 text-center font-mono text-[11px] font-black'
                       >
                         {code}
                       </div>
                     ))}
                   </div>
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    className='w-full gap-2 font-semibold'
+                  <button
+                    type='button'
                     onClick={handleCopyCodes}
+                    className='nb-frame nb-sd-sm nb-press flex h-10 w-full items-center justify-center gap-2 bg-[#ffd84d] text-xs font-black uppercase tracking-[0.15em]'
                   >
                     {copied ? (
-                      <Check className='h-4 w-4 text-emerald-600' aria-hidden />
+                      <Check className='h-4 w-4' strokeWidth={3} aria-hidden />
                     ) : (
-                      <Copy className='h-4 w-4' aria-hidden />
+                      <Copy className='h-4 w-4' strokeWidth={3} aria-hidden />
                     )}
                     {copied ? 'Disalin' : 'Salin semua kode'}
-                  </Button>
-                </CardContent>
-              </Card>
+                  </button>
+                </div>
+              </div>
 
-              <Card className='rounded-xl border border-primary/20 shadow-sm ring-2 ring-primary/10'>
-                <CardHeader className='pb-2 pt-4'>
-                  <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    3. Aktivasi
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className='flex flex-col items-center space-y-6 pt-6 sm:space-y-8 sm:pt-8'>
-                  <InputOTP
-                    maxLength={6}
-                    disabled={isActivating}
-                    onComplete={(v) => activateMfa(v)}
-                  >
-                    <InputOTPGroup>
-                      {[...Array(6)].map((_, i) => (
-                        <InputOTPSlot
-                          key={i}
-                          index={i}
-                          className='h-14 w-10 border-border bg-muted/30 text-xl font-semibold focus-visible:ring-primary/30'
-                        />
-                      ))}
-                    </InputOTPGroup>
-                  </InputOTP>
+              {/* 3. Aktivasi */}
+              <div className='nb-frame nb-frame-thick nb-sd-lg bg-white'>
+                <div className={`${STEP_HEAD_CLASS} bg-[#c9f24d]`}>
+                  3. Aktivasi
+                </div>
+                <div className='flex flex-col items-center space-y-6 px-4 py-8'>
+                  <div className='w-full overflow-x-auto py-2'>
+                    <InputOTP
+                      maxLength={6}
+                      disabled={isActivating}
+                      onComplete={(v) => activateMfa(v)}
+                      containerClassName='mx-auto w-max'
+                    >
+                      <InputOTPGroup className='gap-1.5'>
+                        {[...Array(6)].map((_, i) => (
+                          <InputOTPSlot
+                            key={i}
+                            index={i}
+                            className='nb-otp nb-frame nb-sd-sm h-14 w-10 bg-white text-xl font-black text-[#111]'
+                          />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                   {isActivating && (
-                    <p className='flex items-center gap-2 text-xs font-medium text-muted-foreground'>
-                      <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden />
+                    <p className='flex items-center gap-2 text-xs font-black uppercase tracking-[0.15em]'>
+                      <Loader2 className='h-3.5 w-3.5 animate-spin' strokeWidth={3} aria-hidden />
                       Memverifikasi…
                     </p>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           )}
         </>
       )}
 
-      {/* Info Warning */}
+      {/* Peringatan */}
       {setupData && !isMfaActive && (
-        <Alert className='rounded-xl border-amber-200 border-l-4 bg-amber-50/90 shadow-sm ring-1 ring-amber-900/5'>
-          <AlertTriangle className='h-5 w-5 text-amber-600' aria-hidden />
-          <AlertTitle className='font-semibold text-amber-950'>
-            Sebelum aktivasi
-          </AlertTitle>
-          <AlertDescription className='text-xs text-amber-900/90'>
-            Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun
-            sulit dilakukan jika aplikasi autentikator hilang.
-          </AlertDescription>
-        </Alert>
+        <div className='nb-frame nb-sd flex items-start gap-3 bg-[#ffd84d] px-4 py-3.5'>
+          <AlertTriangle className='mt-0.5 h-5 w-5 shrink-0' strokeWidth={3} aria-hidden />
+          <div className='space-y-1'>
+            <p className='text-sm font-black uppercase tracking-[0.12em]'>
+              Sebelum aktivasi
+            </p>
+            <p className='text-xs font-bold text-[#111]/80'>
+              Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun
+              sulit dilakukan jika aplikasi autentikator hilang.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   )

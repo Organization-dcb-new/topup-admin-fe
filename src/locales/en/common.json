@@ -1742,7 +1742,9 @@
     "processing": "Processing…",
     "submit": "Login",
     "loginSuccess": "Login successful",
-    "loginError": "Login failed"
+    "loginError": "Login failed",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Recovery successful. Please log in again.",

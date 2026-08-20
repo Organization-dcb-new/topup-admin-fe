@@ -137,3 +137,111 @@
 .animate-progress-loading {
   animation: progress-loading 2s ease-in-out infinite;
 }
+
+/* ==========================================================================
+   Neo-brutalism — auth pages only
+   Dipakai oleh: src/pages/Login.tsx, src/pages/VerifyOTP.tsx,
+   src/pages/Unauthorized.tsx, src/components/Auth/Setup2Fa.tsx.
+   Ditulis unlayered supaya menang atas utility Tailwind bawaan komponen
+   shadcn (border/rounded/shadow) tanpa harus mengubah komponen global.
+   ========================================================================== */
+.nb {
+  --nb-ink: #111111;
+  --nb-cream: #f5f1e8;
+  --nb-lime: #c9f24d;
+  --nb-cyan: #6fe3f5;
+  --nb-pink: #ff9ed2;
+  --nb-orange: #ff9d3d;
+  --nb-yellow: #ffd84d;
+  --nb-red: #ff4d3d;
+  color: var(--nb-ink);
+}
+
+/* Latar cream + grid tipis */
+.nb-surface {
+  background-color: var(--nb-cream);
+  background-image:
+    linear-gradient(rgba(17, 17, 17, 0.06) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(17, 17, 17, 0.06) 2px, transparent 2px);
+  background-size: 34px 34px;
+}
+
+/* Garis + sudut tajam. Sengaja tidak mengatur ukuran/warna latar
+   supaya masih bisa diatur lewat utility Tailwind di JSX. */
+.nb-frame {
+  border: 3px solid var(--nb-ink);
+  border-radius: 0;
+}
+.nb-frame-thick {
+  border-width: 4px;
+}
+.nb-frame-thin {
+  border-width: 2px;
+}
+.nb-round {
+  border-radius: 9999px;
+}
+.nb-sd-sm {
+  box-shadow: 3px 3px 0 0 var(--nb-ink);
+}
+.nb-sd {
+  box-shadow: 5px 5px 0 0 var(--nb-ink);
+}
+.nb-sd-lg {
+  box-shadow: 8px 8px 0 0 var(--nb-ink);
+}
+
+/* Tombol: naik saat hover, "ketekan" sampai rata saat aktif */
+.nb-press {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nb-press:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 0 var(--nb-ink);
+}
+.nb-press:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 0 var(--nb-ink);
+}
+.nb-press:focus-visible {
+  outline: 3px solid var(--nb-ink);
+  outline-offset: 3px;
+}
+.nb-press:disabled {
+  transform: none;
+  box-shadow: 3px 3px 0 0 var(--nb-ink);
+}
+
+/* Pembungkus input: efeknya dipicu focus-within dari input di dalamnya */
+.nb-field {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nb-field:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 0 var(--nb-ink);
+}
+
+/* Slot OTP (menimpa style bawaan InputOTPSlot) */
+.nb-otp {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.nb-otp[data-active='true'] {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 0 var(--nb-ink);
+  background-color: var(--nb-yellow);
+}
+
+/* Status error — ditaruh paling akhir supaya menang dari .nb-frame */
+.nb-invalid {
+  border-color: var(--nb-red);
+  box-shadow: 4px 4px 0 0 var(--nb-red);
+}
+.nb-invalid:focus-within {
+  box-shadow: 6px 6px 0 0 var(--nb-red);
+}

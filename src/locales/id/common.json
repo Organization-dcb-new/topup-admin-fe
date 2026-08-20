@@ -1742,7 +1742,9 @@
     "processing": "Memproses…",
     "submit": "Masuk",
     "loginSuccess": "Login berhasil",
-    "loginError": "Login gagal"
+    "loginError": "Login gagal",
+    "showPassword": "Tampilkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Pemulihan berhasil. Silakan login kembali.",
