@@ -5,11 +5,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
-type UpdateBannerPayload = {
-  image: string
-  redirect_link: string
-}
-
 export const useGetBanners = () => {
   const { t } = useTranslation('common')
   const query = useQuery<BannerResponse>({
@@ -18,17 +13,13 @@ export const useGetBanners = () => {
       const res = await api.get('/banners')
       return res.data
     },
+    staleTime: 60_000,
   })
 
-  useEffect(() => {
-    if (!query.isPending) return
-    const id = toast.loading(t('bannerToasts.loadingList'))
-    return () => {
-      toast.dismiss(id)
-    }
-  }, [query.isPending, t])
-
-  const lastResultSignature = useRef<string | null>(null)
+  // Hanya kegagalan yang ditoast. Status memuat / berhasil / kosong sudah
+  // tampil di halaman (tag status, blok loading, state kosong), dan dulu
+  // toast-nya ikut muncul lagi setiap refetch — termasuk setelah tiap
+  // mutation dan setiap window kembali fokus.
   const hadError = useRef(false)
 
   useEffect(() => {
@@ -43,19 +34,7 @@ export const useGetBanners = () => {
     }
 
     hadError.current = false
-
-    if (!query.isSuccess || !query.data) return
-
-    const signature = String(query.dataUpdatedAt)
-    if (lastResultSignature.current === signature) return
-    lastResultSignature.current = signature
-
-    if (query.data.data.length === 0) {
-      toast.success(t('bannerToasts.emptyList'))
-    } else {
-      toast.success(t('bannerToasts.loadSuccess'))
-    }
-  }, [query.isSuccess, query.isError, query.isFetchedAfterMount, query.data, query.dataUpdatedAt, t])
+  }, [query.isError, query.isFetchedAfterMount, t])
 
   return query
 }
@@ -64,11 +43,8 @@ export function useDeleteBanner(id: string) {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const res = api.delete(`/banners/${id}`)
-      return res
-    },
+  return useMutation({
+    mutationFn: () => api.delete(`/banners/${id}`),
     onSuccess: () => {
       toast.success(t('bannerToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['banners'] })
@@ -77,8 +53,6 @@ export function useDeleteBanner(id: string) {
       toast.error(t('bannerToasts.deleteError'))
     },
   })
-
-  return mutation
 }
 
 interface UpdateBannerProps {
@@ -91,7 +65,7 @@ export function useUpdateBanner({ id, setOpen }: UpdateBannerProps) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: UpdateBannerPayload) => api.patch(`/banners/${id}`, payload),
+    mutationFn: (payload: BannerPayload) => api.patch(`/banners/${id}`, payload),
 
     onSuccess: () => {
       toast.success(t('bannerToasts.updateSuccess'))
@@ -113,7 +87,7 @@ export const useCreateBanner = (
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
+  return useMutation({
     mutationFn: async (payload: BannerPayload) => {
       const res = await api.post('/banners', payload)
       return res.data
@@ -129,6 +103,4 @@ export const useCreateBanner = (
       toast.error(t('bannerToasts.createError'))
     },
   })
-
-  return mutation
 }

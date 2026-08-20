@@ -6,5 +6,9 @@ export interface LoginRequest {
 export interface LoginResponse {
   message: string
   status: 'success' | 'error'
-  token: string
+  /**
+   * Autentikasi memakai cookie httpOnly; field ini tidak selalu ada dan tidak
+   * dipakai klien. Dibiarkan opsional agar tipe tidak menjanjikan yang tidak ada.
+   */
+  token?: string
 }

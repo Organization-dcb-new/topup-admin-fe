@@ -10,15 +10,9 @@ export interface BannerResponse {
   message: string
 }
 
-export type FormValuesBanner = {
-  image: string
-  
-  redirect_link: string
-}
+/** Body untuk POST /banners dan PATCH /banners/:id — keduanya sama. */
+export type BannerPayload = Omit<Banner, 'id'>
 
-export type BannerPayload = {
-  image: string
-  redirect_link: string
-}
-
-
+/** Field yang benar-benar dipegang react-hook-form. `image` diurus terpisah
+ *  oleh `useBannerImage` karena berkasnya baru diunggah saat submit. */
+export type BannerFormValues = Pick<Banner, 'redirect_link'>

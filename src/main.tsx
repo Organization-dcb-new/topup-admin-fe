@@ -3,9 +3,8 @@ import { createRoot } from 'react-dom/client'
 import '@/i18n'
 import App from './routes/route'
 import { NbToaster } from '@/components/ui/nb-toaster'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from '@/lib/query-client'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

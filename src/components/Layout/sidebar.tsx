@@ -10,12 +10,15 @@ import {
 } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { SidebarProps } from '@/types/sidebar'
+import { resolveApiError } from '@/lib/api-error'
 import { logout, useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
+import { ChevronDown, ChevronLeft, Loader2, LogOut, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { SidebarHealthIndicator } from './SidebarHealthIndicator'
 
 function useSidebarCopy() {
@@ -52,6 +55,21 @@ export function Sidebar({
   const { t, i18n } = useTranslation('common')
   const tr = useSidebarCopy()
   const [openLogoutModal, setOpenLogoutModal] = useState(false)
+  const navigate = useNavigate()
+
+  /**
+   * Dulu `logout()` menavigasi sendiri lewat window.location.href sehingga
+   * memuat ulang seluruh aplikasi, dan kegagalannya ditelan diam-diam.
+   */
+  const { mutate: doLogout, isPending: isLoggingOut } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      setOpenLogoutModal(false)
+      toast.success(t('sidebar.logoutSuccess'))
+      navigate('/login', { replace: true })
+    },
+    onError: (err) => toast.error(resolveApiError(err, t, 'sidebar.logoutError')),
+  })
   const isMdUp = useIsMdUp()
   const railCollapsed = collapsed && isMdUp
   const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
@@ -276,13 +294,14 @@ export function Sidebar({
               </button>
               <button
                 type='button'
-                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-[#ff4d3d] px-5 text-xs font-black uppercase tracking-[0.14em]'
-                onClick={async () => {
-                  await logout()
-                  setOpenLogoutModal(false)
-                }}
+                disabled={isLoggingOut}
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-11 cursor-pointer items-center justify-center gap-2 bg-[#ff4d3d] px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60'
+                onClick={() => doLogout()}
               >
-                {t('sidebar.logout')}
+                {isLoggingOut && (
+                  <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
+                )}
+                {isLoggingOut ? t('sidebar.loggingOut') : t('sidebar.logout')}
               </button>
             </DialogFooter>
           </div>

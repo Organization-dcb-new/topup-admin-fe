@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -11,199 +10,137 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
 
-import { ImagePlus, Plus, UploadCloud } from 'lucide-react'
+import { ImagePlus, Plus } from 'lucide-react'
 
-import { handleFileAutoUpload } from '@/helpers/upload'
-import type { FormValuesBanner } from '@/types/banner'
+import { BannerImageField, useBannerImage } from '@/components/Banner/BannerImageField'
+import { safeRedirectHref } from '@/components/Banner/BannerLink'
+import type { BannerFormValues } from '@/types/banner'
 import { useCreateBanner } from '@/hooks/useBanner'
+import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
 export function CreateBannerModal() {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [isUploading, setIsUploading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const image = useBannerImage()
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
-  } = useForm<FormValuesBanner>()
+  } = useForm<BannerFormValues>()
 
-  const mutation = useCreateBanner(reset, setPreview, setOpen)
-  const onSubmit = (values: FormValuesBanner) => {
-    mutation.mutate(values)
-  }
+  const mutation = useCreateBanner(reset, image.reset, setOpen)
 
-  const handleFile = (file: File) => {
-    handleFileAutoUpload({
-      file,
-      setPreview,
-      setIsUploading,
-      setUploadProgress,
-      setValue: setValue as any,
-      fieldName: 'image',
-    })
+  const onSubmit = async (values: BannerFormValues) => {
+    // Unggahan baru jalan di sini, bukan saat berkas dipilih, supaya modal
+    // yang dibatalkan tidak meninggalkan berkas yatim di server.
+    const imageUrl = await image.upload()
+    if (!imageUrl) return
+    mutation.mutate({ ...values, image: imageUrl })
   }
 
   useEffect(() => {
-    if (!open) {
-      reset()
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
+    if (open) return
+    reset()
+    image.reset(null)
+    // `image.reset` stabil (useCallback) — sengaja tidak masuk deps supaya
+    // efek ini hanya bereaksi pada perubahan `open`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, reset])
+
+  const isBusy = image.isUploading || mutation.isPending
 
   return (
     <>
-      <Button
+      <button
         type='button'
-        className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
+        className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-9 w-full cursor-pointer items-center justify-center gap-2 bg-[#c9f24d] px-3 text-xs font-black uppercase tracking-[0.12em] sm:w-auto'
         onClick={() => setOpen(true)}
       >
-        <Plus className='h-4 w-4 shrink-0' aria-hidden />
+        <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
         {t('createBannerModal.trigger')}
-      </Button>
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='gap-0 overflow-hidden p-0 sm:max-w-lg'>
-          <div className='border-b border-border bg-muted/30 px-6 py-5'>
-            <DialogHeader className='gap-1.5 text-left'>
-              <div className='flex items-center gap-2'>
-                <span className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                  <ImagePlus className='h-4 w-4' aria-hidden />
+        <DialogContent
+          className='nb nb-frame nb-frame-thick nb-sd-lg gap-0 overflow-hidden bg-white p-0 sm:max-w-lg'
+          showCloseButton={false}
+        >
+          <div className='border-b-4 border-[#111] bg-[#c9f24d] px-5 py-4'>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className='nb-frame nb-frame-thin flex h-9 w-9 shrink-0 items-center justify-center bg-white'>
+                  <ImagePlus className='h-4 w-4' strokeWidth={3} aria-hidden />
                 </span>
-                <DialogTitle className='text-xl font-semibold tracking-tight'>
+                <DialogTitle className='text-xl font-black uppercase leading-none tracking-tight'>
                   {t('createBannerModal.title')}
                 </DialogTitle>
               </div>
-              <DialogDescription>{t('createBannerModal.description')}</DialogDescription>
+              <DialogDescription className='text-xs font-bold text-[#111]/70'>
+                {t('createBannerModal.description')}
+              </DialogDescription>
             </DialogHeader>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-6 py-5'>
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-5 py-5'>
             <div className='space-y-2'>
-              <Label htmlFor='banner-redirect-link'>{t('createBannerModal.redirectLabel')}</Label>
-              <div className='space-y-1'>
+              <Label
+                htmlFor='banner-redirect-link'
+                className='text-[11px] font-black uppercase tracking-[0.14em]'
+              >
+                {t('createBannerModal.redirectLabel')}
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id='banner-redirect-link'
                   {...register('redirect_link', {
                     required: t('createBannerModal.redirectRequired'),
+                    validate: (value) =>
+                      !!safeRedirectHref(value) || t('createBannerModal.redirectInvalid'),
                   })}
                   placeholder='https://...'
                   inputMode='url'
                   autoComplete='url'
                   aria-invalid={!!errors.redirect_link}
+                  className={cn(
+                    'nb-field nb-frame nb-frame-thin nb-sd-sm h-11 bg-white text-sm font-bold placeholder:font-medium placeholder:text-[#111]/40',
+                    errors.redirect_link && 'nb-invalid',
+                  )}
                 />
 
                 {errors.redirect_link && (
-                  <p className='text-xs text-destructive'>{errors.redirect_link.message}</p>
+                  <p
+                    className='text-[11px] font-black uppercase tracking-wide text-[#ff4d3d]'
+                    role='alert'
+                  >
+                    {errors.redirect_link.message}
+                  </p>
                 )}
               </div>
-              <p className='text-xs text-muted-foreground'>{t('createBannerModal.redirectHint')}</p>
+              <p className='text-xs font-bold text-[#111]/55'>
+                {t('createBannerModal.redirectHint')}
+              </p>
             </div>
 
-            <div className='space-y-2'>
-              <Label>{t('createBannerModal.imageLabel')}</Label>
-              <p className='text-xs text-muted-foreground'>{t('createBannerModal.imageHint')}</p>
+            <BannerImageField image={image} />
 
-              <div
-                role='button'
-                tabIndex={0}
-                aria-label={t('createBannerModal.uploadAria')}
-                onClick={() => inputRef.current?.click()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    inputRef.current?.click()
-                  }
-                }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFile(file)
-                }}
-                className={`group relative flex min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/20 px-4 py-6 transition-colors outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/50 ${
-                  isUploading
-                    ? 'pointer-events-none opacity-60'
-                    : 'hover:border-primary/50 hover:bg-muted/35'
-                }`}
-              >
-                {preview ? (
-                  <>
-                    <img
-                      src={preview}
-                      alt={t('createBannerModal.previewAlt')}
-                      className='max-h-44 w-full rounded-lg object-contain'
-                    />
-                    {!isUploading && (
-                      <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100'>
-                        <span className='rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm'>
-                          {t('createBannerModal.changeImage')}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className='flex flex-col items-center gap-2 text-center text-muted-foreground'>
-                    <span className='flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border'>
-                      <UploadCloud className='h-6 w-6 text-primary' aria-hidden />
-                    </span>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploadTitle')}
-                    </span>
-                    <span className='max-w-[16rem] text-xs leading-relaxed'>
-                      {t('createBannerModal.uploadDropHint')}
-                    </span>
-                  </div>
-                )}
-
-                {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploading', { percent: uploadProgress })}
-                    </span>
-                    <Progress value={uploadProgress} className='h-2 w-[min(100%,12rem)]' />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <input
-              ref={inputRef}
-              type='file'
-              accept='image/*,.svg'
-              className='hidden'
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleFile(file)
-              }}
-            />
-
-            <DialogFooter className='gap-2 border-t border-border pt-5 sm:pt-5'>
-              <Button
-                className='cursor-pointer sm:min-w-[5.5rem]'
-                variant='outline'
+            <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
+              <button
                 type='button'
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-white px-5 text-xs font-black uppercase tracking-[0.14em] sm:min-w-[5.5rem]'
                 onClick={() => setOpen(false)}
               >
                 {t('createBannerModal.cancel')}
-              </Button>
-              <Button
-                className='cursor-pointer sm:min-w-[5.5rem]'
+              </button>
+              <button
                 type='submit'
-                disabled={isUploading || mutation.isPending}
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-[#c9f24d] px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[5.5rem]'
+                disabled={isBusy}
               >
-                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
-              </Button>
+                {isBusy ? t('createBannerModal.saving') : t('createBannerModal.save')}
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

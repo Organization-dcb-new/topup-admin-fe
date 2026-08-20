@@ -40,7 +40,10 @@
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs"
-    }
+    },
+    "loggingOut": "Signing out…",
+    "logoutSuccess": "Signed out",
+    "logoutError": "Could not sign out, try again"
   },
   "transactionPage": {
     "toastLoading": "Loading transactions…",
@@ -1724,9 +1727,10 @@
     }
   },
   "unauthorizedPage": {
-    "title": "403 - Block Access",
+    "title": "Access denied",
     "subtitle": "User does not have access.",
-    "backButton": "Back to Dashboard"
+    "backButton": "Back to Dashboard",
+    "tabTitle": "Access denied"
   },
   "notFoundPage": {
     "title": "Page not found",
@@ -1744,7 +1748,11 @@
     "loginSuccess": "Login successful",
     "loginError": "Login failed",
     "showPassword": "Show password",
-    "hidePassword": "Hide password"
+    "hidePassword": "Hide password",
+    "tabTitle": "Sign in",
+    "capsLockOn": "Caps Lock is on",
+    "errorIdentifierRequired": "Email or username is required",
+    "errorPasswordMin": "Password must be at least 6 characters"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Recovery successful. Please log in again.",
@@ -1761,7 +1769,11 @@
     "useOtp": "Use OTP",
     "useRecovery": "Use recovery code",
     "trouble": "Having trouble?",
-    "backToLogin": "Back to login"
+    "backToLogin": "Back to login",
+    "tabTitle": "Verify",
+    "badgeOtp": "OTP",
+    "badgeRecovery": "Recovery",
+    "recoveryLabel": "Recovery code"
   },
   "transactionDetailPage": {
     "title": "Transaction detail",
@@ -1859,5 +1871,51 @@
   },
   "common": {
     "refresh": "Refresh"
+  },
+  "authShared": {
+    "loading": "Loading…",
+    "loadingHint": "This will only take a moment.",
+    "switchLanguage": "Switch language",
+    "networkError": "Cannot reach the server. Check your connection.",
+    "timeoutError": "The server took too long to respond. Try again.",
+    "rateLimited": "Too many attempts. Wait a moment before trying again.",
+    "serverError": "The server ran into a problem. Try again later."
+  },
+  "setup2fa": {
+    "title": "Account security",
+    "subtitle": "Manage two-factor authentication (2FA) for your admin account.",
+    "badgeActive": "2FA active",
+    "checking": "Checking security status…",
+    "checkingHint": "This will only take a moment.",
+    "manageTitle": "Manage 2FA",
+    "deactivateHeading": "Turn off protection?",
+    "deactivateBody": "This increases the risk of unauthorized access. Make sure you understand the consequences.",
+    "deactivateCta": "Turn off 2FA",
+    "finalVerifyTitle": "Final verification",
+    "finalVerifySubtitle": "Enter your OTP code to confirm",
+    "deactivating": "Turning off…",
+    "cancelDeactivate": "Cancel, keep 2FA on",
+    "enableTitle": "Strengthen your account",
+    "enableBody": "Use an authenticator app to protect the admin dashboard from unauthorized access.",
+    "enableCta": "Turn on 2FA",
+    "preparing": "Preparing…",
+    "step1": "1. Scan QR",
+    "step2": "2. Recovery codes",
+    "step3": "3. Activation",
+    "copyAll": "Copy all codes",
+    "copied": "Copied",
+    "confirmSaved": "I have saved the recovery codes somewhere safe",
+    "otpLabel": "OTP code from your authenticator app",
+    "verifying": "Verifying…",
+    "warnTitle": "Before you activate",
+    "warnBody": "Store the recovery codes somewhere safe. Without them, recovering your account is difficult if you lose the authenticator app.",
+    "toastQrCreated": "QR code created",
+    "toastQrError": "Could not start 2FA setup",
+    "toastActivated": "2FA is now on",
+    "toastActivateError": "That OTP code is not valid",
+    "toastDeactivated": "2FA is now off",
+    "toastDeactivateError": "Could not turn off 2FA",
+    "toastCopied": "Recovery codes copied",
+    "toastCopyError": "Could not copy the recovery codes"
   }
 }

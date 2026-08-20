@@ -40,7 +40,10 @@
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk"
-    }
+    },
+    "loggingOut": "Keluar…",
+    "logoutSuccess": "Berhasil keluar",
+    "logoutError": "Gagal keluar, coba lagi"
   },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
@@ -1724,9 +1727,10 @@
     }
   },
   "unauthorizedPage": {
-    "title": "403 - Akses diblokir",
+    "title": "Akses diblokir",
     "subtitle": "Pengguna tidak memiliki akses.",
-    "backButton": "Kembali ke dasbor"
+    "backButton": "Kembali ke dasbor",
+    "tabTitle": "Akses ditolak"
   },
   "notFoundPage": {
     "title": "Halaman tidak ditemukan",
@@ -1744,7 +1748,11 @@
     "loginSuccess": "Login berhasil",
     "loginError": "Login gagal",
     "showPassword": "Tampilkan kata sandi",
-    "hidePassword": "Sembunyikan kata sandi"
+    "hidePassword": "Sembunyikan kata sandi",
+    "tabTitle": "Masuk",
+    "capsLockOn": "Caps Lock aktif",
+    "errorIdentifierRequired": "Email atau username wajib diisi",
+    "errorPasswordMin": "Kata sandi minimal 6 karakter"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Pemulihan berhasil. Silakan login kembali.",
@@ -1761,7 +1769,11 @@
     "useOtp": "Gunakan OTP",
     "useRecovery": "Gunakan kode recovery",
     "trouble": "Terjadi masalah?",
-    "backToLogin": "Kembali ke login"
+    "backToLogin": "Kembali ke login",
+    "tabTitle": "Verifikasi",
+    "badgeOtp": "OTP",
+    "badgeRecovery": "Pemulihan",
+    "recoveryLabel": "Kode pemulihan"
   },
   "transactionDetailPage": {
     "title": "Detail transaksi",
@@ -1859,5 +1871,51 @@
   },
   "common": {
     "refresh": "Muat Ulang"
+  },
+  "authShared": {
+    "loading": "Memuat…",
+    "loadingHint": "Mohon tunggu sebentar.",
+    "switchLanguage": "Ganti bahasa",
+    "networkError": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+    "timeoutError": "Server terlalu lama merespons. Coba lagi.",
+    "rateLimited": "Terlalu banyak percobaan. Tunggu sebentar sebelum mencoba lagi.",
+    "serverError": "Server sedang bermasalah. Coba lagi nanti."
+  },
+  "setup2fa": {
+    "title": "Keamanan akun",
+    "subtitle": "Kelola autentikasi dua faktor (2FA) untuk akun admin Anda.",
+    "badgeActive": "2FA aktif",
+    "checking": "Memeriksa status keamanan…",
+    "checkingHint": "Mohon tunggu sebentar.",
+    "manageTitle": "Kelola 2FA",
+    "deactivateHeading": "Nonaktifkan perlindungan?",
+    "deactivateBody": "Tindakan ini meningkatkan risiko akses tidak sah. Pastikan Anda memahami konsekuensinya.",
+    "deactivateCta": "Nonaktifkan 2FA",
+    "finalVerifyTitle": "Verifikasi akhir",
+    "finalVerifySubtitle": "Masukkan kode OTP untuk mengonfirmasi",
+    "deactivating": "Menonaktifkan…",
+    "cancelDeactivate": "Batal, tetap aktifkan 2FA",
+    "enableTitle": "Perkuat keamanan akun",
+    "enableBody": "Gunakan aplikasi autentikator untuk melindungi dashboard admin dari akses tidak sah.",
+    "enableCta": "Aktifkan 2FA",
+    "preparing": "Menyiapkan…",
+    "step1": "1. Pindai QR",
+    "step2": "2. Kode cadangan",
+    "step3": "3. Aktivasi",
+    "copyAll": "Salin semua kode",
+    "copied": "Disalin",
+    "confirmSaved": "Saya sudah menyimpan kode cadangan di tempat aman",
+    "otpLabel": "Kode OTP dari aplikasi autentikator",
+    "verifying": "Memverifikasi…",
+    "warnTitle": "Sebelum aktivasi",
+    "warnBody": "Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun sulit dilakukan jika aplikasi autentikator hilang.",
+    "toastQrCreated": "QR berhasil dibuat",
+    "toastQrError": "Gagal membuat setup 2FA",
+    "toastActivated": "2FA berhasil diaktifkan",
+    "toastActivateError": "Kode OTP tidak valid",
+    "toastDeactivated": "2FA berhasil dinonaktifkan",
+    "toastDeactivateError": "Gagal menonaktifkan 2FA",
+    "toastCopied": "Kode cadangan disalin",
+    "toastCopyError": "Gagal menyalin kode cadangan"
   }
 }

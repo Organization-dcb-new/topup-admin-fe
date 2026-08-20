@@ -1,8 +1,12 @@
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ShieldOff, ArrowLeft } from 'lucide-react'
 
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
+
 export default function UnauthorizedPage() {
   const { t } = useTranslation('common')
+  useDocumentTitle(t('unauthorizedPage.tabTitle'))
 
   return (
     <div className='nb nb-surface relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12'>
@@ -12,7 +16,7 @@ export default function UnauthorizedPage() {
         <div className='nb-frame nb-round nb-sd absolute bottom-[22%] right-[14%] h-16 w-16 bg-[#ff9ed2]' />
       </div>
 
-      <div className='relative z-10 w-full max-w-md'>
+      <div className='relative z-10 w-full max-w-md duration-300 animate-in fade-in slide-in-from-bottom-3'>
         <span className='nb-frame nb-sd-sm absolute -top-2 left-5 z-20 -rotate-2 bg-[#ff4d3d] px-3 py-1 text-xs font-black uppercase tracking-[0.25em] text-white'>
           403
         </span>
@@ -37,14 +41,14 @@ export default function UnauthorizedPage() {
               {t('unauthorizedPage.subtitle')}
             </p>
 
-            <button
-              type='button'
-              onClick={() => (window.location.href = '/')}
-              className='nb-frame nb-sd nb-press mt-8 flex h-14 w-full items-center justify-center gap-2 bg-[#c9f24d] text-base font-black uppercase tracking-[0.12em]'
+            {/* Navigasi SPA, bukan reload dokumen seperti sebelumnya */}
+            <Link
+              to='/'
+              className='nb-frame nb-sd nb-press mt-8 flex h-14 w-full items-center justify-center gap-2 bg-[#c9f24d] text-base font-black uppercase tracking-[0.12em] no-underline text-[#111]'
             >
               <ArrowLeft className='h-5 w-5 shrink-0' strokeWidth={3} aria-hidden />
               {t('unauthorizedPage.backButton')}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

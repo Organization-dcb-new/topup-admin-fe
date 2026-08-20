@@ -288,7 +288,11 @@ export const router = createBrowserRouter([
       },
       {
         path: '*',
-        element: <NotFoundPage />,
+        element: (
+          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+            <NotFoundPage />
+          </RoleGuard>
+        ),
       },
     ],
   },

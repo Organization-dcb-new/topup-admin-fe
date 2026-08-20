@@ -17,6 +17,8 @@ interface DataTableProps<TData, TValue> {
   emptyMessage?: React.ReactNode
   /** Header mengikuti scroll vertikal (berguna saat tabel panjang) */
   stickyHeader?: boolean
+  /** Kelas tambahan untuk pembungkus tabel (mis. `nb nb-table` di halaman neo-brutalism) */
+  className?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -25,6 +27,7 @@ export function DataTable<TData, TValue>({
   renderSubRow,
   emptyMessage = 'No data',
   stickyHeader = false,
+  className,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -36,7 +39,12 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className='w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80'>
+    <div
+      className={cn(
+        'w-full min-w-0 max-w-full overflow-x-auto overflow-y-clip rounded-md border border-border/80',
+        className,
+      )}
+    >
       <Table
         className='min-w-max [&_td]:border-x-0 [&_th]:border-x-0'
         scrollContainer={false}
