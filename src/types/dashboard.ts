@@ -107,11 +107,12 @@ export interface DashboardOverviewResponse {
 
 export interface TimeseriesPoint {
   time_key: string // awal bucket, RFC3339 WIB
+  /** Semua order dibuat pada bucket ini. */
   count: number
+  /** Order yang sudah dibayar (payments PAID/SUCCESS) pada bucket ini. */
+  paid: number
   revenue: number
   margin: number
-  failed: number
-  pending: number
 }
 
 export interface DashboardTimeseriesData {

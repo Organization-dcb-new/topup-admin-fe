@@ -14,21 +14,92 @@ export const RANGE_OPTIONS: DashboardRange[] = [
   'custom',
 ]
 
-/**
- * Granularity yang aman ditawarkan per rentang. Sengaja tidak memunculkan
- * `second`/`minute` untuk menghindari error 400 (batas 1000 bucket & aturan
- * "granularity too fine"). Elemen pertama = default.
- */
-export const GRANULARITY_BY_RANGE: Record<DashboardRange, DashboardGranularity[]> = {
-  today: ['hour'],
-  '7d': ['day', 'hour'],
-  '30d': ['day', 'week'],
-  this_month: ['day', 'week'],
-  custom: ['day', 'week', 'month'],
+const DAY_MS = 86_400_000
+
+/** Lebar bucket per granularity — sama dengan asumsi server saat menghitung batas. */
+const BUCKET_MS: Record<DashboardGranularity, number> = {
+  second: 1_000,
+  minute: 60_000,
+  hour: 3_600_000,
+  day: DAY_MS,
+  week: 7 * DAY_MS,
+  month: 30 * DAY_MS,
 }
 
-export function defaultGranularity(range: DashboardRange): DashboardGranularity {
-  return GRANULARITY_BY_RANGE[range][0]
+/** Server menolak lebih dari 1000 bucket, dan `second`/`minute` di atas 24 jam. */
+const MAX_BUCKETS = 1000
+const FINE_GRANULARITY_MAX_MS = DAY_MS
+
+/** Di atas ini grafik jadi rapat dan tak terbaca, jadi bukan pilihan default. */
+const READABLE_BUCKETS = 100
+
+/** Kasar → halus; urutan tampilan mengikuti ini. */
+const GRANULARITY_ORDER: DashboardGranularity[] = ['hour', 'day', 'week', 'month']
+
+/**
+ * Perkiraan panjang rentang (ms), sengaja dibulatkan ke atas supaya opsi yang
+ * ditawarkan tidak pernah melampaui batas server.
+ */
+export function rangeSpanMs(
+  range: DashboardRange,
+  startDate?: string,
+  endDate?: string,
+): number {
+  const now = new Date()
+  switch (range) {
+    case 'today': {
+      const midnight = new Date(now)
+      midnight.setHours(0, 0, 0, 0)
+      return Math.max(now.getTime() - midnight.getTime(), BUCKET_MS.hour)
+    }
+    case '7d':
+      return 7 * DAY_MS
+    case '30d':
+      return 30 * DAY_MS
+    case 'this_month': {
+      const first = new Date(now.getFullYear(), now.getMonth(), 1)
+      return Math.max(now.getTime() - first.getTime(), DAY_MS)
+    }
+    case 'custom': {
+      if (!startDate || !endDate) return DAY_MS
+      const start = new Date(`${startDate}T00:00:00`).getTime()
+      const end = new Date(`${endDate}T00:00:00`).getTime() + DAY_MS // end_date inklusif
+      return Number.isFinite(start) && Number.isFinite(end) && end > start ? end - start : DAY_MS
+    }
+  }
+}
+
+/**
+ * Granularity yang aman untuk sebuah rentang. Daftar statis per preset dulu bisa
+ * menawarkan `day` untuk rentang kustom bertahun-tahun — di atas 1000 bucket
+ * server membalas 400, jadi pilihan yang pasti gagal tidak lagi ditampilkan.
+ */
+export function granularityOptions(
+  range: DashboardRange,
+  startDate?: string,
+  endDate?: string,
+): DashboardGranularity[] {
+  const span = rangeSpanMs(range, startDate, endDate)
+  const allowed = GRANULARITY_ORDER.filter((g) => {
+    if ((g === 'second' || g === 'minute') && span > FINE_GRANULARITY_MAX_MS) return false
+    return span / BUCKET_MS[g] <= MAX_BUCKETS
+  })
+  // Rentang yang sangat panjang menyisakan `month`; jangan pernah kembalikan kosong.
+  return allowed.length > 0 ? allowed : ['month']
+}
+
+/** Granularity terhalus yang masih terbaca; jatuh ke yang terkasar bila tak ada. */
+export function defaultGranularity(
+  range: DashboardRange,
+  startDate?: string,
+  endDate?: string,
+): DashboardGranularity {
+  const options = granularityOptions(range, startDate, endDate)
+  const span = rangeSpanMs(range, startDate, endDate)
+  return (
+    options.find((g) => span / BUCKET_MS[g] <= READABLE_BUCKETS) ??
+    options[options.length - 1]
+  )
 }
 
 /** Warna konsisten per status order (dipakai chart & badge). */
@@ -52,15 +123,19 @@ export const ORDER_STATUSES: OrderStatus[] = [
   'REFUNDED',
 ]
 
+/** Granularity berstep tetap saja; `month` panjangnya bervariasi. */
 const STEP_MS: Partial<Record<DashboardGranularity, number>> = {
-  second: 1_000,
-  minute: 60_000,
-  hour: 3_600_000,
-  day: 86_400_000,
-  week: 604_800_000,
+  second: BUCKET_MS.second,
+  minute: BUCKET_MS.minute,
+  hour: BUCKET_MS.hour,
+  day: BUCKET_MS.day,
+  week: BUCKET_MS.week,
 }
 
-const EMPTY_POINT = { count: 0, revenue: 0, margin: 0, failed: 0, pending: 0 }
+const EMPTY_POINT = { count: 0, paid: 0, revenue: 0, margin: 0 }
+
+/** Batas pengaman; di atas ini pengisian celah dilewati, bukan dipotong. */
+const MAX_FILLED_BUCKETS = 2000
 
 /**
  * Server tidak mengirim bucket kosong. Untuk granularity berstep tetap
@@ -81,10 +156,14 @@ export function fillTimeseriesGaps(
   const byTs = new Map(sorted.map((p) => [new Date(p.time_key).getTime(), p]))
   const start = new Date(sorted[0].time_key).getTime()
   const end = new Date(sorted[sorted.length - 1].time_key).getTime()
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return series
+
+  // Memotong di tengah jalan akan menyembunyikan ekor grafik tanpa jejak apa pun;
+  // lebih jujur menggambar titik apa adanya daripada separuh rentang yang mulus.
+  if ((end - start) / step + 1 > MAX_FILLED_BUCKETS) return sorted
 
   const out: TimeseriesPoint[] = []
-  const MAX_BUCKETS = 2000 // guard runaway
-  for (let ts = start, i = 0; ts <= end && i < MAX_BUCKETS; ts += step, i++) {
+  for (let ts = start; ts <= end; ts += step) {
     const existing = byTs.get(ts)
     out.push(existing ?? { time_key: new Date(ts).toISOString(), ...EMPTY_POINT })
   }

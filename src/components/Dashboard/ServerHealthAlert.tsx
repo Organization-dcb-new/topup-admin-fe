@@ -3,14 +3,16 @@ import { cn } from '@/lib/utils'
 import { Activity, CheckCircle2, XCircle, AlertTriangle, RefreshCw } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 
-function formatTimeSince(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
-  if (seconds < 60) return `${seconds}s ago`
+function formatTimeSince(date: Date, t: TFunction): string {
+  const seconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000))
+  if (seconds < 60) return t('dashboard.health.agoSeconds', { count: seconds })
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return t('dashboard.health.agoMinutes', { count: minutes })
   const hours = Math.floor(minutes / 60)
-  return `${hours}h ${minutes % 60}m ago`
+  return t('dashboard.health.agoHours', { hours, minutes: minutes % 60 })
 }
 
 /**
@@ -91,6 +93,7 @@ function RefreshButton({ label, onClick }: { label: string; onClick: () => void 
 }
 
 export function ServerHealthAlert() {
+  const { t } = useTranslation('common')
   const { data, isLoading, isError, dataUpdatedAt } = useHealthCheck()
   const queryClient = useQueryClient()
   const [, setTick] = useState(0)
@@ -105,7 +108,7 @@ export function ServerHealthAlert() {
     queryClient.invalidateQueries({ queryKey: ['health'] })
   }
 
-  const lastChecked = dataUpdatedAt ? formatTimeSince(new Date(dataUpdatedAt)) : null
+  const lastChecked = dataUpdatedAt ? formatTimeSince(new Date(dataUpdatedAt), t) : null
 
   if (isLoading) {
     return (
@@ -113,8 +116,8 @@ export function ServerHealthAlert() {
         surface='bg-white'
         chip='bg-[#6fe3f5]'
         icon={<Activity className='h-5 w-5 animate-pulse' strokeWidth={3} aria-hidden />}
-        title='Server Status'
-        description='Checking server health...'
+        title={t('dashboard.health.title')}
+        description={t('dashboard.health.checking')}
       />
     )
   }
@@ -125,10 +128,10 @@ export function ServerHealthAlert() {
         surface='bg-[#ff4d3d]'
         chip='bg-white'
         icon={<XCircle className='h-5 w-5' strokeWidth={3} aria-hidden />}
-        title='Server Unreachable'
-        description='Cannot connect to the server. Please check if the backend is running.'
+        title={t('dashboard.health.unreachable')}
+        description={t('dashboard.health.unreachableHint')}
       >
-        <RefreshButton label='Retry' onClick={handleRefresh} />
+        <RefreshButton label={t('dashboard.health.retry')} onClick={handleRefresh} />
       </HealthBanner>
     )
   }
@@ -143,7 +146,7 @@ export function ServerHealthAlert() {
         surface='bg-white'
         chip='bg-[#c9f24d]'
         icon={<CheckCircle2 className='h-5 w-5' strokeWidth={3} aria-hidden />}
-        title='All Systems Operational'
+        title={t('dashboard.health.operational')}
       >
         {Object.entries(services).map(([name, status]) => (
           <ServiceTag key={name} name={name} status={status} />
@@ -153,7 +156,7 @@ export function ServerHealthAlert() {
             {lastChecked}
           </span>
         )}
-        <RefreshButton label='Refresh' onClick={handleRefresh} />
+        <RefreshButton label={t('dashboard.health.refresh')} onClick={handleRefresh} />
       </HealthBanner>
     )
   }
@@ -164,7 +167,7 @@ export function ServerHealthAlert() {
       surface='bg-[#ff9d3d]'
       chip='bg-white'
       icon={<AlertTriangle className='h-5 w-5' strokeWidth={3} aria-hidden />}
-      title={isHealthy ? 'Degraded Performance' : 'Server Unhealthy'}
+      title={t(isHealthy ? 'dashboard.health.degraded' : 'dashboard.health.unhealthy')}
     >
       {Object.entries(services).map(([name, status]) => (
         <ServiceTag key={name} name={name} status={status} />
@@ -174,7 +177,7 @@ export function ServerHealthAlert() {
           {lastChecked}
         </span>
       )}
-      <RefreshButton label='Refresh' onClick={handleRefresh} />
+      <RefreshButton label={t('dashboard.health.refresh')} onClick={handleRefresh} />
     </HealthBanner>
   )
 }

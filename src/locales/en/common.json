@@ -1715,7 +1715,8 @@
       "metric": {
         "count": "Order count",
         "revenue": "Revenue",
-        "margin": "Margin"
+        "margin": "Margin",
+        "paid": "Paid transactions"
       }
     },
     "status": {
@@ -1751,6 +1752,28 @@
       "empty": "No data yet.",
       "productMeta": "{{sku}} · {{qty}} sold",
       "ordersMeta": "{{count}} orders"
+    },
+    "refresh": "Refresh data",
+    "autoRefresh": {
+      "label": "Auto refresh:",
+      "off": "Off",
+      "30s": "30s",
+      "1m": "1m",
+      "5m": "5m"
+    },
+    "health": {
+      "title": "Server status",
+      "checking": "Checking server health...",
+      "operational": "All systems operational",
+      "degraded": "Degraded performance",
+      "unhealthy": "Server unhealthy",
+      "unreachable": "Server unreachable",
+      "unreachableHint": "Cannot connect to the server. Check that the backend is running.",
+      "refresh": "Refresh",
+      "retry": "Retry",
+      "agoSeconds": "{{count}}s ago",
+      "agoMinutes": "{{count}}m ago",
+      "agoHours": "{{hours}}h {{minutes}}m ago"
     }
   },
   "unauthorizedPage": {

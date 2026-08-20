@@ -70,6 +70,12 @@ export const useDashboardOverview = (
 export const useDashboardTimeseries = (
   params: DashboardRangeParams,
   granularity: DashboardGranularity,
+  /**
+   * Disamakan dengan polling overview. Tanpa ini grafik membeku pada snapshot
+   * pertama sementara kartu KPI di atasnya terus bergerak — dua angka berbeda
+   * untuk rentang yang sama di layar yang sama.
+   */
+  refetchInterval?: number | false,
 ) =>
   useQuery<DashboardTimeseriesResponse>({
     queryKey: [
@@ -94,4 +100,6 @@ export const useDashboardTimeseries = (
     },
     enabled: isRangeReady(params),
     staleTime: 30_000,
+    refetchInterval: refetchInterval !== undefined ? refetchInterval : 60_000,
+    refetchIntervalInBackground: false,
   })

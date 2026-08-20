@@ -20,6 +20,8 @@ import {
   useAddProductToCategoryProduct,
 } from "@/hooks/useCategoryProduct";
 import { useGetProductNames } from "@/hooks/useProduct";
+import { cn } from "@/lib/utils";
+import { nbIconBtnSm } from "@/styles/nb";
 import {
   ArrowUpDown,
   CheckSquare,
@@ -49,10 +51,12 @@ export function AddProductToCategoryProductButton({
   id,
   game_id,
   existingProduct,
+  triggerClassName,
 }: {
   id: string;
   game_id: string;
   existingProduct: ProductResponseOnly[];
+  triggerClassName?: string;
 }) {
   const { t } = useTranslation("common");
   const [selected, setSelected] = useState<string[]>([]);
@@ -127,15 +131,13 @@ export function AddProductToCategoryProductButton({
       }}
     >
       <AlertDialogTrigger asChild>
-        <Button
+        <button
           type="button"
-          className="cursor-pointer"
-          variant="ghost"
-          size="icon"
+          className={cn(nbIconBtnSm, triggerClassName)}
           aria-label={t("categoryProductAddProducts.triggerAria")}
         >
-          <Plus className="h-4 w-4" aria-hidden />
-        </Button>
+          <Plus className="h-4 w-4" strokeWidth={3} aria-hidden />
+        </button>
       </AlertDialogTrigger>
 
       <AlertDialogContent className="rounded-[2rem] sm:max-w-[500px] border-none shadow-2xl p-6">
