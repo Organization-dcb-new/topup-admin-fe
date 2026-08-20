@@ -4,26 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-
-/**
- * Hanya http(s) dan path absolut yang boleh dipakai sebagai `href`.
- *
- * Nilai `redirect_link` datang dari form dan disimpan apa adanya oleh backend,
- * jadi `javascript:` / `data:` bisa ikut tersimpan dan akan tereksekusi saat
- * tautannya diklik di dashboard. `//evil.com` juga ditolak karena
- * protocol-relative tetap keluar ke host lain.
- */
-export function safeRedirectHref(url: string | null | undefined): string | null {
-  const trimmed = url?.trim()
-  if (!trimmed) return null
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  if (/^\/(?!\/)/.test(trimmed)) return trimmed
-  return null
-}
-
-export function isExternalHref(href: string): boolean {
-  return /^https?:\/\//i.test(href)
-}
+import { isExternalHref, safeRedirectHref } from '@/lib/url'
 
 const CHIP_BASE =
   'nb-frame nb-frame-thin inline-flex min-w-0 items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-wide'

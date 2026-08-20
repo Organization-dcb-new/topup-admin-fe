@@ -1,35 +1,44 @@
+import { BannerImage } from "@/components/Banner/BannerImage";
+import { BannerLink } from "@/components/Banner/BannerLink";
+import { BannerRowActions } from "@/components/Banner/BannerRowActions";
 import { CreateBannerModal } from "@/components/Banner/CreateBannerModal";
 import { DashboardLayout } from "@/components/Layout/dashboard-layout";
 import ErrorComponent from "@/components/Layout/error";
 import { DataTable } from "@/components/Layout/table-data";
-import { useGetBanners } from "@/hooks/useBanner";
-import { getBannerColumns } from "@/tables/table-banner";
-import {
-  AlertCircle,
-  CheckCircle2,
-  ImageIcon,
-  Loader2,
-  LayoutGrid,
-  List,
-  ZoomIn,
-  ExternalLink,
-  Link2,
-  Copy,
-  Check,
-  X,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { BannerRowActions } from "@/components/Banner/BannerRowActions";
+import { useGetBanners } from "@/hooks/useBanner";
+import { cn } from "@/lib/utils";
+import { getBannerColumns } from "@/tables/table-banner";
+import type { Banner } from "@/types/banner";
+import {
+  AlertCircle,
+  CheckCircle2,
+  ImageIcon,
+  LayoutGrid,
+  List,
+  Loader2,
+  X,
+  ZoomIn,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-/** Label status di kanan judul halaman. */
+type ViewMode = "table" | "grid";
+
+const VIEW_MODE_STORAGE_KEY = "banner-view-mode";
+
+function readStoredViewMode(): ViewMode {
+  return localStorage.getItem(VIEW_MODE_STORAGE_KEY) === "table"
+    ? "table"
+    : "grid";
+}
+
+/** Label status di sisi kanan judul halaman. */
 function StatusTag({
   accent,
   children,
@@ -77,59 +86,47 @@ function ViewToggleButton({
   );
 }
 
-function BannerCard({ banner }: { banner: any }) {
-  const [copied, setCopied] = useState(false);
-  const isExternal =
-    banner.redirect_link?.startsWith("http://") ||
-    banner.redirect_link?.startsWith("https://");
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!banner.redirect_link) return;
-    await navigator.clipboard.writeText(banner.redirect_link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const src = banner.image || "https://api.dicebear.com/9.x/lorelei/svg";
+function BannerCard({ banner }: { banner: Banner }) {
+  const { t } = useTranslation("common");
 
   return (
     <div className="nb-frame nb-frame-thick nb-sd nb-press group relative flex flex-col bg-white">
       <Dialog>
         <DialogTrigger asChild>
-          <div className="relative aspect-video w-full cursor-zoom-in overflow-hidden border-b-4 border-[#111] bg-[#f5f1e8]">
-            <img
-              src={src}
-              alt="Banner preview"
+          {/* <button>, bukan <div>: pemicu lama tidak fokusabel sehingga zoom
+              gambar sama sekali tidak bisa dibuka lewat keyboard. */}
+          <button
+            type="button"
+            aria-label={t("bannerTable.zoomImage")}
+            className="relative block aspect-video w-full cursor-zoom-in overflow-hidden border-b-4 border-[#111] bg-[#f5f1e8]"
+          >
+            <BannerImage
+              src={banner.image}
+              alt={t("bannerTable.imageAlt")}
               className="h-full w-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.png";
-              }}
             />
-            <div className="absolute inset-0 flex items-center justify-center bg-[#111]/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <span className="absolute inset-0 flex items-center justify-center bg-[#111]/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <span className="nb-frame nb-frame-thin flex h-10 w-10 items-center justify-center bg-[#c9f24d]">
-                <ZoomIn className="h-5 w-5" strokeWidth={3} />
+                <ZoomIn className="h-5 w-5" strokeWidth={3} aria-hidden />
               </span>
-            </div>
-          </div>
+            </span>
+          </button>
         </DialogTrigger>
         <DialogContent
           className="nb nb-frame nb-frame-thick nb-sd-lg max-w-3xl bg-white p-2"
           showCloseButton={false}
         >
-          <img
-            src={src}
-            alt="Banner full size"
+          <BannerImage
+            src={banner.image}
+            alt={t("bannerTable.imageAlt")}
             className="h-auto max-h-[80vh] w-full object-contain"
-            onError={(e) => {
-              e.currentTarget.src = "/placeholder.png";
-            }}
+            fallbackClassName="min-h-[16rem]"
           />
           <DialogClose asChild>
             <button
               type="button"
               className="nb-frame nb-frame-thin nb-sd-sm nb-press-sm absolute -right-3 -top-3 flex h-9 w-9 cursor-pointer items-center justify-center bg-[#ff4d3d]"
-              aria-label="Close"
+              aria-label={t("bannerTable.closePreview")}
             >
               <X className="h-4 w-4" strokeWidth={3} aria-hidden />
             </button>
@@ -138,47 +135,7 @@ function BannerCard({ banner }: { banner: any }) {
       </Dialog>
 
       <div className="flex flex-col gap-2.5 p-3">
-        {banner.redirect_link ? (
-          <div className="flex w-full items-center gap-2">
-            <a
-              href={banner.redirect_link}
-              target={isExternal ? "_blank" : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-              className={cn(
-                "nb-frame nb-frame-thin nb-press-sm inline-flex min-w-0 flex-1 items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-wide",
-                isExternal ? "bg-[#6fe3f5]" : "bg-[#ff9ed2]",
-              )}
-              title={banner.redirect_link}
-            >
-              {isExternal ? (
-                <ExternalLink className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
-              ) : (
-                <Link2 className="h-3.5 w-3.5 shrink-0" strokeWidth={3} />
-              )}
-              <span className="truncate">{banner.redirect_link}</span>
-            </a>
-            <button
-              type="button"
-              className={cn(
-                "nb-frame nb-frame-thin nb-press-sm flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center",
-                copied ? "bg-[#c9f24d]" : "bg-white",
-              )}
-              onClick={handleCopy}
-              title="Copy Link"
-              aria-label="Copy Link"
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5" strokeWidth={3} />
-              ) : (
-                <Copy className="h-3.5 w-3.5" strokeWidth={3} />
-              )}
-            </button>
-          </div>
-        ) : (
-          <span className="nb-frame nb-frame-thin inline-block w-fit bg-[#f5f1e8] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-[#111]/55">
-            No redirect link
-          </span>
-        )}
+        <BannerLink url={banner.redirect_link} />
 
         <div className="flex items-center justify-end border-t-4 border-[#111] pt-2.5">
           <BannerRowActions banner={banner} />
@@ -193,7 +150,11 @@ export default function BannerPage() {
   const { data, isPending, isError, isSuccess } = useGetBanners();
   const rows = data?.data ?? [];
   const bannerColumns = useMemo(() => getBannerColumns(t), [t]);
-  const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>(readStoredViewMode);
+
+  useEffect(() => {
+    localStorage.setItem(VIEW_MODE_STORAGE_KEY, viewMode);
+  }, [viewMode]);
 
   return (
     <DashboardLayout>
@@ -216,19 +177,31 @@ export default function BannerPage() {
           <div className="flex shrink-0 sm:justify-end">
             {isPending && (
               <StatusTag accent="bg-[#6fe3f5]">
-                <Loader2 className="h-4 w-4 shrink-0 animate-spin" strokeWidth={3} aria-hidden />
+                <Loader2
+                  className="h-4 w-4 shrink-0 animate-spin"
+                  strokeWidth={3}
+                  aria-hidden
+                />
                 {t("bannerPage.loadingShort")}
               </StatusTag>
             )}
             {isError && (
               <StatusTag accent="bg-[#ff4d3d]">
-                <AlertCircle className="h-4 w-4 shrink-0" strokeWidth={3} aria-hidden />
+                <AlertCircle
+                  className="h-4 w-4 shrink-0"
+                  strokeWidth={3}
+                  aria-hidden
+                />
                 {t("bannerPage.loadFailedShort")}
               </StatusTag>
             )}
             {isSuccess && (
               <StatusTag accent="bg-[#c9f24d]">
-                <CheckCircle2 className="h-4 w-4 shrink-0" strokeWidth={3} aria-hidden />
+                <CheckCircle2
+                  className="h-4 w-4 shrink-0"
+                  strokeWidth={3}
+                  aria-hidden
+                />
                 <span className="tabular-nums">
                   {t("bannerPage.totalBanners", { count: rows.length })}
                 </span>
@@ -252,16 +225,16 @@ export default function BannerPage() {
               <ViewToggleButton
                 active={viewMode === "table"}
                 onClick={() => setViewMode("table")}
-                label="Table View"
+                label={t("bannerPage.tableView")}
               >
-                <List className="h-4 w-4" strokeWidth={3} />
+                <List className="h-4 w-4" strokeWidth={3} aria-hidden />
               </ViewToggleButton>
               <ViewToggleButton
                 active={viewMode === "grid"}
                 onClick={() => setViewMode("grid")}
-                label="Grid Gallery"
+                label={t("bannerPage.gridView")}
               >
-                <LayoutGrid className="h-4 w-4" strokeWidth={3} />
+                <LayoutGrid className="h-4 w-4" strokeWidth={3} aria-hidden />
               </ViewToggleButton>
             </div>
             <CreateBannerModal />
@@ -276,7 +249,11 @@ export default function BannerPage() {
             aria-busy="true"
           >
             <span className="nb-frame nb-frame-thin nb-sd-sm flex h-14 w-14 items-center justify-center bg-[#6fe3f5]">
-              <Loader2 className="h-7 w-7 animate-spin" strokeWidth={3} aria-hidden />
+              <Loader2
+                className="h-7 w-7 animate-spin"
+                strokeWidth={3}
+                aria-hidden
+              />
             </span>
             <div className="text-center">
               <p className="text-sm font-black uppercase tracking-tight">

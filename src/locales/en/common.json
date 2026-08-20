@@ -356,7 +356,9 @@
     "tableLoadingTitle": "Loading banners…",
     "tableLoadingHint": "Please wait a moment.",
     "loadErrorDetail": "Failed to load banners. Check your connection or try reloading the page.",
-    "emptyPage": "No banners yet. Add one with the Add banner button above."
+    "emptyPage": "No banners yet. Add one with the Add banner button above.",
+    "tableView": "Table view",
+    "gridView": "Grid gallery"
   },
   "blogPage": {
     "title": "Blog",
@@ -650,7 +652,6 @@
     "updating": "Updating…",
     "applyAll": "Apply to All Games"
   },
-
   "gameShowcase": {
     "label": "Showcase",
     "hideAria": "Hide {{name}} from showcase",
@@ -1295,7 +1296,15 @@
     "colRedirectLink": "Redirect link",
     "imageAlt": "Banner",
     "actionsHeader": "Actions",
-    "rowActionsAria": "Actions for this banner"
+    "rowActionsAria": "Actions for this banner",
+    "noImage": "No image",
+    "noRedirectLink": "No redirect link",
+    "copyLink": "Copy link",
+    "copyFailed": "Failed to copy link",
+    "unsafeLink": "Unsafe link",
+    "unsafeLinkHint": "This link is blocked because its scheme is not allowed: {{url}}",
+    "zoomImage": "View banner image",
+    "closePreview": "Close preview"
   },
   "bannerToasts": {
     "loadingList": "Loading banner list…",
@@ -1326,7 +1335,8 @@
     "uploading": "Uploading… {{percent}}%",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "redirectInvalid": "Use a full http(s) URL or a path starting with /"
   },
   "editBannerModal": {
     "triggerShort": "Edit",
@@ -1917,5 +1927,13 @@
     "toastDeactivateError": "Could not turn off 2FA",
     "toastCopied": "Recovery codes copied",
     "toastCopyError": "Could not copy the recovery codes"
+  },
+  "bannerImageField": {
+    "errors": {
+      "invalidType": "Only image files are allowed.",
+      "tooLarge": "Image must be 10 MB or smaller.",
+      "uploadFailed": "Image upload failed. Please try again.",
+      "required": "Please choose a banner image first."
+    }
   }
 }

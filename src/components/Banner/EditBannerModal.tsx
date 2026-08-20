@@ -13,10 +13,11 @@ import { Label } from '@/components/ui/label'
 
 import { Pencil } from 'lucide-react'
 
-import { BannerImageField, useBannerImage } from '@/components/Banner/BannerImageField'
-import { safeRedirectHref } from '@/components/Banner/BannerLink'
+import { BannerImageField } from '@/components/Banner/BannerImageField'
+import { useBannerImage } from '@/components/Banner/useBannerImage'
 import type { Banner, BannerFormValues } from '@/types/banner'
 import { useUpdateBanner } from '@/hooks/useBanner'
+import { safeRedirectHref } from '@/lib/url'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 

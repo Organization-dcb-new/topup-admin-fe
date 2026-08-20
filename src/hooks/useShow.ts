@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
 import { api } from '@/api/axios'
 import type { ShowPayload } from '@/components/Show/CreateShowModal'
 import type { ShowResponse } from '@/types/show'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+
+const SHOWS_QUERY_KEY = ['shows']
 
 type UpdateShowPayload = {
   name: string
@@ -16,98 +17,74 @@ type UpdateShowPayload = {
   is_show: boolean
 }
 
-export const useGetShows = () => {
-  const { t } = useTranslation('common')
-  const query = useQuery<ShowResponse>({
-    queryKey: ['shows'],
+/**
+ * Sengaja tanpa toast apa pun. Versi sebelumnya memunculkan toast "memuat"
+ * lalu "berhasil dimuat" pada SETIAP kunjungan halaman — dua notifikasi untuk
+ * kejadian yang sudah terlihat jelas dari status di header dan tabelnya.
+ */
+export const useGetShows = () =>
+  useQuery<ShowResponse>({
+    queryKey: SHOWS_QUERY_KEY,
     queryFn: async () => {
       const res = await api.get('/shows/admin')
       return res.data
     },
   })
 
-  useEffect(() => {
-    if (!query.isPending) return
-    const id = toast.loading(t('showToasts.loading'))
-    return () => {
-      toast.dismiss(id)
-    }
-  }, [query.isPending, t])
-
-  useEffect(() => {
-    if (!query.isFetchedAfterMount) return
-    if (query.isSuccess) {
-      toast.success(t('showToasts.loadSuccess'))
-    }
-    if (query.isError) {
-      toast.error(t('showToasts.loadError'))
-    }
-  }, [query.isSuccess, query.isError, query.isFetchedAfterMount, t])
-
-  return query
-}
-
-export const useCreateShow = (
-  reset: () => void,
-  setPreview: (url: string | null) => void,
-  setOpen: (open: boolean) => void,
-) => {
+export const useCreateShow = (onDone?: () => void) => {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
+  return useMutation({
     mutationFn: async (payload: ShowPayload) => {
       const res = await api.post('/shows', payload)
       return res.data
     },
     onSuccess: () => {
       toast.success(t('showToasts.createSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['shows'] })
-      reset()
-      setPreview(null)
-      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: SHOWS_QUERY_KEY })
+      onDone?.()
     },
     onError: () => {
       toast.error(t('showToasts.createError'))
     },
   })
-
-  return mutation
 }
 
-export function useDeleteShow(id: string) {
+export function useDeleteShow(id: string, onDone?: () => void) {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
+  return useMutation({
+    /** `await` sebelumnya hilang, jadi kegagalan hapus bisa lolos tanpa terdeteksi. */
     mutationFn: async () => {
-      const res = api.delete(`/shows/${id}`)
-      return res
+      const res = await api.delete(`/shows/${id}`)
+      return res.data
     },
     onSuccess: () => {
       toast.success(t('showToasts.deleteSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['shows'] })
+      queryClient.invalidateQueries({ queryKey: SHOWS_QUERY_KEY })
+      onDone?.()
     },
     onError: () => {
       toast.error(t('showToasts.deleteError'))
     },
   })
-
-  return mutation
 }
 
-export function useAddGamesToShow(showId: string) {
+export function useAddGamesToShow(showId: string, onDone?: () => void) {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (gameIds: string[]) =>
-      api.put(`/shows/${showId}/games`, {
-        game_ids: gameIds,
-      }),
+    mutationFn: async (gameIds: string[]) => {
+      const res = await api.put(`/shows/${showId}/games`, { game_ids: gameIds })
+      return res.data
+    },
     onSuccess: () => {
       toast.success(t('showToasts.addGamesSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['shows'] })
+      queryClient.invalidateQueries({ queryKey: SHOWS_QUERY_KEY })
+      onDone?.()
     },
     onError: () => {
       toast.error(t('showToasts.addGamesError'))
@@ -125,11 +102,13 @@ export function useUpdateShow({ id, setOpen }: UpdateShowProps) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: UpdateShowPayload) => api.put(`/shows/${id}`, payload),
-
+    mutationFn: async (payload: UpdateShowPayload) => {
+      const res = await api.put(`/shows/${id}`, payload)
+      return res.data
+    },
     onSuccess: () => {
       toast.success(t('showToasts.updateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['shows'] })
+      queryClient.invalidateQueries({ queryKey: SHOWS_QUERY_KEY })
       setOpen?.(false)
     },
     onError: () => {

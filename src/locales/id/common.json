@@ -356,7 +356,9 @@
     "tableLoadingTitle": "Memuat data banner…",
     "tableLoadingHint": "Mohon tunggu sebentar.",
     "loadErrorDetail": "Gagal memuat daftar banner. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Belum ada banner. Tambahkan lewat tombol Tambah banner di atas."
+    "emptyPage": "Belum ada banner. Tambahkan lewat tombol Tambah banner di atas.",
+    "tableView": "Tampilan tabel",
+    "gridView": "Galeri grid"
   },
   "blogPage": {
     "title": "Blog",
@@ -650,7 +652,6 @@
     "updating": "Memperbarui…",
     "applyAll": "Terapkan ke Semua Game"
   },
-
   "gameShowcase": {
     "label": "Etalase",
     "hideAria": "Sembunyikan {{name}} dari etalase",
@@ -1295,7 +1296,15 @@
     "colRedirectLink": "Link redirect",
     "imageAlt": "Banner",
     "actionsHeader": "Aksi",
-    "rowActionsAria": "Aksi untuk banner ini"
+    "rowActionsAria": "Aksi untuk banner ini",
+    "noImage": "Tanpa gambar",
+    "noRedirectLink": "Tanpa link redirect",
+    "copyLink": "Salin link",
+    "copyFailed": "Gagal menyalin link",
+    "unsafeLink": "Link tidak aman",
+    "unsafeLinkHint": "Link ini diblokir karena skemanya tidak diizinkan: {{url}}",
+    "zoomImage": "Lihat gambar banner",
+    "closePreview": "Tutup pratinjau"
   },
   "bannerToasts": {
     "loadingList": "Sedang memuat daftar banner…",
@@ -1326,7 +1335,8 @@
     "uploading": "Mengunggah… {{percent}}%",
     "cancel": "Batal",
     "save": "Simpan",
-    "saving": "Menyimpan…"
+    "saving": "Menyimpan…",
+    "redirectInvalid": "Gunakan URL http(s) lengkap atau path yang diawali /"
   },
   "editBannerModal": {
     "triggerShort": "Ubah",
@@ -1917,5 +1927,13 @@
     "toastDeactivateError": "Gagal menonaktifkan 2FA",
     "toastCopied": "Kode cadangan disalin",
     "toastCopyError": "Gagal menyalin kode cadangan"
+  },
+  "bannerImageField": {
+    "errors": {
+      "invalidType": "Hanya file gambar yang diperbolehkan.",
+      "tooLarge": "Ukuran gambar maksimal 10 MB.",
+      "uploadFailed": "Unggah gambar gagal. Coba lagi.",
+      "required": "Pilih gambar banner dulu."
+    }
   }
 }
