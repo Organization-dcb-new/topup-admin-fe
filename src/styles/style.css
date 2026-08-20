@@ -245,3 +245,81 @@
 .nb-invalid:focus-within {
   box-shadow: 6px 6px 0 0 var(--nb-red);
 }
+
+/* ==========================================================================
+   Neo-brutalism — sidebar
+   Dipakai oleh: src/components/Layout/sidebar.tsx dan
+   src/components/Layout/SidebarHealthIndicator.tsx.
+   Namespace `nb-nav` / `nb-item` / `nb-press-sm` supaya tidak bocor ke
+   komponen lain. Unlayered, alasannya sama dengan blok di atas.
+   ========================================================================== */
+
+/* Scrollbar kotak, sewarna tinta */
+.nb-nav {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nb-ink) transparent;
+}
+.nb-nav::-webkit-scrollbar {
+  width: 10px;
+}
+.nb-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.nb-nav::-webkit-scrollbar-thumb {
+  background: var(--nb-ink);
+  border: 2px solid var(--nb-cream);
+}
+
+/* Item navigasi: garis hitam baru muncul saat hover/aktif supaya daftar
+   panjang tetap terbaca. Warna latar sengaja dilepas ke utility Tailwind. */
+.nb-item {
+  border: 2px solid transparent;
+  border-radius: 0;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+.nb-item:hover {
+  border-color: var(--nb-ink);
+  box-shadow: 3px 3px 0 0 var(--nb-ink);
+  transform: translate(-1px, -1px);
+}
+.nb-item:focus-visible {
+  outline: 3px solid var(--nb-ink);
+  outline-offset: 2px;
+}
+.nb-item:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--nb-ink);
+}
+.nb-item[aria-current='page'],
+.nb-item[data-active='true'] {
+  border-color: var(--nb-ink);
+  box-shadow: 4px 4px 0 0 var(--nb-ink);
+}
+.nb-item[aria-current='page']:hover,
+.nb-item[data-active='true']:hover {
+  box-shadow: 5px 5px 0 0 var(--nb-ink);
+}
+
+/* Versi ringkas dari .nb-press untuk tombol kecil (ikon 32-44px) */
+.nb-press-sm {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    opacity 0.2s ease;
+}
+.nb-press-sm:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 0 var(--nb-ink);
+}
+.nb-press-sm:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 var(--nb-ink);
+}
+.nb-press-sm:focus-visible {
+  outline: 3px solid var(--nb-ink);
+  outline-offset: 2px;
+}

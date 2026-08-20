@@ -2,7 +2,6 @@ import { useHealthCheck } from '@/hooks/useHealth'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 import { Activity, RefreshCw } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 
@@ -35,18 +34,18 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
   const services = data?.services ?? {}
   const downServices = Object.entries(services).filter(([, status]) => status !== 'up')
 
-  let dotColor = 'bg-gray-400 animate-pulse' // loading
+  let dotColor = 'bg-white animate-pulse' // loading
   let statusLabel = 'Checking...'
 
   if (!isLoading) {
     if (isError || !data) {
-      dotColor = 'bg-red-500'
+      dotColor = 'bg-[#ff4d3d]'
       statusLabel = 'Unreachable'
     } else if (isHealthy && downServices.length === 0) {
-      dotColor = 'bg-emerald-500'
+      dotColor = 'bg-[#c9f24d]'
       statusLabel = 'Operational'
     } else {
-      dotColor = 'bg-amber-500'
+      dotColor = 'bg-[#ffd84d]'
       statusLabel = 'Degraded'
     }
   }
@@ -55,22 +54,23 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
     <button
       type='button'
       className={cn(
-        'flex items-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-muted/60',
-        collapsed
-          ? 'mx-auto h-10 w-10 justify-center p-0'
-          : 'h-10 w-full gap-3 px-3',
+        'nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex cursor-pointer items-center bg-white',
+        collapsed ? 'mx-auto h-10 w-10 justify-center p-0' : 'h-10 w-full gap-2.5 px-2.5',
       )}
       title={collapsed ? `Server: ${statusLabel}` : undefined}
       aria-label={`Server status: ${statusLabel}`}
     >
-      <span className='relative flex h-4 w-4 shrink-0 items-center justify-center'>
-        <Activity className='h-4 w-4 text-muted-foreground' aria-hidden />
+      <span className='relative flex h-4.5 w-4.5 shrink-0 items-center justify-center'>
+        <Activity className='h-4.5 w-4.5' strokeWidth={2.5} aria-hidden />
         <span
-          className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-background', dotColor)}
+          className={cn(
+            'absolute -right-1 -top-1 h-2.5 w-2.5 border-2 border-[#111]',
+            dotColor,
+          )}
         />
       </span>
       {!collapsed && (
-        <span className='min-w-0 truncate text-xs font-medium text-foreground'>
+        <span className='min-w-0 truncate text-[11px] font-black uppercase tracking-[0.14em]'>
           {statusLabel}
         </span>
       )}
@@ -83,34 +83,36 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
       <PopoverContent
         side={collapsed ? 'right' : 'top'}
         align='start'
-        sideOffset={8}
-        className='z-[60] w-64 p-3'
+        sideOffset={10}
+        className='nb nb-frame nb-frame-thick nb-sd z-60 w-64 bg-white p-3'
       >
         <div className='space-y-3'>
-          <div className='flex items-center justify-between'>
-            <h4 className='text-sm font-semibold text-foreground'>Server Health</h4>
-            <Button
+          <div className='flex items-center justify-between gap-2 border-b-4 border-[#111] pb-2'>
+            <h4 className='text-[11px] font-black uppercase tracking-[0.16em]'>
+              Server Health
+            </h4>
+            <button
               type='button'
-              variant='ghost'
-              size='sm'
-              className='h-7 gap-1.5 text-xs'
+              className='nb-frame nb-frame-thin nb-press-sm flex h-7 cursor-pointer items-center gap-1.5 bg-[#6fe3f5] px-2 text-[10px] font-black uppercase tracking-[0.12em]'
               onClick={handleRefresh}
             >
-              <RefreshCw className='h-3 w-3' />
+              <RefreshCw className='h-3 w-3' strokeWidth={3} aria-hidden />
               Refresh
-            </Button>
+            </button>
           </div>
 
           {isLoading && (
-            <p className='text-xs text-muted-foreground'>Checking server health...</p>
+            <p className='text-[11px] font-bold uppercase tracking-wide text-[#111]/60'>
+              Checking server health...
+            </p>
           )}
 
           {!isLoading && (isError || !data) && (
-            <div className='rounded-md bg-red-50 p-2 dark:bg-red-950/30'>
-              <p className='text-xs font-medium text-red-700 dark:text-red-300'>
+            <div className='nb-frame nb-frame-thin bg-[#ff4d3d] p-2'>
+              <p className='text-[11px] font-black uppercase tracking-wide'>
                 Cannot connect to server
               </p>
-              <p className='mt-0.5 text-xs text-red-600 dark:text-red-400'>
+              <p className='mt-0.5 text-[11px] font-bold'>
                 Backend may be down or unreachable.
               </p>
             </div>
@@ -125,16 +127,14 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
                     <span
                       key={name}
                       className={cn(
-                        'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium',
-                        isUp
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-                          : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
+                        'nb-frame nb-frame-thin inline-flex items-center gap-1.5 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide',
+                        isUp ? 'bg-[#c9f24d]' : 'bg-[#ff4d3d]',
                       )}
                     >
                       <span
                         className={cn(
-                          'h-1.5 w-1.5 rounded-full',
-                          isUp ? 'bg-emerald-500' : 'bg-red-500',
+                          'h-2 w-2 border-2 border-[#111]',
+                          isUp ? 'bg-white' : 'bg-[#111]',
                         )}
                       />
                       {name}
@@ -144,11 +144,11 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
               </div>
 
               {lastChecked && (
-                <p className='text-xs text-muted-foreground'>
+                <p className='text-[10px] font-bold uppercase tracking-wide text-[#111]/60'>
                   Last checked: {lastChecked}
                 </p>
               )}
-              <p className='text-xs text-muted-foreground'>
+              <p className='text-[10px] font-bold uppercase tracking-wide text-[#111]/60'>
                 Auto-refresh every 5 minutes
               </p>
             </div>
