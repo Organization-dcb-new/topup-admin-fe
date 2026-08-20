@@ -1,13 +1,27 @@
 import { useState } from 'react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import {
+  nbAccent,
+  nbCode,
+  nbDialog,
+  nbDialogButton,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbHint,
+  nbIconButton,
+} from '@/lib/nb'
+import { cn } from '@/lib/utils'
 import { Trash2, Loader2 } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
@@ -32,50 +46,56 @@ export default function ModalDeleteRateLimit({
   })
 
   return (
-    <>
-      <Button
-        variant='ghost'
-        size='icon'
-        onClick={() => setOpen(true)}
-        className='cursor-pointer h-8 w-8 text-destructive hover:text-red-700 hover:bg-red-50'
-      >
-        <Trash2 className='h-4 w-4' />
-      </Button>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <button
+          type='button'
+          className={cn(nbIconButton, nbAccent.red)}
+          disabled={mutation.isPending}
+          aria-label={`Delete ${settingKey}`}
+        >
+          <Trash2 className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+        </button>
+      </AlertDialogTrigger>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='sm:max-w-106.25'>
-          <DialogHeader>
-            <DialogTitle>Delete Rate Limit</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete{' '}
-              <b className='text-red-600'>{settingKey}</b>? This action cannot
-              be undone and will reset all active limits in Redis.
-            </DialogDescription>
-          </DialogHeader>
+      <AlertDialogContent className={nbDialog}>
+        <div className={cn(nbDialogHeader, nbAccent.red)}>
+          <AlertDialogHeader className='gap-2 text-left'>
+            <div className='flex items-center gap-2.5'>
+              <span className={nbDialogIcon}>
+                <Trash2 className='h-4 w-4' strokeWidth={3} aria-hidden />
+              </span>
+              <AlertDialogTitle className={nbDialogTitle}>Delete Rate Limit</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className={cn(nbHint, 'text-left')}>
+              Are you sure you want to delete <code className={nbCode}>{settingKey}</code>? This
+              action cannot be undone and will reset all active limits in Redis.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </div>
 
-          <DialogFooter className='mt-4'>
-            <Button
-              variant='outline'
-              onClick={() => setOpen(false)}
-              className='cursor-pointer'
-            >
-              Cancel
-            </Button>
-            <Button
-              variant='destructive'
-              onClick={() => mutation.mutate()}
-              className='cursor-pointer'
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? (
-                <Loader2 className='animate-spin h-4 w-4' />
-              ) : (
-                'Delete'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+        <AlertDialogFooter className='gap-2 px-5 py-5'>
+          <AlertDialogCancel
+            className={cn(nbDialogButton, nbAccent.white)}
+            disabled={mutation.isPending}
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            className={cn(nbDialogButton, nbAccent.red, 'text-[#111]')}
+            onClick={(e) => {
+              e.preventDefault()
+              mutation.mutate()
+            }}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending && (
+              <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
+            )}
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -8,29 +8,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import {
+  MaintenanceFormFields,
+  type MaintenanceFormValues,
+} from '@/components/Maintenance/MaintenanceFormFields'
 import {
   datetimeLocalToIso,
   isoToDatetimeLocal,
   isMaintenanceWindowOrderInvalid,
 } from '@/helpers/maintenance-datetime'
 import { useUpdateMaintenance } from '@/hooks/useMaintenance'
+import {
+  nbAccent,
+  nbDialog,
+  nbDialogBody,
+  nbDialogButton,
+  nbDialogFooter,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbError,
+  nbHint,
+  nbIconButton,
+} from '@/lib/nb'
 import type { Maintenance, UpdateMaintenancePayload } from '@/types/maintenance'
 import { cn } from '@/lib/utils'
 import { Loader2, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-type FormValues = {
-  name: string
-  is_maintenance: boolean
-  start_time: string
-  end_time: string
-}
-
-function maintenanceToForm(m: Maintenance): FormValues {
+function maintenanceToForm(m: Maintenance): MaintenanceFormValues {
   return {
     name: m.name,
     is_maintenance: m.is_maintenance,
@@ -39,7 +45,7 @@ function maintenanceToForm(m: Maintenance): FormValues {
   }
 }
 
-function toUpdatePayload(v: FormValues): UpdateMaintenancePayload {
+function toUpdatePayload(v: MaintenanceFormValues): UpdateMaintenancePayload {
   return {
     name: v.name.trim(),
     is_maintenance: v.is_maintenance,
@@ -60,12 +66,9 @@ export function EditMaintenanceModal({
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const mutation = useUpdateMaintenance(maintenance.id, () => setOpen(false))
-  const nameId = useId()
-  const startId = useId()
-  const endId = useId()
 
   const { register, handleSubmit, reset, watch, setValue, setError, clearErrors, formState } =
-    useForm<FormValues>()
+    useForm<MaintenanceFormValues>()
 
   const startTime = watch('start_time')
   const endTime = watch('end_time')
@@ -81,25 +84,32 @@ export function EditMaintenanceModal({
 
   return (
     <>
-      <Button
+      <button
         type='button'
-        variant='ghost'
-        size='icon'
-        className={cn('cursor-pointer', triggerClassName)}
+        className={cn(nbIconButton, nbAccent.yellow, triggerClassName)}
         aria-label={t('maintenanceEditModal.triggerAria', { name: maintenance.name })}
         onClick={openDialog}
       >
-        <Pencil className='h-4 w-4' aria-hidden />
-      </Button>
+        <Pencil className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='rounded-xl sm:max-w-lg'>
-          <DialogHeader className='space-y-1 text-left'>
-            <DialogTitle className='text-lg font-semibold tracking-tight'>
-              {t('maintenanceEditModal.title')}
-            </DialogTitle>
-            <DialogDescription>{t('maintenanceEditModal.description')}</DialogDescription>
-          </DialogHeader>
+        <DialogContent className={nbDialog} showCloseButton={false}>
+          <div className={cn(nbDialogHeader, nbAccent.yellow)}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={nbDialogIcon}>
+                  <Pencil className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <DialogTitle className={nbDialogTitle}>
+                  {t('maintenanceEditModal.title')}
+                </DialogTitle>
+              </div>
+              <DialogDescription className={nbHint}>
+                {t('maintenanceEditModal.description')}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
           <form
             onSubmit={handleSubmit((v) => {
@@ -109,65 +119,43 @@ export function EditMaintenanceModal({
               }
               mutation.mutate(toUpdatePayload(v))
             })}
-            className='space-y-4'
+            className={cn(nbDialogBody, 'max-h-[70vh] overflow-y-auto')}
           >
-            <div className='space-y-2'>
-              <Label htmlFor={nameId}>{t('maintenanceForm.nameLabel')}</Label>
-              <Input
-                id={nameId}
-                autoComplete='off'
-                className='rounded-lg'
-                aria-invalid={!!formState.errors.name}
-                {...register('name', { required: t('maintenanceForm.nameRequired') })}
-              />
-              {formState.errors.name && (
-                <p className='text-xs text-destructive'>{formState.errors.name.message}</p>
-              )}
-            </div>
-
-            <div className='flex items-center justify-between gap-4 rounded-lg border border-border/80 bg-muted/20 px-3 py-2.5'>
-              <div className='min-w-0 space-y-0.5'>
-                <p className='text-sm font-medium'>{t('maintenanceForm.modeLabel')}</p>
-                <p className='text-xs text-muted-foreground'>{t('maintenanceForm.modeHint')}</p>
-              </div>
-              <Switch
-                checked={watch('is_maintenance')}
-                onCheckedChange={(c) => setValue('is_maintenance', c)}
-                aria-label={t('maintenanceForm.modeAria')}
-              />
-            </div>
-
-            <div className='grid gap-4 sm:grid-cols-2'>
-              <div className='space-y-2 sm:col-span-2'>
-                <Label htmlFor={startId}>{t('maintenanceForm.startLabel')}</Label>
-                <Input id={startId} type='datetime-local' className='rounded-lg' {...register('start_time')} />
-              </div>
-              <div className='space-y-2 sm:col-span-2'>
-                <Label htmlFor={endId}>{t('maintenanceForm.endLabel')}</Label>
-                <Input id={endId} type='datetime-local' className='rounded-lg' {...register('end_time')} />
-              </div>
-            </div>
+            <MaintenanceFormFields
+              register={register}
+              errors={formState.errors}
+              isMaintenance={watch('is_maintenance')}
+              onModeChange={(c) => setValue('is_maintenance', c)}
+            />
 
             {formState.errors.root?.message && (
-              <p className='text-sm text-destructive' role='alert'>
+              <p className={nbError} role='alert'>
                 {formState.errors.root.message}
               </p>
             )}
 
-            <DialogFooter className='gap-2 sm:gap-2'>
-              <Button type='button' variant='outline' className='cursor-pointer' onClick={() => setOpen(false)}>
+            <DialogFooter className={nbDialogFooter}>
+              <button
+                type='button'
+                className={cn(nbDialogButton, nbAccent.white)}
+                onClick={() => setOpen(false)}
+              >
                 {t('maintenanceForm.cancel')}
-              </Button>
-              <Button type='submit' disabled={mutation.isPending} className='cursor-pointer gap-2'>
+              </button>
+              <button
+                type='submit'
+                disabled={mutation.isPending}
+                className={cn(nbDialogButton, nbAccent.yellow)}
+              >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
                     {t('maintenanceForm.saving')}
                   </>
                 ) : (
                   t('maintenanceForm.save')
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

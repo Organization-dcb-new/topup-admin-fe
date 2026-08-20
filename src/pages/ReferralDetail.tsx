@@ -1,20 +1,50 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
-import { Button } from '@/components/ui/button'
+import { DataTable } from '@/components/Layout/table-data'
+import { PaymentStatusTag } from '@/components/Transaction/TransactionCells'
 import { Switch } from '@/components/ui/switch'
 import { useGetReferralCodeById, useUpdateReferralCode } from '@/hooks/useReferral'
 import { formatBackendDateTime, parseBackendDate } from '@/lib/backend-datetime'
-import { ArrowLeft, Loader2, Percent, Calendar, RefreshCw, BarChart2, TrendingUp, CheckCircle, Clock, Coins } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router-dom'
-import { DataTable } from '@/components/Layout/table-data'
-import { useMemo, useCallback } from 'react'
-import type { ColumnDef } from '@tanstack/react-table'
-import type { Payment } from '@/types/transaction'
+import {
+  nbAccent,
+  nbBox,
+  nbCode,
+  nbHint,
+  nbIconButton,
+  nbLink,
+  nbMutedLabel,
+  nbPageIcon,
+  nbPageSubtitle,
+  nbPageTitle,
+  nbPanel,
+  nbPanelHeader,
+  nbSectionTitle,
+  nbSwitch,
+  nbTable,
+  nbTag,
+} from '@/lib/nb'
 import { cn } from '@/lib/utils'
+import type { Payment } from '@/types/transaction'
+import type { ColumnDef } from '@tanstack/react-table'
 import { format } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
 import i18n from '@/i18n'
+import {
+  ArrowLeft,
+  BarChart2,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Coins,
+  Loader2,
+  Percent,
+  RefreshCw,
+  TrendingUp,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link, useParams } from 'react-router-dom'
 
 function formatIdr(value: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -26,6 +56,61 @@ function formatIdr(value: number) {
 
 function dateLocale() {
   return i18n.language.startsWith('id') ? idLocale : enUS
+}
+
+/** Satu angka ringkasan pemakaian kode referral. */
+function StatTile({
+  label,
+  value,
+  icon: Icon,
+  accent,
+  valueClass,
+}: {
+  label: string
+  value: string
+  icon: LucideIcon
+  accent: string
+  valueClass?: string
+}) {
+  return (
+    <div className={cn(nbBox, 'p-3')}>
+      <div className='flex items-center justify-between gap-2'>
+        <p className={cn('truncate', nbMutedLabel)}>{label}</p>
+        <span
+          className={cn(
+            'nb-frame nb-frame-thin flex h-7 w-7 shrink-0 items-center justify-center',
+            accent,
+          )}
+        >
+          <Icon className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+        </span>
+      </div>
+      <p className='mt-2 text-xl font-black leading-tight tabular-nums'>
+        <span className={cn('inline-block', valueClass)}>{value}</span>
+      </p>
+    </div>
+  )
+}
+
+/** Satu baris label + nilai di kartu informasi. */
+function InfoRow({
+  label,
+  icon: Icon,
+  children,
+}: {
+  label: string
+  icon?: LucideIcon
+  children: React.ReactNode
+}) {
+  return (
+    <div className='space-y-1'>
+      <span className={cn('flex items-center gap-1', nbMutedLabel)}>
+        {Icon && <Icon className='h-3 w-3' strokeWidth={3} aria-hidden />}
+        {label}
+      </span>
+      <div className='text-sm font-black'>{children}</div>
+    </div>
+  )
 }
 
 export default function ReferralDetailPage() {
@@ -44,21 +129,15 @@ export default function ReferralDetailPage() {
     })
   }, [referral, updateMutate])
 
-  // Calculate statistics from transactions
   const stats = useMemo(() => {
     const transactions = referral?.transactions ?? []
     const totalCount = transactions.length
-    const paidTransactions = transactions.filter((t) => t.status === 'PAID')
+    const paidTransactions = transactions.filter((tx) => tx.status === 'PAID')
     const paidCount = paidTransactions.length
     const totalVolume = paidTransactions.reduce((acc, curr) => acc + curr.amount, 0)
     const successRate = totalCount > 0 ? Math.min(Math.round((paidCount / totalCount) * 100), 100) : 0
 
-    return {
-      totalCount,
-      paidCount,
-      totalVolume,
-      successRate,
-    }
+    return { totalCount, paidCount, totalVolume, successRate }
   }, [referral])
 
   const columns = useMemo<ColumnDef<Payment>[]>(() => {
@@ -67,10 +146,7 @@ export default function ReferralDetailPage() {
         accessorKey: 'payment_number',
         header: t('referralPage.detail.table.paymentNo'),
         cell: ({ row }) => (
-          <Link
-            to={`/transactions/${row.original.id}`}
-            className='font-mono text-xs font-semibold text-primary hover:underline'
-          >
+          <Link to={`/transactions/${row.original.id}`} className={cn(nbLink, 'font-mono text-xs')}>
             {row.original.payment_number}
           </Link>
         ),
@@ -79,7 +155,10 @@ export default function ReferralDetailPage() {
         accessorKey: 'order_id',
         header: t('referralPage.detail.table.orderId'),
         cell: ({ row }) => (
-          <span className='font-mono text-xs text-slate-500 truncate block max-w-[120px]' title={row.original.order_id}>
+          <span
+            className='block max-w-[120px] truncate font-mono text-xs font-bold text-[#111]/70'
+            title={row.original.order_id}
+          >
             {row.original.order_id}
           </span>
         ),
@@ -88,7 +167,7 @@ export default function ReferralDetailPage() {
         accessorKey: 'amount',
         header: () => <span className='block text-right'>{t('referralPage.detail.table.amount')}</span>,
         cell: ({ row }) => (
-          <span className='block text-right font-bold tabular-nums text-slate-900'>
+          <span className='block text-right font-black tabular-nums'>
             {formatIdr(row.original.amount)}
           </span>
         ),
@@ -96,46 +175,12 @@ export default function ReferralDetailPage() {
       {
         accessorKey: 'payment_channel',
         header: t('referralPage.detail.table.channel'),
-        cell: ({ row }) => (
-          <span className='text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200'>
-            {row.original.payment_channel}
-          </span>
-        ),
+        cell: ({ row }) => <span className={nbCode}>{row.original.payment_channel}</span>,
       },
       {
         accessorKey: 'status',
         header: t('referralPage.detail.table.status'),
-        cell: ({ row }) => {
-          const status = row.original.status
-          const isPaid = status === 'PAID'
-          const isProcessing = status === 'PROCESSING'
-          const isPending = status === 'PENDING'
-          const isFailed = status === 'FAILED'
-          const isExpired = status === 'EXPIRED'
-
-          return (
-            <span
-              className={cn(
-                'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-xs transition-all duration-200',
-                isPaid && 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-                isProcessing && 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-                isPending && 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-                (isFailed || isExpired) && 'bg-rose-500/10 text-rose-600 border-rose-500/20'
-              )}
-            >
-              <span
-                className={cn(
-                  'h-1.5 w-1.5 shrink-0 rounded-full',
-                  isPaid && 'bg-emerald-500',
-                  isProcessing && 'bg-blue-500 animate-pulse',
-                  isPending && 'bg-amber-500 animate-pulse',
-                  (isFailed || isExpired) && 'bg-rose-500'
-                )}
-              />
-              {status}
-            </span>
-          )
-        },
+        cell: ({ row }) => <PaymentStatusTag status={row.original.status} t={t} />,
       },
       {
         accessorKey: 'created_at',
@@ -143,7 +188,7 @@ export default function ReferralDetailPage() {
         cell: ({ row }) => {
           const date = parseBackendDate(row.original.created_at)
           return (
-            <span className='whitespace-nowrap text-xs tabular-nums text-slate-500'>
+            <span className='whitespace-nowrap text-xs font-bold tabular-nums text-[#111]/70'>
               {date ? format(date, 'dd MMM yyyy, HH:mm:ss', { locale: dateLocale() }) : '—'}
             </span>
           )
@@ -154,190 +199,189 @@ export default function ReferralDetailPage() {
 
   return (
     <DashboardLayout>
-      <div className='mx-auto max-w-7xl space-y-6'>
-        {/* Navigation & Header */}
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+      <div className='mx-auto min-w-0 max-w-7xl space-y-5'>
+        <div
+          className={cn(
+            nbPanel,
+            'flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5',
+          )}
+        >
           <div className='flex items-start gap-3'>
-            <Button type='button' variant='outline' size='icon' asChild className='h-9 w-9 shrink-0 border-slate-200'>
-              <Link to='/referral-codes' aria-label={t('referralPage.detail.backBtn')}>
-                <ArrowLeft className='h-4 w-4' />
-              </Link>
-            </Button>
-            <div className='min-w-0 gap-3 flex'>
-              <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                <Percent className='h-5 w-5' />
-              </div>
-              <div className='min-w-0 space-y-1'>
-                <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
-                  {t('referralPage.detail.title')}
-                </h1>
-                <p className='text-sm text-muted-foreground'>{t('referralPage.detail.subtitle')}</p>
+            <Link
+              to='/referral-codes'
+              aria-label={t('referralPage.detail.backBtn')}
+              className={cn(nbIconButton, nbAccent.white, 'h-10 w-10')}
+            >
+              <ArrowLeft className='h-4 w-4' strokeWidth={3} aria-hidden />
+            </Link>
+            <div className='flex min-w-0 gap-3'>
+              <span className={cn(nbPageIcon, nbAccent.pink)}>
+                <Percent className='h-5 w-5' strokeWidth={2.5} aria-hidden />
+              </span>
+              <div className='min-w-0 space-y-1.5'>
+                <h1 className={nbPageTitle}>{t('referralPage.detail.title')}</h1>
+                <p className={nbPageSubtitle}>{t('referralPage.detail.subtitle')}</p>
               </div>
             </div>
           </div>
 
-          <div className='flex items-center gap-2 self-end sm:self-center'>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              onClick={() => void refetch()}
-              className='h-9 border-slate-200 flex items-center gap-1.5'
-            >
-              <RefreshCw className='h-3.5 w-3.5' />
-              {t('common.refresh') || 'Refresh'}
-            </Button>
-          </div>
+          <button
+            type='button'
+            onClick={() => void refetch()}
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 bg-[#6fe3f5] px-4 text-xs font-black uppercase tracking-[0.14em]'
+          >
+            <RefreshCw className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+            {t('common.refresh')}
+          </button>
         </div>
 
         {isLoading && (
-          <div className='flex min-h-[20rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'>
-            <Loader2 className='h-11 w-11 animate-spin text-primary' />
-            <p className='text-sm text-muted-foreground'>{t('providerPage.loadingShort') || 'Loading…'}</p>
+          <div
+            className={cn(
+              nbPanel,
+              'flex min-h-[20rem] flex-col items-center justify-center gap-4 py-12',
+            )}
+            role='status'
+            aria-live='polite'
+            aria-busy='true'
+          >
+            <span
+              className={cn(
+                'nb-frame nb-frame-thin nb-sd-sm flex h-14 w-14 items-center justify-center',
+                nbAccent.cyan,
+              )}
+            >
+              <Loader2 className='h-7 w-7 animate-spin' strokeWidth={3} aria-hidden />
+            </span>
+            <p className={nbSectionTitle}>{t('providerPage.loadingShort')}</p>
           </div>
         )}
 
-        {!id && <ErrorComponent message='Missing referral code ID' />}
-        {isError && <ErrorComponent message={t('referralPage.toastError')} />}
+        {!id && (
+          <div className={nbPanel}>
+            <ErrorComponent message='Missing referral code ID' />
+          </div>
+        )}
+        {isError && (
+          <div className={nbPanel}>
+            <ErrorComponent message={t('referralPage.toastError')} />
+          </div>
+        )}
 
         {isSuccess && referral && (
           <>
-            {/* Quick Metrics */}
-            <div className='grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5'>
-              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Total Uses</p>
-                  <BarChart2 className='h-4 w-4 text-slate-400' />
-                </div>
-                <p className='mt-2 text-xl font-extrabold text-slate-900 tabular-nums'>{stats.totalCount}</p>
-              </div>
-
-              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Successful Uses</p>
-                  <CheckCircle className='h-4 w-4 text-emerald-500' />
-                </div>
-                <p className='mt-2 text-xl font-extrabold text-slate-900 tabular-nums'>{stats.paidCount}</p>
-              </div>
-
-              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Sales Volume</p>
-                  <TrendingUp className='h-4 w-4 text-emerald-500' />
-                </div>
-                <p className='mt-2 text-xl font-extrabold text-emerald-600 tabular-nums'>{formatIdr(stats.totalVolume)}</p>
-              </div>
-
-              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>{t('referralPage.detail.totalEarnings')}</p>
-                  <Coins className='h-4 w-4 text-amber-500' />
-                </div>
-                <p className='mt-2 text-xl font-extrabold text-amber-600 tabular-nums'>{formatIdr(referral.total_earnings ?? 0)}</p>
-              </div>
-
-              <div className='rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-xs transition-all duration-200'>
-                <div className='flex items-center justify-between'>
-                  <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400'>Conversion Rate</p>
-                  <Clock className='h-4 w-4 text-slate-400' />
-                </div>
-                <p className='mt-2 text-xl font-extrabold text-slate-900 tabular-nums'>{stats.successRate}%</p>
-              </div>
+            <div className='grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5'>
+              <StatTile
+                label={t('referralPage.detail.stats.totalUses')}
+                value={String(stats.totalCount)}
+                icon={BarChart2}
+                accent={nbAccent.cyan}
+              />
+              <StatTile
+                label={t('referralPage.detail.stats.successfulUses')}
+                value={String(stats.paidCount)}
+                icon={CheckCircle}
+                accent={nbAccent.lime}
+              />
+              <StatTile
+                label={t('referralPage.detail.stats.salesVolume')}
+                value={formatIdr(stats.totalVolume)}
+                icon={TrendingUp}
+                accent={nbAccent.lime}
+                valueClass='bg-[#c9f24d] px-1'
+              />
+              <StatTile
+                label={t('referralPage.detail.totalEarnings')}
+                value={formatIdr(referral.total_earnings ?? 0)}
+                icon={Coins}
+                accent={nbAccent.yellow}
+                valueClass='bg-[#ffd84d] px-1'
+              />
+              <StatTile
+                label={t('referralPage.detail.stats.conversionRate')}
+                value={`${stats.successRate}%`}
+                icon={Clock}
+                accent={nbAccent.orange}
+              />
             </div>
 
-            {/* Detailed metadata */}
-            <div className='grid gap-6 lg:grid-cols-3'>
-              {/* Info Card */}
-              <div className='lg:col-span-1 space-y-6'>
-                <div className='rounded-xl border border-slate-200 bg-white p-5 shadow-xs space-y-4'>
-                  <h2 className='text-sm font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-3'>
-                    {t('referralPage.detail.cardTitle')}
-                  </h2>
+            <div className='grid gap-5 lg:grid-cols-3'>
+              <div className={cn(nbPanel, 'lg:col-span-1')}>
+                <div className={cn(nbPanelHeader, nbAccent.pink)}>
+                  <h2 className={nbSectionTitle}>{t('referralPage.detail.cardTitle')}</h2>
+                </div>
 
-                  <div className='space-y-3.5 text-sm'>
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide'>
-                        {t('referralPage.detail.name')}
-                      </span>
-                      <span className='font-medium text-slate-900'>{referral.name}</span>
-                    </div>
+                <div className='space-y-4 p-4'>
+                  <InfoRow label={t('referralPage.detail.name')}>{referral.name}</InfoRow>
 
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1'>
-                        {t('referralPage.detail.code')}
-                      </span>
-                      <code className='rounded bg-slate-100 px-1.5 py-0.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-800 border border-slate-200'>
-                        {referral.code}
-                      </code>
-                    </div>
+                  <InfoRow label={t('referralPage.detail.code')}>
+                    <code className={nbCode}>{referral.code}</code>
+                  </InfoRow>
 
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide'>
-                        {t('referralPage.detail.percent')}
-                      </span>
-                      <span className='font-bold text-slate-700'>{referral.percent}%</span>
-                    </div>
+                  <InfoRow label={t('referralPage.detail.percent')}>
+                    <span className='tabular-nums'>{referral.percent}%</span>
+                  </InfoRow>
 
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide'>
-                        {t('referralPage.detail.totalEarnings')}
-                      </span>
-                      <span className='font-bold text-amber-600'>{formatIdr(referral.total_earnings ?? 0)}</span>
-                    </div>
+                  <InfoRow label={t('referralPage.detail.totalEarnings')}>
+                    <span className='inline-block bg-[#ffd84d] px-1 tabular-nums'>
+                      {formatIdr(referral.total_earnings ?? 0)}
+                    </span>
+                  </InfoRow>
 
-                    <div className='flex items-center justify-between border-t border-b border-slate-50 py-3'>
-                      <div>
-                        <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide'>
-                          {t('referralPage.detail.status')}
-                        </span>
-                        <span className='text-xs text-slate-500'>
-                          {referral.is_active ? t('referralPage.statusActive') : t('referralPage.statusInactive')}
-                        </span>
-                      </div>
-                      <Switch checked={referral.is_active} onCheckedChange={handleToggleStatus} />
+                  <div className='nb-frame nb-frame-thin flex items-center justify-between gap-3 bg-[#f5f1e8] px-3 py-2.5'>
+                    <div className='min-w-0'>
+                      <span className={nbMutedLabel}>{t('referralPage.detail.status')}</span>
+                      <p className='text-xs font-black uppercase tracking-[0.12em]'>
+                        {referral.is_active
+                          ? t('referralPage.statusActive')
+                          : t('referralPage.statusInactive')}
+                      </p>
                     </div>
-
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-1'>
-                        <Calendar className='h-3 w-3' />
-                        {t('referralPage.detail.createdAt')}
-                      </span>
-                      <span className='text-xs text-slate-600'>{formatBackendDateTime(referral.created_at)}</span>
-                    </div>
-
-                    <div>
-                      <span className='block text-xs font-semibold text-slate-400 uppercase tracking-wide flex items-center gap-1'>
-                        <Calendar className='h-3 w-3' />
-                        {t('referralPage.detail.updatedAt')}
-                      </span>
-                      <span className='text-xs text-slate-600'>{formatBackendDateTime(referral.updated_at)}</span>
-                    </div>
+                    <Switch
+                      className={nbSwitch}
+                      checked={referral.is_active}
+                      onCheckedChange={handleToggleStatus}
+                      aria-label={t('referralPage.form.statusLabel')}
+                    />
                   </div>
+
+                  <InfoRow label={t('referralPage.detail.createdAt')} icon={Calendar}>
+                    <span className='text-xs tabular-nums'>
+                      {formatBackendDateTime(referral.created_at)}
+                    </span>
+                  </InfoRow>
+
+                  <InfoRow label={t('referralPage.detail.updatedAt')} icon={Calendar}>
+                    <span className='text-xs tabular-nums'>
+                      {formatBackendDateTime(referral.updated_at)}
+                    </span>
+                  </InfoRow>
                 </div>
               </div>
 
-              {/* Transactions Table */}
-              <div className='lg:col-span-2'>
-                <div className='rounded-xl border border-slate-200 bg-white shadow-xs overflow-hidden'>
-                  <div className='border-b border-slate-100 px-5 py-4'>
-                    <h2 className='text-sm font-bold text-slate-900 uppercase tracking-wider'>
-                      {t('referralPage.detail.txTitle')}
-                    </h2>
-                    <p className='text-xs text-slate-400 mt-0.5'>
-                      {t('referralPage.detail.txSubtitle')}
-                    </p>
+              <div className='min-w-0 space-y-4 lg:col-span-2'>
+                <div
+                  className={cn(
+                    nbPanel,
+                    'flex flex-col gap-1 p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4',
+                  )}
+                >
+                  <div className='min-w-0'>
+                    <h2 className={nbSectionTitle}>{t('referralPage.detail.txTitle')}</h2>
+                    <p className={cn('mt-0.5', nbHint)}>{t('referralPage.detail.txSubtitle')}</p>
                   </div>
-
-                  <div className='p-4'>
-                    <div className='max-h-[30rem] overflow-y-auto overscroll-contain'>
-                      <DataTable
-                        columns={columns}
-                        data={referral.transactions ?? []}
-                        emptyMessage={t('referralPage.detail.txEmpty')}
-                      />
-                    </div>
-                  </div>
+                  <p className={cn(nbTag, nbAccent.cyan, 'self-start sm:self-auto')}>
+                    <span className='tabular-nums'>{stats.totalCount}</span>
+                  </p>
                 </div>
+
+                <DataTable
+                  className={nbTable}
+                  getRowId={(row) => row.id}
+                  columns={columns}
+                  data={referral.transactions ?? []}
+                  emptyMessage={t('referralPage.detail.txEmpty')}
+                />
               </div>
             </div>
           </>

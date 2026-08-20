@@ -1877,6 +1877,12 @@
       "txTitle": "Riwayat Transaksi",
       "txSubtitle": "Daftar transaksi yang menggunakan kode referral ini.",
       "txEmpty": "Belum ada transaksi menggunakan kode ini.",
+      "stats": {
+        "totalUses": "Total Pemakaian",
+        "successfulUses": "Pemakaian Berhasil",
+        "salesVolume": "Volume Penjualan",
+        "conversionRate": "Rasio Konversi"
+      },
       "table": {
         "paymentNo": "No. Pembayaran",
         "orderId": "Order ID",

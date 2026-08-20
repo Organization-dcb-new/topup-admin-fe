@@ -16,6 +16,20 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useAdminMutation } from '@/hooks/useAdmin'
+import {
+  nbAccent,
+  nbDialog,
+  nbDialogButton,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbHint,
+  nbSelectContent,
+  nbSelectItem,
+  nbSelectTrigger,
+} from '@/lib/nb'
+import { cn } from '@/lib/utils'
+import { ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 
 export const UpdateAdminRole = ({
@@ -44,27 +58,44 @@ export const UpdateAdminRole = ({
         }}
         disabled={updateRole.isPending}
       >
-        <SelectTrigger className='w-25 h-8 text-[10px] font-black uppercase ring-offset-0 focus:ring-0'>
+        <SelectTrigger size='sm' className={cn(nbSelectTrigger, 'w-25 text-[10px]')}>
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
-          <SelectItem value='admin'>ADMIN</SelectItem>
-          <SelectItem value='noc'>NOC</SelectItem>
+        <SelectContent className={nbSelectContent}>
+          <SelectItem value='admin' className={nbSelectItem}>
+            ADMIN
+          </SelectItem>
+          <SelectItem value='noc' className={nbSelectItem}>
+            NOC
+          </SelectItem>
         </SelectContent>
       </Select>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Konfirmasi Perikatan Role</AlertDialogTitle>
-            <AlertDialogDescription>
-              Apakah Anda yakin ingin mengubah role menjadi {selectedRole.toUpperCase()}?
-              Ini akan merubah hak akses akun terkait.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm} className='bg-indigo-600 hover:bg-indigo-700'>
+        <AlertDialogContent className={nbDialog}>
+          <div className={cn(nbDialogHeader, nbAccent.yellow)}>
+            <AlertDialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={nbDialogIcon}>
+                  <ShieldCheck className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <AlertDialogTitle className={nbDialogTitle}>Konfirmasi ubah peran</AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className={cn(nbHint, 'text-left')}>
+                Apakah Anda yakin ingin mengubah role menjadi {selectedRole.toUpperCase()}? Ini akan
+                merubah hak akses akun terkait.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+          </div>
+
+          <AlertDialogFooter className='gap-2 px-5 py-5'>
+            <AlertDialogCancel className={cn(nbDialogButton, nbAccent.white)}>
+              Batal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              className={cn(nbDialogButton, nbAccent.yellow, 'text-[#111]')}
+            >
               Ubah Role
             </AlertDialogAction>
           </AlertDialogFooter>

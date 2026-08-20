@@ -1877,6 +1877,12 @@
       "txTitle": "Transaction History",
       "txSubtitle": "List of transactions that used this referral code.",
       "txEmpty": "No transactions have used this code yet.",
+      "stats": {
+        "totalUses": "Total Uses",
+        "successfulUses": "Successful Uses",
+        "salesVolume": "Sales Volume",
+        "conversionRate": "Conversion Rate"
+      },
       "table": {
         "paymentNo": "Payment No.",
         "orderId": "Order ID",

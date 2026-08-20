@@ -1,5 +1,6 @@
-import { Badge } from '@/components/ui/badge'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { nbAccent, nbBadge, nbLink } from '@/lib/nb'
+import { cn } from '@/lib/utils'
 import type { AdminLog } from '@/types/admin-log'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
@@ -10,10 +11,12 @@ function formatJsonValue(value: Record<string, unknown> | null) {
   return JSON.stringify(value)
 }
 
-function actionVariant(action: string): 'success' | 'destructive' | 'outline' {
-  if (action === 'LOGIN') return 'success'
-  if (action === 'DELETE') return 'destructive'
-  return 'outline'
+function actionAccent(action: string) {
+  if (action === 'LOGIN') return nbAccent.lime
+  if (action === 'DELETE') return nbAccent.red
+  if (action === 'CREATE') return nbAccent.cyan
+  if (action === 'UPDATE') return nbAccent.yellow
+  return nbAccent.cream
 }
 
 export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
@@ -22,10 +25,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       accessorKey: 'ID',
       header: t('adminLogTable.colId'),
       cell: ({ row }) => (
-        <Link
-          to={`/admin-logs/${row.original.ID}`}
-          className='font-mono text-sm text-primary underline-offset-4 hover:underline'
-        >
+        <Link to={`/admin-logs/${row.original.ID}`} className={cn(nbLink, 'font-mono text-sm')}>
           {row.original.ID}
         </Link>
       ),
@@ -34,7 +34,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       accessorKey: 'CreatedAt',
       header: t('adminLogTable.colCreatedAt'),
       cell: ({ row }) => (
-        <span className='whitespace-nowrap text-sm tabular-nums text-muted-foreground'>
+        <span className='whitespace-nowrap text-sm font-bold tabular-nums text-[#111]/70'>
           {formatBackendDateTime(row.original.CreatedAt)}
         </span>
       ),
@@ -43,21 +43,21 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       accessorKey: 'Action',
       header: t('adminLogTable.colAction'),
       cell: ({ row }) => (
-        <Badge variant={actionVariant(row.original.Action)} className='font-medium'>
+        <span className={cn(nbBadge, actionAccent(row.original.Action))}>
           {row.original.Action}
-        </Badge>
+        </span>
       ),
     },
     {
       accessorKey: 'Module',
       header: t('adminLogTable.colModule'),
-      cell: ({ row }) => <span className='font-medium text-foreground'>{row.original.Module}</span>,
+      cell: ({ row }) => <span className='font-black'>{row.original.Module}</span>,
     },
     {
       accessorKey: 'Description',
       header: t('adminLogTable.colDescription'),
       cell: ({ row }) => (
-        <span className='line-clamp-2 min-w-[14rem] max-w-[22rem] text-sm text-muted-foreground'>
+        <span className='line-clamp-2 min-w-[14rem] max-w-[22rem] text-sm font-bold'>
           {row.original.Description || '—'}
         </span>
       ),
@@ -67,7 +67,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       header: t('adminLogTable.colOldData'),
       cell: ({ row }) => (
         <span
-          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs text-muted-foreground'
+          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs font-bold text-[#111]/70'
           title={formatJsonValue(row.original.OldData)}
         >
           {formatJsonValue(row.original.OldData)}
@@ -79,7 +79,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       header: t('adminLogTable.colNewData'),
       cell: ({ row }) => (
         <span
-          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs text-muted-foreground'
+          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs font-bold text-[#111]/70'
           title={formatJsonValue(row.original.NewData)}
         >
           {formatJsonValue(row.original.NewData)}
@@ -90,7 +90,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       accessorKey: 'IPAddress',
       header: t('adminLogTable.colIpAddress'),
       cell: ({ row }) => (
-        <span className='font-mono text-sm tabular-nums text-muted-foreground'>
+        <span className='font-mono text-sm font-bold tabular-nums text-[#111]/70'>
           {row.original.IPAddress || '—'}
         </span>
       ),
@@ -99,7 +99,7 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       accessorKey: 'UserAgent',
       header: t('adminLogTable.colUserAgent'),
       cell: ({ row }) => (
-        <span className='line-clamp-2 min-w-[14rem] max-w-[24rem] text-xs text-muted-foreground'>
+        <span className='line-clamp-2 min-w-[14rem] max-w-[24rem] text-xs font-bold text-[#111]/70'>
           {row.original.UserAgent || '—'}
         </span>
       ),

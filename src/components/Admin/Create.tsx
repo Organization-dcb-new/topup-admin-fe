@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Loader2, Plus } from 'lucide-react'
+import { Loader2, Plus, UserPlus } from 'lucide-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
@@ -23,6 +22,23 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { api } from '@/api/axios'
+import {
+  nbAccent,
+  nbDialog,
+  nbDialogBody,
+  nbDialogButton,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbError,
+  nbHint,
+  nbInput,
+  nbLabel,
+  nbSelectContent,
+  nbSelectItem,
+  nbSelectTrigger,
+} from '@/lib/nb'
+import { cn } from '@/lib/utils'
 
 type CreateAdminFormValues = {
   username: string
@@ -36,6 +52,13 @@ type CreateAdminFormValues = {
 export const CreateAdminModal = () => {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
+
+  const fullNameId = useId()
+  const usernameId = useId()
+  const roleId = useId()
+  const emailId = useId()
+  const passwordId = useId()
+  const confirmId = useId()
 
   const {
     register,
@@ -76,73 +99,102 @@ export const CreateAdminModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto'>
-          <Plus className='h-4 w-4 shrink-0' aria-hidden />
+        <button
+          type='button'
+          className={cn(nbDialogButton, nbAccent.lime, 'h-10 w-full px-4 sm:w-auto')}
+        >
+          <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
           Tambah admin
-        </Button>
+        </button>
       </DialogTrigger>
-      <DialogContent className='rounded-xl sm:max-w-lg'>
-        <DialogHeader className='space-y-1 text-left'>
-          <DialogTitle className='text-lg font-semibold tracking-tight'>Tambah admin baru</DialogTitle>
-          <DialogDescription className='text-sm text-muted-foreground'>
-            Isi detail akun untuk memberi akses ke dashboard admin.
-          </DialogDescription>
-        </DialogHeader>
 
-        <form onSubmit={handleSubmit((v) => mutate(v))} className='space-y-4 pt-2'>
+      <DialogContent className={nbDialog} showCloseButton={false}>
+        <div className={cn(nbDialogHeader, nbAccent.lime)}>
+          <DialogHeader className='gap-2 text-left'>
+            <div className='flex items-center gap-2.5'>
+              <span className={nbDialogIcon}>
+                <UserPlus className='h-4 w-4' strokeWidth={3} aria-hidden />
+              </span>
+              <DialogTitle className={nbDialogTitle}>Tambah admin baru</DialogTitle>
+            </div>
+            <DialogDescription className={nbHint}>
+              Isi detail akun untuk memberi akses ke dashboard admin.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        <form
+          onSubmit={handleSubmit((v) => mutate(v))}
+          className={cn(nbDialogBody, 'max-h-[70vh] overflow-y-auto')}
+        >
           <div className='space-y-2'>
-            <Label htmlFor='admin-full-name' className='text-sm font-medium'>
+            <Label htmlFor={fullNameId} className={nbLabel}>
               Nama lengkap
             </Label>
             <Input
-              id='admin-full-name'
+              id={fullNameId}
               {...register('full_name', { required: 'Nama lengkap wajib diisi' })}
               placeholder='Contoh: Budi Santoso'
-              className='rounded-lg'
+              className={cn(nbInput, errors.full_name && 'nb-invalid')}
+              aria-invalid={!!errors.full_name}
               autoComplete='name'
             />
             {errors.full_name && (
-              <p className='text-xs text-destructive'>{errors.full_name.message}</p>
+              <p className={nbError} role='alert'>
+                {errors.full_name.message}
+              </p>
             )}
           </div>
 
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
             <div className='space-y-2'>
-              <Label htmlFor='admin-username' className='text-sm font-medium'>
+              <Label htmlFor={usernameId} className={nbLabel}>
                 Nama pengguna
               </Label>
               <Input
-                id='admin-username'
+                id={usernameId}
                 {...register('username', { required: 'Nama pengguna wajib diisi' })}
                 placeholder='budisantoso'
-                className='rounded-lg'
+                className={cn(nbInput, errors.username && 'nb-invalid')}
+                aria-invalid={!!errors.username}
                 autoComplete='username'
               />
               {errors.username && (
-                <p className='text-xs text-destructive'>{errors.username.message}</p>
+                <p className={nbError} role='alert'>
+                  {errors.username.message}
+                </p>
               )}
             </div>
 
             <div className='space-y-2'>
-              <Label className='text-sm font-medium'>Peran</Label>
+              <Label htmlFor={roleId} className={nbLabel}>
+                Peran
+              </Label>
               <Select onValueChange={(val) => setValue('role', val)} defaultValue={selectedRole}>
-                <SelectTrigger className='rounded-lg font-medium uppercase'>
+                <SelectTrigger
+                  id={roleId}
+                  className={cn(nbSelectTrigger, 'w-full data-[size=default]:h-11')}
+                >
                   <SelectValue placeholder='Pilih peran' />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='admin'>ADMIN</SelectItem>
-                  <SelectItem value='noc'>NOC</SelectItem>
+                <SelectContent className={nbSelectContent}>
+                  <SelectItem value='admin' className={nbSelectItem}>
+                    ADMIN
+                  </SelectItem>
+                  <SelectItem value='noc' className={nbSelectItem}>
+                    NOC
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='admin-email' className='text-sm font-medium'>
+            <Label htmlFor={emailId} className={nbLabel}>
               Email
             </Label>
             <Input
-              id='admin-email'
+              id={emailId}
               {...register('email', {
                 required: 'Email wajib diisi',
                 pattern: {
@@ -152,61 +204,79 @@ export const CreateAdminModal = () => {
               })}
               type='email'
               placeholder='admin@pakargaming.id'
-              className='rounded-lg'
+              className={cn(nbInput, errors.email && 'nb-invalid')}
+              aria-invalid={!!errors.email}
               autoComplete='email'
             />
-            {errors.email && <p className='text-xs text-destructive'>{errors.email.message}</p>}
+            {errors.email && (
+              <p className={nbError} role='alert'>
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor='admin-password' className='text-sm font-medium'>
+            <Label htmlFor={passwordId} className={nbLabel}>
               Kata sandi
             </Label>
             <Input
-              id='admin-password'
+              id={passwordId}
               {...register('password', {
                 required: 'Kata sandi wajib diisi',
                 minLength: { value: 6, message: 'Minimal 6 karakter' },
               })}
               type='password'
               placeholder='••••••••'
-              className='rounded-lg'
+              className={cn(nbInput, errors.password && 'nb-invalid')}
+              aria-invalid={!!errors.password}
               autoComplete='new-password'
             />
             {errors.password && (
-              <p className='text-xs text-destructive'>{errors.password.message}</p>
+              <p className={nbError} role='alert'>
+                {errors.password.message}
+              </p>
             )}
           </div>
 
-          <div className='space-y-2 border-t pt-4 mt-6'>
-            <Label className='font-bold text-indigo-600'>Admin Password Check</Label>
+          <div className='nb-frame nb-frame-thin nb-sd-sm space-y-2 bg-[#ffd84d] p-3'>
+            <Label htmlFor={confirmId} className={nbLabel}>
+              Konfirmasi kata sandi Anda
+            </Label>
+            <p className={nbHint}>
+              Masukkan kata sandi akun Anda sendiri untuk mengesahkan pendaftaran ini.
+            </p>
             <Input
+              id={confirmId}
               {...register('confirm_admin_password', {
                 required: 'Your password is required to confirm this action',
               })}
               type='password'
               placeholder='Validasi Password Anda'
-              className='rounded-xl border-indigo-200'
+              className={cn(nbInput, errors.confirm_admin_password && 'nb-invalid')}
+              aria-invalid={!!errors.confirm_admin_password}
+              autoComplete='current-password'
             />
             {errors.confirm_admin_password && (
-              <p className='text-xs text-red-500'>{errors.confirm_admin_password.message}</p>
+              <p className={nbError} role='alert'>
+                {errors.confirm_admin_password.message}
+              </p>
             )}
           </div>
 
-          <Button
+          <button
             type='submit'
-            className='w-full bg-indigo-600 hover:bg-indigo-700 rounded-xl h-11 font-bold mt-4'
+            className={cn(nbDialogButton, nbAccent.lime, 'w-full')}
             disabled={isPending}
           >
             {isPending ? (
-              <span className='flex items-center gap-2'>
-                <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+              <>
+                <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
                 Mendaftar…
-              </span>
+              </>
             ) : (
               'Daftarkan'
             )}
-          </Button>
+          </button>
         </form>
       </DialogContent>
     </Dialog>

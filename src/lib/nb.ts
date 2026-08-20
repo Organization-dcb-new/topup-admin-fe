@@ -77,8 +77,10 @@ export const nbSwitch = 'nb-switch'
 
 /** `SelectContent` dirender lewat portal di luar pembungkus `.nb`, jadi kelas
  *  `nb` dipasang lagi supaya variabel `--nb-ink` tetap terbaca. */
+// Tinggi disetel lewat varian `data-[size=…]` karena `SelectTrigger` shadcn
+// memakai selektor atribut yang menang atas utility `h-*` biasa.
 export const nbSelectTrigger =
-  'nb-frame nb-frame-thin nb-sd-sm nb-focus h-10 bg-white font-black uppercase tracking-[0.12em] text-[#111] focus-visible:ring-0'
+  'nb-frame nb-frame-thin nb-sd-sm nb-focus bg-white font-black uppercase tracking-[0.12em] text-[#111] focus-visible:ring-0 data-[size=default]:h-10 data-[size=sm]:h-8'
 export const nbSelectContent = 'nb nb-frame nb-frame-thin nb-sd bg-white'
 export const nbSelectItem =
   'rounded-none font-black uppercase tracking-[0.12em] text-[#111] focus:bg-[#ffd84d] focus:text-[#111]'

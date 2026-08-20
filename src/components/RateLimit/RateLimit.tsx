@@ -1,16 +1,32 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Plus, Edit3, Loader2 } from 'lucide-react' // Tambah Loader2
+import {
+  nbAccent,
+  nbDialog,
+  nbDialogBody,
+  nbDialogButton,
+  nbDialogFooter,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbError,
+  nbHint,
+  nbIconButton,
+  nbInput,
+  nbLabel,
+} from '@/lib/nb'
+import { cn } from '@/lib/utils'
+import { Plus, Edit3, Loader2 } from 'lucide-react'
 import type { RateLimit } from '@/types/rate_limit'
 import { useRateLimitSubmit } from '@/hooks/useRateLimiter'
 
@@ -21,6 +37,11 @@ interface Props {
 export default function ModalRateLimit({ rateLimit }: Props) {
   const [open, setOpen] = useState(false)
   const isUpdate = !!rateLimit
+
+  // Tiap baris tabel merender modalnya sendiri, jadi id statis akan bentrok
+  // dan `htmlFor` label menunjuk ke input baris lain.
+  const keyId = useId()
+  const valueId = useId()
 
   const {
     register,
@@ -45,110 +66,124 @@ export default function ModalRateLimit({ rateLimit }: Props) {
     }
   }, [open, rateLimit, reset, isUpdate])
 
+  const accent = isUpdate ? nbAccent.yellow : nbAccent.lime
+
   return (
     <>
       {isUpdate ? (
-        <Button
-          variant='ghost'
-          size='icon'
-          className='h-8 w-8 cursor-pointer hover:bg-purple-50 hover:text-purple-600 transition-colors'
+        <button
+          type='button'
+          className={cn(nbIconButton, nbAccent.yellow)}
+          onClick={() => setOpen(true)}
+          aria-label={`Update ${rateLimit?.key}`}
+        >
+          <Edit3 className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+        </button>
+      ) : (
+        <button
+          type='button'
+          className={cn(nbDialogButton, nbAccent.lime, 'h-10 w-full px-4 sm:w-auto')}
           onClick={() => setOpen(true)}
         >
-          <Edit3 className='h-4 w-4' />
-        </Button>
-      ) : (
-        <Button className='cursor-pointer' onClick={() => setOpen(true)}>
-          <Plus className='h-4 w-4' /> Create Rate Limit
-        </Button>
+          <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
+          Create Rate Limit
+        </button>
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='sm:max-w-md'>
-          <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-              {isUpdate ? (
-                <>
-                  <Edit3 className='h-5 w-5 text-purple-600' /> Update Setting
-                </>
-              ) : (
-                <>
-                  <Plus className='h-5 w-5 text-purple-600' /> New Rate Limit
-                </>
+        <DialogContent className={nbDialog} showCloseButton={false}>
+          <div className={cn(nbDialogHeader, accent)}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={nbDialogIcon}>
+                  {isUpdate ? (
+                    <Edit3 className='h-4 w-4' strokeWidth={3} aria-hidden />
+                  ) : (
+                    <Plus className='h-4 w-4' strokeWidth={3} aria-hidden />
+                  )}
+                </span>
+                <DialogTitle className={nbDialogTitle}>
+                  {isUpdate ? 'Update Setting' : 'New Rate Limit'}
+                </DialogTitle>
+              </div>
+              <DialogDescription className={nbHint}>
+                Threshold is applied per minute, per API key.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className={nbDialogBody}>
+            <div className='space-y-2'>
+              <Label htmlFor={keyId} className={nbLabel}>
+                Setting Key
+              </Label>
+              <Input
+                id={keyId}
+                autoComplete='off'
+                {...register('key', {
+                  required: 'Key is required',
+                  pattern: {
+                    value: /^[A-Z_]+$/,
+                    message: 'Key must be UPPERCASE_WITH_UNDERSCORES',
+                  },
+                })}
+                placeholder='e.g. LIMIT_UPLOAD'
+                aria-invalid={!!errors.key}
+                className={cn(nbInput, 'font-mono uppercase', errors.key && 'nb-invalid')}
+              />
+              {errors.key && (
+                <p className={nbError} role='alert'>
+                  {errors.key.message}
+                </p>
               )}
-            </DialogTitle>
-          </DialogHeader>
-
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-            <div className='space-y-4 py-2'>
-              {/* Key Setting */}
-              <div className='space-y-2'>
-                <Label htmlFor='key' className='text-sm font-semibold'>
-                  Setting Key
-                </Label>
-                <Input
-                  {...register('key', {
-                    required: 'Key is required',
-                    pattern: {
-                      value: /^[A-Z_]+$/,
-                      message: 'Key must be UPPERCASE_WITH_UNDERSCORES',
-                    },
-                  })}
-                  placeholder='e.g. LIMIT_UPLOAD'
-                  className={` transition-all`}
-                />
-                {errors.key && (
-                  <p className='text-[11px] font-medium text-destructive italic'>
-                    {errors.key.message}
-                  </p>
-                )}
-              </div>
-
-              {/* Value Setting */}
-              <div className='space-y-2'>
-                <Label htmlFor='value' className='text-sm font-semibold'>
-                  Threshold Value (req/min)
-                </Label>
-                <Input
-                  type='number'
-                  {...register('value', {
-                    required: 'Value is required',
-                    min: { value: 1, message: 'Minimum value is 1' },
-                  })}
-                  placeholder='10'
-                  className='transition-all focus-visible:ring-purple-500'
-                />
-                {errors.value && (
-                  <p className='text-[11px] font-medium text-destructive italic'>
-                    {errors.value.message}
-                  </p>
-                )}
-              </div>
             </div>
 
-            <DialogFooter className='gap-2 sm:gap-5 border-t pt-4'>
-              <Button
-                variant='ghost'
+            <div className='space-y-2'>
+              <Label htmlFor={valueId} className={nbLabel}>
+                Threshold Value (req/min)
+              </Label>
+              <Input
+                id={valueId}
+                type='number'
+                {...register('value', {
+                  required: 'Value is required',
+                  min: { value: 1, message: 'Minimum value is 1' },
+                })}
+                placeholder='10'
+                aria-invalid={!!errors.value}
+                className={cn(nbInput, 'tabular-nums', errors.value && 'nb-invalid')}
+              />
+              {errors.value && (
+                <p className={nbError} role='alert'>
+                  {errors.value.message}
+                </p>
+              )}
+            </div>
+
+            <DialogFooter className={nbDialogFooter}>
+              <button
                 type='button'
                 onClick={() => setOpen(false)}
-                className='cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50'
+                className={cn(nbDialogButton, nbAccent.white)}
               >
                 Cancel
-              </Button>
-              <Button
+              </button>
+              <button
                 type='submit'
                 disabled={mutation.isPending}
-                className='cursor-pointer bg-purple-600 hover:bg-purple-700 min-w-25'
+                className={cn(nbDialogButton, accent)}
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Saving
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
+                    Saving
                   </>
                 ) : isUpdate ? (
                   'Update'
                 ) : (
                   'Create'
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

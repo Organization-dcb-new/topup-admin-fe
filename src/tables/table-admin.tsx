@@ -2,37 +2,30 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import type { AdminUser } from '@/types/admin'
 import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
-import { Badge } from '@/components/ui/badge'
 import { UpdateAdminRole } from '@/components/Admin/Update'
 import { DeleteAdminButton } from '@/components/Admin/Delete'
+import { nbAccent, nbBadge } from '@/lib/nb'
 import { cn } from '@/lib/utils'
 
-const roleBadgeClass = (role: string | undefined) => {
-  switch (role) {
-    case 'dev':
-      return 'border-purple-200 bg-purple-50 text-purple-800'
-    case 'admin':
-      return 'border-blue-200 bg-blue-50 text-blue-800'
-    case 'noc':
-      return 'border-border bg-muted/50 text-muted-foreground'
-    default:
-      return 'border-border bg-muted/30 text-foreground'
-  }
+/** Ikon + warna per peran. Warnanya sengaja beda tajam supaya peran `dev`
+ *  langsung kelihatan saat menyisir daftar panjang. */
+const ROLE_STYLE: Record<string, { icon: typeof Shield; accent: string }> = {
+  dev: { icon: ShieldAlert, accent: nbAccent.pink },
+  admin: { icon: ShieldCheck, accent: nbAccent.cyan },
+  noc: { icon: Shield, accent: nbAccent.cream },
 }
 
 export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
   {
     accessorKey: 'username',
     header: t('adminTable.colUsername'),
-    cell: ({ row }) => (
-      <div className='font-medium text-gray-900'>{row.original.username}</div>
-    ),
+    cell: ({ row }) => <div className='font-black'>{row.original.username}</div>,
   },
   {
     accessorKey: 'email',
     header: t('adminTable.colEmail'),
     cell: ({ row }) => (
-      <div className='max-w-[14rem] truncate font-medium text-gray-900 sm:max-w-xs'>
+      <div className='max-w-[14rem] truncate font-bold sm:max-w-xs' title={row.original.email}>
         {row.original.email}
       </div>
     ),
@@ -42,40 +35,24 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     header: t('adminTable.colRole'),
     cell: ({ row }) => {
       const role = row.original.role
+      const style = ROLE_STYLE[role] ?? { icon: Shield, accent: nbAccent.white }
+      const Icon = style.icon
       return (
-        <div className='flex items-center gap-2'>
-          {role === 'dev' && (
-            <ShieldAlert className='h-4 w-4 shrink-0 text-purple-600' aria-hidden />
-          )}
-          {role === 'admin' && (
-            <ShieldCheck className='h-4 w-4 shrink-0 text-blue-600' aria-hidden />
-          )}
-          {role === 'noc' && <Shield className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />}
-          <Badge
-            variant='outline'
-            className={cn('text-[10px] font-semibold uppercase tracking-wide', roleBadgeClass(role))}
-          >
-            {role}
-          </Badge>
-        </div>
+        <span className={cn(nbBadge, style.accent)}>
+          <Icon className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
+          {role}
+        </span>
       )
     },
   },
   {
     accessorKey: 'two_factor_enabled',
     header: t('adminTable.colTwoFactor'),
-    cell: ({ row }) => {
-      const enabled = row.original.two_factor_enabled
-      return enabled ? (
-        <Badge variant='success' className='font-medium'>
-          {t('adminTable.enabled')}
-        </Badge>
-      ) : (
-        <Badge variant='outline' className='border-border font-medium text-muted-foreground'>
-          {t('adminTable.disabled')}
-        </Badge>
-      )
-    },
+    cell: ({ row }) => (
+      <span className={cn(nbBadge, row.original.two_factor_enabled ? nbAccent.lime : nbAccent.cream)}>
+        {row.original.two_factor_enabled ? t('adminTable.enabled') : t('adminTable.disabled')}
+      </span>
+    ),
   },
   {
     id: 'actions',

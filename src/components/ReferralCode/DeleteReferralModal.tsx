@@ -1,4 +1,3 @@
-import { Loader2, Trash2 } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +9,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useAdminMutation } from '@/hooks/useAdmin'
+import { useDeleteReferralCode } from '@/hooks/useReferral'
 import {
   nbAccent,
   nbDialog,
@@ -22,24 +21,24 @@ import {
   nbIconButton,
 } from '@/lib/nb'
 import { cn } from '@/lib/utils'
+import { Loader2, Trash2 } from 'lucide-react'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-export const DeleteAdminButton = ({
-  id,
-  email,
-}: {
-  id: string
-  email: string
-}) => {
-  const { deleteAdmin } = useAdminMutation()
+export function DeleteReferralModal({ id }: { id: string }) {
+  const { t } = useTranslation('common')
+  const [open, setOpen] = useState(false)
+  const mutation = useDeleteReferralCode()
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <button
           type='button'
           className={cn(nbIconButton, nbAccent.red)}
-          disabled={deleteAdmin.isPending}
-          aria-label={`Hapus admin ${email}`}
+          disabled={mutation.isPending}
+          aria-label={t('referralPage.deleteBtn')}
+          title={t('referralPage.deleteBtn')}
         >
           <Trash2 className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
         </button>
@@ -52,11 +51,12 @@ export const DeleteAdminButton = ({
               <span className={nbDialogIcon}>
                 <Trash2 className='h-4 w-4' strokeWidth={3} aria-hidden />
               </span>
-              <AlertDialogTitle className={nbDialogTitle}>Hapus akun admin?</AlertDialogTitle>
+              <AlertDialogTitle className={nbDialogTitle}>
+                {t('referralPage.deleteConfirm.title')}
+              </AlertDialogTitle>
             </div>
             <AlertDialogDescription className={cn(nbHint, 'text-left')}>
-              Yakin ingin menghapus <span className='bg-white px-1 font-black'>{email}</span>?
-              Tindakan ini tidak dapat dibatalkan.
+              {t('referralPage.deleteConfirm.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
@@ -64,22 +64,22 @@ export const DeleteAdminButton = ({
         <AlertDialogFooter className='gap-2 px-5 py-5'>
           <AlertDialogCancel
             className={cn(nbDialogButton, nbAccent.white)}
-            disabled={deleteAdmin.isPending}
+            disabled={mutation.isPending}
           >
-            Batal
+            {t('referralPage.deleteConfirm.cancel')}
           </AlertDialogCancel>
           <AlertDialogAction
+            className={cn(nbDialogButton, nbAccent.red, 'text-[#111]')}
             onClick={(e) => {
               e.preventDefault()
-              deleteAdmin.mutate(id)
+              mutation.mutate(id, { onSuccess: () => setOpen(false) })
             }}
-            disabled={deleteAdmin.isPending}
-            className={cn(nbDialogButton, nbAccent.red, 'text-[#111]')}
+            disabled={mutation.isPending}
           >
-            {deleteAdmin.isPending && (
+            {mutation.isPending && (
               <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
             )}
-            Hapus
+            {t('referralPage.deleteConfirm.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
