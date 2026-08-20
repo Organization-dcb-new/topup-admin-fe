@@ -343,7 +343,9 @@
     "colQuantity": "Quantity",
     "colProviderStatus": "Provider status",
     "colTotal": "Total",
-    "colUnitPrice": "Unit price"
+    "colUnitPrice": "Unit price",
+    "copyLabel": "Copy",
+    "copyError": "Failed to copy"
   },
   "bannerPage": {
     "title": "Banners",
@@ -367,7 +369,9 @@
     "createHeading": "New article",
     "editHeading": "Edit article",
     "addArticle": "Add article",
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "tableView": "Table view",
+    "gridView": "Grid gallery"
   },
   "blogTable": {
     "colThumbnail": "Image",
@@ -377,7 +381,10 @@
     "noTags": "No tags",
     "colStatus": "Status",
     "statusPublished": "Published",
-    "statusDraft": "Draft"
+    "statusDraft": "Draft",
+    "noImage": "No image",
+    "copySlug": "Copy slug",
+    "copyFailed": "Failed to copy slug"
   },
   "blogList": {
     "loadingTitle": "Loading articles…",
@@ -1375,7 +1382,16 @@
     "colAlias": "Alias",
     "colGameCount": "Game count",
     "actionsHeader": "Actions",
-    "rowActionsAria": "Actions for this show"
+    "rowActionsAria": "Actions for this show",
+    "colFlags": "Tags",
+    "colStatus": "Status",
+    "flagHot": "Hot",
+    "flagNew": "New",
+    "flagPopular": "Popular",
+    "statusVisible": "Visible",
+    "statusHidden": "Hidden",
+    "connectedGames": "Connected games ({{count}})",
+    "noImage": "No image yet"
   },
   "showToasts": {
     "loading": "Loading…",
@@ -1404,7 +1420,8 @@
     "aliasHint": "Unique identifier for the system (usually lowercase, no spaces).",
     "imageLabel": "Show image",
     "uploadAria": "Upload show image",
-    "previewAlt": "Show image preview"
+    "previewAlt": "Show image preview",
+    "imageHint": "JPG, PNG, WEBP, or SVG. The image uploads when you save."
   },
   "editShowModal": {
     "triggerShort": "Edit",

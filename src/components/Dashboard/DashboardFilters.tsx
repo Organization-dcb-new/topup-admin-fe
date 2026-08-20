@@ -12,6 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  dashSelectContent,
+  dashSelectItem,
+  dashSelectTrigger,
+} from '@/components/Dashboard/styles'
 import { RANGE_OPTIONS } from '@/lib/dashboard'
 import type { DashboardRange } from '@/types/dashboard'
 import { format } from 'date-fns'
@@ -54,7 +59,7 @@ export function DashboardFilters({
   return (
     <div className='flex flex-wrap items-center gap-2 sm:gap-3'>
       {/* Auto Refresh dropdown selector */}
-      <div className='flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 text-xs font-semibold text-slate-600 dark:text-slate-400'>
+      <label className='nb-frame nb-frame-thin nb-sd-sm flex h-9 items-center gap-1.5 bg-white px-2.5 text-[11px] font-black uppercase tracking-[0.08em] text-[#111]'>
         <span>Auto Refresh:</span>
         <select
           value={pollingInterval === false ? 'off' : pollingInterval}
@@ -63,14 +68,14 @@ export function DashboardFilters({
             if (val === 'off') onPollingIntervalChange(false)
             else onPollingIntervalChange(Number(val))
           }}
-          className='bg-transparent border-none focus:outline-hidden font-bold text-primary cursor-pointer'
+          className='nb-focus cursor-pointer border-none bg-transparent font-black text-[#111] focus:outline-hidden'
         >
           <option value='off'>Off</option>
           <option value='30000'>30s</option>
           <option value='60000'>1m</option>
           <option value='300000'>5m</option>
         </select>
-      </div>
+      </label>
 
       {/* Manual Refresh Trigger */}
       <Button
@@ -79,19 +84,22 @@ export function DashboardFilters({
         size='icon'
         onClick={onRefresh}
         disabled={isRefreshing}
-        className='h-9 w-9 rounded-lg border-slate-200 dark:border-zinc-800 text-slate-550 hover:text-slate-900 hover:bg-slate-50 dark:hover:bg-zinc-900 cursor-pointer shadow-2xs'
+        className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-9 w-9 cursor-pointer bg-[#ffd84d] text-[#111] hover:bg-[#ffd84d] hover:text-[#111]'
         title='Refresh data'
       >
-        <RotateCw className={cn('h-4 w-4 text-slate-500', isRefreshing && 'animate-spin')} />
+        <RotateCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} strokeWidth={3} />
       </Button>
 
       <Select value={range} onValueChange={(v) => onRangeChange(v as DashboardRange)}>
-        <SelectTrigger className='w-44 border-slate-200 dark:border-zinc-800' aria-label={t('dashboard.rangeLabel')}>
+        <SelectTrigger
+          className={`${dashSelectTrigger} h-9 w-44`}
+          aria-label={t('dashboard.rangeLabel')}
+        >
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className={dashSelectContent}>
           {RANGE_OPTIONS.map((r) => (
-            <SelectItem key={r} value={r}>
+            <SelectItem key={r} value={r} className={dashSelectItem}>
               {t(RANGE_LABEL_KEY[r])}
             </SelectItem>
           ))}
@@ -104,9 +112,12 @@ export function DashboardFilters({
             <Button
               variant='outline'
               aria-label={t('dashboard.pickDateAria')}
-              className={`w-64 justify-start text-left font-normal border-slate-200 dark:border-zinc-800 ${!date?.from && 'text-muted-foreground'}`}
+              className={cn(
+                'nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-9 w-64 cursor-pointer justify-start bg-white text-left font-bold text-[#111] hover:bg-[#ffd84d] hover:text-[#111]',
+                !date?.from && 'text-[#111]/55',
+              )}
             >
-              <CalendarIcon className='mr-2 h-4 w-4' aria-hidden />
+              <CalendarIcon className='mr-2 h-4 w-4' strokeWidth={3} aria-hidden />
               {date?.from ? (
                 date.to ? (
                   <>
@@ -120,7 +131,11 @@ export function DashboardFilters({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className='w-auto p-0' align='start'>
+          {/* Portal berada di luar pembungkus `.nb`, jadi kelasnya dipasang lagi. */}
+          <PopoverContent
+            className='nb nb-frame nb-frame-thick nb-sd w-auto bg-white p-0'
+            align='start'
+          >
             <Calendar
               initialFocus
               mode='range'

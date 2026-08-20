@@ -120,7 +120,7 @@ export function CreateBannerModal() {
                   </p>
                 )}
               </div>
-              <p className='text-xs font-bold text-[#111]/55'>
+              <p className='text-xs font-bold text-[#111]/70'>
                 {t('createBannerModal.redirectHint')}
               </p>
             </div>

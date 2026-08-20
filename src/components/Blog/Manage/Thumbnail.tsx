@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge'
+import { FallbackImage } from '@/components/ui/fallback-image'
 import { cn } from '@/lib/utils'
 import type { BlogFormValues } from '../types/blog'
 import type { UseMutationResult } from '@tanstack/react-query'
@@ -15,30 +15,29 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
   const isUploading = uploadMutation.isPending
 
   return (
-    <div className='rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 transition-shadow hover:shadow-md'>
+    <div className='nb-frame nb-frame-thick nb-sd bg-white p-4'>
       <div className='mb-3 flex items-center justify-between gap-2'>
-        <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+        <p className='text-[11px] font-black uppercase tracking-[0.14em]'>
           {t('blogThumbnail.label')}
         </p>
         {formData.thumbnail && !isUploading && (
-          <Badge variant='secondary' className='text-[10px] font-normal'>
+          <span className='nb-frame nb-frame-thin bg-[#6fe3f5] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider'>
             {t('blogThumbnail.ratioBadge')}
-          </Badge>
+          </span>
         )}
       </div>
 
       <div
         className={cn(
-          'relative flex aspect-video items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-colors',
-          isUploading
-            ? 'border-primary/40 bg-primary/5'
-            : 'border-border bg-muted/20 hover:border-primary/50',
+          'nb-frame nb-frame-thick nb-sd-sm nb-drop relative flex aspect-video items-center justify-center overflow-hidden bg-[#f5f1e8]',
+          isUploading && 'pointer-events-none',
         )}
       >
         {formData.thumbnail ? (
-          <img
+          <FallbackImage
             src={formData.thumbnail}
             alt={t('blogThumbnail.previewAlt')}
+            label={t('blogTable.noImage')}
             className={cn(
               'h-full w-full object-cover transition-opacity duration-300',
               isUploading && 'opacity-40',
@@ -46,25 +45,21 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
           />
         ) : (
           <div className='px-4 text-center'>
-            <UploadCloud
-              className={cn(
-                'mx-auto mb-2 h-8 w-8',
-                isUploading ? 'text-primary' : 'text-muted-foreground',
-              )}
-              aria-hidden
-            />
-            <p className='text-xs font-medium text-muted-foreground'>
+            <span className='nb-frame nb-frame-thin nb-sd-sm mx-auto mb-2 flex h-11 w-11 items-center justify-center bg-[#6fe3f5]'>
+              <UploadCloud className='h-5 w-5' strokeWidth={2.5} aria-hidden />
+            </span>
+            <p className='text-[11px] font-black uppercase tracking-wide'>
               {isUploading ? t('blogThumbnail.uploading') : t('blogThumbnail.uploadHint')}
             </p>
           </div>
         )}
 
         {isUploading && (
-          <div className='absolute inset-0 flex flex-col items-center justify-center bg-background/50 backdrop-blur-[2px]'>
-            <Loader2 className='mb-2 h-7 w-7 animate-spin text-primary' aria-hidden />
-            <div className='h-1 w-24 overflow-hidden rounded-full bg-muted'>
-              <div className='h-full w-1/2 animate-pulse rounded-full bg-primary' />
-            </div>
+          <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#f5f1e8]/95'>
+            <Loader2 className='h-7 w-7 animate-spin' strokeWidth={3} aria-hidden />
+            <span className='text-[11px] font-black uppercase tracking-[0.12em]'>
+              {t('blogThumbnail.uploading')}
+            </span>
           </div>
         )}
 
@@ -80,11 +75,15 @@ export default function Thumbnail({ formData, uploadMutation }: ThumbnailProps) 
           onChange={(e) => {
             const file = e.target.files?.[0]
             if (file) uploadMutation.mutate(file)
+            // Direset supaya memilih berkas yang sama dua kali tetap memicu onChange.
+            e.target.value = ''
           }}
         />
       </div>
 
-      <p className='mt-2 text-center text-[10px] text-muted-foreground'>{t('blogThumbnail.sizeHint')}</p>
+      <p className='mt-2 text-center text-[10px] font-bold text-[#111]/55'>
+        {t('blogThumbnail.sizeHint')}
+      </p>
     </div>
   )
 }

@@ -27,7 +27,16 @@ import {
   formatNumber,
 } from '@/lib/format'
 import i18n from '@/i18n'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
+import {
+  dashAccent,
+  dashCard,
+  dashCardBody,
+  dashCardHeader,
+  dashCardTitle,
+  dashSelectContent,
+  dashSelectItem,
+  dashSelectTrigger,
+} from '@/components/Dashboard/styles'
 import type { DashboardGranularity } from '@/types/dashboard'
 import { AlertCircle, Loader2 } from 'lucide-react'
 import { useState } from 'react'
@@ -44,6 +53,15 @@ import {
 
 type Metric = 'count' | 'revenue' | 'margin'
 const METRICS: Metric[] = ['count', 'revenue', 'margin']
+
+/** Isian area per metrik; garisnya selalu hitam supaya kontras tetap tegas. */
+const METRIC_FILL: Record<Metric, string> = {
+  count: '#6fe3f5',
+  revenue: '#c9f24d',
+  margin: '#ff9ed2',
+}
+
+const INK = '#111111'
 
 const GRANULARITY_LABEL_KEY: Record<DashboardGranularity, string> = {
   second: 'dashboard.granularity.second',
@@ -72,24 +90,25 @@ export function TransactionChart({ params }: TransactionChartProps) {
   const { data, isLoading, isError, error } = useDashboardTimeseries(params, granularity)
   const series = data ? fillTimeseriesGaps(data.data.series, granularity) : []
   const isCount = metric === 'count'
-  const color = metric === 'margin' ? '#8b5cf6' : isCount ? '#0ea5e9' : '#059669'
+  const fill = METRIC_FILL[metric]
 
   return (
     <Card className={dashCard}>
       <CardHeader
-        className={`${dashCardHeader} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}
+        className={`${dashCardHeader} ${dashAccent.cyan} flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between`}
       >
-        <CardTitle className='text-sm font-semibold text-gray-900'>
-          {t('dashboard.chart.title')}
-        </CardTitle>
+        <CardTitle className={dashCardTitle}>{t('dashboard.chart.title')}</CardTitle>
         <div className='flex flex-wrap items-center gap-2'>
           <Select value={metric} onValueChange={(v) => setMetric(v as Metric)}>
-            <SelectTrigger className='h-8 w-36' aria-label={t('dashboard.chart.metricLabel')}>
+            <SelectTrigger
+              className={`${dashSelectTrigger} h-8 w-36`}
+              aria-label={t('dashboard.chart.metricLabel')}
+            >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={dashSelectContent}>
               {METRICS.map((m) => (
-                <SelectItem key={m} value={m}>
+                <SelectItem key={m} value={m} className={dashSelectItem}>
                   {t(`dashboard.chart.metric.${m}`)}
                 </SelectItem>
               ))}
@@ -99,12 +118,15 @@ export function TransactionChart({ params }: TransactionChartProps) {
             value={granularity}
             onValueChange={(v) => setGranularity(v as DashboardGranularity)}
           >
-            <SelectTrigger className='h-8 w-28' aria-label={t('dashboard.chart.granularityLabel')}>
+            <SelectTrigger
+              className={`${dashSelectTrigger} h-8 w-28`}
+              aria-label={t('dashboard.chart.granularityLabel')}
+            >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={dashSelectContent}>
               {GRANULARITY_BY_RANGE[params.range].map((g) => (
-                <SelectItem key={g} value={g}>
+                <SelectItem key={g} value={g} className={dashSelectItem}>
                   {t(GRANULARITY_LABEL_KEY[g])}
                 </SelectItem>
               ))}
@@ -112,50 +134,56 @@ export function TransactionChart({ params }: TransactionChartProps) {
           </Select>
         </div>
       </CardHeader>
-      <CardContent className='p-4'>
+      <CardContent className={dashCardBody}>
         {isLoading ? (
           <div className='flex h-56 items-center justify-center'>
-            <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-14 w-14 items-center justify-center bg-[#6fe3f5]'>
+              <Loader2 className='h-7 w-7 animate-spin' strokeWidth={3} aria-hidden />
+            </span>
           </div>
         ) : isError ? (
-          <div className='flex h-56 flex-col items-center justify-center gap-2 text-center'>
-            <AlertCircle className='h-8 w-8 text-destructive' aria-hidden />
-            <p className='text-sm font-medium text-destructive'>
+          <div className='flex h-56 flex-col items-center justify-center gap-3 text-center'>
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-14 w-14 items-center justify-center bg-[#ff4d3d]'>
+              <AlertCircle className='h-7 w-7' strokeWidth={3} aria-hidden />
+            </span>
+            <p className='text-xs font-black uppercase tracking-tight text-[#111]'>
               {extractErrorMessage(error) ?? t('dashboard.chart.loadError')}
             </p>
           </div>
         ) : series.length === 0 ? (
           <div className='flex h-56 items-center justify-center'>
-            <p className='text-sm text-muted-foreground'>{t('dashboard.chart.empty')}</p>
+            <p className='text-xs font-bold uppercase tracking-tight text-[#111]/55'>
+              {t('dashboard.chart.empty')}
+            </p>
           </div>
         ) : (
           <ResponsiveContainer width='100%' height={224}>
             <AreaChart data={series} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
-              <defs>
-                <linearGradient id='chartFill' x1='0' y1='0' x2='0' y2='1'>
-                  <stop offset='5%' stopColor={color} stopOpacity={0.3} />
-                  <stop offset='95%' stopColor={color} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray='3 3' vertical={false} stroke='#f1f5f9' />
+              <CartesianGrid
+                strokeDasharray='4 4'
+                vertical={false}
+                stroke={INK}
+                strokeOpacity={0.18}
+              />
               <XAxis
                 dataKey='time_key'
                 tickFormatter={(v) => formatBucketLabel(v, granularity, i18n.language)}
-                tick={{ fontSize: 11, fill: '#94a3b8' }}
+                tick={{ fontSize: 11, fill: INK, fontWeight: 700 }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: INK, strokeWidth: 2 }}
                 minTickGap={24}
               />
               <YAxis
-                tick={{ fontSize: 11, fill: '#94a3b8' }}
+                tick={{ fontSize: 11, fill: INK, fontWeight: 700 }}
                 tickLine={false}
-                axisLine={false}
+                axisLine={{ stroke: INK, strokeWidth: 2 }}
                 width={56}
                 tickFormatter={(v) =>
                   isCount ? formatCompactNumber(v) : formatCompactCurrency(v)
                 }
               />
               <Tooltip
+                cursor={{ stroke: INK, strokeWidth: 2 }}
                 labelFormatter={(v) => formatBucketFull(String(v), i18n.language)}
                 formatter={(value) => {
                   const num = typeof value === 'number' ? value : Number(value)
@@ -164,14 +192,28 @@ export function TransactionChart({ params }: TransactionChartProps) {
                     t(`dashboard.chart.metric.${metric}`),
                   ] as [string, string]
                 }}
-                contentStyle={{ borderRadius: 8, fontSize: 12 }}
+                contentStyle={{
+                  background: '#fff',
+                  border: `3px solid ${INK}`,
+                  borderRadius: 0,
+                  boxShadow: `5px 5px 0 0 ${INK}`,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: INK,
+                }}
+                labelStyle={{ fontWeight: 900, color: INK }}
+                itemStyle={{ color: INK }}
               />
+              {/* `linear` + garis tebal hitam: bentuknya bersudut, senada
+                  dengan sisa halaman, dan tiap bucket tetap kebaca. */}
               <Area
-                type='monotone'
+                type='linear'
                 dataKey={metric}
-                stroke={color}
-                strokeWidth={2}
-                fill='url(#chartFill)'
+                stroke={INK}
+                strokeWidth={3}
+                fill={fill}
+                fillOpacity={0.85}
+                activeDot={{ r: 5, fill, stroke: INK, strokeWidth: 3 }}
               />
             </AreaChart>
           </ResponsiveContainer>

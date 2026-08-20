@@ -1,6 +1,5 @@
 import { ArrowLeft, Plus, LayoutGrid, List as ListIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Button } from '../../ui/button'
 import { cn } from '@/lib/utils'
 
 type ViewMode = 'list' | 'create' | 'edit'
@@ -13,7 +12,41 @@ interface HeaderBlogProps {
   setViewMode?: (mode: 'table' | 'grid') => void
 }
 
-export default function HeaderBlog({ view, setView, className, viewMode, setViewMode }: HeaderBlogProps) {
+function ViewToggleButton({
+  active,
+  onClick,
+  label,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      aria-pressed={active}
+      className={cn(
+        'nb-frame nb-frame-thin nb-press-sm flex h-9 w-9 cursor-pointer items-center justify-center',
+        active ? 'nb-sd-sm bg-[#6fe3f5]' : 'bg-white text-[#111]/45',
+      )}
+    >
+      {children}
+    </button>
+  )
+}
+
+export default function HeaderBlog({
+  view,
+  setView,
+  className,
+  viewMode,
+  setViewMode,
+}: HeaderBlogProps) {
   const { t } = useTranslation('common')
 
   return (
@@ -23,62 +56,50 @@ export default function HeaderBlog({ view, setView, className, viewMode, setView
         className,
       )}
     >
-      <h2 className='text-sm font-semibold tracking-tight text-gray-900 dark:text-white'>
+      <h2 className='text-sm font-black uppercase tracking-tight'>
         {view === 'list' && t('blogPage.listHeading')}
         {view === 'create' && t('blogPage.createHeading')}
         {view === 'edit' && t('blogPage.editHeading')}
       </h2>
-      <div className='flex shrink-0 justify-end items-center gap-3'>
+
+      <div className='flex shrink-0 items-center justify-between gap-3 sm:justify-end'>
         {view === 'list' && setViewMode && viewMode && (
-          <div className='flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 mr-1'>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
+          <div className='flex items-center gap-1.5'>
+            <ViewToggleButton
+              active={viewMode === 'table'}
               onClick={() => setViewMode('table')}
-              className={cn(
-                'h-7 w-7 rounded-md transition-all duration-200 cursor-pointer',
-                viewMode === 'table' ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs' : 'text-slate-400 dark:text-slate-500'
-              )}
-              title='Table View'
+              label={t('blogPage.tableView')}
             >
-              <ListIcon className='h-4 w-4' />
-            </Button>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
+              <ListIcon className='h-4 w-4' strokeWidth={3} aria-hidden />
+            </ViewToggleButton>
+            <ViewToggleButton
+              active={viewMode === 'grid'}
               onClick={() => setViewMode('grid')}
-              className={cn(
-                'h-7 w-7 rounded-md transition-all duration-200 cursor-pointer',
-                viewMode === 'grid' ? 'bg-white dark:bg-zinc-800 text-slate-900 dark:text-white shadow-xs' : 'text-slate-400 dark:text-slate-500'
-              )}
-              title='Grid View'
+              label={t('blogPage.gridView')}
             >
-              <LayoutGrid className='h-4 w-4' />
-            </Button>
+              <LayoutGrid className='h-4 w-4' strokeWidth={3} aria-hidden />
+            </ViewToggleButton>
           </div>
         )}
-        
+
         {view === 'list' ? (
-          <Button
+          <button
             type='button'
             onClick={() => setView('create')}
-            className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-9 cursor-pointer items-center justify-center gap-2 bg-[#c9f24d] px-3 text-xs font-black uppercase tracking-[0.12em]'
           >
-            <Plus className='h-4 w-4 shrink-0' aria-hidden />
+            <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
             {t('blogPage.addArticle')}
-          </Button>
+          </button>
         ) : (
-          <Button
+          <button
             type='button'
             onClick={() => setView('list')}
-            variant='outline'
-            className='w-full cursor-pointer gap-2 sm:w-auto'
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-9 cursor-pointer items-center justify-center gap-2 bg-white px-3 text-xs font-black uppercase tracking-[0.12em]'
           >
-            <ArrowLeft className='h-4 w-4 shrink-0' aria-hidden />
+            <ArrowLeft className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
             {t('blogPage.backToList')}
-          </Button>
+          </button>
         )}
       </div>
     </div>

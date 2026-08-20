@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { BlogFormBlogMutationResult } from '../hooks/useBlog'
 import { Loader2, Save, Send } from 'lucide-react'
@@ -33,19 +32,21 @@ export default function ButtonManage({
           id: 'published' as const,
           label: t('blogPublish.publishedLabel'),
           desc: t('blogPublish.publishedDesc'),
+          accent: 'bg-[#c9f24d]',
         },
         {
           id: 'draft' as const,
           label: t('blogPublish.draftLabel'),
           desc: t('blogPublish.draftDesc'),
+          accent: 'bg-[#ffd84d]',
         },
       ] as const,
     [t],
   )
 
   return (
-    <div className='space-y-4 rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5'>
-      <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
+    <div className='nb-frame nb-frame-thick nb-sd space-y-4 bg-white p-4'>
+      <p className='text-[11px] font-black uppercase tracking-[0.14em]'>
         {t('blogPublish.sectionTitle')}
       </p>
 
@@ -58,62 +59,59 @@ export default function ButtonManage({
               type='button'
               role='radio'
               aria-checked={selected}
+              data-active={selected || undefined}
               onClick={() => onStatusChange(item.id)}
               className={cn(
-                'flex w-full cursor-pointer items-center gap-3 rounded-xl border-2 p-3 text-left transition-colors',
-                selected
-                  ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                  : 'border-border/60 bg-muted/20 hover:border-border hover:bg-muted/40',
+                'nb-item flex w-full cursor-pointer items-center gap-3 p-3 text-left',
+                selected ? item.accent : 'bg-white hover:bg-[#f5f1e8]',
               )}
             >
               <span
                 className={cn(
-                  'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2',
-                  selected ? 'border-primary bg-primary' : 'border-muted-foreground/40 bg-background',
+                  'flex h-4 w-4 shrink-0 items-center justify-center border-2 border-[#111]',
+                  selected ? 'bg-[#111]' : 'bg-white',
                 )}
+                aria-hidden
               >
-                {selected && <span className='h-1.5 w-1.5 rounded-full bg-background' />}
+                {selected && <span className='h-1.5 w-1.5 bg-white' />}
               </span>
               <span className='min-w-0'>
-                <span
-                  className={cn(
-                    'block text-xs font-semibold',
-                    selected ? 'text-foreground' : 'text-muted-foreground',
-                  )}
-                >
+                <span className='block text-[11px] font-black uppercase tracking-wide'>
                   {item.label}
                 </span>
-                <span className='block text-[10px] text-muted-foreground'>{item.desc}</span>
+                <span className='block text-[10px] font-bold text-[#111]/55'>{item.desc}</span>
               </span>
             </button>
           )
         })}
       </div>
 
-      <div className='border-t border-border/60 pt-4'>
-        <Button
+      <div className='border-t-4 border-[#111] pt-4'>
+        <button
           type='button'
           disabled={isDisabled}
-          className='h-11 w-full text-xs font-semibold uppercase tracking-wide'
+          className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-11 w-full cursor-pointer items-center justify-center bg-[#c9f24d] text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60'
           onClick={() => handlePublish(currentStatusValue)}
         >
           {isPending ? (
             <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' aria-hidden />
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
               {t('blogPublish.processing')}
             </>
           ) : isEdit ? (
             <>
-              <Save className='mr-2 h-4 w-4' aria-hidden />
+              <Save className='mr-2 h-4 w-4' strokeWidth={3} aria-hidden />
               {t('blogPublish.saveChanges')}
             </>
           ) : (
             <>
-              <Send className='mr-2 h-4 w-4' aria-hidden />
-              {currentStatusValue === 'published' ? t('blogPublish.publish') : t('blogPublish.saveDraft')}
+              <Send className='mr-2 h-4 w-4' strokeWidth={3} aria-hidden />
+              {currentStatusValue === 'published'
+                ? t('blogPublish.publish')
+                : t('blogPublish.saveDraft')}
             </>
           )}
-        </Button>
+        </button>
       </div>
     </div>
   )

@@ -343,7 +343,9 @@
     "colQuantity": "Jumlah",
     "colProviderStatus": "Status provider",
     "colTotal": "Total",
-    "colUnitPrice": "Harga satuan"
+    "colUnitPrice": "Harga satuan",
+    "copyLabel": "Salin",
+    "copyError": "Gagal menyalin"
   },
   "bannerPage": {
     "title": "Banner",
@@ -367,7 +369,9 @@
     "createHeading": "Artikel baru",
     "editHeading": "Ubah artikel",
     "addArticle": "Tambah artikel",
-    "backToList": "Kembali ke daftar"
+    "backToList": "Kembali ke daftar",
+    "tableView": "Tampilan tabel",
+    "gridView": "Galeri grid"
   },
   "blogTable": {
     "colThumbnail": "Gambar",
@@ -377,7 +381,10 @@
     "noTags": "Tanpa tag",
     "colStatus": "Status",
     "statusPublished": "Terbit",
-    "statusDraft": "Draf"
+    "statusDraft": "Draf",
+    "noImage": "Tanpa gambar",
+    "copySlug": "Salin slug",
+    "copyFailed": "Gagal menyalin slug"
   },
   "blogList": {
     "loadingTitle": "Memuat daftar artikel…",
@@ -1375,7 +1382,16 @@
     "colAlias": "Alias",
     "colGameCount": "Jumlah game",
     "actionsHeader": "Aksi",
-    "rowActionsAria": "Aksi untuk show ini"
+    "rowActionsAria": "Aksi untuk show ini",
+    "colFlags": "Penanda",
+    "colStatus": "Status",
+    "flagHot": "Hot",
+    "flagNew": "Baru",
+    "flagPopular": "Populer",
+    "statusVisible": "Tampil",
+    "statusHidden": "Disembunyikan",
+    "connectedGames": "Game terhubung ({{count}})",
+    "noImage": "Belum ada gambar"
   },
   "showToasts": {
     "loading": "Sedang memuat…",
@@ -1404,7 +1420,8 @@
     "aliasHint": "Identitas unik (biasanya huruf kecil, tanpa spasi) untuk sistem.",
     "imageLabel": "Gambar show",
     "uploadAria": "Unggah gambar show",
-    "previewAlt": "Pratinjau gambar show"
+    "previewAlt": "Pratinjau gambar show",
+    "imageHint": "Format JPG, PNG, WEBP, atau SVG. Gambar baru diunggah saat disimpan."
   },
   "editShowModal": {
     "triggerShort": "Ubah",

@@ -1,31 +1,33 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Show } from '@/types/show'
 import type { TFunction } from 'i18next'
-import { ChevronDown, ChevronRight, Gamepad2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChevronDown, ChevronRight, Eye, EyeOff, Gamepad2, ImageOff } from 'lucide-react'
 import { ShowActionsHeader, ShowRowActions } from '@/components/Show/ShowRowActions'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { cn } from '@/lib/utils'
+
+const FLAGS = [
+  { key: 'is_hot', labelKey: 'showTable.flagHot', accent: 'bg-[#ff9d3d]' },
+  { key: 'is_new', labelKey: 'showTable.flagNew', accent: 'bg-[#c9f24d]' },
+  { key: 'is_popular', labelKey: 'showTable.flagPopular', accent: 'bg-[#ff9ed2]' },
+] as const
 
 export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
   return [
     {
       id: 'expand',
       header: () => (
-        <span className='block min-w-[2.75rem] text-xs font-medium text-muted-foreground'>
-          {t('showTable.gameListColumn')}
-        </span>
+        <span className='block min-w-[2.75rem]'>{t('showTable.gameListColumn')}</span>
       ),
       cell: ({ row }) => {
         const count = row.original.games?.length ?? 0
         if (!count) {
-          return <span className='text-xs text-muted-foreground'>—</span>
+          return <span className='font-black text-[#111]/70'>—</span>
         }
         return (
-          <Button
+          <button
             type='button'
-            variant='ghost'
-            size='icon'
-            className='h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground'
+            className='nb-frame nb-frame-thin nb-press-sm flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center bg-[#ffd84d]'
             onClick={row.getToggleExpandedHandler()}
             aria-expanded={row.getIsExpanded()}
             aria-label={
@@ -35,11 +37,11 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
             }
           >
             {row.getIsExpanded() ? (
-              <ChevronDown className='h-4 w-4' aria-hidden />
+              <ChevronDown className='h-4 w-4' strokeWidth={3} aria-hidden />
             ) : (
-              <ChevronRight className='h-4 w-4' aria-hidden />
+              <ChevronRight className='h-4 w-4' strokeWidth={3} aria-hidden />
             )}
-          </Button>
+          </button>
         )
       },
       size: 40,
@@ -48,10 +50,84 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
     {
       accessorKey: 'name',
       header: t('showTable.colName'),
+      cell: ({ row }) => {
+        const { image, name } = row.original
+        return (
+          <div className='flex min-w-0 items-center gap-2.5'>
+            {/* Gambar acara sebelumnya tersimpan tapi tidak pernah ditampilkan di mana pun. */}
+            {image ? (
+              <img
+                src={image}
+                alt=''
+                loading='lazy'
+                className='nb-frame nb-frame-thin h-10 w-16 shrink-0 bg-[#f5f1e8] object-cover'
+              />
+            ) : (
+              <span
+                className='nb-frame nb-frame-thin flex h-10 w-16 shrink-0 items-center justify-center bg-[#f5f1e8]'
+                title={t('showTable.noImage')}
+              >
+                <ImageOff className='h-4 w-4 text-[#111]/70' strokeWidth={3} aria-hidden />
+              </span>
+            )}
+            <span className='truncate font-black uppercase tracking-tight'>{name}</span>
+          </div>
+        )
+      },
     },
     {
       accessorKey: 'alias',
       header: t('showTable.colAlias'),
+      cell: ({ row }) => (
+        <span className='font-mono text-xs font-bold'>{row.original.alias || '—'}</span>
+      ),
+    },
+    {
+      id: 'flags',
+      header: t('showTable.colFlags'),
+      cell: ({ row }) => {
+        const active = FLAGS.filter((flag) => row.original[flag.key])
+        if (!active.length) {
+          return <span className='font-black text-[#111]/70'>—</span>
+        }
+        return (
+          <div className='flex flex-wrap gap-1'>
+            {active.map((flag) => (
+              <span
+                key={flag.key}
+                className={cn(
+                  'nb-frame nb-frame-thin px-1.5 py-0.5 text-[10px] font-black uppercase tracking-[0.1em]',
+                  flag.accent,
+                )}
+              >
+                {t(flag.labelKey)}
+              </span>
+            ))}
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: 'is_show',
+      header: t('showTable.colStatus'),
+      cell: ({ row }) => {
+        const visible = row.original.is_show
+        return (
+          <span
+            className={cn(
+              'nb-frame nb-frame-thin inline-flex items-center gap-1.5 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em]',
+              visible ? 'bg-[#c9f24d]' : 'bg-white text-[#111]/70',
+            )}
+          >
+            {visible ? (
+              <Eye className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
+            ) : (
+              <EyeOff className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
+            )}
+            {visible ? t('showTable.statusVisible') : t('showTable.statusHidden')}
+          </span>
+        )
+      },
     },
     {
       accessorKey: 'games',
@@ -61,7 +137,7 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
         const n = games.length
         if (n === 0) {
           return (
-            <span className='inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-900 px-2 text-xs font-bold tabular-nums text-slate-400 dark:text-slate-500'>
+            <span className='nb-frame nb-frame-thin inline-flex min-h-7 min-w-7 items-center justify-center bg-white px-2 text-xs font-black tabular-nums text-[#111]/70'>
               0
             </span>
           )
@@ -71,8 +147,8 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
             <PopoverTrigger asChild>
               <button
                 type='button'
-                className='inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-900/30 px-2 text-xs font-bold cursor-pointer transition-colors duration-200 tabular-nums text-indigo-600 dark:text-indigo-400'
-                title={t('showTable.ariaOpenGameList')}
+                className='nb-frame nb-frame-thin nb-press-sm inline-flex min-h-7 min-w-7 cursor-pointer items-center justify-center bg-[#6fe3f5] px-2 text-xs font-black tabular-nums'
+                aria-label={t('showTable.ariaOpenGameList')}
               >
                 {n}
               </button>
@@ -80,15 +156,18 @@ export function getShowColumns(t: TFunction): ColumnDef<Show>[] {
             <PopoverContent
               side='top'
               align='center'
-              className='z-[60] w-64 p-3 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg'
+              className='nb nb-frame nb-frame-thick nb-sd z-[60] w-64 bg-white p-3'
             >
-              <p className='border-b border-slate-100 dark:border-zinc-900 pb-1.5 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-1.5'>
-                <Gamepad2 className='h-3.5 w-3.5' />
-                Connected Games ({n})
+              <p className='mb-2 flex items-center gap-1.5 border-b-[3px] border-[#111] pb-1.5 text-[10px] font-black uppercase tracking-[0.12em]'>
+                <Gamepad2 className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+                {t('showTable.connectedGames', { count: n })}
               </p>
-              <div className='max-h-48 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar'>
+              <div className='max-h-48 space-y-1 overflow-y-auto pr-1'>
                 {games.map((g) => (
-                  <div key={g.id} className='text-xs font-semibold text-slate-700 dark:text-slate-300 truncate py-1 px-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-zinc-900'>
+                  <div
+                    key={g.id}
+                    className='truncate px-1.5 py-1 text-xs font-bold hover:bg-[#f5f1e8]'
+                  >
                     {g.name}
                   </div>
                 ))}

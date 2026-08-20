@@ -1,7 +1,6 @@
 import { useHealthCheck } from '@/hooks/useHealth'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { cn } from '@/lib/utils'
 import { Activity, CheckCircle2, XCircle, AlertTriangle, RefreshCw } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 
@@ -12,6 +11,83 @@ function formatTimeSince(date: Date): string {
   if (minutes < 60) return `${minutes}m ago`
   const hours = Math.floor(minutes / 60)
   return `${hours}h ${minutes % 60}m ago`
+}
+
+/**
+ * Rangka banner status. Latar berwarna penuh sengaja disimpan untuk keadaan
+ * yang butuh perhatian (server mati / degradasi); kondisi normal tetap putih
+ * dengan kotak ikon berwarna supaya tidak berteriak setiap kali halaman dibuka.
+ */
+function HealthBanner({
+  surface,
+  chip,
+  icon,
+  title,
+  description,
+  children,
+}: {
+  surface: string
+  chip: string
+  icon: React.ReactNode
+  title: string
+  description?: string
+  children?: React.ReactNode
+}) {
+  return (
+    <div
+      role='alert'
+      className={cn(
+        'nb-frame nb-frame-thick nb-sd flex flex-col gap-3 p-3 text-[#111] sm:flex-row sm:items-center sm:justify-between',
+        surface,
+      )}
+    >
+      <div className='flex items-center gap-3'>
+        <span
+          className={cn(
+            'nb-frame nb-frame-thin nb-sd-sm flex h-9 w-9 shrink-0 items-center justify-center',
+            chip,
+          )}
+        >
+          {icon}
+        </span>
+        <div className='min-w-0'>
+          <p className='text-sm font-black uppercase tracking-tight'>{title}</p>
+          {description && <p className='mt-0.5 text-xs font-bold text-[#111]/70'>{description}</p>}
+        </div>
+      </div>
+      {children && (
+        <div className='flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end'>
+          {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ServiceTag({ name, status }: { name: string; status: string }) {
+  const isUp = status === 'up'
+  return (
+    <span className='nb-frame nb-frame-thin inline-flex items-center gap-1.5 bg-white px-2 py-0.5 text-[11px] font-black uppercase tracking-tight'>
+      <span
+        className={cn('h-2.5 w-2.5 shrink-0 border-2 border-[#111]', isUp ? 'bg-[#c9f24d]' : 'bg-[#ff4d3d]')}
+        aria-hidden
+      />
+      {name}: {status}
+    </span>
+  )
+}
+
+function RefreshButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-8 shrink-0 cursor-pointer items-center gap-1.5 bg-white px-2 text-[11px] font-black uppercase tracking-tight'
+    >
+      <RefreshCw className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+      {label}
+    </button>
+  )
 }
 
 export function ServerHealthAlert() {
@@ -33,38 +109,27 @@ export function ServerHealthAlert() {
 
   if (isLoading) {
     return (
-      <Alert className='border-blue-200 bg-blue-50/50 dark:border-blue-900 dark:bg-blue-950/30'>
-        <Activity className='h-4 w-4 animate-pulse text-blue-600 dark:text-blue-400' />
-        <AlertTitle className='text-blue-800 dark:text-blue-300'>Server Status</AlertTitle>
-        <AlertDescription className='text-blue-600 dark:text-blue-400'>
-          Checking server health...
-        </AlertDescription>
-      </Alert>
+      <HealthBanner
+        surface='bg-white'
+        chip='bg-[#6fe3f5]'
+        icon={<Activity className='h-5 w-5 animate-pulse' strokeWidth={3} aria-hidden />}
+        title='Server Status'
+        description='Checking server health...'
+      />
     )
   }
 
   if (isError || !data) {
     return (
-      <Alert className='border-red-200 bg-red-50/50 dark:border-red-900 dark:bg-red-950/30'>
-        <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />
-        <AlertTitle className='text-red-800 dark:text-red-300'>Server Unreachable</AlertTitle>
-        <AlertDescription>
-          <div className='flex items-center justify-between gap-2'>
-            <span className='text-red-600 dark:text-red-400'>
-              Cannot connect to the server. Please check if the backend is running.
-            </span>
-            <Button
-              variant='ghost'
-              size='sm'
-              className='h-7 shrink-0 gap-1.5 text-xs text-red-700 hover:bg-red-100 dark:text-red-300 dark:hover:bg-red-900/40'
-              onClick={handleRefresh}
-            >
-              <RefreshCw className='h-3 w-3' />
-              Retry
-            </Button>
-          </div>
-        </AlertDescription>
-      </Alert>
+      <HealthBanner
+        surface='bg-[#ff4d3d]'
+        chip='bg-white'
+        icon={<XCircle className='h-5 w-5' strokeWidth={3} aria-hidden />}
+        title='Server Unreachable'
+        description='Cannot connect to the server. Please check if the backend is running.'
+      >
+        <RefreshButton label='Retry' onClick={handleRefresh} />
+      </HealthBanner>
     )
   }
 
@@ -74,87 +139,42 @@ export function ServerHealthAlert() {
 
   if (isHealthy && downServices.length === 0) {
     return (
-      <Alert className='border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/30'>
-        <CheckCircle2 className='h-4 w-4 text-emerald-600 dark:text-emerald-400' />
-        <AlertTitle className='text-emerald-800 dark:text-emerald-300'>All Systems Operational</AlertTitle>
-        <AlertDescription>
-          <div className='flex items-center justify-between gap-2'>
-            <div className='flex flex-wrap items-center gap-2 text-emerald-600 dark:text-emerald-400'>
-              {Object.entries(services).map(([name, status]) => (
-                <span
-                  key={name}
-                  className='inline-flex items-center gap-1 rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-                >
-                  <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-                  {name}: {status}
-                </span>
-              ))}
-            </div>
-            <div className='flex shrink-0 items-center gap-2'>
-              {lastChecked && (
-                <span className='text-xs text-muted-foreground'>{lastChecked}</span>
-              )}
-              <Button
-                variant='ghost'
-                size='sm'
-                className='h-7 gap-1.5 text-xs text-emerald-700 hover:bg-emerald-100 dark:text-emerald-300 dark:hover:bg-emerald-900/40'
-                onClick={handleRefresh}
-              >
-                <RefreshCw className='h-3 w-3' />
-                Refresh
-              </Button>
-            </div>
-          </div>
-        </AlertDescription>
-      </Alert>
+      <HealthBanner
+        surface='bg-white'
+        chip='bg-[#c9f24d]'
+        icon={<CheckCircle2 className='h-5 w-5' strokeWidth={3} aria-hidden />}
+        title='All Systems Operational'
+      >
+        {Object.entries(services).map(([name, status]) => (
+          <ServiceTag key={name} name={name} status={status} />
+        ))}
+        {lastChecked && (
+          <span className='text-[11px] font-bold uppercase tracking-tight text-[#111]/55'>
+            {lastChecked}
+          </span>
+        )}
+        <RefreshButton label='Refresh' onClick={handleRefresh} />
+      </HealthBanner>
     )
   }
 
   // Partially degraded or unhealthy
   return (
-    <Alert className='border-amber-200 bg-amber-50/50 dark:border-amber-900 dark:bg-amber-950/30'>
-      <AlertTriangle className='h-4 w-4 text-amber-600 dark:text-amber-400' />
-      <AlertTitle className='text-amber-800 dark:text-amber-300'>
-        {isHealthy ? 'Degraded Performance' : 'Server Unhealthy'}
-      </AlertTitle>
-      <AlertDescription>
-        <div className='flex items-center justify-between gap-2'>
-          <div className='flex flex-wrap items-center gap-2'>
-            {Object.entries(services).map(([name, status]) => {
-              const isUp = status === 'up'
-              return (
-                <span
-                  key={name}
-                  className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ${
-                    isUp
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300'
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${isUp ? 'bg-emerald-500' : 'bg-red-500'}`}
-                  />
-                  {name}: {status}
-                </span>
-              )
-            })}
-          </div>
-          <div className='flex shrink-0 items-center gap-2'>
-            {lastChecked && (
-              <span className='text-xs text-muted-foreground'>{lastChecked}</span>
-            )}
-            <Button
-              variant='ghost'
-              size='sm'
-              className='h-7 gap-1.5 text-xs text-amber-700 hover:bg-amber-100 dark:text-amber-300 dark:hover:bg-amber-900/40'
-              onClick={handleRefresh}
-            >
-              <RefreshCw className='h-3 w-3' />
-              Refresh
-            </Button>
-          </div>
-        </div>
-      </AlertDescription>
-    </Alert>
+    <HealthBanner
+      surface='bg-[#ff9d3d]'
+      chip='bg-white'
+      icon={<AlertTriangle className='h-5 w-5' strokeWidth={3} aria-hidden />}
+      title={isHealthy ? 'Degraded Performance' : 'Server Unhealthy'}
+    >
+      {Object.entries(services).map(([name, status]) => (
+        <ServiceTag key={name} name={name} status={status} />
+      ))}
+      {lastChecked && (
+        <span className='text-[11px] font-bold uppercase tracking-tight text-[#111]/70'>
+          {lastChecked}
+        </span>
+      )}
+      <RefreshButton label='Refresh' onClick={handleRefresh} />
+    </HealthBanner>
   )
 }

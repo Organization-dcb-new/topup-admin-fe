@@ -4,9 +4,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
+import {
+  dashAccent,
+  dashCard,
+  dashCardBody,
+  dashCardHeader,
+  dashCardTitle,
+} from '@/components/Dashboard/styles'
 import { formatNumber } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import type { PendingAging } from '@/types/dashboard'
 import { CheckCircle2, Clock } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -27,36 +32,35 @@ export function PendingAgingCard({ pendingAging }: PendingAgingCardProps) {
 
   return (
     <Card className={dashCard}>
-      <CardHeader className={dashCardHeader}>
-        <CardTitle className='flex items-center gap-2 text-sm font-semibold text-gray-900'>
-          <Clock className='h-4 w-4 text-amber-500' aria-hidden />
+      <CardHeader className={`${dashCardHeader} ${dashAccent.orange}`}>
+        <CardTitle className={`${dashCardTitle} flex items-center gap-2`}>
+          <Clock className='h-4 w-4' strokeWidth={3} aria-hidden />
           {t('dashboard.pending.title')}
         </CardTitle>
       </CardHeader>
-      <CardContent className='p-4'>
+      <CardContent className={dashCardBody}>
         {hasStuck ? (
           <div className='space-y-2'>
-            <div className='flex items-baseline gap-2'>
-              <span
-                className={cn(
-                  'text-2xl font-semibold tabular-nums',
-                  count > 0 ? 'text-amber-600' : 'text-foreground',
-                )}
-              >
+            <div className='flex flex-wrap items-baseline gap-2'>
+              <span className='nb-frame nb-frame-thin bg-[#ff9d3d] px-1.5 text-2xl font-black tabular-nums'>
                 {formatNumber(count)}
               </span>
-              <span className='text-sm text-muted-foreground'>
+              <span className='text-xs font-bold uppercase tracking-tight text-[#111]/60'>
                 {t('dashboard.pending.stuckSuffix', { minutes: threshold_minutes })}
               </span>
             </div>
-            <p className='text-xs text-muted-foreground'>
+            <p className='text-xs font-bold text-[#111]/55'>
               {t('dashboard.pending.oldest', { duration: oldestLabel })}
             </p>
           </div>
         ) : (
           <div className='flex items-center gap-3 py-2'>
-            <CheckCircle2 className='h-6 w-6 shrink-0 text-emerald-600' aria-hidden />
-            <p className='text-sm text-muted-foreground'>{t('dashboard.pending.none')}</p>
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-9 w-9 shrink-0 items-center justify-center bg-[#c9f24d]'>
+              <CheckCircle2 className='h-5 w-5' strokeWidth={3} aria-hidden />
+            </span>
+            <p className='text-xs font-bold uppercase tracking-tight text-[#111]/70'>
+              {t('dashboard.pending.none')}
+            </p>
           </div>
         )}
       </CardContent>

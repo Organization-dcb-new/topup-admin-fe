@@ -4,7 +4,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
+import {
+  dashAccent,
+  dashCard,
+  dashCardBody,
+  dashCardHeader,
+  dashCardTitle,
+} from '@/components/Dashboard/styles'
 import { formatNumber } from '@/lib/format'
 import type { FailedReason } from '@/types/dashboard'
 import { AlertTriangle } from 'lucide-react'
@@ -20,32 +26,34 @@ export function FailedReasonsCard({ failedReasons }: FailedReasonsCardProps) {
 
   return (
     <Card className={dashCard}>
-      <CardHeader className={dashCardHeader}>
-        <CardTitle className='flex items-center gap-2 text-sm font-semibold text-gray-900'>
-          <AlertTriangle className='h-4 w-4 text-red-500' aria-hidden />
+      <CardHeader className={`${dashCardHeader} ${dashAccent.red}`}>
+        <CardTitle className={`${dashCardTitle} flex items-center gap-2`}>
+          <AlertTriangle className='h-4 w-4' strokeWidth={3} aria-hidden />
           {t('dashboard.failed.title')}
         </CardTitle>
       </CardHeader>
-      <CardContent className='p-4'>
+      <CardContent className={dashCardBody}>
         {failedReasons.length === 0 ? (
-          <p className='py-4 text-center text-sm text-muted-foreground'>
+          <p className='py-4 text-center text-xs font-bold uppercase tracking-tight text-[#111]/55'>
             {t('dashboard.failed.empty')}
           </p>
         ) : (
           <ul className='space-y-3'>
             {failedReasons.map((r, i) => (
-              <li key={`${r.reason}-${i}`} className='space-y-1'>
+              <li key={`${r.reason}-${i}`} className='space-y-1.5'>
                 <div className='flex items-center justify-between gap-3 text-sm'>
-                  <span className='min-w-0 truncate text-foreground' title={r.reason}>
+                  <span className='min-w-0 truncate font-bold text-[#111]' title={r.reason}>
                     {r.reason}
                   </span>
-                  <span className='shrink-0 tabular-nums font-medium text-muted-foreground'>
+                  <span className='shrink-0 font-black tabular-nums text-[#111]'>
                     {formatNumber(r.count)}
                   </span>
                 </div>
-                <div className='h-1.5 w-full overflow-hidden rounded-full bg-muted'>
+                {/* Bar diberi bingkai penuh supaya nilai kecil tetap terbaca
+                    sebagai takaran, bukan sekadar garis tipis yang hilang. */}
+                <div className='nb-frame nb-frame-thin h-3 w-full overflow-hidden bg-[#f5f1e8]'>
                   <div
-                    className='h-full rounded-full bg-red-500/70'
+                    className='h-full bg-[#ff4d3d]'
                     style={{ width: `${max > 0 ? (r.count / max) * 100 : 0}%` }}
                   />
                 </div>

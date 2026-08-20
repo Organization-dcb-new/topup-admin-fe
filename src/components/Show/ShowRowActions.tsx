@@ -15,23 +15,20 @@ export function ShowActionsHeader() {
 
 export function ShowRowActions({ show }: { show: Show }) {
   const { t } = useTranslation('common')
-  const toolbarBtn = 'border-0 bg-transparent shadow-none hover:bg-muted/70'
 
   return (
-    <div className='flex w-full min-w-[12rem] justify-end pr-0.5'>
-      <div
-        className='inline-flex flex-wrap items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35'
-        role='group'
-        aria-label={t('showTable.rowActionsAria')}
-      >
-        <AddGamesToShowButton
-          showId={show.id}
-          existingGames={show.games}
-          triggerClassName={toolbarBtn}
-        />
-        <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
-        <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
-      </div>
+    <div
+      className='flex w-full min-w-[12rem] flex-wrap items-center justify-end gap-2'
+      role='group'
+      aria-label={t('showTable.rowActionsAria')}
+    >
+      <AddGamesToShowButton
+        showId={show.id}
+        existingGames={show.games}
+        triggerClassName='bg-[#6fe3f5]'
+      />
+      <UpdateShowModal show={show} triggerClassName='bg-[#ffd84d]' />
+      <DeleteShowButton id={show.id} triggerClassName='bg-[#ff4d3d]' />
     </div>
   )
 }

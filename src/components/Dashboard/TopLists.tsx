@@ -4,9 +4,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
+import {
+  dashAccent,
+  dashCard,
+  dashCardBody,
+  dashCardHeader,
+  dashCardTitle,
+} from '@/components/Dashboard/styles'
 import { formatPaymentChannel } from '@/lib/dashboard'
 import { formatCurrency, formatNumber } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import type { TopGame, TopPaymentMethod, TopProduct } from '@/types/dashboard'
 import { useTranslation } from 'react-i18next'
 
@@ -17,32 +24,50 @@ interface TopItem {
   revenue: number
 }
 
-function TopListCard({ title, items }: { title: string; items: TopItem[] }) {
+function TopListCard({
+  title,
+  items,
+  accent,
+}: {
+  title: string
+  items: TopItem[]
+  accent: string
+}) {
   const { t } = useTranslation('common')
   return (
     <Card className={dashCard}>
-      <CardHeader className={dashCardHeader}>
-        <CardTitle className='text-sm font-semibold text-gray-900'>{title}</CardTitle>
+      <CardHeader className={cn(dashCardHeader, accent)}>
+        <CardTitle className={dashCardTitle}>{title}</CardTitle>
       </CardHeader>
-      <CardContent className='p-4'>
+      <CardContent className={dashCardBody}>
         {items.length === 0 ? (
-          <p className='py-4 text-center text-sm text-muted-foreground'>
+          <p className='py-4 text-center text-xs font-bold uppercase tracking-tight text-[#111]/55'>
             {t('dashboard.top.empty')}
           </p>
         ) : (
-          <ol className='space-y-2.5'>
+          <ol>
             {items.map((item, i) => (
-              <li key={item.id} className='flex items-center gap-3'>
-                <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-semibold text-primary'>
+              <li
+                key={item.id}
+                className='flex items-center gap-3 border-b-2 border-[#111]/10 py-2 first:pt-0 last:border-b-0 last:pb-0'
+              >
+                {/* Peringkat 1 disorot penuh, sisanya kotak putih — urutan
+                    tetap terbaca tanpa harus mengandalkan warna saja. */}
+                <span
+                  className={cn(
+                    'nb-frame nb-frame-thin flex h-6 w-6 shrink-0 items-center justify-center text-xs font-black tabular-nums',
+                    i === 0 ? 'bg-[#ffd84d]' : 'bg-white',
+                  )}
+                >
                   {i + 1}
                 </span>
                 <div className='min-w-0 flex-1'>
-                  <p className='truncate text-sm font-medium text-foreground' title={item.name}>
+                  <p className='truncate text-sm font-bold text-[#111]' title={item.name}>
                     {item.name}
                   </p>
-                  <p className='truncate text-xs text-muted-foreground'>{item.meta}</p>
+                  <p className='truncate text-[11px] font-bold text-[#111]/55'>{item.meta}</p>
                 </div>
-                <span className='shrink-0 text-sm font-semibold tabular-nums text-foreground'>
+                <span className='shrink-0 text-sm font-black tabular-nums text-[#111]'>
                   {formatCurrency(item.revenue)}
                 </span>
               </li>
@@ -83,10 +108,18 @@ export function TopLists({ topProducts, topGames, topPaymentMethods }: TopListsP
   }))
 
   return (
-    <div className='grid grid-cols-1 gap-3 lg:grid-cols-3'>
-      <TopListCard title={t('dashboard.top.products')} items={products} />
-      <TopListCard title={t('dashboard.top.games')} items={games} />
-      <TopListCard title={t('dashboard.top.paymentMethods')} items={methods} />
+    <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
+      <TopListCard
+        title={t('dashboard.top.products')}
+        items={products}
+        accent={dashAccent.lime}
+      />
+      <TopListCard title={t('dashboard.top.games')} items={games} accent={dashAccent.pink} />
+      <TopListCard
+        title={t('dashboard.top.paymentMethods')}
+        items={methods}
+        accent={dashAccent.cyan}
+      />
     </div>
   )
 }

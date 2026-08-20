@@ -1,6 +1,4 @@
 import { DeleteBlogDialog } from '@/components/Blog/Delete/Delete'
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 import type { Blog } from '@/tables/table-blog'
 import { Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -22,29 +20,24 @@ export function BlogRowActions({
   onEdit: (blog: Blog) => void
 }) {
   const { t } = useTranslation('common')
-  const toolbarBtn =
-    'border-0 bg-transparent shadow-none hover:bg-muted/70'
 
   return (
-    <div className='flex w-full min-w-[10rem] justify-end pr-0.5'>
-      <div
-        className='inline-flex items-center gap-1 rounded-lg border border-input bg-muted/25 p-1 shadow-xs dark:bg-muted/35'
-        role='group'
-        aria-label={t('blogRowActions.rowGroupAria')}
+    <div
+      className='flex w-full min-w-[10rem] items-center justify-end gap-2'
+      role='group'
+      aria-label={t('blogRowActions.rowGroupAria')}
+    >
+      <button
+        type='button'
+        onClick={() => onEdit(blog)}
+        className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-8 cursor-pointer items-center gap-1.5 bg-[#ffd84d] px-2 text-[10px] font-black uppercase tracking-[0.12em]'
+        aria-label={t('blogRowActions.editAria')}
       >
-        <Button
-          type='button'
-          variant='outline'
-          size='sm'
-          onClick={() => onEdit(blog)}
-          className={cn('cursor-pointer gap-1.5', toolbarBtn)}
-          aria-label={t('blogRowActions.editAria')}
-        >
-          <Pencil className='h-4 w-4 shrink-0' aria-hidden />
-          <span className='hidden sm:inline'>{t('blogRowActions.editLabel')}</span>
-        </Button>
-        <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
-      </div>
+        <Pencil className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
+        <span className='hidden sm:inline'>{t('blogRowActions.editLabel')}</span>
+      </button>
+
+      <DeleteBlogDialog blogId={blog.id} triggerClassName='bg-[#ff4d3d]' />
     </div>
   )
 }

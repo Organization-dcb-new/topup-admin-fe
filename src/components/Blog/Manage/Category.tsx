@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import type { GameNames } from '@/hooks/useGame'
 import type { BlogFormValues } from '../types/blog'
@@ -72,12 +71,9 @@ export default function Category({ formData, listCategory, updateField }: Catego
 
   return (
     <div className='space-y-4'>
-      <div
-        ref={dropdownRef}
-        className='rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5 transition-colors hover:border-primary/25'
-      >
-        <p className='mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-          <Gamepad2 className='h-3.5 w-3.5 text-primary' aria-hidden />
+      <div ref={dropdownRef} className='nb-frame nb-frame-thick nb-sd bg-white p-4'>
+        <p className='mb-3 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.14em]'>
+          <Gamepad2 className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
           {t('blogCategory.gameCategoryTitle')}
         </p>
 
@@ -87,34 +83,34 @@ export default function Category({ formData, listCategory, updateField }: Catego
             onClick={() => setIsOpen(!isOpen)}
             aria-expanded={isOpen}
             aria-haspopup='listbox'
+            data-active={isOpen || undefined}
             className={cn(
-              'flex w-full items-center justify-between rounded-xl border bg-muted/30 p-3 text-left text-sm font-medium transition-all',
-              isOpen
-                ? 'border-primary/50 ring-2 ring-primary/15'
-                : 'border-border/80 hover:border-border',
+              'nb-item flex w-full items-center justify-between p-3 text-left text-sm font-bold',
+              isOpen ? 'bg-[#ffd84d]' : 'bg-[#f5f1e8] hover:bg-white',
             )}
           >
-            <span className={formData.category ? 'text-foreground' : 'text-muted-foreground'}>
+            <span className={formData.category ? '' : 'text-[#111]/45'}>
               {formData.category || t('blogCategory.selectPlaceholder')}
             </span>
             <ChevronDown
-              className={cn('h-4 w-4 shrink-0 text-muted-foreground transition-transform', isOpen && 'rotate-180')}
+              className={cn('h-4 w-4 shrink-0 transition-transform', isOpen && 'rotate-180')}
+              strokeWidth={3}
               aria-hidden
             />
           </button>
 
           {isOpen && (
             <div
-              className='absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-border/80 bg-popover text-popover-foreground shadow-lg ring-1 ring-gray-900/5 animate-in fade-in zoom-in-95 duration-200'
+              className='nb-frame nb-frame-thick nb-sd absolute z-50 mt-2 w-full overflow-hidden bg-white'
               role='listbox'
             >
-              <div className='flex items-center gap-2 border-b border-border/60 bg-muted/30 p-2'>
-                <Search className='ml-1 h-3.5 w-3.5 shrink-0 text-muted-foreground' aria-hidden />
+              <div className='flex items-center gap-2 border-b-4 border-[#111] bg-[#f5f1e8] p-2'>
+                <Search className='ml-1 h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
                 <input
                   type='text'
                   placeholder={t('blogCategory.searchPlaceholder')}
                   autoFocus
-                  className='min-w-0 flex-1 bg-transparent py-2 text-xs outline-none placeholder:text-muted-foreground'
+                  className='min-w-0 flex-1 bg-transparent py-2 text-xs font-bold outline-none placeholder:font-medium placeholder:text-[#111]/40'
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   aria-label={t('blogCategory.searchAria')}
@@ -130,16 +126,21 @@ export default function Category({ formData, listCategory, updateField }: Catego
                       role='option'
                       aria-selected={formData.category === game.name}
                       onClick={() => handleSelect(game.name)}
-                      className='flex w-full items-center justify-between px-3 py-2.5 text-left text-xs font-medium transition-colors hover:bg-muted/80'
+                      className={cn(
+                        'flex w-full items-center justify-between border-b-2 border-[#111]/10 px-3 py-2.5 text-left text-xs font-bold uppercase tracking-wide transition-colors last:border-b-0',
+                        formData.category === game.name
+                          ? 'bg-[#c9f24d]'
+                          : 'hover:bg-[#f5f1e8]',
+                      )}
                     >
                       {game.name}
                       {formData.category === game.name && (
-                        <Check className='h-3.5 w-3.5 text-primary' aria-hidden />
+                        <Check className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
                       )}
                     </button>
                   ))
                 ) : (
-                  <div className='p-4 text-center text-xs text-muted-foreground'>
+                  <div className='p-4 text-center text-xs font-bold text-[#111]/55'>
                     {t('blogCategory.noResults')}
                   </div>
                 )}
@@ -149,33 +150,32 @@ export default function Category({ formData, listCategory, updateField }: Catego
         </div>
       </div>
 
-      <div className='rounded-xl border border-border/80 bg-card p-4 shadow-sm ring-1 ring-gray-900/5'>
-        <p className='mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-          <Hash className='h-3.5 w-3.5 text-primary' aria-hidden />
+      <div className='nb-frame nb-frame-thick nb-sd bg-white p-4'>
+        <p className='mb-3 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.14em]'>
+          <Hash className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
           {t('blogCategory.tagsTitle')}
         </p>
 
-        <div className='flex flex-wrap gap-2 rounded-xl border border-border/80 bg-muted/20 p-2.5 focus-within:ring-2 focus-within:ring-primary/15'>
+        <div className='nb-field nb-frame nb-frame-thin nb-sd-sm flex flex-wrap gap-2 bg-[#f5f1e8] p-2.5'>
           {formData.tags?.map((tag) => (
-            <Badge
+            <span
               key={tag}
-              variant='secondary'
-              className='gap-1 pr-1 font-mono text-[10px] font-semibold'
+              className='nb-frame nb-frame-thin inline-flex items-center gap-1 bg-[#ff9ed2] pl-1.5 pr-1 text-[10px] font-black uppercase tracking-wide'
             >
               {tag}
               <button
                 type='button'
                 onClick={() => handleRemoveTag(tag)}
-                className='rounded p-0.5 hover:bg-destructive/20 hover:text-destructive'
+                className='cursor-pointer p-0.5 hover:bg-[#ff4d3d]'
                 aria-label={t('blogCategory.removeTagAria', { tag })}
               >
-                <X className='h-3 w-3' />
+                <X className='h-3 w-3' strokeWidth={3} aria-hidden />
               </button>
-            </Badge>
+            </span>
           ))}
           <input
             type='text'
-            className='min-w-[6rem] flex-1 bg-transparent p-1 text-xs outline-none placeholder:text-muted-foreground'
+            className='min-w-[6rem] flex-1 bg-transparent p-1 text-xs font-bold outline-none placeholder:font-medium placeholder:text-[#111]/40'
             placeholder={t('blogCategory.tagsInputPlaceholder')}
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
@@ -184,17 +184,21 @@ export default function Category({ formData, listCategory, updateField }: Catego
           />
         </div>
 
-        <div className='mt-4 border-t border-border/60 pt-4'>
+        <div className='mt-4 border-t-4 border-[#111] pt-4'>
           <div className='mb-2 flex flex-wrap items-center justify-between gap-2'>
-            <p className='text-[10px] font-semibold uppercase tracking-wide text-muted-foreground'>
+            <p className='text-[10px] font-black uppercase tracking-[0.14em]'>
               {t('blogCategory.quickAddTitle')}
             </p>
             <div className='relative flex items-center'>
-              <Search className='absolute left-2 h-3 w-3 text-muted-foreground' aria-hidden />
+              <Search
+                className='absolute left-2 h-3 w-3 text-[#111]/50'
+                strokeWidth={3}
+                aria-hidden
+              />
               <input
                 type='text'
                 placeholder={t('blogCategory.quickSearchPlaceholder')}
-                className='w-28 rounded-md border border-border/60 bg-muted/30 py-1 pl-7 pr-2 text-[10px] outline-none transition-all focus:w-36 focus:ring-1 focus:ring-primary/25'
+                className='nb-field nb-frame nb-frame-thin w-28 bg-white py-1 pl-7 pr-2 text-[10px] font-bold outline-none transition-all focus:w-36 placeholder:font-medium placeholder:text-[#111]/40'
                 value={tagSearch}
                 onChange={(e) => setTagSearch(e.target.value)}
                 aria-label={t('blogCategory.quickSearchAria')}
@@ -214,19 +218,19 @@ export default function Category({ formData, listCategory, updateField }: Catego
                       onClick={() => handleAddTag(game.name)}
                       disabled={taken}
                       className={cn(
-                        'flex items-center gap-1 rounded-lg border px-2 py-1 text-[10px] font-medium transition-colors',
+                        'nb-frame nb-frame-thin flex items-center gap-1 px-2 py-1 text-[10px] font-black uppercase tracking-wide',
                         taken
-                          ? 'cursor-not-allowed border-transparent bg-muted/50 text-muted-foreground opacity-60'
-                          : 'border-border/80 bg-background shadow-sm hover:border-primary/40 hover:bg-primary/5',
+                          ? 'cursor-not-allowed bg-[#f5f1e8] text-[#111]/40'
+                          : 'nb-sd-sm nb-press-sm cursor-pointer bg-white',
                       )}
                     >
-                      {!taken && <Plus className='h-3 w-3 text-primary' aria-hidden />}
+                      {!taken && <Plus className='h-3 w-3 shrink-0' strokeWidth={3} aria-hidden />}
                       {game.name}
                     </button>
                   )
                 })
               ) : (
-                <p className='py-2 text-[10px] text-muted-foreground'>
+                <p className='py-2 text-[10px] font-bold text-[#111]/55'>
                   {t('blogCategory.noMatchingCategories')}
                 </p>
               )}

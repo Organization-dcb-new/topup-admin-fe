@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -8,34 +8,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
 import { Checkbox } from '@/components/ui/checkbox'
 
-import { Pencil, UploadCloud } from 'lucide-react'
+import { Pencil } from 'lucide-react'
 import type { Show } from '@/types/show'
+import { BannerImageField } from '@/components/Banner/BannerImageField'
+import { useBannerImage } from '@/components/Banner/useBannerImage'
 import { useUpdateShow } from '@/hooks/useShow'
-import { handleFileAutoUpload } from '@/helpers/upload'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
 type UpdateShowForm = {
   name: string
   alias: string
-  image: string
   is_hot: boolean
   is_new: boolean
   is_popular: boolean
   is_show: boolean
 }
 
+const FIELD_CLASS =
+  'nb-field nb-frame nb-frame-thin nb-sd-sm h-11 bg-white text-sm font-bold placeholder:font-medium placeholder:text-[#5f5f5f]'
+const LABEL_CLASS = 'text-[11px] font-black uppercase tracking-[0.14em]'
+const ERROR_CLASS = 'text-[11px] font-black uppercase tracking-wide text-[#8f1d10]'
+
 function showToFormValues(show: Show): UpdateShowForm {
   return {
     name: show.name,
     alias: show.alias,
-    image: show.image,
     is_hot: show.is_hot,
     is_new: show.is_new,
     is_popular: show.is_popular,
@@ -51,15 +53,11 @@ export function UpdateShowModal({
   triggerClassName?: string
 }) {
   const { t } = useTranslation('common')
-  const inputRef = useRef<HTMLInputElement>(null)
-  const defaultPreview = useRef<string | null>(null)
-
   const [open, setOpen] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
+  const image = useBannerImage(show.image)
 
-  const { register, handleSubmit, reset, setValue, watch, formState } = useForm<UpdateShowForm>()
+  const { register, handleSubmit, reset, setValue, watch, formState } =
+    useForm<UpdateShowForm>({ defaultValues: showToFormValues(show) })
 
   const flagFields = useMemo(
     () =>
@@ -79,228 +77,153 @@ export function UpdateShowModal({
   )
 
   const setDialogOpen = (value: boolean) => {
-    if (!value) {
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
+    if (value) {
+      reset(showToFormValues(show))
+      image.reset(show.image)
     }
     setOpen(value)
   }
 
-  const mutation = useUpdateShow({
-    id: show.id,
-    setOpen: setDialogOpen,
-  })
+  const mutation = useUpdateShow({ id: show.id, setOpen: setDialogOpen })
 
-  const openDialog = () => {
-    reset(showToFormValues(show))
-    setPreview(show.image || null)
-    defaultPreview.current = show.image || null
-    setOpen(true)
+  const onSubmit = async (values: UpdateShowForm) => {
+    const url = await image.upload()
+    if (!url) return
+    mutation.mutate({ ...values, image: url })
   }
 
-  const handleFile = (file: File) => {
-    handleFileAutoUpload({
-      file,
-      setPreview,
-      setIsUploading,
-      setUploadProgress,
-      setValue: setValue as Parameters<typeof handleFileAutoUpload>[0]['setValue'],
-      fieldName: 'image',
-    })
-  }
+  const isBusy = image.isUploading || mutation.isPending
 
   return (
     <>
-      <Button
-        variant='outline'
-        size='sm'
-        onClick={openDialog}
-        className={cn('cursor-pointer gap-1.5', triggerClassName)}
+      <button
+        type='button'
+        onClick={() => setDialogOpen(true)}
+        className={cn(
+          'nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-8 cursor-pointer items-center gap-1.5 px-2 text-[10px] font-black uppercase tracking-[0.12em]',
+          triggerClassName,
+        )}
         aria-label={t('editShowModal.triggerAria')}
       >
-        <Pencil className='h-4 w-4 shrink-0' aria-hidden />
+        <Pencil className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
         <span className='hidden sm:inline'>{t('editShowModal.triggerShort')}</span>
-      </Button>
+      </button>
 
       <Dialog open={open} onOpenChange={setDialogOpen}>
-        <DialogContent className='max-h-[min(90vh,40rem)] gap-0 overflow-hidden overflow-y-auto p-0 sm:max-w-lg'>
-          <div className='border-b border-border bg-muted/30 px-6 py-5'>
-            <DialogHeader className='gap-1.5 text-left'>
-              <div className='flex items-center gap-2'>
-                <span className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                  <Pencil className='h-4 w-4' aria-hidden />
+        <DialogContent
+          className='nb nb-frame nb-frame-thick nb-sd-lg max-h-[min(90vh,44rem)] gap-0 overflow-y-auto bg-white p-0 sm:max-w-lg'
+          showCloseButton={false}
+        >
+          <div className='border-b-4 border-[#111] bg-[#ffd84d] px-5 py-4'>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className='nb-frame nb-frame-thin flex h-9 w-9 shrink-0 items-center justify-center bg-white'>
+                  <Pencil className='h-4 w-4' strokeWidth={3} aria-hidden />
                 </span>
-                <DialogTitle className='text-xl font-semibold tracking-tight'>
+                <DialogTitle className='text-xl font-black uppercase leading-none tracking-tight'>
                   {t('editShowModal.title')}
                 </DialogTitle>
               </div>
-              <DialogDescription>{t('editShowModal.description')}</DialogDescription>
+              <DialogDescription className='text-xs font-bold text-[#111]/80'>
+                {t('editShowModal.description')}
+              </DialogDescription>
             </DialogHeader>
           </div>
 
-          <form
-            onSubmit={handleSubmit((values) => mutation.mutate(values))}
-            className='space-y-5 px-6 py-5'
-          >
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-5 py-5'>
             <div className='space-y-2'>
-              <Label htmlFor='edit-show-name'>{t('editShowModal.nameLabel')}</Label>
-              <div className='space-y-1'>
-                <Input
-                  id='edit-show-name'
-                  {...register('name', { required: t('editShowModal.nameRequired') })}
-                  placeholder={t('editShowModal.namePlaceholder')}
-                  aria-invalid={!!formState.errors.name}
-                />
-                {formState.errors.name && (
-                  <p className='text-xs text-destructive'>{formState.errors.name.message}</p>
-                )}
-              </div>
+              <Label htmlFor='edit-show-name' className={LABEL_CLASS}>
+                {t('editShowModal.nameLabel')}
+              </Label>
+              <Input
+                id='edit-show-name'
+                {...register('name', { required: t('editShowModal.nameRequired') })}
+                placeholder={t('editShowModal.namePlaceholder')}
+                aria-invalid={!!formState.errors.name}
+                className={cn(FIELD_CLASS, formState.errors.name && 'nb-invalid')}
+              />
+              {formState.errors.name && (
+                <p className={ERROR_CLASS} role='alert'>
+                  {formState.errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='edit-show-alias'>{t('editShowModal.aliasLabel')}</Label>
+              <Label htmlFor='edit-show-alias' className={LABEL_CLASS}>
+                {t('editShowModal.aliasLabel')}
+              </Label>
               <Input
                 id='edit-show-alias'
                 {...register('alias', { required: t('editShowModal.aliasRequired') })}
                 placeholder={t('editShowModal.aliasPlaceholder')}
                 autoComplete='off'
                 aria-invalid={!!formState.errors.alias}
+                className={cn(FIELD_CLASS, formState.errors.alias && 'nb-invalid')}
               />
               {formState.errors.alias && (
-                <p className='text-xs text-destructive'>{formState.errors.alias.message}</p>
+                <p className={ERROR_CLASS} role='alert'>
+                  {formState.errors.alias.message}
+                </p>
               )}
-              <p className='text-xs text-muted-foreground'>{t('editShowModal.aliasHint')}</p>
+              <p className='text-xs font-bold text-[#111]/70'>{t('editShowModal.aliasHint')}</p>
             </div>
 
-            <input type='hidden' {...register('image')} />
+            <BannerImageField
+              image={image}
+              labelKey='editShowModal.imageLabel'
+              hintKey='createShowModal.imageHint'
+              ariaKey='editShowModal.uploadAria'
+            />
 
-            <div className='space-y-2'>
-              <Label>{t('editShowModal.imageLabel')}</Label>
-              <p className='text-xs text-muted-foreground'>{t('createBannerModal.imageHint')}</p>
-
-              <div
-                role='button'
-                tabIndex={0}
-                aria-label={t('editShowModal.uploadAria')}
-                onClick={() => inputRef.current?.click()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    inputRef.current?.click()
-                  }
-                }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFile(file)
-                }}
-                className={`group relative flex min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/20 px-4 py-6 transition-colors outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/50 ${
-                  isUploading
-                    ? 'pointer-events-none opacity-60'
-                    : 'hover:border-primary/50 hover:bg-muted/35'
-                }`}
-              >
-                {preview ? (
-                  <>
-                    <img
-                      src={preview}
-                      alt={t('editShowModal.previewAlt')}
-                      className='max-h-44 w-full rounded-lg object-contain'
-                    />
-                    {!isUploading && (
-                      <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100'>
-                        <span className='rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm'>
-                          {t('createBannerModal.changeImage')}
-                        </span>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className='flex flex-col items-center gap-2 text-center text-muted-foreground'>
-                    <span className='flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border'>
-                      <UploadCloud className='h-6 w-6 text-primary' aria-hidden />
-                    </span>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploadTitle')}
-                    </span>
-                    <span className='max-w-[16rem] text-xs leading-relaxed'>
-                      {t('createBannerModal.uploadDropHint')}
-                    </span>
-                  </div>
-                )}
-
-                {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploading', { percent: uploadProgress })}
-                    </span>
-                    <Progress value={uploadProgress} className='h-2 w-[min(100%,12rem)]' />
-                  </div>
-                )}
-              </div>
-
-              <input
-                ref={inputRef}
-                type='file'
-                accept='image/*,.svg'
-                className='hidden'
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (!file) {
-                    setPreview(defaultPreview.current)
-                    return
-                  }
-                  handleFile(file)
-                  e.target.value = ''
-                }}
-              />
-            </div>
-
-            <div className='space-y-3 rounded-xl border border-border/80 bg-muted/15 p-4'>
+            <fieldset className='nb-frame nb-frame-thin space-y-3 bg-[#f5f1e8] p-4'>
+              <legend className='sr-only'>{t('editShowModal.flagsTitle')}</legend>
               <div>
-                <p className='text-sm font-semibold text-foreground'>{t('editShowModal.flagsTitle')}</p>
-                <p className='text-xs text-muted-foreground'>{t('editShowModal.flagsHint')}</p>
+                <p className='text-[11px] font-black uppercase tracking-[0.14em]'>
+                  {t('editShowModal.flagsTitle')}
+                </p>
+                <p className='text-xs font-bold text-[#111]/70'>{t('editShowModal.flagsHint')}</p>
               </div>
-              <div className='grid gap-3 sm:grid-cols-2'>
+              <div className='grid gap-2 sm:grid-cols-2'>
                 {flagFields.map(({ key, label, description }) => (
                   <label
                     key={key}
-                    className='flex cursor-pointer gap-3 rounded-lg border border-transparent p-2 transition-colors hover:bg-muted/50'
+                    className='nb-frame nb-frame-thin flex cursor-pointer gap-3 bg-white p-2.5 hover:bg-[#ffd84d]'
                   >
                     <Checkbox
                       checked={watch(key)}
                       onCheckedChange={(v) => setValue(key, !!v)}
                       aria-describedby={`${key}-hint`}
+                      className='mt-0.5 rounded-none border-2 border-[#111] data-[state=checked]:bg-[#c9f24d] data-[state=checked]:text-[#111]'
                     />
                     <span className='min-w-0 space-y-0.5'>
-                      <span className='block text-sm font-medium leading-none'>{label}</span>
-                      <span id={`${key}-hint`} className='block text-xs text-muted-foreground'>
+                      <span className='block text-xs font-black uppercase tracking-tight'>
+                        {label}
+                      </span>
+                      <span id={`${key}-hint`} className='block text-[11px] font-bold text-[#111]/70'>
                         {description}
                       </span>
                     </span>
                   </label>
                 ))}
               </div>
-            </div>
+            </fieldset>
 
-            <DialogFooter className='gap-2 border-t border-border pt-5 sm:pt-5'>
-              <Button
+            <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
+              <button
                 type='button'
-                variant='outline'
-                onClick={() => setDialogOpen(false)}
-                className='cursor-pointer sm:min-w-[5.5rem]'
+                onClick={() => setOpen(false)}
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-white px-5 text-xs font-black uppercase tracking-[0.14em] sm:min-w-[5.5rem]'
               >
                 {t('createBannerModal.cancel')}
-              </Button>
-              <Button
+              </button>
+              <button
                 type='submit'
-                disabled={mutation.isPending || isUploading}
-                className='cursor-pointer sm:min-w-[5.5rem]'
+                disabled={isBusy}
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-[#c9f24d] px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[5.5rem]'
               >
-                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
-              </Button>
+                {isBusy ? t('createBannerModal.saving') : t('createBannerModal.save')}
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

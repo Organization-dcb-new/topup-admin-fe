@@ -78,7 +78,7 @@ function ViewToggleButton({
       aria-pressed={active}
       className={cn(
         "nb-frame nb-frame-thin nb-press-sm flex h-9 w-9 cursor-pointer items-center justify-center",
-        active ? "nb-sd-sm bg-[#6fe3f5]" : "bg-white text-[#111]/45",
+        active ? "nb-sd-sm bg-[#6fe3f5]" : "bg-white text-[#111]/70",
       )}
     >
       {children}
@@ -215,7 +215,7 @@ export default function BannerPage() {
             <h2 className="text-sm font-black uppercase tracking-tight">
               {t("bannerPage.listTitle")}
             </h2>
-            <p className="mt-0.5 text-xs font-bold text-[#111]/55">
+            <p className="mt-0.5 text-xs font-bold text-[#111]/70">
               {t("bannerPage.listHint")}
             </p>
           </div>
@@ -259,7 +259,7 @@ export default function BannerPage() {
               <p className="text-sm font-black uppercase tracking-tight">
                 {t("bannerPage.tableLoadingTitle")}
               </p>
-              <p className="mt-1 text-xs font-bold text-[#111]/55">
+              <p className="mt-1 text-xs font-bold text-[#111]/70">
                 {t("bannerPage.tableLoadingHint")}
               </p>
             </div>

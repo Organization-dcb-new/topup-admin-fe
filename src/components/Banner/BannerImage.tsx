@@ -32,7 +32,7 @@ export function BannerImage({
         role='img'
         aria-label={alt}
         className={cn(
-          'flex h-full w-full flex-col items-center justify-center gap-1 bg-[#f5f1e8] text-[#111]/45',
+          'flex h-full w-full flex-col items-center justify-center gap-1 bg-[#f5f1e8] text-[#111]/70',
           fallbackClassName,
         )}
       >

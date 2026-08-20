@@ -20,9 +20,9 @@ export default function Field({ updateField, formData, handleEditorImageUpload }
       <input
         type='text'
         className={cn(
-          'w-full border-0 bg-transparent text-3xl font-bold tracking-tight outline-none',
-          'placeholder:text-muted-foreground/40 sm:text-4xl',
-          'focus-visible:ring-0',
+          'nb-field nb-frame nb-frame-thick nb-sd w-full bg-white px-4 py-3',
+          'text-2xl font-black uppercase tracking-tight outline-none sm:text-3xl',
+          'placeholder:font-bold placeholder:normal-case placeholder:text-[#111]/30',
         )}
         placeholder={t('blogField.titlePlaceholder')}
         value={formData.title}
@@ -32,7 +32,7 @@ export default function Field({ updateField, formData, handleEditorImageUpload }
 
       <div
         className={cn(
-          'overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm ring-1 ring-gray-900/5',
+          'nb-editor nb-frame nb-frame-thick nb-sd overflow-hidden bg-white',
           '[&_.rc-md-editor]:min-h-[320px] sm:[&_.rc-md-editor]:min-h-[420px]',
         )}
       >

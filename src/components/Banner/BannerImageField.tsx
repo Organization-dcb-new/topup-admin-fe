@@ -68,7 +68,7 @@ export function BannerImageField({
             <span className='text-sm font-black uppercase tracking-tight'>
               {t('createBannerModal.uploadTitle')}
             </span>
-            <span className='max-w-[16rem] text-xs font-bold leading-relaxed text-[#111]/55'>
+            <span className='max-w-[16rem] text-xs font-bold leading-relaxed text-[#111]/70'>
               {t('createBannerModal.uploadDropHint')}
             </span>
           </span>

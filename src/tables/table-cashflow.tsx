@@ -1,14 +1,12 @@
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { CashflowTypeTag } from '@/components/Cashflow/CashflowTypeTag'
+import { CopyButton } from '@/components/ui/copy-button'
 import i18n from '@/i18n'
-import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import type { CashflowItem } from '@/types/cashflow'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import { format } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
-import { Copy, ChevronRight, Eye } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { ChevronRight, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 function formatIdr(value: number) {
@@ -27,157 +25,113 @@ export function getCashflowColumns(
   t: TFunction,
   onViewDetail: (item: CashflowItem) => void
 ): ColumnDef<CashflowItem>[] {
-  const copyId = async (value: string) => {
-    try {
-      await copyTextToClipboard(value)
-      toast.success(t('cashflowTable.copySuccess'))
-    } catch {
-      toast.error(t('cashflowTable.copyError'))
-    }
-  }
-
   return [
     {
       accessorKey: 'created_at',
-      header: () => <span className='font-medium'>{t('cashflowTable.colDate')}</span>,
-      cell: ({ row }) => {
-        const raw = row.original.created_at
-        const date = new Date(raw)
-        return (
-          <span className='whitespace-nowrap tabular-nums text-sm text-foreground'>
-            {format(date, 'dd MMM yyyy, HH:mm:ss', { locale: dateLocale() })}
-          </span>
-        )
-      },
-    },
-    {
-      accessorKey: 'type',
-      header: () => <span className='font-medium'>{t('cashflowTable.colType')}</span>,
-      cell: ({ row }) => {
-        const type = row.original.type
-        if (type === 'PROVIDER') {
-          return (
-            <Badge
-              variant='secondary'
-              className='bg-blue-50 text-blue-700 border-blue-200/60 hover:bg-blue-50'
-            >
-              {t('cashflowFilter.provider')}
-            </Badge>
-          )
-        }
-        if (type === 'PAYMENT_GATEWAY') {
-          return (
-            <Badge
-              variant='secondary'
-              className='bg-amber-50 text-amber-700 border-amber-200/60 hover:bg-amber-50'
-            >
-              {t('cashflowFilter.pg')}
-            </Badge>
-          )
-        }
-        return (
-          <Badge
-            variant='secondary'
-            className='bg-emerald-50 text-emerald-700 border-emerald-200/60 hover:bg-emerald-50'
-          >
-            {t('cashflowFilter.revenue')}
-          </Badge>
-        )
-      },
-    },
-    {
-      accessorKey: 'amount',
-      header: () => (
-        <span className='block text-right font-medium'>{t('cashflowTable.colAmount')}</span>
-      ),
-      cell: ({ row }) => {
-        const amount = row.original.amount
-        return (
-          <span className='block text-right tabular-nums text-sm font-semibold text-gray-900'>
-            {formatIdr(amount)}
-          </span>
-        )
-      },
-    },
-    {
-      accessorKey: 'notes',
-      header: () => <span className='font-medium'>{t('cashflowTable.colNotes')}</span>,
+      header: t('cashflowTable.colDate'),
       cell: ({ row }) => (
-        <span
-          className='text-sm text-muted-foreground truncate max-w-[14rem] block cursor-pointer hover:text-primary hover:underline transition-all duration-200'
-          onClick={() => onViewDetail(row.original)}
-          title={row.original.notes}
-        >
-          {row.original.notes}
+        <span className='whitespace-nowrap text-xs font-bold tabular-nums'>
+          {format(new Date(row.original.created_at), 'dd MMM yyyy, HH:mm:ss', {
+            locale: dateLocale(),
+          })}
         </span>
       ),
     },
     {
+      accessorKey: 'type',
+      header: t('cashflowTable.colType'),
+      cell: ({ row }) => <CashflowTypeTag t={t} type={row.original.type} />,
+    },
+    {
+      accessorKey: 'amount',
+      header: () => <span className='block text-right'>{t('cashflowTable.colAmount')}</span>,
+      cell: ({ row }) => (
+        <span className='block whitespace-nowrap text-right text-sm font-black tabular-nums'>
+          {formatIdr(row.original.amount)}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'notes',
+      header: t('cashflowTable.colNotes'),
+      cell: ({ row }) => (
+        <button
+          type='button'
+          className='nb-focus block max-w-[14rem] cursor-pointer truncate text-left text-xs font-bold underline-offset-2 hover:underline'
+          onClick={() => onViewDetail(row.original)}
+          title={row.original.notes}
+        >
+          {row.original.notes || '—'}
+        </button>
+      ),
+    },
+    {
       accessorKey: 'order_id',
-      header: () => <span className='font-medium'>{t('cashflowTable.colOrderId')}</span>,
+      header: t('cashflowTable.colOrderId'),
       cell: ({ row }) => {
         const orderId = row.original.order_id
+        if (!orderId) return <span className='font-black text-[#111]/70'>—</span>
         return (
-          <div className='flex items-center gap-1 font-mono text-xs'>
-            <span className='truncate max-w-[8rem]' title={orderId}>{orderId}</span>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
-              className='h-6 w-6 text-muted-foreground hover:text-foreground'
-              onClick={() => void copyId(orderId)}
-              title={t('cashflowTable.colOrderId')}
-            >
-              <Copy className='h-3 w-3' aria-hidden />
-            </Button>
+          <div className='flex items-center gap-1.5'>
+            <span className='max-w-[8rem] truncate font-mono text-xs font-bold' title={orderId}>
+              {orderId}
+            </span>
+            <CopyButton
+              value={orderId}
+              label={t('cashflowTable.colOrderId')}
+              errorLabel={t('cashflowTable.copyError')}
+              className='h-7 w-7'
+            />
           </div>
         )
       },
     },
     {
       accessorKey: 'payment_id',
-      header: () => <span className='font-medium'>{t('cashflowTable.colPaymentId')}</span>,
+      header: t('cashflowTable.colPaymentId'),
       cell: ({ row }) => {
         const paymentId = row.original.payment_id
-        if (!paymentId) return <span className='text-muted-foreground'>—</span>
+        if (!paymentId) return <span className='font-black text-[#111]/70'>—</span>
 
         return (
-          <div className='flex items-center gap-1 font-mono text-xs'>
+          <div className='flex items-center gap-1.5'>
             <Link
               to={`/transactions/${paymentId}`}
-              className='group inline-flex items-center gap-0.5 text-primary hover:underline'
+              className='nb-focus group inline-flex min-w-0 items-center gap-0.5 font-mono text-xs font-bold underline-offset-2 hover:underline'
             >
-              <span className='truncate max-w-[8rem]' title={paymentId}>{paymentId}</span>
-              <ChevronRight className='h-3.5 w-3.5 opacity-60 group-hover:translate-x-0.5' />
+              <span className='max-w-[8rem] truncate' title={paymentId}>
+                {paymentId}
+              </span>
+              <ChevronRight
+                className='h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5'
+                strokeWidth={3}
+                aria-hidden
+              />
             </Link>
-            <Button
-              type='button'
-              variant='ghost'
-              size='icon'
-              className='h-6 w-6 text-muted-foreground hover:text-foreground'
-              onClick={() => void copyId(paymentId)}
-              title={t('cashflowTable.colPaymentId')}
-            >
-              <Copy className='h-3 w-3' aria-hidden />
-            </Button>
+            <CopyButton
+              value={paymentId}
+              label={t('cashflowTable.colPaymentId')}
+              errorLabel={t('cashflowTable.copyError')}
+              className='h-7 w-7'
+            />
           </div>
         )
       },
     },
     {
       id: 'actions',
-      header: () => <span className='font-medium'>{t('cashflowTable.colActions', { defaultValue: 'Aksi' })}</span>,
+      header: () => <span className='block text-right'>{t('cashflowTable.colActions')}</span>,
       cell: ({ row }) => (
-        <Button
-          type='button'
-          variant='ghost'
-          size='sm'
-          className='h-8 px-2 text-primary hover:text-primary/80 hover:bg-primary/5 flex items-center gap-1 font-medium transition-all duration-200'
-          onClick={() => onViewDetail(row.original)}
-        >
-          <Eye className='h-4 w-4' />
-          <span>{t('cashflowTable.btnDetail', { defaultValue: 'Detail' })}</span>
-        </Button>
+        <div className='flex justify-end'>
+          <button
+            type='button'
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-8 cursor-pointer items-center gap-1.5 bg-[#ffd84d] px-2 text-[10px] font-black uppercase tracking-[0.12em]'
+            onClick={() => onViewDetail(row.original)}
+          >
+            <Eye className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
+            {t('cashflowTable.btnDetail')}
+          </button>
+        </div>
       ),
     },
   ]

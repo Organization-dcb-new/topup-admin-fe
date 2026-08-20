@@ -43,7 +43,7 @@ export function BannerLink({ url, className }: { url: string; className?: string
     return (
       <span
         className={cn(
-          'nb-frame nb-frame-thin inline-block w-fit bg-[#f5f1e8] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-[#111]/55',
+          'nb-frame nb-frame-thin inline-block w-fit bg-[#f5f1e8] px-2 py-1 text-[10px] font-black uppercase tracking-wide text-[#111]/70',
           className,
         )}
       >

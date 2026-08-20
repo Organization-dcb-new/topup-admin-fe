@@ -7,15 +7,17 @@ interface PaginationProps {
   page: number
   totalPage: number
   onChange: (page: number) => void
+  /** Kelas tambahan untuk pembungkus (mis. `nb nb-pagination` di halaman neo-brutalism) */
+  className?: string
 }
 
-export default function Pagination({ page, totalPage, onChange }: PaginationProps) {
+export default function Pagination({ page, totalPage, onChange, className }: PaginationProps) {
   const [jump, setJump] = useState('')
 
   if (totalPage <= 1) return null
 
   return (
-    <div className='mt-6 flex flex-wrap items-center justify-center gap-3'>
+    <div className={cn('mt-6 flex flex-wrap items-center justify-center gap-3', className)}>
       {/* Prev */}
       <Button
         variant='outline'
@@ -111,6 +113,7 @@ function renderPages(page: number, totalPage: number, onChange: (page: number) =
         key={p}
         size='icon'
         variant={p === page ? 'default' : 'outline'}
+        data-active={p === page || undefined}
         className={cn('h-9 w-9', p === page && 'pointer-events-none')}
         onClick={() => onChange(p as number)}
       >

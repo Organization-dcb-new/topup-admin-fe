@@ -38,16 +38,18 @@ export default function DashboardPage() {
       <div className='w-full space-y-4'>
         <ServerHealthAlert />
 
-        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center gap-3'>
-            <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <LayoutDashboard className='h-5 w-5' aria-hidden />
-            </div>
-            <div className='min-w-0'>
-              <h1 className='text-xl font-semibold tracking-tight text-gray-900 dark:text-white'>
+        <div className='nb-frame nb-frame-thick nb-sd flex flex-col gap-4 bg-white p-4 lg:flex-row lg:items-center lg:justify-between lg:p-5'>
+          <div className='flex gap-3'>
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-12 w-12 shrink-0 items-center justify-center bg-[#c9f24d]'>
+              <LayoutDashboard className='h-5 w-5' strokeWidth={2.5} aria-hidden />
+            </span>
+            <div className='min-w-0 space-y-1.5'>
+              <h1 className='text-2xl font-black uppercase leading-none tracking-tight'>
                 {t('dashboard.title')}
               </h1>
-              <p className='text-sm text-muted-foreground'>{t('dashboard.subtitle')}</p>
+              <p className='inline-block bg-[#ffd84d] px-1.5 py-0.5 text-xs font-bold'>
+                {t('dashboard.subtitle')}
+              </p>
             </div>
           </div>
           <DashboardFilters
@@ -63,18 +65,22 @@ export default function DashboardPage() {
         </div>
 
         {needsDate ? (
-          <div className='flex min-h-64 items-center justify-center rounded-xl border border-dashed border-border/80 bg-muted/20'>
-            <p className='text-sm text-muted-foreground'>{t('dashboard.pickDatePrompt')}</p>
+          <div className='nb-frame nb-frame-thick nb-sd flex min-h-64 items-center justify-center bg-white px-6 text-center'>
+            <p className='text-xs font-bold uppercase tracking-tight text-[#111]/55'>
+              {t('dashboard.pickDatePrompt')}
+            </p>
           </div>
         ) : isLoading ? (
           <DashboardSkeleton />
         ) : isError || !overview ? (
-          <ErrorComponent message={t('dashboard.loadError')} />
+          <div className='nb-frame nb-frame-thick nb-sd bg-white'>
+            <ErrorComponent message={t('dashboard.loadError')} />
+          </div>
         ) : (
-          <div className='space-y-3'>
+          <div className='space-y-4'>
             <KpiCards summary={overview.summary} comparison={overview.comparison} />
 
-            <div className='grid grid-cols-1 gap-3 lg:grid-cols-3'>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
               <div className='lg:col-span-2'>
                 {/* keyed by range → remount resets granularity ke default rentang baru */}
                 <TransactionChart key={range} params={params} />
@@ -86,7 +92,7 @@ export default function DashboardPage() {
               />
             </div>
 
-            <div className='grid grid-cols-1 gap-3 lg:grid-cols-3'>
+            <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
               <PendingAgingCard pendingAging={overview.pending_aging} />
               <div className='lg:col-span-2'>
                 <FailedReasonsCard failedReasons={overview.failed_reasons} />
