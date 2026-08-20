@@ -19,6 +19,12 @@ interface DataTableProps<TData, TValue> {
   stickyHeader?: boolean
   /** Kelas tambahan untuk pembungkus tabel (mis. `nb nb-table` di halaman neo-brutalism) */
   className?: string
+  /**
+   * Id baris yang stabil. Tanpa ini TanStack Table memakai indeks sebagai
+   * `row.id`, sehingga key React ikut bergeser saat daftar berubah dan state
+   * lokal di dalam sel (mis. dialog hapus yang sedang terbuka) berpindah baris.
+   */
+  getRowId?: (row: TData, index: number) => string
 }
 
 export function DataTable<TData, TValue>({
@@ -28,10 +34,12 @@ export function DataTable<TData, TValue>({
   emptyMessage = 'No data',
   stickyHeader = false,
   className,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
+    getRowId,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: renderSubRow ? getExpandedRowModel() : undefined,
     enableExpanding: !!renderSubRow,

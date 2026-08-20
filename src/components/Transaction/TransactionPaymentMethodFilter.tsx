@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { txClear, txCommandItem, txControl, txPopover } from '@/components/Transaction/styles'
 import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
@@ -55,36 +56,46 @@ export default function TransactionPaymentMethodFilter({
               aria-label={t('transactionFilters.paymentMethod.filterAria')}
               disabled={isLoading}
               className={cn(
-                'h-10 w-full min-w-0 justify-between font-normal shadow-xs',
-                isError && 'border-destructive/50 text-destructive',
-                !selected && !isError && !isLoading && 'text-muted-foreground',
+                txControl,
+                'justify-between',
+                isError && 'bg-[#ff4d3d]',
+                !selected && !isError && !isLoading && 'text-[#111]/55',
               )}
             >
             <span className='flex min-w-0 items-center gap-2'>
               {isLoading ? (
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-muted-foreground' aria-hidden />
+                <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
               ) : (
-                <CreditCard className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
+                <CreditCard className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
               )}
               <span className='truncate'>
                 {isLoading ? t('transactionFilters.paymentMethod.loading') : label}
               </span>
             </span>
-            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' aria-hidden />
+            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          className='w-[min(100vw-2rem,var(--radix-popover-trigger-width))] p-0 sm:w-80'
+          className={cn(txPopover, 'w-[min(100vw-2rem,var(--radix-popover-trigger-width))] sm:w-80')}
           align='start'
         >
-          <Command>
-            <CommandInput placeholder={t('transactionFilters.paymentMethod.commandSearch')} />
+          <Command className='rounded-none bg-white [&_[data-slot=command-input-wrapper]]:border-b-[3px] [&_[data-slot=command-input-wrapper]]:border-[#111]'>
+            <CommandInput
+              placeholder={t('transactionFilters.paymentMethod.commandSearch')}
+              className='font-bold placeholder:font-medium placeholder:text-[#5f5f5f]'
+            />
             <CommandList>
-              <CommandEmpty>{t('transactionFilters.paymentMethod.commandEmpty')}</CommandEmpty>
-              <CommandGroup heading={t('transactionFilters.paymentMethod.groupHeading')}>
+              <CommandEmpty className='py-5 text-center text-xs font-bold uppercase tracking-tight text-[#111]/55'>
+                {t('transactionFilters.paymentMethod.commandEmpty')}
+              </CommandEmpty>
+              <CommandGroup
+                heading={t('transactionFilters.paymentMethod.groupHeading')}
+                className='[&_[cmdk-group-heading]]:text-[10px] [&_[cmdk-group-heading]]:font-black [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.14em] [&_[cmdk-group-heading]]:text-[#111]/60'
+              >
                 <CommandItem
                   value='semua-metode'
                   keywords={['semua', 'all']}
+                  className={txCommandItem}
                   onSelect={() => {
                     onChange('')
                     setOpen(false)
@@ -92,6 +103,7 @@ export default function TransactionPaymentMethodFilter({
                 >
                   <Check
                     className={cn('mr-2 h-4 w-4 shrink-0', value === '' ? 'opacity-100' : 'opacity-0')}
+                    strokeWidth={3}
                     aria-hidden
                   />
                   {t('transactionFilters.paymentMethod.allMethods')}
@@ -104,6 +116,7 @@ export default function TransactionPaymentMethodFilter({
                         key={pm.id}
                         value={`${title} ${pm.code} ${pm.id}`}
                         keywords={[title, pm.code, pm.id, pm.provider]}
+                        className={txCommandItem}
                         onSelect={() => {
                           onChange(pm.id)
                           setOpen(false)
@@ -114,6 +127,7 @@ export default function TransactionPaymentMethodFilter({
                             'mr-2 h-4 w-4 shrink-0',
                             value === pm.id ? 'opacity-100' : 'opacity-0',
                           )}
+                          strokeWidth={3}
                           aria-hidden
                         />
                         <span className='truncate'>{title}</span>
@@ -127,16 +141,14 @@ export default function TransactionPaymentMethodFilter({
         </Popover>
       </div>
       {value !== '' && !isLoading && (
-        <Button
+        <button
           type='button'
-          variant='ghost'
-          size='icon'
-          className='h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground'
+          className={txClear}
           onClick={() => onChange('')}
           aria-label={t('transactionFilters.paymentMethod.clearAria')}
         >
-          <FilterX className='h-4 w-4' aria-hidden />
-        </Button>
+          <FilterX className='h-4 w-4' strokeWidth={3} aria-hidden />
+        </button>
       )}
     </div>
   )

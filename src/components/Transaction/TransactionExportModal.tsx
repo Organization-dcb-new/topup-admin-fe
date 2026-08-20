@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import { txSectionTitle } from '@/components/Transaction/styles'
 import { Download, Loader2, CalendarRange } from 'lucide-react'
 import TransactionDateFilter from './TransactionDateFilter'
 import TransactionStatusFilter from './TransactionStatusFilter'
@@ -92,29 +92,31 @@ export default function TransactionExportModal() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button
-          variant='outline'
-          size='sm'
-          className='h-9 shrink-0 gap-2 shadow-xs sm:self-center'
+        <button
+          type='button'
+          className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-9 shrink-0 cursor-pointer items-center gap-2 bg-[#c9f24d] px-3 text-xs font-black uppercase tracking-[0.12em] sm:self-center'
         >
-          <Download className='h-3.5 w-3.5' aria-hidden />
+          <Download className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
           {t('transactionPage.exportCSV')}
-        </Button>
+        </button>
       </DialogTrigger>
 
       {/* overflow-visible supaya Popover kalender tidak terpotong di dalam modal */}
-      <DialogContent className='flex w-full max-w-lg flex-col gap-0 overflow-visible p-0'>
+      <DialogContent
+        className='nb nb-frame nb-frame-thick nb-sd-lg flex w-full max-w-lg flex-col gap-0 overflow-visible bg-white p-0'
+        showCloseButton={false}
+      >
         {/* ── Header ── */}
-        <DialogHeader className='border-b border-border/80 px-6 py-5'>
+        <DialogHeader className='border-b-4 border-[#111] bg-[#6fe3f5] px-5 py-4 text-left'>
           <div className='flex min-w-0 items-center gap-3'>
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <CalendarRange className='h-4 w-4' aria-hidden />
-            </div>
-            <div className='min-w-0 space-y-0.5'>
-              <DialogTitle className='text-base font-semibold leading-snug'>
+            <span className='nb-frame nb-frame-thin flex h-9 w-9 shrink-0 items-center justify-center bg-white'>
+              <CalendarRange className='h-4 w-4' strokeWidth={3} aria-hidden />
+            </span>
+            <div className='min-w-0 space-y-1'>
+              <DialogTitle className='text-lg font-black uppercase leading-none tracking-tight'>
                 {t('transactionPage.exportCSVTitle')}
               </DialogTitle>
-              <DialogDescription className='text-xs leading-snug text-muted-foreground'>
+              <DialogDescription className='text-xs font-bold leading-snug text-[#111]/80'>
                 {t('transactionPage.exportCSVDesc')}
               </DialogDescription>
             </div>
@@ -122,59 +124,52 @@ export default function TransactionExportModal() {
         </DialogHeader>
 
         {/* ── Body ── overflow-visible agar kalender bisa render ke luar modal */}
-        <div className='overflow-visible px-6 py-5'>
+        <div className='overflow-visible px-5 py-5'>
           <div className='flex flex-col gap-6'>
             <div className='space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                {t('transactionPage.dateTimeRange')}
-              </p>
+              <p className={txSectionTitle}>{t('transactionPage.dateTimeRange')}</p>
               <div className='overflow-visible'>
                 <TransactionDateFilter date={dateRange} onChange={setDateRange} />
               </div>
             </div>
 
             <div className='space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                {t('transactionPage.status')}
-              </p>
+              <p className={txSectionTitle}>{t('transactionPage.status')}</p>
               <TransactionStatusFilter value={status} onChange={setStatus} />
             </div>
 
             <div className='space-y-2'>
-              <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                {t('transactionPage.paymentMethod')}
-              </p>
+              <p className={txSectionTitle}>{t('transactionPage.paymentMethod')}</p>
               <TransactionPaymentMethodFilter value={paymentMethodId} onChange={setPaymentMethodId} />
             </div>
           </div>
         </div>
 
         {/* ── Footer ── */}
-        <DialogFooter className='border-t border-border/80 px-6 py-4'>
-          <Button
+        <DialogFooter className='gap-2 border-t-4 border-[#111] px-5 py-4'>
+          <button
             type='button'
-            variant='outline'
-            className='flex-1 sm:flex-none'
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 flex-1 cursor-pointer bg-white px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none'
             onClick={() => handleOpenChange(false)}
             disabled={isExporting}
           >
             {t('sidebar.cancel')}
-          </Button>
-          <Button
+          </button>
+          <button
             type='button'
-            className='flex-1 gap-2 sm:flex-none'
+            className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-11 flex-1 cursor-pointer items-center justify-center gap-2 bg-[#c9f24d] px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none'
             onClick={handleExport}
             disabled={isExporting}
           >
             {isExporting ? (
-              <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+              <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
             ) : (
-              <Download className='h-4 w-4' aria-hidden />
+              <Download className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
             )}
             {isExporting
               ? t('transactionPage.generating', 'Generating…')
               : t('transactionPage.generateCSV')}
-          </Button>
+          </button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

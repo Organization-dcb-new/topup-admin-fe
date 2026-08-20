@@ -2,7 +2,6 @@ import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
-import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import TransactionAmountFilter from '@/components/Transaction/TransactionAmountFilter'
 import TransactionDateFilter from '@/components/Transaction/TransactionDateFilter'
@@ -11,6 +10,7 @@ import TransactionPaymentMethodFilter from '@/components/Transaction/Transaction
 import TransactionSearchInput from '@/components/Transaction/SearchTransaction'
 import TransactionStatusFilter from '@/components/Transaction/TransactionStatusFilter'
 import TransactionExportModal from '@/components/Transaction/TransactionExportModal'
+import { txLabel, txSectionTitle } from '@/components/Transaction/styles'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetTransactions } from '@/hooks/useTransaction'
 import { getPaymentColumns } from '@/tables/table-transaction'
@@ -32,6 +32,54 @@ import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 
 const TX_LIST_TOAST_ID = 'transactions-list'
+
+function formatIdr(value: number) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(value)
+}
+
+/** Label status di sisi kanan judul halaman. */
+function StatusTag({ accent, children }: { accent: string; children: React.ReactNode }) {
+  return (
+    <p
+      className={cn(
+        'nb-frame nb-frame-thin nb-sd-sm inline-flex items-center gap-2 px-2.5 py-1.5 text-xs font-black uppercase tracking-[0.12em]',
+        accent,
+      )}
+    >
+      {children}
+    </p>
+  )
+}
+
+/** Kartu angka ringkas di bawah judul. */
+function StatTile({
+  label,
+  value,
+  accent,
+  suffix,
+}: {
+  label: string
+  value: string
+  /** Sorotan di belakang angka — pembeda antar kartu saat dilihat sekilas. */
+  accent: string
+  suffix?: string
+}) {
+  return (
+    <div className='nb-frame nb-frame-thick nb-sd bg-white p-3'>
+      <p className='truncate text-[10px] font-black uppercase tracking-[0.14em] text-[#111]/60'>
+        {label}
+      </p>
+      <p className='mt-1.5 text-lg font-black leading-tight tabular-nums'>
+        <span className={cn('inline-block px-1', accent)}>{value}</span>
+        {suffix && <span className='ml-1 text-xs font-bold text-[#111]/60'>{suffix}</span>}
+      </p>
+    </div>
+  )
+}
 
 export default function TransactionPage() {
   const { t } = useTranslation('common')
@@ -188,99 +236,97 @@ export default function TransactionPage() {
 
   return (
     <DashboardLayout>
-      <div className='w-full space-y-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+      <div className='w-full min-w-0 space-y-5'>
+        <div className='nb-frame nb-frame-thick nb-sd flex flex-col gap-4 bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5'>
           <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <Receipt className='h-5 w-5' aria-hidden />
-            </div>
-            <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900 dark:text-white'>
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-12 w-12 shrink-0 items-center justify-center bg-[#ff9d3d]'>
+              <Receipt className='h-5 w-5' strokeWidth={2.5} aria-hidden />
+            </span>
+            <div className='min-w-0 space-y-1.5'>
+              <h1 className='text-2xl font-black uppercase leading-none tracking-tight'>
                 {t('transactionPage.title')}
               </h1>
-              <p className='text-sm text-muted-foreground'>
+              <p className='inline-block bg-[#ffd84d] px-1.5 py-0.5 text-xs font-bold'>
                 {t('transactionPage.subtitle', { limit })}
               </p>
             </div>
           </div>
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
+
+          <div className='flex shrink-0 sm:justify-end'>
             {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
+              <StatusTag accent='bg-[#6fe3f5]'>
+                <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
                 {t('transactionPage.loadingShort')}
-              </p>
+              </StatusTag>
             )}
             {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
+              <StatusTag accent='bg-[#ff4d3d]'>
+                <AlertCircle className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
                 {t('transactionPage.loadFailedShort')}
-              </p>
+              </StatusTag>
             )}
             {isSuccess && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground dark:text-slate-350'>
+              <StatusTag accent='bg-[#c9f24d]'>
+                <CheckCircle2 className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
+                <span className='tabular-nums'>
                   {t('transactionPage.totalCount', {
                     count: (data?.meta?.total_data ?? 0).toLocaleString('id-ID'),
                   })}
                 </span>
-              </p>
+              </StatusTag>
             )}
           </div>
         </div>
 
-        {/* Quick Stats Overview */}
+        {/* Ringkasan singkat */}
         <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
-          {/* Card 1: Total Volume */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
-              {stats.isOverall ? 'Total Volume' : 'Total Volume (Page)'}
-            </p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalVolume)}</p>
-          </div>
-          {/* Card 2: Total Paid */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Total Paid Count</p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.paidCount} <span className='text-xs font-normal text-slate-400'>txs</span></p>
-          </div>
-          {/* Card 3: Estimated Margin */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
-              {stats.isOverall ? 'Est. Margin' : 'Est. Margin (Page)'}
-            </p>
-            <p className='mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-450 tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalMargin)}</p>
-          </div>
-          {/* Card 4: Success Rate */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Success Rate</p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.successRate}%</p>
-          </div>
+          <StatTile
+            label={stats.isOverall ? 'Total Volume' : 'Total Volume (Page)'}
+            value={formatIdr(stats.totalVolume)}
+            accent='bg-[#6fe3f5]'
+          />
+          <StatTile
+            label='Total Paid Count'
+            value={stats.paidCount.toLocaleString('id-ID')}
+            accent='bg-[#ffd84d]'
+            suffix='txs'
+          />
+          <StatTile
+            label={stats.isOverall ? 'Est. Margin' : 'Est. Margin (Page)'}
+            value={formatIdr(stats.totalMargin)}
+            accent={stats.totalMargin < 0 ? 'bg-[#ff4d3d]' : 'bg-[#c9f24d]'}
+          />
+          <StatTile
+            label='Success Rate'
+            value={`${stats.successRate}%`}
+            accent='bg-[#ff9ed2]'
+          />
         </div>
 
         <section
-          className='overflow-hidden rounded-xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'
+          className='nb-frame nb-frame-thick nb-sd bg-white'
           aria-label={t('transactionPage.filtersRegionAria')}
         >
           <div
             className={cn(
-              'flex flex-col gap-2 bg-muted/25 dark:bg-zinc-900/10 p-2 sm:flex-row sm:items-center sm:gap-3 sm:p-2 sm:pl-3 sm:pr-4',
-              filtersOpen && 'border-b border-gray-100 dark:border-zinc-900',
+              'flex flex-col gap-2 bg-[#f5f1e8] p-2 sm:flex-row sm:items-center sm:gap-3 sm:p-2 sm:pl-3 sm:pr-3',
+              filtersOpen && 'border-b-4 border-[#111]',
             )}
           >
             <button
               type='button'
               id='tx-filters-toggle'
-              className='flex min-h-10 min-w-0 flex-1 items-center justify-between gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-muted/50 dark:hover:bg-zinc-900/50 sm:px-4 cursor-pointer'
+              className='nb-focus flex min-h-10 min-w-0 flex-1 cursor-pointer items-center justify-between gap-3 px-1 py-2 text-left sm:px-2'
               aria-expanded={filtersOpen}
               aria-controls='tx-filters-panel'
               onClick={() => setFiltersOpen((o) => !o)}
             >
               <span className='flex min-w-0 items-center gap-2'>
-                <SlidersHorizontal className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
-                <span className='text-sm font-semibold text-gray-900 dark:text-white'>
+                <SlidersHorizontal className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
+                <span className='text-sm font-black uppercase tracking-tight'>
                   {t('transactionPage.filterHeading')}
                 </span>
-                <span className='hidden text-xs text-muted-foreground sm:inline'>
+                <span className='hidden text-[11px] font-bold text-[#111]/60 sm:inline'>
                   {filtersOpen
                     ? t('transactionPage.filtersClickClose')
                     : t('transactionPage.filtersClickOpen')}
@@ -288,15 +334,17 @@ export default function TransactionPage() {
               </span>
               <ChevronDown
                 className={cn(
-                  'h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200',
+                  'h-4 w-4 shrink-0 transition-transform duration-200',
                   filtersOpen && 'rotate-180',
                 )}
+                strokeWidth={3}
                 aria-hidden
               />
             </button>
-            <div className='flex gap-2 sm:self-center items-center'>
+
+            <div className='flex flex-wrap items-center gap-2 sm:self-center'>
               {/* Auto Refresh dropdown selector */}
-              <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 text-xs font-semibold text-slate-600 dark:text-slate-400'>
+              <label className='nb-frame nb-frame-thin nb-sd-sm flex h-9 items-center gap-1.5 bg-white px-2.5 text-[11px] font-black uppercase tracking-[0.08em]'>
                 <span>Auto Refresh:</span>
                 <select
                   value={pollingInterval === false ? 'off' : pollingInterval}
@@ -305,30 +353,30 @@ export default function TransactionPage() {
                     if (val === 'off') setPollingInterval(false)
                     else setPollingInterval(Number(val))
                   }}
-                  className='bg-transparent border-none focus:outline-hidden font-bold text-primary cursor-pointer'
+                  className='nb-focus cursor-pointer border-none bg-transparent font-black text-[#111] focus:outline-hidden'
                 >
                   <option value='off'>Off</option>
                   <option value='10000'>10s</option>
                   <option value='30000'>30s</option>
                   <option value='60000'>1m</option>
                 </select>
-              </div>
+              </label>
 
               <TransactionExportModal />
-              <Button
+
+              <button
                 type='button'
-                variant='outline'
-                size='sm'
-                className='h-9 shrink-0 shadow-xs border-slate-200 dark:border-zinc-850 hover:bg-slate-50 dark:hover:bg-zinc-900 rounded-lg'
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm flex h-9 shrink-0 cursor-pointer items-center gap-2 bg-[#ff9ed2] px-3 text-xs font-black uppercase tracking-[0.12em] disabled:cursor-not-allowed disabled:bg-white disabled:opacity-55'
                 disabled={!hasActiveFilters}
                 onClick={resetFilters}
                 aria-label={t('transactionPage.resetFiltersAria')}
               >
-                <RotateCcw className='mr-2 h-3.5 w-3.5' aria-hidden />
+                <RotateCcw className='h-3.5 w-3.5 shrink-0' strokeWidth={3} aria-hidden />
                 {t('transactionPage.resetFilters')}
-              </Button>
+              </button>
             </div>
           </div>
+
           <div
             id='tx-filters-panel'
             role='region'
@@ -336,13 +384,10 @@ export default function TransactionPage() {
             hidden={!filtersOpen}
             className='min-w-0'
           >
-            <div className='min-w-0 px-4 py-5 sm:px-6 sm:py-6'>
-              <div className='flex flex-col gap-8'>
+            <div className='min-w-0 px-4 py-5 sm:px-5 sm:py-6'>
+              <div className='flex flex-col gap-7'>
                 <div className='space-y-2'>
-                  <Label
-                    htmlFor='tx-filter-search'
-                    className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'
-                  >
+                  <Label htmlFor='tx-filter-search' className={txSectionTitle}>
                     {t('transactionPage.searchLabel')}
                   </Label>
                   <TransactionSearchInput
@@ -352,49 +397,37 @@ export default function TransactionPage() {
                   />
                 </div>
 
-                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
+                <div className='h-1 bg-[#111]/15' aria-hidden />
 
                 <div className='space-y-4'>
-                  <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                    {t('transactionPage.sectionTimeGameStatus')}
-                  </p>
+                  <p className={txSectionTitle}>{t('transactionPage.sectionTimeGameStatus')}</p>
                   <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-5'>
                     <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.dateTimeRange')}
-                      </Label>
+                      <Label className={txLabel}>{t('transactionPage.dateTimeRange')}</Label>
                       <TransactionDateFilter date={dateRange} onChange={setDateRange} />
                     </div>
                     <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.game')}
-                      </Label>
+                      <Label className={txLabel}>{t('transactionPage.game')}</Label>
                       <TransactionGameFilter value={gameId} onChange={setGameId} />
                     </div>
                     <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.paymentMethod')}
-                      </Label>
+                      <Label className={txLabel}>{t('transactionPage.paymentMethod')}</Label>
                       <TransactionPaymentMethodFilter
                         value={paymentMethodId}
                         onChange={setPaymentMethodId}
                       />
                     </div>
                     <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.status')}
-                      </Label>
+                      <Label className={txLabel}>{t('transactionPage.status')}</Label>
                       <TransactionStatusFilter value={statusFilter} onChange={setStatusFilter} />
                     </div>
                   </div>
                 </div>
 
-                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
+                <div className='h-1 bg-[#111]/15' aria-hidden />
 
                 <div className='space-y-4'>
-                  <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                    {t('transactionPage.amountSection')}
-                  </p>
+                  <p className={txSectionTitle}>{t('transactionPage.amountSection')}</p>
                   <TransactionAmountFilter
                     minValue={minAmountFilter}
                     maxValue={maxAmountFilter}
@@ -409,54 +442,58 @@ export default function TransactionPage() {
           </div>
         </section>
 
-        <div className='overflow-hidden rounded-xl bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800'>
-          <div className='border-b border-gray-100 dark:border-zinc-900 px-4 py-3 sm:px-5'>
-            <div className='min-w-0 space-y-0.5'>
-              <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>{t('transactionPage.listTitle')}</h2>
-              <p className='text-xs text-muted-foreground'>{t('transactionPage.listHint')}</p>
+        <div className='nb-frame nb-frame-thick nb-sd bg-white p-3 sm:p-4'>
+          <h2 className='text-sm font-black uppercase tracking-tight'>
+            {t('transactionPage.listTitle')}
+          </h2>
+          <p className='mt-0.5 text-xs font-bold text-[#111]/70'>
+            {t('transactionPage.listHint')}
+          </p>
+        </div>
+
+        {isLoading && (
+          <div
+            className='nb-frame nb-frame-thick nb-sd flex min-h-[16rem] flex-col items-center justify-center gap-4 bg-white py-12'
+            role='status'
+            aria-live='polite'
+            aria-busy='true'
+          >
+            <span className='nb-frame nb-frame-thin nb-sd-sm flex h-14 w-14 items-center justify-center bg-[#6fe3f5]'>
+              <Loader2 className='h-7 w-7 animate-spin' strokeWidth={3} aria-hidden />
+            </span>
+            <div className='text-center'>
+              <p className='text-sm font-black uppercase tracking-tight'>
+                {t('transactionPage.tableLoadingTitle')}
+              </p>
+              <p className='mt-1 text-xs font-bold text-[#111]/70'>
+                {t('transactionPage.tableLoadingHint')}
+              </p>
             </div>
           </div>
+        )}
 
-          <div className='min-w-0 p-3 sm:p-4'>
-            {isLoading && (
-              <div
-                className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12'
-                role='status'
-                aria-live='polite'
-                aria-busy='true'
-              >
-                <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {t('transactionPage.tableLoadingTitle')}
-                  </p>
-                  <p className='mt-1 text-xs text-muted-foreground'>
-                    {t('transactionPage.tableLoadingHint')}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {isError && (
-              <ErrorComponent message={t('transactionPage.loadErrorDetail')} />
-            )}
-
-            {isSuccess && (
-              <>
-                <div className='max-h-[min(70vh,40rem)] min-w-0 w-full overflow-auto overscroll-contain'>
-                  <DataTable
-                    columns={paymentColumns}
-                    data={rows}
-                    emptyMessage={t('transactionPage.emptyPage')}
-                  />
-                </div>
-                <div className='mt-4'>
-                  <Pagination page={page} totalPage={data?.meta?.total_page} onChange={setPage} />
-                </div>
-              </>
-            )}
+        {isError && (
+          <div className='nb-frame nb-frame-thick nb-sd bg-white'>
+            <ErrorComponent message={t('transactionPage.loadErrorDetail')} />
           </div>
-        </div>
+        )}
+
+        {isSuccess && (
+          <>
+            <DataTable
+              className='nb nb-table nb-sd'
+              columns={paymentColumns}
+              data={rows}
+              emptyMessage={t('transactionPage.emptyPage')}
+            />
+            <Pagination
+              className='nb nb-pagination'
+              page={page}
+              totalPage={data?.meta?.total_page}
+              onChange={setPage}
+            />
+          </>
+        )}
       </div>
     </DashboardLayout>
   )

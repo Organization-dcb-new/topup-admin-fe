@@ -4,7 +4,13 @@ import { BannerLink } from '@/components/Banner/BannerLink'
 import type { Banner } from '@/types/banner'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { ZoomIn, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -30,7 +36,9 @@ function ImageCell({ src, alt }: { src: string; alt: string }) {
       <DialogContent
         className='nb nb-frame nb-frame-thick nb-sd-lg max-w-3xl bg-white p-2'
         showCloseButton={false}
+        aria-describedby={undefined}
       >
+        <DialogTitle className='sr-only'>{t('bannerTable.zoomImage')}</DialogTitle>
         <BannerImage
           src={src}
           alt={alt}

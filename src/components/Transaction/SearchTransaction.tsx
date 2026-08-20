@@ -1,4 +1,6 @@
 import { Input } from '@/components/ui/input'
+import { txField } from '@/components/Transaction/styles'
+import { cn } from '@/lib/utils'
 import { Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
@@ -13,7 +15,8 @@ export default function TransactionSearchInput({ value, onChange, id }: Transact
   return (
     <div className='relative w-full min-w-0'>
       <Search
-        className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground'
+        className='pointer-events-none absolute left-3 top-1/2 z-10 h-4 w-4 -translate-y-1/2 text-[#111]'
+        strokeWidth={3}
         aria-hidden
       />
       <Input
@@ -22,7 +25,7 @@ export default function TransactionSearchInput({ value, onChange, id }: Transact
         enterKeyHint='search'
         autoComplete='off'
         placeholder={t('transactionFilters.search.placeholder')}
-        className='h-10 pl-9'
+        className={cn(txField, 'pl-9')}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         aria-label={t('transactionFilters.search.ariaLabel')}

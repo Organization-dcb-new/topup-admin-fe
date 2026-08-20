@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { txClear, txControl, txField, txLabel, txPopover } from '@/components/Transaction/styles'
 import { cn } from '@/lib/utils'
 import { format, startOfDay } from 'date-fns'
 import { CalendarIcon, FilterX } from 'lucide-react'
@@ -101,11 +102,12 @@ export default function TransactionDateFilter({
               variant='outline'
               aria-label={t('transactionFilters.date.pickAria')}
               className={cn(
-                'h-10 w-full min-w-0 justify-start text-left text-xs font-normal shadow-xs sm:text-sm',
-                !date?.from && 'text-muted-foreground',
+                txControl,
+                'justify-start text-xs sm:text-sm',
+                !date?.from && 'text-[#111]/55',
               )}
             >
-            <CalendarIcon className='mr-2 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
+            <CalendarIcon className='mr-2 h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
             {rangeLabel ? (
               <span className='truncate tabular-nums' title={rangeLabel}>
                 {rangeLabel}
@@ -115,10 +117,7 @@ export default function TransactionDateFilter({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent
-          className='w-auto overflow-hidden rounded-xl border p-0 shadow-md ring-1 ring-gray-900/5'
-          align='start'
-        >
+        <PopoverContent className={cn(txPopover, 'w-auto')} align='start'>
           <Calendar
             initialFocus
             mode='range'
@@ -127,35 +126,29 @@ export default function TransactionDateFilter({
             numberOfMonths={2}
           />
           {date?.from && (
-            <div className='grid gap-3 border-t border-border/80 bg-muted/20 p-3 sm:grid-cols-2'>
+            <div className='grid gap-3 border-t-4 border-[#111] bg-[#f5f1e8] p-3 sm:grid-cols-2'>
               <div className='grid gap-1.5'>
-                <Label
-                  htmlFor='tx-filter-start-time'
-                  className='text-xs font-medium text-muted-foreground'
-                >
+                <Label htmlFor='tx-filter-start-time' className={txLabel}>
                   {t('transactionFilters.date.startTime')}
                 </Label>
                 <Input
                   id='tx-filter-start-time'
                   type='time'
                   step={1}
-                  className='h-10 bg-background'
+                  className={txField}
                   value={timeInputValue(date.from)}
                   onChange={handleStartTimeChange}
                 />
               </div>
               <div className='grid gap-1.5'>
-                <Label
-                  htmlFor='tx-filter-end-time'
-                  className='text-xs font-medium text-muted-foreground'
-                >
+                <Label htmlFor='tx-filter-end-time' className={txLabel}>
                   {t('transactionFilters.date.endTime')}
                 </Label>
                 <Input
                   id='tx-filter-end-time'
                   type='time'
                   step={1}
-                  className='h-10 bg-background'
+                  className={txField}
                   value={timeInputValue(date.to ?? date.from)}
                   onChange={handleEndTimeChange}
                 />
@@ -166,16 +159,14 @@ export default function TransactionDateFilter({
         </Popover>
       </div>
       {date?.from && (
-        <Button
+        <button
           type='button'
-          variant='ghost'
-          size='icon'
-          className='h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground'
+          className={txClear}
           onClick={() => onChange(undefined)}
           aria-label={t('transactionFilters.date.clearAria')}
         >
-          <FilterX className='h-4 w-4' aria-hidden />
-        </Button>
+          <FilterX className='h-4 w-4' strokeWidth={3} aria-hidden />
+        </button>
       )}
     </div>
   )

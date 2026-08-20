@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
+import { pmCellIcon, pmCode } from '@/components/PaymentMethod/styles'
 import { DeletePaymentCategory } from '@/components/PaymentMethodCategory/Delete'
 import { AddPaymentMethodToPaymentCategoryButton } from '@/components/PaymentMethodCategory/Add'
 import { EditPaymentCategoryModal } from '@/components/PaymentMethodCategory/Edit'
@@ -22,7 +23,7 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
               ? t('paymentMethodCategoryTable.iconAltName', { name: row.original.name })
               : t('paymentMethodCategoryTable.iconAltFallback')
           }
-          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+          className={pmCellIcon}
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
@@ -34,38 +35,32 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
   {
     accessorKey: 'name',
     header: t('paymentMethodCategoryTable.colName'),
-    cell: ({ row }) => (
-      <div className='font-medium text-gray-900'>{row.original.name}</div>
-    ),
+    cell: ({ row }) => <div className='font-black text-[#111]'>{row.original.name}</div>,
   },
   {
     accessorKey: 'slug',
     header: t('paymentMethodCategoryTable.colSlug'),
-    cell: ({ row }) => (
-      <code className='rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground'>
-        {row.original.slug}
-      </code>
-    ),
+    cell: ({ row }) => <code className={pmCode}>{row.original.slug}</code>,
   },
   {
     accessorKey: 'sort_order',
     header: t('paymentMethodCategoryTable.colSortOrder'),
-    cell: ({ row }) => <span className="text-sm tabular-nums">{row.original.sort_order}</span>,
+    cell: ({ row }) => (
+      <span className='text-sm font-black tabular-nums'>{row.original.sort_order}</span>
+    ),
   },
   {
     id: 'actions',
     header: t('paymentMethodCategoryTable.colActions'),
     cell: ({ row }) => (
-      <div className='flex min-w-0 items-center'>
-        <div
-          className='inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm'
-          role='group'
-          aria-label={t('paymentMethodCategoryTable.rowActionsAria', { name: row.original.name })}
-        >
-          <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
-          <EditPaymentCategoryModal category={row.original} />
-          <DeletePaymentCategory id={row.original.id} />
-        </div>
+      <div
+        className='flex min-w-0 flex-wrap items-center gap-1.5'
+        role='group'
+        aria-label={t('paymentMethodCategoryTable.rowActionsAria', { name: row.original.name })}
+      >
+        <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
+        <EditPaymentCategoryModal category={row.original} />
+        <DeletePaymentCategory id={row.original.id} />
       </div>
     ),
   },

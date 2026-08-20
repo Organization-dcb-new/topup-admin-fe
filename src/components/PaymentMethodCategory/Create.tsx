@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -14,8 +14,23 @@ import { Progress } from '@/components/ui/progress'
 import { Loader2, Plus, UploadCloud } from 'lucide-react'
 
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { cn } from '@/lib/utils'
 
 import { useCreatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
+import {
+  pmAddBtn,
+  pmBtn,
+  pmDialog,
+  pmDialogDesc,
+  pmDialogHeader,
+  pmDialogIcon,
+  pmDialogTitle,
+  pmDrop,
+  pmError,
+  pmField,
+  pmLabel,
+  pmProgress,
+} from '@/components/PaymentMethod/styles'
 
 export type FormValuesPaymentCategory = {
   name: string
@@ -79,77 +94,102 @@ export function CreatePaymentCategoryModal() {
 
   return (
     <>
-      <Button
-        type='button'
-        className='w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto'
-        onClick={() => applyOpen(true)}
-      >
-        <Plus className='h-4 w-4 shrink-0' aria-hidden />
+      <button type='button' className={cn(pmAddBtn, 'bg-[#ff9ed2]')} onClick={() => applyOpen(true)}>
+        <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
         Tambah kategori
-      </Button>
+      </button>
 
       <Dialog open={open} onOpenChange={applyOpen}>
-        <DialogContent className='rounded-xl sm:max-w-md'>
-          <DialogHeader className='space-y-1 text-left'>
-            <DialogTitle className='text-lg font-semibold tracking-tight'>Tambah kategori</DialogTitle>
-            <p className='text-sm text-muted-foreground'>
-              Nama, slug, dan ikon digunakan untuk menampilkan grup metode pembayaran.
-            </p>
-          </DialogHeader>
+        <DialogContent
+          className={cn(pmDialog, 'max-h-[min(90vh,44rem)] overflow-y-auto sm:max-w-md')}
+          showCloseButton={false}
+        >
+          <div className={cn(pmDialogHeader, 'bg-[#ff9ed2]')}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={pmDialogIcon}>
+                  <Plus className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <DialogTitle className={pmDialogTitle}>Tambah kategori</DialogTitle>
+              </div>
+              <DialogDescription className={pmDialogDesc}>
+                Nama, slug, dan ikon digunakan untuk menampilkan grup metode pembayaran.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-5 py-5'>
             <input type='hidden' {...register('icon_url')} />
             <div className='space-y-2'>
-              <Label htmlFor='pmc-name'>Nama</Label>
-              <div className='space-y-1'>
+              <Label htmlFor='pmc-name' className={pmLabel}>
+                Nama
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id='pmc-name'
                   {...register('name', { required: 'Nama wajib diisi' })}
                   placeholder='Contoh: E-wallet'
                   aria-invalid={!!errors.name}
+                  className={cn(pmField, errors.name && 'nb-invalid')}
                 />
 
-                {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+                {errors.name && (
+                  <p className={pmError} role='alert'>
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='pmc-slug'>Slug</Label>
-              <div className='space-y-1'>
+              <Label htmlFor='pmc-slug' className={pmLabel}>
+                Slug
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id='pmc-slug'
                   {...register('slug', { required: 'Slug wajib diisi' })}
                   placeholder='ewallet'
                   aria-invalid={!!errors.slug}
+                  className={cn(pmField, errors.slug && 'nb-invalid')}
                 />
 
-                {errors.slug && <p className='text-xs text-destructive'>{errors.slug.message}</p>}
+                {errors.slug && (
+                  <p className={pmError} role='alert'>
+                    {errors.slug.message}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="pmc-sort-order">Sort order</Label>
-              <div className="space-y-1">
+            <div className='space-y-2'>
+              <Label htmlFor='pmc-sort-order' className={pmLabel}>
+                Sort order
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
-                  id="pmc-sort-order"
-                  type="number"
+                  id='pmc-sort-order'
+                  type='number'
                   {...register('sort_order', {
                     required: 'Sort order wajib diisi',
                     valueAsNumber: true,
                     min: { value: 0, message: 'Sort order minimal 0' },
                   })}
-                  placeholder="0"
+                  placeholder='0'
                   aria-invalid={!!errors.sort_order}
+                  className={cn(pmField, errors.sort_order && 'nb-invalid')}
                 />
 
                 {errors.sort_order && (
-                  <p className="text-xs text-destructive">{errors.sort_order.message}</p>
+                  <p className={pmError} role='alert'>
+                    {errors.sort_order.message}
+                  </p>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Ikon</Label>
+            <div className='space-y-2'>
+              <Label className={pmLabel}>Ikon</Label>
 
               <div
                 role='button'
@@ -167,27 +207,30 @@ export function CreatePaymentCategoryModal() {
                   const file = e.dataTransfer.files[0]
                   if (file) handleFile(file)
                 }}
-                className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition ${
-                  isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'
-                } border-border/80`}
+                aria-busy={isUploading}
+                className={cn(pmDrop, isUploading && 'pointer-events-none opacity-60')}
               >
                 {preview ? (
-                  <img src={preview} alt='' className='h-full w-full rounded-lg object-contain' />
+                  <img src={preview} alt='' className='h-full w-full object-contain p-2' />
                 ) : (
-                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
-                    <UploadCloud className='h-6 w-6' aria-hidden />
-                    <span className='text-sm'>Klik atau letakkan gambar di sini</span>
+                  <div className='flex flex-col items-center gap-2 text-center'>
+                    <span className='nb-frame nb-frame-thin nb-sd-sm flex h-12 w-12 items-center justify-center bg-[#6fe3f5]'>
+                      <UploadCloud className='h-6 w-6' strokeWidth={2.5} aria-hidden />
+                    </span>
+                    <span className='max-w-[16rem] text-xs font-bold leading-relaxed text-[#111]/70'>
+                      Klik atau letakkan gambar di sini
+                    </span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white'>
+                  <div className='absolute inset-0 flex items-center justify-center bg-[#f5f1e8]/95 text-xs font-black uppercase tracking-[0.12em]'>
                     Mengunggah {uploadProgress}%
                   </div>
                 )}
               </div>
 
-              {isUploading && <Progress value={uploadProgress} />}
+              {isUploading && <Progress value={uploadProgress} className={pmProgress} />}
             </div>
 
             <input
@@ -201,24 +244,24 @@ export function CreatePaymentCategoryModal() {
               }}
             />
 
-            <DialogFooter className='gap-2 sm:gap-0'>
-              <Button type='button' variant='outline' className='rounded-lg' onClick={() => applyOpen(false)}>
+            <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
+              <button type='button' className={cn(pmBtn, 'bg-white')} onClick={() => applyOpen(false)}>
                 Batal
-              </Button>
-              <Button
+              </button>
+              <button
                 type='submit'
-                className='rounded-lg font-semibold'
+                className={cn(pmBtn, 'bg-[#ff9ed2]')}
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? (
-                  <span className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+                  <>
+                    <Loader2 className='h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
                     Menyimpan…
-                  </span>
+                  </>
                 ) : (
                   'Simpan'
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

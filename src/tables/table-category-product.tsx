@@ -1,12 +1,13 @@
 import { AddProductToCategoryProductButton } from '@/components/CategoryProduct/AddProduct'
 import { DeleteCategoryProductButton } from '@/components/CategoryProduct/DeleteCategoryProduct'
 import { UpdateCategoryProduct } from '@/components/CategoryProduct/UpdateCategoryProduct'
+import { FallbackImage } from '@/components/ui/fallback-image'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
+import { cn } from '@/lib/utils'
+import { nbAccent, nbIconBtnSm, nbTag } from '@/styles/nb'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import { ChevronDown, ChevronRight } from 'lucide-react'
-
-const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
 export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProduct>[] => [
   {
@@ -16,7 +17,7 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
       row.original.product?.length ? (
         <button
           type='button'
-          className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border/70 bg-muted/25 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground'
+          className={cn(nbIconBtnSm, row.getIsExpanded() ? nbAccent.yellow : nbAccent.white)}
           onClick={row.getToggleExpandedHandler()}
           aria-expanded={row.getIsExpanded()}
           aria-label={
@@ -26,9 +27,9 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
           }
         >
           {row.getIsExpanded() ? (
-            <ChevronDown className='h-4 w-4' aria-hidden />
+            <ChevronDown className='h-4 w-4' strokeWidth={3} aria-hidden />
           ) : (
-            <ChevronRight className='h-4 w-4' aria-hidden />
+            <ChevronRight className='h-4 w-4' strokeWidth={3} aria-hidden />
           )}
         </button>
       ) : (
@@ -40,36 +41,35 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
     id: 'icon',
     accessorKey: 'icon_url',
     header: t('categoryProductTable.colIcon'),
-    cell: ({ row }) => {
-      const src = row.original.icon_url?.trim() || FALLBACK_ICON
-      return (
-        <img
-          src={src}
+    cell: ({ row }) => (
+      <span className='nb-frame nb-frame-thin nb-sd-sm flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden bg-[#f5f1e8]'>
+        <FallbackImage
+          src={row.original.icon_url?.trim()}
           alt={
             row.original.name
               ? t('categoryProductTable.iconAltName', { name: row.original.name })
               : t('categoryProductTable.iconAltFallback')
           }
-          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.png'
-          }}
+          label={t('categoryProductTable.noIcon')}
+          className='h-full w-full object-contain'
         />
-      )
-    },
+      </span>
+    ),
   },
   {
     accessorKey: 'name',
     header: t('categoryProductTable.colCategoryName'),
     cell: ({ row }) => (
-      <div className='max-w-[12rem] font-medium text-gray-900 sm:max-w-xs'>{row.original.name}</div>
+      <div className='max-w-[12rem] font-black uppercase tracking-tight text-[#111] sm:max-w-xs'>
+        {row.original.name}
+      </div>
     ),
   },
   {
     accessorKey: 'game_name',
     header: t('categoryProductTable.colGame'),
     cell: ({ row }) => (
-      <span className='max-w-[10rem] truncate text-sm text-foreground sm:max-w-[12rem]'>
+      <span className={cn(nbTag, nbAccent.cyan, 'max-w-[12rem] truncate')}>
         {row.original.game_name}
       </span>
     ),
@@ -79,7 +79,7 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
     accessorKey: 'product',
     header: t('categoryProductTable.colProductCount'),
     cell: ({ row }) => (
-      <span className='tabular-nums text-sm font-medium text-foreground'>
+      <span className={cn(nbTag, nbAccent.lime, 'tabular-nums')}>
         {row.original.product?.length ?? 0}
       </span>
     ),
@@ -88,20 +88,19 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
     id: 'actions',
     header: t('categoryProductTable.colActions'),
     cell: ({ row }) => (
-      <div className='flex min-w-0 items-center'>
-        <div
-          className='inline-flex flex-wrap items-center gap-0.5 rounded-lg border border-border/70 bg-muted/25 p-0.5 shadow-sm'
-          role='group'
-          aria-label={t('categoryProductTable.rowActionsAria', { name: row.original.name })}
-        >
-          <AddProductToCategoryProductButton
-            id={row.original.id}
-            game_id={row.original.game_id}
-            existingProduct={row.original.product}
-          />
-          <DeleteCategoryProductButton id={row.original.id} />
-          <UpdateCategoryProduct category={row.original} />
-        </div>
+      <div
+        className='flex min-w-0 flex-wrap items-center gap-2'
+        role='group'
+        aria-label={t('categoryProductTable.rowActionsAria', { name: row.original.name })}
+      >
+        <AddProductToCategoryProductButton
+          id={row.original.id}
+          game_id={row.original.game_id}
+          existingProduct={row.original.product}
+          triggerClassName={nbAccent.cyan}
+        />
+        <UpdateCategoryProduct category={row.original} triggerClassName={nbAccent.yellow} />
+        <DeleteCategoryProductButton id={row.original.id} triggerClassName={nbAccent.red} />
       </div>
     ),
   },

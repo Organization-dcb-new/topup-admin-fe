@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
@@ -17,6 +17,23 @@ import { Loader2, Pencil, UploadCloud } from 'lucide-react'
 import { handleFileAutoUpload } from '@/helpers/upload'
 import { useUpdatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
+import { cn } from '@/lib/utils'
+import {
+  pmBtn,
+  pmDialog,
+  pmDialogDesc,
+  pmDialogHeader,
+  pmDialogIcon,
+  pmDialogTitle,
+  pmDrop,
+  pmError,
+  pmField,
+  pmIconBtn,
+  pmLabel,
+  pmProgress,
+  pmSwitch,
+  pmSwitchRow,
+} from '@/components/PaymentMethod/styles'
 
 type FormValuesPaymentCategory = {
   name: string
@@ -93,78 +110,108 @@ export function EditPaymentCategoryModal({ category }: { category: PaymentMethod
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        type="button"
-        className="h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground"
+      <button
+        type='button'
+        className={cn(pmIconBtn, 'bg-[#ffd84d]')}
         aria-label={`Edit kategori ${category.name}`}
         onClick={() => setOpen(true)}
       >
-        <Pencil className="h-4 w-4" aria-hidden />
-      </Button>
+        <Pencil className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rounded-xl sm:max-w-md">
-          <DialogHeader className="space-y-1 text-left">
-            <DialogTitle className="text-lg font-semibold tracking-tight">Edit kategori</DialogTitle>
-            <p className="text-sm text-muted-foreground">
-              Ubah informasi kategori metode pembayaran.
-            </p>
-          </DialogHeader>
+        <DialogContent
+          className={cn(pmDialog, 'max-h-[min(90vh,44rem)] overflow-y-auto sm:max-w-md')}
+          showCloseButton={false}
+        >
+          <div className={cn(pmDialogHeader, 'bg-[#ffd84d]')}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={pmDialogIcon}>
+                  <Pencil className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <DialogTitle className={pmDialogTitle}>Edit kategori</DialogTitle>
+              </div>
+              <DialogDescription className={pmDialogDesc}>
+                Ubah informasi kategori metode pembayaran.
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <input type="hidden" {...register('icon_url')} />
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-5 py-5'>
+            <input type='hidden' {...register('icon_url')} />
 
-            <div className="space-y-2">
-              <Label htmlFor={`pmc-name-edit-${category.id}`}>Nama</Label>
-              <div className="space-y-1">
+            <div className='space-y-2'>
+              <Label htmlFor={`pmc-name-edit-${category.id}`} className={pmLabel}>
+                Nama
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id={`pmc-name-edit-${category.id}`}
                   {...register('name', { required: 'Nama wajib diisi' })}
-                  placeholder="Contoh: E-wallet"
+                  placeholder='Contoh: E-wallet'
                   aria-invalid={!!errors.name}
+                  className={cn(pmField, errors.name && 'nb-invalid')}
                 />
-                {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                {errors.name && (
+                  <p className={pmError} role='alert'>
+                    {errors.name.message}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={`pmc-slug-edit-${category.id}`}>Slug</Label>
-              <div className="space-y-1">
+            <div className='space-y-2'>
+              <Label htmlFor={`pmc-slug-edit-${category.id}`} className={pmLabel}>
+                Slug
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id={`pmc-slug-edit-${category.id}`}
                   {...register('slug', { required: 'Slug wajib diisi' })}
-                  placeholder="ewallet"
+                  placeholder='ewallet'
                   aria-invalid={!!errors.slug}
+                  className={cn(pmField, errors.slug && 'nb-invalid')}
                 />
-                {errors.slug && <p className="text-xs text-destructive">{errors.slug.message}</p>}
+                {errors.slug && (
+                  <p className={pmError} role='alert'>
+                    {errors.slug.message}
+                  </p>
+                )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor={`pmc-sort-order-edit-${category.id}`}>Sort order</Label>
-              <div className="space-y-1">
+            <div className='space-y-2'>
+              <Label htmlFor={`pmc-sort-order-edit-${category.id}`} className={pmLabel}>
+                Sort order
+              </Label>
+              <div className='space-y-1.5'>
                 <Input
                   id={`pmc-sort-order-edit-${category.id}`}
-                  type="number"
+                  type='number'
                   {...register('sort_order', {
                     required: 'Sort order wajib diisi',
                     valueAsNumber: true,
                     min: { value: 0, message: 'Sort order minimal 0' },
                   })}
-                  placeholder="0"
+                  placeholder='0'
                   aria-invalid={!!errors.sort_order}
+                  className={cn(pmField, errors.sort_order && 'nb-invalid')}
                 />
                 {errors.sort_order && (
-                  <p className="text-xs text-destructive">{errors.sort_order.message}</p>
+                  <p className={pmError} role='alert'>
+                    {errors.sort_order.message}
+                  </p>
                 )}
               </div>
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center justify-between rounded-lg border border-border/80 px-3 py-2">
-                <Label htmlFor={`pmc-active-edit-${category.id}`} className="cursor-pointer">
+            <div className='space-y-2'>
+              <div className={pmSwitchRow}>
+                <Label
+                  htmlFor={`pmc-active-edit-${category.id}`}
+                  className={cn(pmLabel, 'cursor-pointer')}
+                >
                   Aktif
                 </Label>
                 <Switch
@@ -172,15 +219,16 @@ export function EditPaymentCategoryModal({ category }: { category: PaymentMethod
                   checked={watch('is_active')}
                   onCheckedChange={(checked) => setValue('is_active', checked)}
                   disabled={mutation.isPending}
+                  className={pmSwitch}
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Ikon</Label>
+            <div className='space-y-2'>
+              <Label className={pmLabel}>Ikon</Label>
 
               <div
-                role="button"
+                role='button'
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -195,58 +243,61 @@ export function EditPaymentCategoryModal({ category }: { category: PaymentMethod
                   const file = e.dataTransfer.files[0]
                   if (file) handleFile(file)
                 }}
-                className={`group relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition ${
-                  isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'
-                } border-border/80`}
+                aria-busy={isUploading}
+                className={cn(pmDrop, isUploading && 'pointer-events-none opacity-60')}
               >
                 {preview ? (
-                  <img src={preview} alt="" className="h-full w-full rounded-lg object-contain" />
+                  <img src={preview} alt='' className='h-full w-full object-contain p-2' />
                 ) : (
-                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                    <UploadCloud className="h-6 w-6" aria-hidden />
-                    <span className="text-sm">Klik atau letakkan gambar di sini</span>
+                  <div className='flex flex-col items-center gap-2 text-center'>
+                    <span className='nb-frame nb-frame-thin nb-sd-sm flex h-12 w-12 items-center justify-center bg-[#6fe3f5]'>
+                      <UploadCloud className='h-6 w-6' strokeWidth={2.5} aria-hidden />
+                    </span>
+                    <span className='max-w-[16rem] text-xs font-bold leading-relaxed text-[#111]/70'>
+                      Klik atau letakkan gambar di sini
+                    </span>
                   </div>
                 )}
 
                 {isUploading && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white">
+                  <div className='absolute inset-0 flex items-center justify-center bg-[#f5f1e8]/95 text-xs font-black uppercase tracking-[0.12em]'>
                     Mengunggah {uploadProgress}%
                   </div>
                 )}
               </div>
 
-              {isUploading && <Progress value={uploadProgress} />}
+              {isUploading && <Progress value={uploadProgress} className={pmProgress} />}
             </div>
 
             <input
               ref={inputRef}
-              type="file"
-              accept="image/*,.svg"
-              className="hidden"
+              type='file'
+              accept='image/*,.svg'
+              className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]
                 if (file) handleFile(file)
               }}
             />
 
-            <DialogFooter className="gap-2 sm:gap-0">
-              <Button type="button" variant="outline" className="rounded-lg" onClick={closeModal}>
+            <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
+              <button type='button' className={cn(pmBtn, 'bg-white')} onClick={closeModal}>
                 Batal
-              </Button>
-              <Button
-                type="submit"
-                className="rounded-lg font-semibold"
+              </button>
+              <button
+                type='submit'
+                className={cn(pmBtn, 'bg-[#ffd84d]')}
                 disabled={isUploading || mutation.isPending}
               >
                 {mutation.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                  <>
+                    <Loader2 className='h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
                     Menyimpan...
-                  </span>
+                  </>
                 ) : (
                   'Simpan'
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

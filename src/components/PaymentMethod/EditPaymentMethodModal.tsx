@@ -3,13 +3,13 @@ import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
@@ -17,7 +17,25 @@ import { Loader2, Pencil, UploadCloud } from 'lucide-react'
 import type { FormValuesPaymentMethodEdit, PaymentMethod } from '@/types/payment-method'
 import { useEditPaymentMethod } from '@/hooks/usePaymentMethod'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import {
+  pmBtn,
+  pmDialog,
+  pmDialogDesc,
+  pmDialogHeader,
+  pmDialogIcon,
+  pmDialogTitle,
+  pmDrop,
+  pmError,
+  pmField,
+  pmHint,
+  pmIconBtn,
+  pmLabel,
+  pmProgress,
+  pmSwitch,
+  pmSwitchRow,
+} from './styles'
 
 export type PropsEditPaymentMethodModal = {
   paymentMethod: PaymentMethod
@@ -80,69 +98,93 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
 
   return (
     <div>
-      <Button
-        variant='ghost'
-        size='icon'
+      <button
         type='button'
         onClick={() => setOpen(true)}
-        className='h-8 w-8 text-muted-foreground hover:bg-muted hover:text-foreground'
+        className={cn(pmIconBtn, 'bg-[#ffd84d]')}
         aria-label={t('paymentMethodEdit.triggerAria', { name: paymentMethod.name })}
       >
-        <Pencil className='h-4 w-4' aria-hidden />
-      </Button>
+        <Pencil className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+      </button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='rounded-xl sm:max-w-3xl'>
-          <DialogHeader className='space-y-1 text-left'>
-            <DialogTitle className='text-lg font-semibold tracking-tight'>{t('paymentMethodEdit.title')}</DialogTitle>
-            <p className='text-sm text-muted-foreground'>
-              {t('paymentMethodEdit.description')}
-            </p>
-          </DialogHeader>
+        <DialogContent
+          className={cn(pmDialog, 'max-h-[min(90vh,46rem)] overflow-y-auto sm:max-w-3xl')}
+          showCloseButton={false}
+        >
+          <div className={cn(pmDialogHeader, 'bg-[#ffd84d]')}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={pmDialogIcon}>
+                  <Pencil className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <DialogTitle className={pmDialogTitle}>{t('paymentMethodEdit.title')}</DialogTitle>
+              </div>
+              <DialogDescription className={pmDialogDesc}>
+                {t('paymentMethodEdit.description')}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
           <form
             onSubmit={handleSubmit((v) => updatePaymentMethodMutation.mutate(v))}
-            className='space-y-4'
+            className='space-y-5 px-5 py-5'
           >
             <input type='hidden' {...register('icon_url', { required: t('paymentMethodEdit.iconRequired') })} />
 
             <div className='flex w-full flex-col gap-5 md:flex-row'>
-              <div className='flex w-full flex-col gap-3'>
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-name-${paymentMethod.id}`}>{t('paymentMethodEdit.nameLabel')}</Label>
+              <div className='flex w-full flex-col gap-4'>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-name-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.nameLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-name-${paymentMethod.id}`}
                     {...register('name', { required: t('paymentMethodEdit.nameRequired') })}
+                    aria-invalid={!!errors.name}
+                    className={cn(pmField, errors.name && 'nb-invalid')}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-code-${paymentMethod.id}`}>{t('paymentMethodEdit.codeLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-code-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.codeLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-code-${paymentMethod.id}`}
                     {...register('code', { required: t('paymentMethodEdit.codeRequired') })}
+                    aria-invalid={!!errors.code}
+                    className={cn(pmField, errors.code && 'nb-invalid')}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-type-${paymentMethod.id}`}>{t('paymentMethodEdit.typeLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-type-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.typeLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-type-${paymentMethod.id}`}
                     {...register('type', { required: t('paymentMethodEdit.typeRequired') })}
                     placeholder={t('paymentMethodEdit.typePlaceholder')}
+                    aria-invalid={!!errors.type}
+                    className={cn(pmField, errors.type && 'nb-invalid')}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-provider-${paymentMethod.id}`}>{t('paymentMethodEdit.providerLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-provider-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.providerLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-provider-${paymentMethod.id}`}
                     {...register('provider', { required: t('paymentMethodEdit.providerRequired') })}
                     placeholder={t('paymentMethodEdit.providerPlaceholder')}
+                    aria-invalid={!!errors.provider}
+                    className={cn(pmField, errors.provider && 'nb-invalid')}
                   />
                 </div>
 
                 <div className='space-y-2'>
-                  <Label>{t('paymentMethodEdit.iconLabel')}</Label>
+                  <Label className={pmLabel}>{t('paymentMethodEdit.iconLabel')}</Label>
 
                   <div
                     role='button'
@@ -160,25 +202,29 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       const file = e.dataTransfer.files[0]
                       if (file) handleFile(file)
                     }}
-                    className={`relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition ${
-                      isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary'
-                    } ${errors.icon_url ? 'border-destructive' : 'border-border/80'}`}
+                    aria-busy={isUploading}
+                    aria-invalid={!!errors.icon_url}
+                    className={cn(
+                      pmDrop,
+                      isUploading && 'pointer-events-none opacity-60',
+                      errors.icon_url && 'nb-invalid',
+                    )}
                   >
                     {preview ? (
-                      <img
-                        src={preview}
-                        alt=''
-                        className='h-full w-full rounded-lg object-contain'
-                      />
+                      <img src={preview} alt='' className='h-full w-full object-contain p-2' />
                     ) : (
-                      <div className='flex flex-col items-center gap-2 text-muted-foreground'>
-                        <UploadCloud className='h-6 w-6' aria-hidden />
-                        <span className='text-sm'>{t('paymentMethodEdit.iconDropHint')}</span>
+                      <div className='flex flex-col items-center gap-2 text-center'>
+                        <span className='nb-frame nb-frame-thin nb-sd-sm flex h-12 w-12 items-center justify-center bg-[#6fe3f5]'>
+                          <UploadCloud className='h-6 w-6' strokeWidth={2.5} aria-hidden />
+                        </span>
+                        <span className='max-w-[16rem] text-xs font-bold leading-relaxed text-[#111]/70'>
+                          {t('paymentMethodEdit.iconDropHint')}
+                        </span>
                       </div>
                     )}
 
                     {isUploading && (
-                      <div className='absolute inset-0 flex items-center justify-center bg-black/50 text-sm font-medium text-white'>
+                      <div className='absolute inset-0 flex items-center justify-center bg-[#f5f1e8]/95 text-xs font-black uppercase tracking-[0.12em]'>
                         {t('paymentMethodEdit.uploading', { percent: uploadProgress })}
                       </div>
                     )}
@@ -200,17 +246,21 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                     }}
                   />
 
-                  {isUploading && <Progress value={uploadProgress} />}
+                  {isUploading && <Progress value={uploadProgress} className={pmProgress} />}
 
                   {errors.icon_url && (
-                    <p className='text-xs text-destructive'>{errors.icon_url.message}</p>
+                    <p className={pmError} role='alert'>
+                      {errors.icon_url.message}
+                    </p>
                   )}
                 </div>
               </div>
 
-              <div className='flex w-full flex-col gap-3'>
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-fee-pct-${paymentMethod.id}`}>{t('paymentMethodEdit.feePercentLabel')}</Label>
+              <div className='flex w-full flex-col gap-4'>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-fee-pct-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.feePercentLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-fee-pct-${paymentMethod.id}`}
                     type='number'
@@ -219,11 +269,14 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       valueAsNumber: true,
                       min: 0,
                     })}
+                    className={pmField}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-fee-fixed-${paymentMethod.id}`}>{t('paymentMethodEdit.feeFixedLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-fee-fixed-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.feeFixedLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-fee-fixed-${paymentMethod.id}`}
                     type='number'
@@ -231,11 +284,14 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       valueAsNumber: true,
                       min: 0,
                     })}
+                    className={pmField}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-min-${paymentMethod.id}`}>{t('paymentMethodEdit.minAmountLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-min-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.minAmountLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-min-${paymentMethod.id}`}
                     type='number'
@@ -243,11 +299,14 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       valueAsNumber: true,
                       min: 0,
                     })}
+                    className={pmField}
                   />
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-max-${paymentMethod.id}`}>{t('paymentMethodEdit.maxAmountLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-max-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.maxAmountLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-max-${paymentMethod.id}`}
                     type='number'
@@ -255,37 +314,50 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
                       valueAsNumber: true,
                       validate: (v, f) => v >= f.min_amount || t('paymentMethodEdit.maxMinValidation'),
                     })}
+                    aria-invalid={!!errors.max_amount}
+                    className={cn(pmField, errors.max_amount && 'nb-invalid')}
                   />
+                  {errors.max_amount && (
+                    <p className={pmError} role='alert'>
+                      {errors.max_amount.message}
+                    </p>
+                  )}
                 </div>
 
-                <div className='space-y-1'>
-                  <Label htmlFor={`pm-edit-sort-${paymentMethod.id}`}>{t('paymentMethodEdit.sortOrderLabel')}</Label>
+                <div className='space-y-1.5'>
+                  <Label htmlFor={`pm-edit-sort-${paymentMethod.id}`} className={pmLabel}>
+                    {t('paymentMethodEdit.sortOrderLabel')}
+                  </Label>
                   <Input
                     id={`pm-edit-sort-${paymentMethod.id}`}
                     type='number'
                     {...register('sort_order', {
                       valueAsNumber: true,
                     })}
+                    className={pmField}
                   />
                 </div>
 
                 <div className='space-y-2'>
-                  <Label>{t('paymentMethodEdit.statusLabel')}</Label>
+                  <Label className={pmLabel}>{t('paymentMethodEdit.statusLabel')}</Label>
                   <input type='hidden' {...register('is_active')} />
 
-                  <div className='flex items-center justify-between rounded-lg border border-border/80 px-3 py-2'>
-                    <span className='text-sm font-medium'>
-                      {watch('is_active') ? t('paymentMethodEdit.statusActive') : t('paymentMethodEdit.statusInactive')}
+                  <div className={pmSwitchRow}>
+                    <span className='text-xs font-black uppercase tracking-[0.12em]'>
+                      {watch('is_active')
+                        ? t('paymentMethodEdit.statusActive')
+                        : t('paymentMethodEdit.statusInactive')}
                     </span>
 
                     <Switch
                       checked={watch('is_active')}
                       onCheckedChange={(v) => setValue('is_active', v)}
                       disabled={isUploading || updatePaymentMethodMutation.isPending}
+                      className={pmSwitch}
                     />
                   </div>
 
-                  <p className='text-xs text-muted-foreground'>
+                  <p className={pmHint}>
                     {watch('is_active')
                       ? t('paymentMethodEdit.statusActiveHint')
                       : t('paymentMethodEdit.statusInactiveHint')}
@@ -294,24 +366,24 @@ export function EditPaymentMethodModal({ paymentMethod }: PropsEditPaymentMethod
               </div>
             </div>
 
-            <DialogFooter className='gap-2 sm:gap-0'>
-              <Button type='button' variant='outline' className='rounded-lg' onClick={() => setOpen(false)}>
+            <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
+              <button type='button' className={cn(pmBtn, 'bg-white')} onClick={() => setOpen(false)}>
                 {t('paymentMethodEdit.cancel')}
-              </Button>
-              <Button
+              </button>
+              <button
                 type='submit'
-                className='rounded-lg font-semibold'
+                className={cn(pmBtn, 'bg-[#ffd84d]')}
                 disabled={updatePaymentMethodMutation.isPending || isUploading}
               >
                 {updatePaymentMethodMutation.isPending ? (
-                  <span className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+                  <>
+                    <Loader2 className='h-4 w-4 animate-spin' strokeWidth={3} aria-hidden />
                     {t('paymentMethodEdit.saving')}
-                  </span>
+                  </>
                 ) : (
                   t('paymentMethodEdit.save')
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

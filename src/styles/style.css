@@ -237,6 +237,35 @@
   background-color: var(--nb-yellow);
 }
 
+/* Sakelar on/off (menimpa style bawaan Switch shadcn) */
+.nb-switch {
+  height: 1.5rem;
+  width: 2.75rem;
+  border: 2px solid var(--nb-ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 0 var(--nb-ink);
+  background-color: #fff;
+}
+.nb-switch[data-state='checked'] {
+  background-color: var(--nb-lime);
+}
+.nb-switch:focus-visible {
+  outline: 3px solid var(--nb-ink);
+  outline-offset: 2px;
+}
+.nb-switch [data-slot='switch-thumb'] {
+  height: 1.125rem;
+  width: 1.125rem;
+  border-radius: 0;
+  background-color: var(--nb-ink);
+}
+/* Tailwind v4 menggeser thumb lewat properti `translate` + `--tw-translate-x`,
+   jadi jaraknya disetel lewat variabel yang sama — kalau memakai `transform`
+   kedua pergeseran akan ditumpuk. */
+.nb-switch [data-slot='switch-thumb'][data-state='checked'] {
+  --tw-translate-x: 1.375rem;
+}
+
 /* Status error — ditaruh paling akhir supaya menang dari .nb-frame */
 .nb-invalid {
   border-color: var(--nb-red);
@@ -385,7 +414,8 @@
   .nb-press,
   .nb-press-sm,
   .nb-field,
-  .nb-otp {
+  .nb-otp,
+  .nb-switch [data-slot='switch-thumb'] {
     transition: none;
   }
   .nb-press:hover:not(:disabled),

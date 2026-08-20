@@ -169,6 +169,7 @@ export default function BlogList({ onEdit, viewMode }: BlogListProps) {
       {viewMode === 'table' ? (
         <DataTable
           className='nb nb-table nb-sd'
+          getRowId={(row) => row.id}
           columns={columns}
           data={blogs.data}
           emptyMessage={t('blogList.emptyPageRow')}

@@ -6,6 +6,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { nbLabel, nbSelectContent, nbSelectItem, nbSelectTrigger } from '@/styles/nb'
+import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
 
 export type ProductProviderStatusFilterValue = 'all' | 'available' | 'empty'
@@ -19,20 +21,27 @@ export function ProductProviderStatusFilter({ value, onChange }: Props) {
   const { t } = useTranslation('common')
   return (
     <div className='grid min-w-0 gap-1.5'>
-      <Label htmlFor='product-provider-status-filter' className='text-xs text-muted-foreground'>
+      <Label htmlFor='product-provider-status-filter' className={nbLabel}>
         {t('productFilters.providerStatusLabel')}
       </Label>
-      <Select
-        value={value}
-        onValueChange={(v) => onChange(v as ProductProviderStatusFilterValue)}
-      >
-        <SelectTrigger id='product-provider-status-filter' className='h-10 w-full min-w-0 shadow-sm'>
+      <Select value={value} onValueChange={(v) => onChange(v as ProductProviderStatusFilterValue)}>
+        <SelectTrigger
+          id='product-provider-status-filter'
+          className={cn(nbSelectTrigger, 'w-full min-w-0')}
+        >
           <SelectValue placeholder={t('productFilters.providerStatusPlaceholder')} />
         </SelectTrigger>
-        <SelectContent position='popper' align='start'>
-          <SelectItem value='all'>{t('productFilters.all')}</SelectItem>
-          <SelectItem value='available'>{t('productFilters.providerAvailable')}</SelectItem>
-          <SelectItem value='empty'>{t('productFilters.providerEmpty')}</SelectItem>
+        {/* Portal Radix di luar pembungkus `.nb`, jadi kelasnya dipasang ulang. */}
+        <SelectContent position='popper' align='start' className={nbSelectContent}>
+          <SelectItem value='all' className={nbSelectItem}>
+            {t('productFilters.all')}
+          </SelectItem>
+          <SelectItem value='available' className={nbSelectItem}>
+            {t('productFilters.providerAvailable')}
+          </SelectItem>
+          <SelectItem value='empty' className={nbSelectItem}>
+            {t('productFilters.providerEmpty')}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

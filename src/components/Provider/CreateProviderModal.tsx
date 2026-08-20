@@ -8,13 +8,28 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useCreateProvider } from '@/hooks/useProvider'
+import {
+  nbAccent,
+  nbDialog,
+  nbDialogBody,
+  nbDialogButton,
+  nbDialogFooter,
+  nbDialogHeader,
+  nbDialogIcon,
+  nbDialogTitle,
+  nbError,
+  nbHint,
+  nbInput,
+  nbLabel,
+  nbTextarea,
+} from '@/lib/nb'
+import { cn } from '@/lib/utils'
 import type { ProviderPayload } from '@/types/provider'
-import { Eye, EyeOff, Loader2, Plus } from 'lucide-react'
+import { Building2, Eye, EyeOff, Loader2, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export function CreateProviderModal() {
@@ -53,70 +68,91 @@ export function CreateProviderModal() {
 
   return (
     <>
-      <Button
+      <button
         type='button'
-        className='h-10 shrink-0 gap-2 shadow-sm'
+        className={cn(nbDialogButton, nbAccent.lime, 'h-10 w-full px-4 sm:w-auto')}
         onClick={() => setOpen(true)}
       >
-        <Plus className='h-4 w-4' aria-hidden />
+        <Plus className='h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
         {t('providerCreate.trigger')}
-      </Button>
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className='rounded-xl sm:max-w-lg'>
-          <DialogHeader className='space-y-1 text-left'>
-            <DialogTitle className='text-lg font-semibold tracking-tight'>{t('providerCreate.title')}</DialogTitle>
-            <DialogDescription>
-              {t('providerCreate.description')}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className={nbDialog} showCloseButton={false}>
+          <div className={cn(nbDialogHeader, nbAccent.lime)}>
+            <DialogHeader className='gap-2 text-left'>
+              <div className='flex items-center gap-2.5'>
+                <span className={nbDialogIcon}>
+                  <Building2 className='h-4 w-4' strokeWidth={3} aria-hidden />
+                </span>
+                <DialogTitle className={nbDialogTitle}>{t('providerCreate.title')}</DialogTitle>
+              </div>
+              <DialogDescription className={nbHint}>
+                {t('providerCreate.description')}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
 
-          <form onSubmit={handleSubmit((v) => mutation.mutate(v))} className='space-y-4'>
+          <form
+            onSubmit={handleSubmit((v) => mutation.mutate(v))}
+            className={cn(nbDialogBody, 'max-h-[70vh] overflow-y-auto')}
+          >
             {errors.root && (
-              <div className='rounded-lg bg-destructive/10 p-3 text-sm text-destructive' role='alert'>
+              <div
+                className='nb-frame nb-frame-thin nb-sd-sm bg-[#ff4d3d] p-3 text-xs font-black uppercase tracking-[0.12em]'
+                role='alert'
+              >
                 {errors.root.message}
               </div>
             )}
 
             <div className='space-y-2'>
-              <Label htmlFor={nameId} className='text-sm font-medium'>
+              <Label htmlFor={nameId} className={nbLabel}>
                 {t('providerCreate.nameLabel')}
               </Label>
               <Input
                 id={nameId}
                 autoComplete='off'
                 placeholder={t('providerCreate.namePlaceholder')}
-                className='rounded-lg'
+                className={cn(nbInput, errors.name && 'nb-invalid')}
                 aria-invalid={!!errors.name}
                 {...register('name', { required: t('providerCreate.nameRequired') })}
               />
-              {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+              {errors.name && (
+                <p className={nbError} role='alert'>
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor={codeId} className='text-sm font-medium'>
+              <Label htmlFor={codeId} className={nbLabel}>
                 {t('providerCreate.codeLabel')}
               </Label>
               <Input
                 id={codeId}
                 autoComplete='off'
                 placeholder={t('providerCreate.codePlaceholder')}
-                className='rounded-lg font-mono text-sm'
+                className={cn(nbInput, 'font-mono', errors.code && 'nb-invalid')}
                 aria-invalid={!!errors.code}
                 {...register('code', { required: t('providerCreate.codeRequired') })}
               />
-              {errors.code && <p className='text-xs text-destructive'>{errors.code.message}</p>}
+              {errors.code && (
+                <p className={nbError} role='alert'>
+                  {errors.code.message}
+                </p>
+              )}
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor={apiUrlId} className='text-sm font-medium'>
+              <Label htmlFor={apiUrlId} className={nbLabel}>
                 {t('providerCreate.apiUrlLabel')}
               </Label>
               <Input
                 id={apiUrlId}
                 autoComplete='off'
                 placeholder={t('providerCreate.apiUrlPlaceholder')}
-                className='rounded-lg'
+                className={cn(nbInput, errors.api_url && 'nb-invalid')}
                 aria-invalid={!!errors.api_url}
                 {...register('api_url', {
                   required: t('providerCreate.apiUrlRequired'),
@@ -127,23 +163,23 @@ export function CreateProviderModal() {
                 })}
               />
               {errors.api_url && (
-                <p className='text-xs text-destructive'>{errors.api_url.message}</p>
+                <p className={nbError} role='alert'>
+                  {errors.api_url.message}
+                </p>
               )}
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor={apiKeyId} className='text-sm font-medium'>
+              <Label htmlFor={apiKeyId} className={nbLabel}>
                 {t('providerCreate.apiKeyLabel')}
               </Label>
-              <p className='text-xs text-muted-foreground'>
-                {t('providerCreate.apiKeyHint')}
-              </p>
+              <p className={nbHint}>{t('providerCreate.apiKeyHint')}</p>
               <div className='relative'>
                 <Input
                   id={apiKeyId}
                   type={showApiKey ? 'text' : 'password'}
                   autoComplete='off'
-                  className='rounded-lg pr-10'
+                  className={cn(nbInput, 'pr-12', errors.api_key_encrypted && 'nb-invalid')}
                   aria-invalid={!!errors.api_key_encrypted}
                   {...register('api_key_encrypted', {
                     required: t('providerCreate.apiKeyRequired'),
@@ -152,39 +188,51 @@ export function CreateProviderModal() {
                 <button
                   type='button'
                   onClick={() => setShowApiKey((v) => !v)}
-                  className='absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground'
-                  aria-label={showApiKey ? t('providerCreate.hideApiKey') : t('providerCreate.showApiKey')}
+                  className='nb-focus absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center border-2 border-[#111] bg-white'
+                  aria-label={
+                    showApiKey ? t('providerCreate.hideApiKey') : t('providerCreate.showApiKey')
+                  }
                 >
-                  {showApiKey ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
+                  {showApiKey ? (
+                    <EyeOff className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+                  ) : (
+                    <Eye className='h-3.5 w-3.5' strokeWidth={3} aria-hidden />
+                  )}
                 </button>
               </div>
               {errors.api_key_encrypted && (
-                <p className='text-xs text-destructive'>{errors.api_key_encrypted.message}</p>
+                <p className={nbError} role='alert'>
+                  {errors.api_key_encrypted.message}
+                </p>
               )}
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor={priorityId} className='text-sm font-medium'>
+              <Label htmlFor={priorityId} className={nbLabel}>
                 {t('providerCreate.priorityLabel')}
               </Label>
               <Input
                 id={priorityId}
                 type='number'
                 min={0}
-                className='rounded-lg'
+                className={cn(nbInput, 'tabular-nums')}
                 {...register('priority', { valueAsNumber: true })}
               />
-              <p className='text-xs text-muted-foreground'>{t('providerCreate.priorityHint')}</p>
+              <p className={nbHint}>{t('providerCreate.priorityHint')}</p>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor={configId} className='text-sm font-medium'>
+              <Label htmlFor={configId} className={nbLabel}>
                 {t('providerCreate.configLabel')}
               </Label>
               <Textarea
                 id={configId}
                 rows={4}
-                className='max-h-36 min-h-[5rem] resize-y rounded-lg font-mono text-sm'
+                className={cn(
+                  nbTextarea,
+                  'max-h-36 min-h-[5rem] resize-y',
+                  errors.config && 'nb-invalid',
+                )}
                 placeholder={t('providerCreate.configPlaceholder')}
                 aria-invalid={!!errors.config}
                 {...register('config', {
@@ -200,32 +248,35 @@ export function CreateProviderModal() {
                   },
                 })}
               />
-              {errors.config && <p className='text-xs text-destructive'>{errors.config.message}</p>}
+              {errors.config && (
+                <p className={nbError} role='alert'>
+                  {errors.config.message}
+                </p>
+              )}
             </div>
 
-            <DialogFooter className='gap-2 sm:gap-2'>
-              <Button
+            <DialogFooter className={nbDialogFooter}>
+              <button
                 type='button'
-                variant='outline'
-                className='rounded-xl'
+                className={cn(nbDialogButton, nbAccent.white)}
                 onClick={() => setOpen(false)}
               >
                 {t('providerCreate.cancel')}
-              </Button>
-              <Button
+              </button>
+              <button
                 type='submit'
                 disabled={mutation.isPending}
-                className='inline-flex items-center gap-2 rounded-xl'
+                className={cn(nbDialogButton, nbAccent.lime)}
               >
                 {mutation.isPending ? (
                   <>
-                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' aria-hidden />
+                    <Loader2 className='h-4 w-4 shrink-0 animate-spin' strokeWidth={3} aria-hidden />
                     {t('providerCreate.saving')}
                   </>
                 ) : (
                   t('providerCreate.save')
                 )}
-              </Button>
+              </button>
             </DialogFooter>
           </form>
         </DialogContent>

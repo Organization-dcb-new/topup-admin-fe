@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -6,6 +5,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  dashSelectContent,
+  dashSelectItem,
+  dashSelectTrigger,
+} from '@/components/Dashboard/styles'
+import { txClear } from '@/components/Transaction/styles'
+import { cn } from '@/lib/utils'
 import type { Payment } from '@/types/transaction'
 import { FilterX, ListFilter } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -31,16 +37,18 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
           onValueChange={(v) => onChange(v === ALL ? '' : (v as Payment['status']))}
         >
           <SelectTrigger
-            className='h-10 w-full min-w-0 font-normal shadow-xs'
+            className={cn(dashSelectTrigger, 'h-10 w-full min-w-0')}
             aria-label={t('transactionFilters.status.filterAria')}
           >
-            <ListFilter className='mr-2 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
+            <ListFilter className='mr-2 h-4 w-4 shrink-0' strokeWidth={3} aria-hidden />
             <SelectValue placeholder={t('transactionFilters.status.placeholderAll')} />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={ALL}>{t('transactionFilters.status.optionAll')}</SelectItem>
+          <SelectContent className={dashSelectContent}>
+            <SelectItem value={ALL} className={dashSelectItem}>
+              {t('transactionFilters.status.optionAll')}
+            </SelectItem>
             {STATUS_ORDER.map((opt) => (
-              <SelectItem key={opt} value={opt}>
+              <SelectItem key={opt} value={opt} className={dashSelectItem}>
                 {t(`paymentStatus.${opt}`)}
               </SelectItem>
             ))}
@@ -48,16 +56,14 @@ export default function TransactionStatusFilter({ value, onChange }: Transaction
         </Select>
       </div>
       {value !== '' && (
-        <Button
+        <button
           type='button'
-          variant='ghost'
-          size='icon'
-          className='h-10 w-10 shrink-0 text-muted-foreground hover:text-foreground'
+          className={txClear}
           onClick={() => onChange('')}
           aria-label={t('transactionFilters.status.clearAria')}
         >
-          <FilterX className='h-4 w-4' aria-hidden />
-        </Button>
+          <FilterX className='h-4 w-4' strokeWidth={3} aria-hidden />
+        </button>
       )}
     </div>
   )

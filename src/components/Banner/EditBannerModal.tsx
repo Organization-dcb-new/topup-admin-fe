@@ -49,6 +49,13 @@ export function UpdateBanner({
 
   const isBusy = image.isUploading || mutation.isPending
 
+  // Semua jalur tutup lewat sini: `image.reset` menaikkan runId sehingga
+  // unggahan yang masih berjalan tidak lagi memicu PATCH saat resolve.
+  const closeModal = () => {
+    setOpen(false)
+    image.reset(banner.image || null)
+  }
+
   return (
     <>
       <button
@@ -68,10 +75,16 @@ export function UpdateBanner({
         <span className='hidden sm:inline'>{t('editBannerModal.triggerShort')}</span>
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={(next) => (next ? setOpen(true) : closeModal())}>
         <DialogContent
           className='nb nb-frame nb-frame-thick nb-sd-lg gap-0 overflow-hidden bg-white p-0 sm:max-w-lg'
           showCloseButton={false}
+          onEscapeKeyDown={(e) => {
+            if (isBusy) e.preventDefault()
+          }}
+          onInteractOutside={(e) => {
+            if (isBusy) e.preventDefault()
+          }}
         >
           <div className='border-b-4 border-[#111] bg-[#ffd84d] px-5 py-4'>
             <DialogHeader className='gap-2 text-left'>
@@ -133,8 +146,9 @@ export function UpdateBanner({
             <DialogFooter className='gap-2 border-t-4 border-[#111] pt-5 sm:pt-5'>
               <button
                 type='button'
-                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-white px-5 text-xs font-black uppercase tracking-[0.14em] sm:min-w-[5.5rem]'
-                onClick={() => setOpen(false)}
+                className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-11 cursor-pointer bg-white px-5 text-xs font-black uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-60 sm:min-w-[5.5rem]'
+                disabled={isBusy}
+                onClick={closeModal}
               >
                 {t('createBannerModal.cancel')}
               </button>

@@ -23,6 +23,12 @@ export function useBannerImage(initialUrl?: string | null) {
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const objectUrl = useRef<string | null>(null)
+  // Dinaikkan setiap kali state di-reset atau unggahan baru dimulai. Unggahan
+  // yang sudah tidak relevan memeriksa nilai ini dan berhenti tanpa menyentuh
+  // state — tanpa ini, membatalkan modal saat unggahan berjalan tetap membuat
+  // banner ketika promise-nya resolve belakangan.
+  const runId = useRef(0)
+  const uploadingRef = useRef(false)
 
   const revokeObjectUrl = useCallback(() => {
     if (!objectUrl.current) return
@@ -34,6 +40,8 @@ export function useBannerImage(initialUrl?: string | null) {
 
   const reset = useCallback(
     (url?: string | null) => {
+      runId.current += 1
+      uploadingRef.current = false
       revokeObjectUrl()
       setUploadedUrl(url ?? null)
       setPreview(url ?? null)
@@ -47,6 +55,9 @@ export function useBannerImage(initialUrl?: string | null) {
 
   const selectFile = useCallback(
     (file: File) => {
+      // `disabled` pada <button> hanya memblokir click, bukan drop. Dijaga di
+      // hook supaya semua pemanggil (drop, input berkas) ikut terlindungi.
+      if (uploadingRef.current) return
       const invalid = getImageFileValidationError(file)
       if (invalid) {
         setError(t(`bannerImageField.errors.${invalid}`))
@@ -67,14 +78,26 @@ export function useBannerImage(initialUrl?: string | null) {
    *  bila belum ada gambar / unggahannya gagal. */
   const upload = useCallback(async (): Promise<string | null> => {
     if (!pendingFile) {
-      if (!uploadedUrl) setError(t('bannerImageField.errors.required'))
+      setError(uploadedUrl ? null : t('bannerImageField.errors.required'))
       return uploadedUrl
     }
 
+    const run = ++runId.current
+    const isCurrent = () => run === runId.current
+
+    uploadingRef.current = true
     setIsUploading(true)
     setProgress(0)
+    setError(null)
     try {
-      const res = await uploadFile(pendingFile, setProgress)
+      const res = await uploadFile(pendingFile, (percent) => {
+        if (isCurrent()) setProgress(percent)
+      })
+      // Modal ditutup / state di-reset selagi unggahan berjalan: jangan
+      // hidupkan lagi state yang sudah dibersihkan, dan jangan kembalikan URL
+      // (pemanggil memakai nilai null ini untuk membatalkan mutation).
+      if (!isCurrent()) return null
+
       const url: string = res.data.url
       revokeObjectUrl()
       setUploadedUrl(url)
@@ -82,10 +105,13 @@ export function useBannerImage(initialUrl?: string | null) {
       setPendingFile(null)
       return url
     } catch {
-      setError(t('bannerImageField.errors.uploadFailed'))
+      if (isCurrent()) setError(t('bannerImageField.errors.uploadFailed'))
       return null
     } finally {
-      setIsUploading(false)
+      if (isCurrent()) {
+        uploadingRef.current = false
+        setIsUploading(false)
+      }
     }
   }, [pendingFile, revokeObjectUrl, t, uploadedUrl])
 

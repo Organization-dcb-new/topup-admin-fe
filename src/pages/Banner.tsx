@@ -9,6 +9,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useGetBanners } from "@/hooks/useBanner";
@@ -115,7 +116,11 @@ function BannerCard({ banner }: { banner: Banner }) {
         <DialogContent
           className="nb nb-frame nb-frame-thick nb-sd-lg max-w-3xl bg-white p-2"
           showCloseButton={false}
+          aria-describedby={undefined}
         >
+          <DialogTitle className="sr-only">
+            {t("bannerTable.zoomImage")}
+          </DialogTitle>
           <BannerImage
             src={banner.image}
             alt={t("bannerTable.imageAlt")}
@@ -276,6 +281,7 @@ export default function BannerPage() {
           (viewMode === "table" ? (
             <DataTable
               className="nb nb-table nb-sd"
+              getRowId={(row) => row.id}
               columns={bannerColumns}
               data={rows}
               emptyMessage={t("bannerPage.emptyPage")}
