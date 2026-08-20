@@ -15,12 +15,20 @@ import { Loader2, Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 import { type CategoryProduct, useUpdateCategoryProduct } from '@/hooks/useCategoryProduct'
+import { cn } from '@/lib/utils'
+import { nbIconBtnSm } from '@/styles/nb'
 
 type FormValues = {
   name: string
 }
 
-export function UpdateCategoryProduct({ category }: { category: CategoryProduct }) {
+export function UpdateCategoryProduct({
+  category,
+  triggerClassName,
+}: {
+  category: CategoryProduct
+  triggerClassName?: string
+}) {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const nameId = useId()
@@ -39,16 +47,14 @@ export function UpdateCategoryProduct({ category }: { category: CategoryProduct 
 
   return (
     <>
-      <Button
+      <button
         type='button'
-        variant='ghost'
-        size='icon'
         onClick={() => setOpen(true)}
-        className='cursor-pointer'
+        className={cn(nbIconBtnSm, triggerClassName)}
         aria-label={t('categoryProductUpdate.triggerAria', { name: category.name })}
       >
-        <Pencil className='h-4 w-4' aria-hidden />
-      </Button>
+        <Pencil className='h-4 w-4' strokeWidth={3} aria-hidden />
+      </button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className='rounded-xl sm:max-w-md'>

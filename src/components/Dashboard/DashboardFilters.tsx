@@ -25,6 +25,14 @@ import type { DateRange } from 'react-day-picker'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
+/** Nilai `<option>` polling; `off` mematikan refetch berkala. */
+const POLLING_OPTIONS = [
+  { value: 'off', labelKey: 'dashboard.autoRefresh.off' },
+  { value: '30000', labelKey: 'dashboard.autoRefresh.30s' },
+  { value: '60000', labelKey: 'dashboard.autoRefresh.1m' },
+  { value: '300000', labelKey: 'dashboard.autoRefresh.5m' },
+] as const
+
 const RANGE_LABEL_KEY: Record<DashboardRange, string> = {
   today: 'dashboard.range.today',
   '7d': 'dashboard.range.last7d',
@@ -60,7 +68,7 @@ export function DashboardFilters({
     <div className='flex flex-wrap items-center gap-2 sm:gap-3'>
       {/* Auto Refresh dropdown selector */}
       <label className='nb-frame nb-frame-thin nb-sd-sm flex h-9 items-center gap-1.5 bg-white px-2.5 text-[11px] font-black uppercase tracking-[0.08em] text-[#111]'>
-        <span>Auto Refresh:</span>
+        <span>{t('dashboard.autoRefresh.label')}</span>
         <select
           value={pollingInterval === false ? 'off' : pollingInterval}
           onChange={(e) => {
@@ -70,10 +78,11 @@ export function DashboardFilters({
           }}
           className='nb-focus cursor-pointer border-none bg-transparent font-black text-[#111] focus:outline-hidden'
         >
-          <option value='off'>Off</option>
-          <option value='30000'>30s</option>
-          <option value='60000'>1m</option>
-          <option value='300000'>5m</option>
+          {POLLING_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {t(opt.labelKey)}
+            </option>
+          ))}
         </select>
       </label>
 
@@ -85,9 +94,14 @@ export function DashboardFilters({
         onClick={onRefresh}
         disabled={isRefreshing}
         className='nb-frame nb-frame-thin nb-sd-sm nb-press-sm h-9 w-9 cursor-pointer bg-[#ffd84d] text-[#111] hover:bg-[#ffd84d] hover:text-[#111]'
-        title='Refresh data'
+        title={t('dashboard.refresh')}
+        aria-label={t('dashboard.refresh')}
       >
-        <RotateCw className={cn('h-4 w-4', isRefreshing && 'animate-spin')} strokeWidth={3} />
+        <RotateCw
+          className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
+          strokeWidth={3}
+          aria-hidden
+        />
       </Button>
 
       <Select value={range} onValueChange={(v) => onRangeChange(v as DashboardRange)}>

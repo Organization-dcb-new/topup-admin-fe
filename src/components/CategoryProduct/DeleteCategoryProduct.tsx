@@ -9,28 +9,33 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
 import { Loader2, Trash2 } from 'lucide-react'
 import { useDeleteCategoryProduct } from '@/hooks/useCategoryProduct'
+import { cn } from '@/lib/utils'
+import { nbIconBtnSm } from '@/styles/nb'
 import { useTranslation } from 'react-i18next'
 
-export function DeleteCategoryProductButton({ id }: { id: string }) {
+export function DeleteCategoryProductButton({
+  id,
+  triggerClassName,
+}: {
+  id: string
+  triggerClassName?: string
+}) {
   const { t } = useTranslation('common')
   const mutation = useDeleteCategoryProduct(id)
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
+        <button
           type='button'
-          variant='ghost'
-          size='icon'
-          className='cursor-pointer text-destructive hover:bg-destructive/10'
+          className={cn(nbIconBtnSm, triggerClassName)}
           disabled={mutation.isPending}
           aria-label={t('categoryProductDelete.triggerAria')}
         >
-          <Trash2 className='h-4 w-4' aria-hidden />
-        </Button>
+          <Trash2 className='h-4 w-4' strokeWidth={3} aria-hidden />
+        </button>
       </AlertDialogTrigger>
 
       <AlertDialogContent className='rounded-2xl'>

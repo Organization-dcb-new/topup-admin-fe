@@ -82,8 +82,7 @@ export default function DashboardPage() {
 
             <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
               <div className='lg:col-span-2'>
-                {/* keyed by range → remount resets granularity ke default rentang baru */}
-                <TransactionChart key={range} params={params} />
+                <TransactionChart params={params} pollingInterval={pollingInterval} />
               </div>
               <StatusBreakdown
                 statusBreakdown={overview.status_breakdown}

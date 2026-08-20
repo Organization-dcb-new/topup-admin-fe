@@ -18,7 +18,7 @@ import {
   fillTimeseriesGaps,
   formatBucketFull,
   formatBucketLabel,
-  GRANULARITY_BY_RANGE,
+  granularityOptions,
 } from '@/lib/dashboard'
 import {
   formatCompactCurrency,
@@ -39,7 +39,7 @@ import {
 } from '@/components/Dashboard/styles'
 import type { DashboardGranularity } from '@/types/dashboard'
 import { AlertCircle, Loader2 } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   Area,
@@ -51,12 +51,16 @@ import {
   YAxis,
 } from 'recharts'
 
-type Metric = 'count' | 'revenue' | 'margin'
-const METRICS: Metric[] = ['count', 'revenue', 'margin']
+type Metric = 'count' | 'paid' | 'revenue' | 'margin'
+const METRICS: Metric[] = ['count', 'paid', 'revenue', 'margin']
+
+/** Metrik yang dihitung sebagai cacah, bukan rupiah. */
+const COUNT_METRICS: ReadonlySet<Metric> = new Set<Metric>(['count', 'paid'])
 
 /** Isian area per metrik; garisnya selalu hitam supaya kontras tetap tegas. */
 const METRIC_FILL: Record<Metric, string> = {
   count: '#6fe3f5',
+  paid: '#ffd84d',
   revenue: '#c9f24d',
   margin: '#ff9ed2',
 }
@@ -78,18 +82,41 @@ function extractErrorMessage(error: unknown): string | undefined {
 
 interface TransactionChartProps {
   params: DashboardRangeParams
+  pollingInterval?: number | false
 }
 
-export function TransactionChart({ params }: TransactionChartProps) {
+export function TransactionChart({ params, pollingInterval }: TransactionChartProps) {
   const { t } = useTranslation('common')
   const [metric, setMetric] = useState<Metric>('count')
-  const [granularity, setGranularity] = useState<DashboardGranularity>(
-    defaultGranularity(params.range),
-  )
 
-  const { data, isLoading, isError, error } = useDashboardTimeseries(params, granularity)
+  const { range, startDate, endDate } = params
+  const options = useMemo(
+    () => granularityOptions(range, startDate, endDate),
+    [range, startDate, endDate],
+  )
+  /**
+   * State menyimpan *pilihan* pengguna; yang dipakai adalah pilihan itu setelah
+   * dijepit ke opsi yang sah untuk rentang saat ini. Rentang baru bisa membuat
+   * pilihan lama tidak sah (mis. `hour` pada 30 hari → 400 dari server).
+   * Sebelumnya kartu ini di-remount lewat `key` untuk itu, yang ikut membuang
+   * pilihan metrik pengguna.
+   */
+  const [preferred, setGranularity] = useState<DashboardGranularity | null>(null)
+  // Memoised because it reads the clock: without this the fallback could change
+  // between renders and silently spawn a new query.
+  const fallback = useMemo(
+    () => defaultGranularity(range, startDate, endDate),
+    [range, startDate, endDate],
+  )
+  const granularity = preferred && options.includes(preferred) ? preferred : fallback
+
+  const { data, isLoading, isError, error } = useDashboardTimeseries(
+    params,
+    granularity,
+    pollingInterval,
+  )
   const series = data ? fillTimeseriesGaps(data.data.series, granularity) : []
-  const isCount = metric === 'count'
+  const isCount = COUNT_METRICS.has(metric)
   const fill = METRIC_FILL[metric]
 
   return (
@@ -125,7 +152,7 @@ export function TransactionChart({ params }: TransactionChartProps) {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className={dashSelectContent}>
-              {GRANULARITY_BY_RANGE[params.range].map((g) => (
+              {options.map((g) => (
                 <SelectItem key={g} value={g} className={dashSelectItem}>
                   {t(GRANULARITY_LABEL_KEY[g])}
                 </SelectItem>

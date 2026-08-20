@@ -1715,7 +1715,8 @@
       "metric": {
         "count": "Jumlah transaksi",
         "revenue": "Pendapatan",
-        "margin": "Margin"
+        "margin": "Margin",
+        "paid": "Transaksi dibayar"
       }
     },
     "status": {
@@ -1751,6 +1752,28 @@
       "empty": "Belum ada data.",
       "productMeta": "{{sku}} · {{qty}} terjual",
       "ordersMeta": "{{count}} order"
+    },
+    "refresh": "Segarkan data",
+    "autoRefresh": {
+      "label": "Auto refresh:",
+      "off": "Mati",
+      "30s": "30 dtk",
+      "1m": "1 mnt",
+      "5m": "5 mnt"
+    },
+    "health": {
+      "title": "Status server",
+      "checking": "Memeriksa kesehatan server...",
+      "operational": "Semua sistem normal",
+      "degraded": "Performa menurun",
+      "unhealthy": "Server bermasalah",
+      "unreachable": "Server tidak terjangkau",
+      "unreachableHint": "Tidak bisa terhubung ke server. Pastikan backend sedang berjalan.",
+      "refresh": "Segarkan",
+      "retry": "Coba lagi",
+      "agoSeconds": "{{count}} dtk lalu",
+      "agoMinutes": "{{count}} mnt lalu",
+      "agoHours": "{{hours}} j {{minutes}} mnt lalu"
     }
   },
   "unauthorizedPage": {
