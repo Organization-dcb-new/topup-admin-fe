@@ -19,6 +19,8 @@ import { AlertCircle, Boxes, CheckCircle2, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function ProductPage() {
   const { t } = useTranslation('common')
@@ -153,7 +155,9 @@ export default function ProductPage() {
             </div>
           </div>
           <div className='flex flex-wrap items-center gap-3 sm:justify-end'>
-            <EditBulkAllPriceModal />
+            <Can perm={PERM.PRODUCT_UPDATE_PRICE}>
+              <EditBulkAllPriceModal />
+            </Can>
             <div className='flex flex-col items-end gap-1 sm:text-right'>
               {isLoading && (
                 <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>

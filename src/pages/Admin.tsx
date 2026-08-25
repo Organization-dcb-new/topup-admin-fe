@@ -8,6 +8,9 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminData } from '@/hooks/useAdmin'
 import { CreateAdminModal } from '@/components/Admin/Create'
+import { usePermission } from '@/hooks/usePermission'
+import { useAuthUser } from '@/lib/auth'
+import { PERM } from '@/constants/permissions'
 
 export default function AdminManagementPage() {
   const { t, i18n } = useTranslation('common')
@@ -15,7 +18,15 @@ export default function AdminManagementPage() {
   const limit = 10
 
   const { data, isLoading } = useAdminData(page, limit)
-  const adminColumns = useMemo(() => getAdminColumns(t), [t])
+  const { can } = usePermission()
+  const { user } = useAuthUser()
+
+  const canUpdateRole = can(PERM.ADMIN_UPDATE)
+  const canDelete = can(PERM.ADMIN_DELETE)
+  const adminColumns = useMemo(
+    () => getAdminColumns(t, user?.id ?? null, canUpdateRole, canDelete),
+    [t, user?.id, canUpdateRole, canDelete],
+  )
 
   return (
     <DashboardLayout>
@@ -49,7 +60,7 @@ export default function AdminManagementPage() {
                 {t('adminPage.listHint')}
               </p>
             </div>
-            <CreateAdminModal />
+            {can(PERM.ADMIN_CREATE) && <CreateAdminModal />}
           </div>
           <div className='p-3 sm:p-4'>
             {isLoading ? (

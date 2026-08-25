@@ -23,13 +23,16 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { api } from '@/api/axios'
+import { useRoles } from '@/hooks/useRoles'
+import { apiErrorMessage } from '@/lib/api-error'
 
 type CreateAdminFormValues = {
   username: string
   email: string
   password: string
   full_name: string
-  role: string
+  /** UUID role. Backend juga menerima slug, tapi id lebih tahan rename. */
+  role_id: string
   confirm_admin_password: string
 }
 
@@ -50,12 +53,13 @@ export const CreateAdminModal = () => {
       email: '',
       password: '',
       full_name: '',
-      role: 'admin',
+      role_id: '',
       confirm_admin_password: '',
     },
   })
 
-  const selectedRole = watch('role')
+  const { data: roles = [], isLoading: rolesLoading } = useRoles()
+  const selectedRoleId = watch('role_id')
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: CreateAdminFormValues) => {
@@ -67,10 +71,7 @@ export const CreateAdminModal = () => {
       setOpen(false)
       reset()
     },
-    onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      toast.error(msg || 'Gagal mendaftarkan admin')
-    },
+    onError: (err: unknown) => toast.error(apiErrorMessage(err, 'Gagal mendaftarkan admin')),
   })
 
   return (
@@ -125,15 +126,26 @@ export const CreateAdminModal = () => {
 
             <div className='space-y-2'>
               <Label className='text-sm font-medium'>Peran</Label>
-              <Select onValueChange={(val) => setValue('role', val)} defaultValue={selectedRole}>
-                <SelectTrigger className='rounded-lg font-medium uppercase'>
+              <Select
+                value={selectedRoleId}
+                onValueChange={(val) => setValue('role_id', val)}
+                disabled={rolesLoading}
+              >
+                <SelectTrigger className='rounded-lg font-medium'>
                   <SelectValue placeholder='Pilih peran' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='admin'>ADMIN</SelectItem>
-                  <SelectItem value='noc'>NOC</SelectItem>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      {role.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+              <input type='hidden' {...register('role_id', { required: 'Peran wajib dipilih' })} />
+              {errors.role_id && (
+                <p className='text-xs text-destructive'>{errors.role_id.message}</p>
+              )}
             </div>
           </div>
 

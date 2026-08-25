@@ -10,6 +10,8 @@ import { AlertCircle, CheckCircle2, CreditCard, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function PaymentMethodPage() {
   const { t } = useTranslation('common')
@@ -83,7 +85,9 @@ export default function PaymentMethodPage() {
                 {t('paymentMethodPage.listHint', { limit })}
               </p>
             </div>
-            <ModalAddPaymentMethod />
+            <Can perm={PERM.PAYMENT_METHOD_CREATE}>
+              <ModalAddPaymentMethod />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

@@ -22,7 +22,8 @@ import {
 import { CommandPalette } from './CommandPalette'
 import { LogoutDialog } from './LogoutDialog'
 import { useAuthUser } from '@/lib/auth'
-import { canAccessPath } from '@/constants/route-roles'
+import { usePermission } from '@/hooks/usePermission'
+import { canAccessPath } from '@/constants/route-permissions'
 import { resolvePageMatch } from '@/lib/title-map'
 import { cn } from '@/lib/utils'
 
@@ -38,7 +39,11 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { t } = useTranslation('common')
-  const { user, role } = useAuthUser()
+  const { user, role, roleName } = useAuthUser()
+  // Nama role untuk tampilan. Slug dipakai sebagai cadangan, tapi role custom
+  // mengisi slug dengan "custom" — jadi role_name yang benar-benar informatif.
+  const roleLabel = roleName || role
+  const { can } = usePermission()
   const [openLogoutModal, setOpenLogoutModal] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -174,12 +179,12 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
                     <p className='truncate text-sm font-semibold text-foreground'>
                       {username}
                     </p>
-                    {role && (
+                    {roleLabel && (
                       <Badge
                         variant='secondary'
                         className='h-4.5 shrink-0 px-1.5 text-[10px] font-bold uppercase'
                       >
-                        {role}
+                        {roleLabel}
                       </Badge>
                     )}
                   </div>
@@ -199,7 +204,7 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
               </div>
 
               {/* Hanya tampil bila role-nya memang diizinkan guard route ini */}
-              {canAccessPath('/2fa-setup', role) && (
+              {canAccessPath('/2fa-setup', can) && (
                 <Link
                   to='/2fa-setup'
                   onClick={() => setMenuOpen(false)}

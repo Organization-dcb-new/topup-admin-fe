@@ -11,6 +11,8 @@ import { AlertCircle, CheckCircle2, Package, Loader2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function CategoryProduct() {
   const { t } = useTranslation('common')
@@ -99,7 +101,9 @@ export default function CategoryProduct() {
                 {t('categoryProductPage.listHint', { limit })}
               </p>
             </div>
-            <CreateCategoryProductModal />
+            <Can perm={PERM.CATEGORY_PRODUCT_CREATE}>
+              <CreateCategoryProductModal />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

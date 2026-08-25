@@ -5,6 +5,8 @@ import type { PaymentMethodCategory } from '@/types/payment-method-categories'
 import { DeletePaymentCategory } from '@/components/PaymentMethodCategory/Delete'
 import { AddPaymentMethodToPaymentCategoryButton } from '@/components/PaymentMethodCategory/Add'
 import { EditPaymentCategoryModal } from '@/components/PaymentMethodCategory/Edit'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
@@ -62,9 +64,15 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
           role='group'
           aria-label={t('paymentMethodCategoryTable.rowActionsAria', { name: row.original.name })}
         >
-          <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
-          <EditPaymentCategoryModal category={row.original} />
-          <DeletePaymentCategory id={row.original.id} />
+          <Can perm={PERM.PAYMENT_CATEGORY_UPDATE}>
+            <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
+          </Can>
+          <Can perm={PERM.PAYMENT_CATEGORY_UPDATE}>
+            <EditPaymentCategoryModal category={row.original} />
+          </Can>
+          <Can perm={PERM.PAYMENT_CATEGORY_DELETE}>
+            <DeletePaymentCategory id={row.original.id} />
+          </Can>
         </div>
       </div>
     ),

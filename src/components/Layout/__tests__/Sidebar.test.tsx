@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Sidebar } from '@/components/Layout/sidebar'
 import { useAuthUser } from '@/lib/auth'
+import { authStateForRole } from '@/test/auth-fixture'
 
 vi.mock('@/lib/auth', () => ({ useAuthUser: vi.fn() }))
 vi.mock('@/components/Layout/SidebarHealthIndicator', () => ({
@@ -12,13 +13,7 @@ vi.mock('@/components/Layout/SidebarHealthIndicator', () => ({
 
 const mockUseAuthUser = vi.mocked(useAuthUser)
 
-const asRole = (role: string | null) => ({
-  isAuthenticated: !!role,
-  isMfaRequired: false,
-  role,
-  user: role ? { username: 'vian', role } : null,
-  isLoading: false,
-})
+const asRole = (role: string | null) => authStateForRole(role)
 
 const renderSidebar = (
   props: Partial<Parameters<typeof Sidebar>[0]> = {},
@@ -58,11 +53,16 @@ describe('Sidebar', () => {
     mockUseAuthUser.mockReturnValue(asRole('noc'))
     renderSidebar()
     expect(screen.getByRole('link', { name: /Dashboard/ })).toBeInTheDocument()
+    // Grup induk kini tampil kalau ada satu saja anak yang boleh diakses.
+    // Keamanan muncul karena noc boleh mengatur 2FA sendiri, dan Pembayaran
+    // muncul karena backend memang selalu mengizinkan noc membaca daftar
+    // metode pembayaran — sidebar-lah yang dulu menyembunyikannya.
+    // Yang penting: isinya menyusut ke apa yang benar-benar boleh.
+    expect(screen.queryByRole('link', { name: /Users/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Roles/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /Rate limit/i })).not.toBeInTheDocument()
     expect(
-      screen.queryByRole('button', { name: /Security/ }),
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('button', { name: /Payment/ }),
+      screen.queryByRole('link', { name: /Payment categories/ }),
     ).not.toBeInTheDocument()
   })
 

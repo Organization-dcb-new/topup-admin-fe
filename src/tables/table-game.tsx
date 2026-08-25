@@ -7,6 +7,8 @@ import { GameTableActions } from '@/components/Games/TableAction'
 import ToggleGameStatus from '@/components/Games/ToggleGameStatus'
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export const DEFAULT_GAME_IMAGE = 'https://placehold.co/64x64?text=No+Image'
 
@@ -24,7 +26,9 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
 
       return (
         <div className='flex min-w-[4.5rem] items-center py-0.5'>
-          <ChangeImageModal game={row.original} image={image} />
+          <Can perm={PERM.GAME_UPDATE}>
+            <ChangeImageModal game={row.original} image={image} />
+          </Can>
         </div>
       )
     },
@@ -103,7 +107,9 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
     header: t('gameTable.colActive'),
     cell: ({ row }) => (
       <div className='flex min-w-[7rem] items-center py-0.5'>
-        <ToggleGameStatus game={row.original} />
+        <Can perm={PERM.GAME_UPDATE}>
+          <ToggleGameStatus game={row.original} />
+        </Can>
       </div>
     ),
   },

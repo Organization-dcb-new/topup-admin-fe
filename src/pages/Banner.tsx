@@ -23,6 +23,8 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { BannerRowActions } from "@/components/Banner/BannerRowActions";
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 function BannerCard({ banner }: { banner: any }) {
   const [copied, setCopied] = useState(false);
@@ -237,7 +239,9 @@ export default function BannerPage() {
                   <LayoutGrid className="h-4 w-4" />
                 </Button>
               </div>
-              <CreateBannerModal />
+              <Can perm={PERM.BANNER_CREATE}>
+                <CreateBannerModal />
+              </Can>
             </div>
           </div>
 

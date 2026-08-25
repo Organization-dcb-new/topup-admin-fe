@@ -2,6 +2,8 @@ import { ArrowLeft, Plus, LayoutGrid, List as ListIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../ui/button'
 import { cn } from '@/lib/utils'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 type ViewMode = 'list' | 'create' | 'edit'
 
@@ -61,14 +63,16 @@ export default function HeaderBlog({ view, setView, className, viewMode, setView
         )}
         
         {view === 'list' ? (
-          <Button
-            type='button'
-            onClick={() => setView('create')}
-            className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
-          >
-            <Plus className='h-4 w-4 shrink-0' aria-hidden />
-            {t('blogPage.addArticle')}
-          </Button>
+          <Can perm={PERM.BLOG_CREATE}>
+            <Button
+              type='button'
+              onClick={() => setView('create')}
+              className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
+            >
+              <Plus className='h-4 w-4 shrink-0' aria-hidden />
+              {t('blogPage.addArticle')}
+            </Button>
+          </Can>
         ) : (
           <Button
             type='button'

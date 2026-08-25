@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils'
 import type { Blog } from '@/tables/table-blog'
 import { Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export function BlogActionsHeader() {
   const { t } = useTranslation('common')
@@ -32,18 +34,22 @@ export function BlogRowActions({
         role='group'
         aria-label={t('blogRowActions.rowGroupAria')}
       >
-        <Button
-          type='button'
-          variant='outline'
-          size='sm'
-          onClick={() => onEdit(blog)}
-          className={cn('cursor-pointer gap-1.5', toolbarBtn)}
-          aria-label={t('blogRowActions.editAria')}
-        >
-          <Pencil className='h-4 w-4 shrink-0' aria-hidden />
-          <span className='hidden sm:inline'>{t('blogRowActions.editLabel')}</span>
-        </Button>
-        <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
+        <Can perm={PERM.BLOG_UPDATE}>
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            onClick={() => onEdit(blog)}
+            className={cn('cursor-pointer gap-1.5', toolbarBtn)}
+            aria-label={t('blogRowActions.editAria')}
+          >
+            <Pencil className='h-4 w-4 shrink-0' aria-hidden />
+            <span className='hidden sm:inline'>{t('blogRowActions.editLabel')}</span>
+          </Button>
+        </Can>
+        <Can perm={PERM.BLOG_DELETE}>
+          <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
+        </Can>
       </div>
     </div>
   )

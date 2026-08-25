@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function ShowPage() {
   const { t } = useTranslation("common");
@@ -77,7 +79,9 @@ export default function ShowPage() {
                 {t("showPage.listHint")}
               </p>
             </div>
-            <CreateShowModal />
+            <Can perm={PERM.SHOW_CREATE}>
+              <CreateShowModal />
+            </Can>
           </div>
           <div className="p-3 sm:p-4">
             {isPending && (

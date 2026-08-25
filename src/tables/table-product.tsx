@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { DEFAULT_GAME_IMAGE } from "./table-game";
 import { ChangeImageModalProduct } from "@/components/Product/Filter/UploadImage";
 import UpdateProductPriceModal from "@/components/Product/Filter/UpdatePrice";
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 function formatRp(value: number | undefined | null) {
   const n = value ?? 0;
@@ -21,7 +23,9 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
 
       return (
         <div className="flex items-center">
-          <ChangeImageModalProduct product={row.original} image={image} />
+          <Can perm={PERM.PRODUCT_UPDATE}>
+            <ChangeImageModalProduct product={row.original} image={image} />
+          </Can>
         </div>
       );
     },
@@ -175,11 +179,13 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
             name: row.original.name,
           })}
         >
-          <UpdateProductPriceModal
-            basePrice={row.original.base_price}
-            productId={row.original.id}
-            productName={row.original.name}
-          />
+          <Can perm={PERM.PRODUCT_UPDATE_PRICE}>
+            <UpdateProductPriceModal
+              basePrice={row.original.base_price}
+              productId={row.original.id}
+              productName={row.original.name}
+            />
+          </Can>
         </div>
       </div>
     ),

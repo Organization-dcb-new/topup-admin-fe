@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { CommandPalette } from '@/components/Layout/CommandPalette'
 import { useAuthUser } from '@/lib/auth'
+import { authStateForRole } from '@/test/auth-fixture'
 
 vi.mock('@/lib/auth', () => ({
   useAuthUser: vi.fn(),
@@ -10,13 +11,7 @@ vi.mock('@/lib/auth', () => ({
 
 const mockUseAuthUser = vi.mocked(useAuthUser)
 
-const asRole = (role: string | null) => ({
-  isAuthenticated: !!role,
-  isMfaRequired: false,
-  role,
-  user: role ? { username: 'vian', role } : null,
-  isLoading: false,
-})
+const asRole = (role: string | null) => authStateForRole(role)
 
 const renderPalette = (onOpenChange = vi.fn()) => {
   render(

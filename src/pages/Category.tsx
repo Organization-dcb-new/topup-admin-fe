@@ -11,6 +11,8 @@ import { getCategoryColumns } from '@/tables/table-category'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function CategoryPage() {
   const { t, i18n } = useTranslation('common')
@@ -44,7 +46,9 @@ export default function CategoryPage() {
     <DashboardLayout>
       <div className='flex justify-between mb-4'>
         <CategoriesSearchInput value={search} onChange={setSearch} />
-        <CreateCategoryModal />
+        <Can perm={PERM.CATEGORY_CREATE}>
+          <CreateCategoryModal />
+        </Can>
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message={t('categoryPage.errorMessage')} />}

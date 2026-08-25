@@ -17,6 +17,7 @@ import {
   ListOrdered,
   Package,
   Shield,
+  ShieldCheck,
   ClipboardList,
   Tags,
   Tv,
@@ -131,6 +132,11 @@ export const sidebarMenus: SidebarSection[] = [
             label: 'Pengguna',
             icon: Users,
             path: '/admin',
+          },
+          {
+            label: 'Role',
+            icon: ShieldCheck,
+            path: '/roles',
           },
           {
             label: 'Log admin',

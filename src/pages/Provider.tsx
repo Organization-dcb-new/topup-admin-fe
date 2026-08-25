@@ -10,6 +10,8 @@ import { AlertCircle, Building2, CheckCircle2, Loader2 } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function ProviderPages() {
   const { t } = useTranslation('common')
@@ -75,8 +77,12 @@ export default function ProviderPages() {
               </p>
             </div>
             <div className='flex items-center gap-3'>
-              <LapakGamingBalance />
-              <CreateProviderModal />
+              <Can perm={PERM.INTEGRATION_VIEW_BALANCE}>
+                <LapakGamingBalance />
+              </Can>
+              <Can perm={PERM.PROVIDER_CREATE}>
+                <CreateProviderModal />
+              </Can>
             </div>
           </div>
 

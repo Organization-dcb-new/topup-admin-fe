@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Navbar } from '@/components/Layout/navbar'
 import { useAuthUser } from '@/lib/auth'
+import { authStateForRole } from '@/test/auth-fixture'
 
 vi.mock('@/lib/auth', () => ({
   useAuthUser: vi.fn(),
@@ -13,11 +14,8 @@ vi.mock('@/lib/auth', () => ({
 const mockUseAuthUser = vi.mocked(useAuthUser)
 
 const asRole = (role: string) => ({
-  isAuthenticated: true,
-  isMfaRequired: false,
-  role,
-  user: { username: 'vian', email: 'vian@example.com', role },
-  isLoading: false,
+  ...authStateForRole(role),
+  user: { id: 'admin-1', username: 'vian', email: 'vian@example.com', role },
 })
 
 const renderNavbar = (initialPath = '/', onOpenMobile = vi.fn()) => {
@@ -80,8 +78,19 @@ describe('Navbar', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('menyembunyikan tautan keamanan akun dari role noc yang akan ditolak guard', () => {
+  // Sejak RBAC, noc memegang security.2fa.manage: sebelumnya noc tidak bisa
+  // mengatur 2FA sendiri padahal login noc juga melewati gate MFA.
+  it('menampilkan tautan keamanan akun untuk role noc', () => {
     mockUseAuthUser.mockReturnValue(asRole('noc'))
+    renderNavbar('/')
+    fireEvent.click(screen.getByRole('button', { name: 'Account menu' }))
+    expect(
+      screen.getByRole('link', { name: /Account security/ }),
+    ).toHaveAttribute('href', '/2fa-setup')
+  })
+
+  it('menyembunyikan tautan keamanan akun dari sesi tanpa permission', () => {
+    mockUseAuthUser.mockReturnValue({ ...asRole('noc'), permissions: [] })
     renderNavbar('/')
     fireEvent.click(screen.getByRole('button', { name: 'Account menu' }))
     expect(

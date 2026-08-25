@@ -1,5 +1,5 @@
 import { sidebarMenus, type SidebarMenu } from '@/constants/sidebar-menu'
-import { filterMenusByRole } from '@/lib/sidebar-access'
+import { filterMenusByPermission } from '@/lib/sidebar-access'
 import { SIDEBAR_I18N_KEY_BY_TEXT } from '@/i18n/sidebar-label-keys'
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +14,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import type { SidebarProps } from '@/types/sidebar'
-import { useAuthUser } from '@/lib/auth'
+import { usePermission } from '@/hooks/usePermission'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronLeft, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react'
@@ -101,7 +101,7 @@ export function Sidebar({
   onCloseMobile,
 }: SidebarProps) {
   const { pathname } = useLocation()
-  const { role } = useAuthUser()
+  const { can } = usePermission()
   const { t } = useTranslation('common')
   const tr = useSidebarCopy()
   const isMdUp = useIsMdUp()
@@ -110,8 +110,8 @@ export function Sidebar({
   const touchStartX = useRef<number | null>(null)
 
   const filteredMenus = useMemo(
-    () => filterMenusByRole(sidebarMenus, role),
-    [role],
+    () => filterMenusByPermission(sidebarMenus, can),
+    [can],
   )
 
   const activeMenuPath = useMemo(() => {

@@ -5,6 +5,8 @@ import { EditMaintenanceModal } from '@/components/Maintenance/EditMaintenanceMo
 import { Badge } from '@/components/ui/badge'
 import { formatMaintenanceInstant } from '@/helpers/maintenance-datetime'
 import type { Maintenance } from '@/types/maintenance'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export const getMaintenanceColumns = (t: TFunction): ColumnDef<Maintenance>[] => [
   {
@@ -92,8 +94,12 @@ export const getMaintenanceColumns = (t: TFunction): ColumnDef<Maintenance>[] =>
           role='group'
           aria-label={t('maintenanceTable.rowActionsAria', { name: row.original.name })}
         >
-          <EditMaintenanceModal maintenance={row.original} />
-          <DeleteMaintenanceModal id={row.original.id} name={row.original.name} />
+          <Can perm={PERM.MAINTENANCE_UPDATE}>
+            <EditMaintenanceModal maintenance={row.original} />
+          </Can>
+          <Can perm={PERM.MAINTENANCE_DELETE}>
+            <DeleteMaintenanceModal id={row.original.id} name={row.original.name} />
+          </Can>
         </div>
       </div>
     ),

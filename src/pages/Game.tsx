@@ -26,6 +26,8 @@ import { Gamepad2, Inbox, Loader2, RefreshCw, RotateCcw, Search, SearchX } from 
 import { useEffect, useMemo, useState, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 function datetimeLocalToIso(value: string): string | undefined {
   if (!value.trim()) return undefined
@@ -334,7 +336,9 @@ export default function GamePage() {
             </div>
           </div>
           <div className='flex items-center gap-3 sm:justify-end'>
-            <EditBulkAllPriceModal />
+            <Can perm={PERM.PRODUCT_UPDATE_PRICE}>
+              <EditBulkAllPriceModal />
+            </Can>
           </div>
         </div>
 

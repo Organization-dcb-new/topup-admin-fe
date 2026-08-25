@@ -4,6 +4,8 @@ import { Switch } from '../ui/switch'
 import EditGameModal from './EditGameModal'
 import UpdateBulkProductPriceModal from './EditBulkPriceModal'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export function GameTableActions({ game }: { game: Game }) {
   const { t } = useTranslation('common')
@@ -28,9 +30,13 @@ export function GameTableActions({ game }: { game: Game }) {
       </div>
 
       <div className='flex flex-wrap items-center gap-1'>
-        <EditGameModal game={game} />
+        <Can perm={PERM.GAME_UPDATE}>
+          <EditGameModal game={game} />
+        </Can>
         {/* <DeleteGameModal id={game.id} /> */}
-        <UpdateBulkProductPriceModal key={game.id} gameId={game.id} />
+        <Can perm={PERM.PRODUCT_UPDATE_PRICE}>
+          <UpdateBulkProductPriceModal key={game.id} gameId={game.id} />
+        </Can>
       </div>
     </div>
   )

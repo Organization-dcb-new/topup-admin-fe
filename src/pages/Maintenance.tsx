@@ -8,6 +8,8 @@ import { AlertCircle, CheckCircle2, Construction, Loader2 } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function MaintenancePage() {
   const { t, i18n } = useTranslation('common')
@@ -73,7 +75,9 @@ export default function MaintenancePage() {
                 {t('maintenancePage.listHint')}
               </p>
             </div>
-            <CreateMaintenanceModal />
+            <Can perm={PERM.MAINTENANCE_CREATE}>
+              <CreateMaintenanceModal />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

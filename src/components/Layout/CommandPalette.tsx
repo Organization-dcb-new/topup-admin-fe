@@ -11,9 +11,9 @@ import {
   CommandList,
 } from '@/components/ui/command'
 import { sidebarMenus, type SidebarMenu } from '@/constants/sidebar-menu'
-import { filterMenusByRole } from '@/lib/sidebar-access'
+import { filterMenusByPermission } from '@/lib/sidebar-access'
 import { SIDEBAR_I18N_KEY_BY_TEXT } from '@/i18n/sidebar-label-keys'
-import { useAuthUser } from '@/lib/auth'
+import { usePermission } from '@/hooks/usePermission'
 
 interface CommandPaletteProps {
   open: boolean
@@ -30,7 +30,7 @@ interface PaletteEntry {
 export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { t } = useTranslation('common')
   const navigate = useNavigate()
-  const { role } = useAuthUser()
+  const { can } = usePermission()
 
   const tr = (original: string) => {
     const key = SIDEBAR_I18N_KEY_BY_TEXT[original]
@@ -39,7 +39,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
 
   // Hanya menu yang lolos izin role — sumbernya sama dengan sidebar
   const groups = useMemo(() => {
-    return filterMenusByRole(sidebarMenus, role).map((section) => {
+    return filterMenusByPermission(sidebarMenus, can).map((section) => {
       const entries: PaletteEntry[] = []
       for (const menu of section.menus) {
         if (menu.path) {
@@ -57,7 +57,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
       }
       return { title: section.title, entries }
     })
-  }, [role])
+  }, [can])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

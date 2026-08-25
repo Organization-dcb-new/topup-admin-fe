@@ -3,6 +3,8 @@ import type { TFunction } from 'i18next'
 import type { Category } from '@/types/category'
 import { DeleteCategoryButton } from '@/components/Category/DeleteCategoryModal'
 import { EditCategoryModal } from '@/components/Category/EditCategoryModal'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
   {
     accessorKey: 'icon_url',
@@ -38,8 +40,12 @@ export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
     header: t('categoryTable.colActions'),
     cell: ({ row }) => (
       <div className='flex items-center gap-1'>
-        <EditCategoryModal category={row.original}   />
-        <DeleteCategoryButton id={row.original.id} />
+        <Can perm={PERM.CATEGORY_UPDATE}>
+          <EditCategoryModal category={row.original} />
+        </Can>
+        <Can perm={PERM.CATEGORY_DELETE}>
+          <DeleteCategoryButton id={row.original.id} />
+        </Can>
       </div>
     ),
   },

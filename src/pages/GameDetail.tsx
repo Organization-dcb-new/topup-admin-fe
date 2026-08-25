@@ -61,6 +61,8 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import type { TFunction } from 'i18next'
 import { Link, useParams } from 'react-router-dom'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 function EditGameInputModal({ input }: { input: GameInput }) {
   const [open, setOpen] = useState(false)
@@ -419,7 +421,8 @@ function GameDetailView({ game }: { game: Game }) {
 
           {/* Inline Action Toggles */}
           <div className='flex flex-wrap items-center gap-3'>
-            <EditGameModal game={game}>
+            <Can perm={PERM.GAME_UPDATE}>
+              <EditGameModal game={game}>
               <Button
                 variant='outline'
                 size='sm'
@@ -428,9 +431,11 @@ function GameDetailView({ game }: { game: Game }) {
                 <Pencil className='h-4 w-4 text-primary' />
                 {t('editGameModal.title') || 'Edit Game'}
               </Button>
-            </EditGameModal>
+              </EditGameModal>
+            </Can>
 
-            <ChangeImageModal game={game} image={game.thumbnail_url}>
+            <Can perm={PERM.GAME_UPDATE}>
+              <ChangeImageModal game={game} image={game.thumbnail_url}>
               <Button
                 variant='outline'
                 size='sm'
@@ -439,7 +444,8 @@ function GameDetailView({ game }: { game: Game }) {
                 <ImageIcon className='h-4 w-4 text-primary' />
                 {t('gameImageModal.changeImages') || 'Change Images'}
               </Button>
-            </ChangeImageModal>
+              </ChangeImageModal>
+            </Can>
 
             <div className='flex items-center gap-3 rounded-xl border border-border/80 bg-background/90 backdrop-blur-sm p-2 shadow-sm'>
               <div className='flex items-center gap-2 px-1'>

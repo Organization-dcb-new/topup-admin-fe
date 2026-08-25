@@ -30,6 +30,8 @@ import type { DateRange } from 'react-day-picker'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 const TX_LIST_TOAST_ID = 'transactions-list'
 
@@ -314,7 +316,9 @@ export default function TransactionPage() {
                 </select>
               </div>
 
-              <TransactionExportModal />
+              <Can perm={PERM.TRANSACTION_EXPORT}>
+                <TransactionExportModal />
+              </Can>
               <Button
                 type='button'
                 variant='outline'

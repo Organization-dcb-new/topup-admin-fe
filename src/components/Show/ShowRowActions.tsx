@@ -3,6 +3,8 @@ import { AddGamesToShowButton } from '@/components/Show/AddGameToShowModal'
 import { DeleteShowButton } from '@/components/Show/DeleteShowModal'
 import { UpdateShowModal } from '@/components/Show/EditShowModal'
 import { useTranslation } from 'react-i18next'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export function ShowActionsHeader() {
   const { t } = useTranslation('common')
@@ -29,8 +31,12 @@ export function ShowRowActions({ show }: { show: Show }) {
           existingGames={show.games}
           triggerClassName={toolbarBtn}
         />
-        <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
-        <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
+        <Can perm={PERM.SHOW_UPDATE}>
+          <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
+        </Can>
+        <Can perm={PERM.SHOW_DELETE}>
+          <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
+        </Can>
       </div>
     </div>
   )

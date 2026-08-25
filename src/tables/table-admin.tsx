@@ -7,8 +7,12 @@ import { UpdateAdminRole } from '@/components/Admin/Update'
 import { DeleteAdminButton } from '@/components/Admin/Delete'
 import { cn } from '@/lib/utils'
 
-const roleBadgeClass = (role: string | undefined) => {
-  switch (role) {
+/**
+ * Role sistem punya warna sendiri; role custom memakai gaya netral.
+ * Sejak RBAC, slug bisa apa saja, jadi `default` bukan lagi kasus mustahil.
+ */
+const roleBadgeClass = (slug: string | undefined) => {
+  switch (slug) {
     case 'dev':
       return 'border-purple-200 bg-purple-50 text-purple-800'
     case 'admin':
@@ -20,7 +24,24 @@ const roleBadgeClass = (role: string | undefined) => {
   }
 }
 
-export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
+const roleIconClass = (slug: string | undefined) =>
+  slug === 'dev'
+    ? 'text-purple-600'
+    : slug === 'admin'
+      ? 'text-blue-600'
+      : 'text-muted-foreground'
+
+// Nama sengaja camelCase: PascalCase membuat react-refresh
+// menganggapnya komponen, padahal ini hanya pemilih ikon.
+const roleIconFor = (slug: string | undefined) =>
+  slug === 'dev' ? ShieldAlert : slug === 'admin' ? ShieldCheck : Shield
+
+export const getAdminColumns = (
+  t: TFunction,
+  currentAdminId: string | null,
+  canUpdateRole: boolean,
+  canDelete: boolean,
+): ColumnDef<AdminUser>[] => [
   {
     accessorKey: 'username',
     header: t('adminTable.colUsername'),
@@ -41,21 +62,29 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     accessorKey: 'role',
     header: t('adminTable.colRole'),
     cell: ({ row }) => {
-      const role = row.original.role
+      const slug = row.original.role
+      // Untuk role custom backend mengisi `role` dengan "custom" — itu nilai
+      // teknis jalur rollback, bukan untuk ditampilkan.
+      const label = row.original.role_name || slug
       return (
         <div className='flex items-center gap-2'>
-          {role === 'dev' && (
-            <ShieldAlert className='h-4 w-4 shrink-0 text-purple-600' aria-hidden />
-          )}
-          {role === 'admin' && (
-            <ShieldCheck className='h-4 w-4 shrink-0 text-blue-600' aria-hidden />
-          )}
-          {role === 'noc' && <Shield className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />}
+          {(() => {
+            const Icon = roleIconFor(slug)
+            return (
+              <Icon
+                className={cn('h-4 w-4 shrink-0', roleIconClass(slug))}
+                aria-hidden
+              />
+            )
+          })()}
           <Badge
             variant='outline'
-            className={cn('text-[10px] font-semibold uppercase tracking-wide', roleBadgeClass(role))}
+            className={cn(
+              'text-[10px] font-semibold uppercase tracking-wide',
+              roleBadgeClass(slug),
+            )}
           >
-            {role}
+            {label}
           </Badge>
         </div>
       )
@@ -80,11 +109,24 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
   {
     id: 'actions',
     header: t('adminTable.colActions'),
-    cell: ({ row }) => (
-      <div className='flex flex-wrap items-center gap-2'>
-        <UpdateAdminRole id={row.original.id} currentRole={row.original.role} />
-        <DeleteAdminButton id={row.original.id} email={row.original.email} />
-      </div>
-    ),
+    cell: ({ row }) => {
+      const isSelf = !!currentAdminId && row.original.id === currentAdminId
+      return (
+        <div className='flex flex-wrap items-center gap-2'>
+          {canUpdateRole && (
+            <UpdateAdminRole
+              id={row.original.id}
+              currentRoleId={row.original.role_id}
+              currentRoleName={row.original.role_name || row.original.role}
+              isSelf={isSelf}
+              selfHint={t('adminTable.selfRoleHint')}
+            />
+          )}
+          {canDelete && !isSelf && (
+            <DeleteAdminButton id={row.original.id} email={row.original.email} />
+          )}
+        </div>
+      )
+    },
   },
 ]

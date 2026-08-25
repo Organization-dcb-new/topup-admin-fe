@@ -16,50 +16,67 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useAdminMutation } from '@/hooks/useAdmin'
+import { useRoles } from '@/hooks/useRoles'
 import { useState } from 'react'
 
 export const UpdateAdminRole = ({
   id,
-  currentRole,
+  currentRoleId,
+  currentRoleName,
+  /** Backend menolak 403 kalau admin mengubah role akun sendiri. */
+  isSelf,
+  selfHint,
 }: {
   id: string
-  currentRole: string
+  currentRoleId: string | null
+  currentRoleName: string
+  isSelf: boolean
+  selfHint: string
 }) => {
   const { updateRole } = useAdminMutation()
+  const { data: roles = [], isLoading } = useRoles()
   const [open, setOpen] = useState(false)
-  const [selectedRole, setSelectedRole] = useState(currentRole)
+  const [selectedId, setSelectedId] = useState<string | null>(currentRoleId)
+
+  const selectedName = roles.find((r) => r.id === selectedId)?.name ?? currentRoleName
 
   const handleConfirm = () => {
-    updateRole.mutate({ id, role: selectedRole })
+    if (selectedId) updateRole.mutate({ id, roleId: selectedId })
     setOpen(false)
   }
 
   return (
     <>
       <Select
-        value={currentRole}
+        value={currentRoleId ?? undefined}
         onValueChange={(value) => {
-          setSelectedRole(value)
+          setSelectedId(value)
           setOpen(true)
         }}
-        disabled={updateRole.isPending}
+        disabled={updateRole.isPending || isLoading || isSelf}
       >
-        <SelectTrigger className='w-25 h-8 text-[10px] font-black uppercase ring-offset-0 focus:ring-0'>
-          <SelectValue />
+        <SelectTrigger
+          className='h-8 w-36 text-[10px] font-black uppercase ring-offset-0 focus:ring-0'
+          title={isSelf ? selfHint : undefined}
+        >
+          <SelectValue placeholder={currentRoleName} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value='admin'>ADMIN</SelectItem>
-          <SelectItem value='noc'>NOC</SelectItem>
+          {roles.map((role) => (
+            <SelectItem key={role.id} value={role.id}>
+              {role.name}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Konfirmasi Perikatan Role</AlertDialogTitle>
+            <AlertDialogTitle>Konfirmasi Perubahan Role</AlertDialogTitle>
             <AlertDialogDescription>
-              Apakah Anda yakin ingin mengubah role menjadi {selectedRole.toUpperCase()}?
-              Ini akan merubah hak akses akun terkait.
+              Apakah Anda yakin ingin mengubah role menjadi {selectedName}? Ini akan
+              mengubah hak akses akun terkait.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

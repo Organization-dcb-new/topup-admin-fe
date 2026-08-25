@@ -7,17 +7,18 @@ import {
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'
-import { RoleGuard } from '@/components/Auth/RoleGuard'
+import { PermissionGuard } from '@/components/Auth/PermissionGuard'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { resolvePageTitleKey } from '@/lib/title-map'
-import { ROUTE_ROLES } from '@/constants/route-roles'
+import { ROUTE_PERMISSIONS } from '@/constants/route-permissions'
 
 /**
- * Mengambil daftar role dari ROUTE_ROLES, sumber yang sama dengan penyaring
- * menu sidebar. Path tanpa entri menghasilkan daftar kosong (fail-closed).
+ * Mengambil permission dari ROUTE_PERMISSIONS, sumber yang sama dengan
+ * penyaring menu sidebar. Path tanpa entri menghasilkan daftar kosong, dan
+ * PermissionGuard menolak daftar kosong (fail-closed).
  */
 const Guarded = ({ path, children }: { path: string; children: ReactNode }) => (
-  <RoleGuard allowedRoles={ROUTE_ROLES[path] ?? []}>{children}</RoleGuard>
+  <PermissionGuard requires={ROUTE_PERMISSIONS[path] ?? []}>{children}</PermissionGuard>
 )
 
 const LoginPage = lazy(() => import('@/pages/Login'))
@@ -47,6 +48,7 @@ const CashflowPage = lazy(() => import('@/pages/Cashflow'))
 const Setup2FAPage = lazy(() => import('@/pages/SetupAuth'))
 const RateLimitPage = lazy(() => import('@/pages/RateLimit'))
 const AdminManagementPage = lazy(() => import('@/pages/Admin'))
+const RoleManagementPage = lazy(() => import('@/pages/Role'))
 const MaintenancePage = lazy(() => import('@/pages/Maintenance'))
 const AdminLogPage = lazy(() => import('@/pages/AdminLog'))
 const AdminLogDetailPage = lazy(() => import('@/pages/AdminLogDetail'))
@@ -314,6 +316,14 @@ const router = createBrowserRouter([
             element: (
               <Guarded path='/admin'>
                 <AdminManagementPage />
+              </Guarded>
+            ),
+          },
+          {
+            path: 'roles',
+            element: (
+              <Guarded path='/roles'>
+                <RoleManagementPage />
               </Guarded>
             ),
           },

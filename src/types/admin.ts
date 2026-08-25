@@ -14,7 +14,15 @@ export interface AdminUser {
   id: string;
   username: string;
   email: string;
-  role: 'dev' | 'admin' | 'noc';
+  /**
+   * Slug role. Sengaja `string`, bukan union literal: sejak RBAC, role bisa
+   * dibuat user dan slug-nya bebas. Untuk role non-sistem, backend mengisi
+   * field ini dengan "custom" — itu nilai teknis jalur rollback, bukan untuk
+   * ditampilkan. Pakai `role_name` untuk tampilan.
+   */
+  role: string;
+  role_id: string | null;
+  role_name: string;
   two_factor_enabled: boolean;
   created_at: string;
 }

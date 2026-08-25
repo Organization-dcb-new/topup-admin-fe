@@ -5,6 +5,8 @@ import type { CategoryProduct } from '@/hooks/useCategoryProduct'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
@@ -99,8 +101,12 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
             game_id={row.original.game_id}
             existingProduct={row.original.product}
           />
-          <DeleteCategoryProductButton id={row.original.id} />
-          <UpdateCategoryProduct category={row.original} />
+          <Can perm={PERM.CATEGORY_PRODUCT_DELETE}>
+            <DeleteCategoryProductButton id={row.original.id} />
+          </Can>
+          <Can perm={PERM.CATEGORY_PRODUCT_UPDATE}>
+            <UpdateCategoryProduct category={row.original} />
+          </Can>
         </div>
       </div>
     ),

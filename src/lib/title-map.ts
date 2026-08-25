@@ -27,6 +27,7 @@ export const pageTitleKeyMap: Record<string, string> = {
   '/rate-limit': 'rateLimit',
   '/maintenances': 'maintenances',
   '/admin': 'admin',
+  '/roles': 'roles',
   '/admin-logs': 'adminLogs',
   '/unauthorized': 'unauthorized',
 }

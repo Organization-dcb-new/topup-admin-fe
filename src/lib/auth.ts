@@ -41,7 +41,14 @@ export function useAuthUser() {
   return {
     isAuthenticated: isFullyAuthenticated,
     isMfaRequired,
+    /**
+     * Slug role. Hanya untuk keperluan tampilan/diagnostik — JANGAN dipakai
+     * untuk menentukan hak akses. Sejak RBAC, gating memakai `permissions`.
+     */
     role: data?.user?.role ?? null,
+    roleName: data?.user?.role_name ?? null,
+    /** Hak akses efektif. Satu-satunya sumber kebenaran untuk gating. */
+    permissions: (data?.user?.permissions ?? []) as string[],
     user: data?.user ?? null,
     isLoading
   }

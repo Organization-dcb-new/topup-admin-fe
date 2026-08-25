@@ -6,6 +6,8 @@ import type { Provider } from '@/types/provider'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import i18n from '@/i18n'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 function formatConfigPreview(config: Provider['config']) {
   if (config == null || (typeof config === 'object' && Object.keys(config).length === 0)) {
@@ -98,8 +100,12 @@ export const getProviderColumns = (t: TFunction): ColumnDef<Provider>[] => [
           role='group'
           aria-label={t('providerTable.rowActionsAria', { name: row.original.name })}
         >
-          <EditProviderModal provider={row.original} />
-          <DeleteProviderModal id={row.original.id} />
+          <Can perm={PERM.PROVIDER_UPDATE}>
+            <EditProviderModal provider={row.original} />
+          </Can>
+          <Can perm={PERM.PROVIDER_DELETE}>
+            <DeleteProviderModal id={row.original.id} />
+          </Can>
         </div>
       </div>
     ),

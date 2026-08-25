@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/axios'
 import toast from 'react-hot-toast'
+import { apiErrorMessage } from '@/lib/api-error'
 import type { AdminBriefListResponse, AdminResponse } from '@/types/admin'
 
 /** Daftar admin ringkas (id + name) untuk filter, dll. */
@@ -30,18 +31,19 @@ export const useAdminData = (page: number, limit: number) => {
 export const useAdminMutation = () => {
   const queryClient = useQueryClient()
 
+  // Backend mendaftarkan endpoint ini sebagai PUT, bukan PATCH.
+  // Sebelumnya FE mengirim PATCH dan selalu ditolak 405.
   const updateRole = useMutation({
-    mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      return api.patch(`/admin/users/${id}`, { role })
+    mutationFn: async ({ id, roleId }: { id: string; roleId: string }) => {
+      return api.put(`/admin/users/${id}`, { role_id: roleId })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      // Hak akses bisa berubah untuk diri sendiri juga.
+      queryClient.invalidateQueries({ queryKey: ['auth-me'] })
       toast.success('Peran berhasil diperbarui')
     },
-    onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      toast.error(msg || 'Gagal memperbarui peran')
-    },
+    onError: (err: unknown) => toast.error(apiErrorMessage(err, 'Gagal memperbarui peran')),
   })
 
   const deleteAdmin = useMutation({
@@ -52,10 +54,7 @@ export const useAdminMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })
       toast.success('Admin berhasil dihapus')
     },
-    onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-      toast.error(msg || 'Gagal menghapus admin')
-    },
+    onError: (err: unknown) => toast.error(apiErrorMessage(err, 'Gagal menghapus admin')),
   })
 
   return { updateRole, deleteAdmin }
