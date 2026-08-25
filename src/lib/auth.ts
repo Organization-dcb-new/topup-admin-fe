@@ -15,7 +15,7 @@ export async function apiLogout(): Promise<void> {
 
 
 export function useAuthUser() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['auth-me'],
     queryFn: async () => {
       try {
@@ -50,6 +50,13 @@ export function useAuthUser() {
     /** Hak akses efektif. Satu-satunya sumber kebenaran untuk gating. */
     permissions: (data?.user?.permissions ?? []) as string[],
     user: data?.user ?? null,
-    isLoading
+    isLoading,
+    /** Profil gagal dimuat. Halaman yang menyimpulkan status dari `user`
+     *  harus membedakannya dari "data ada tapi nilainya false". */
+    isError,
+    /** Sengaja bertipe sederhana: pemanggil hanya butuh "coba lagi". */
+    refetchProfile: (): void => {
+      void refetch()
+    },
   }
 }

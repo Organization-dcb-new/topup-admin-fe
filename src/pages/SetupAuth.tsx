@@ -4,7 +4,9 @@ import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 export default function Setup2FAPage() {
   return (
     <DashboardLayout>
-      <div className='mx-auto max-w-7xl space-y-6'>
+      {/* Alur linear satu tugas — dibatasi agar mata tidak menyeberangi
+          layar lebar; halaman tabel tetap memakai max-w-7xl */}
+      <div className='mx-auto max-w-3xl'>
         <Setup2FA />
       </div>
     </DashboardLayout>

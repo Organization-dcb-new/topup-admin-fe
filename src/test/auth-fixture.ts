@@ -69,5 +69,7 @@ export function authStateForRole(role: string | null) {
     permissions: permissionsForRole(role),
     user: role ? { id: 'admin-1', username: 'vian', role } : null,
     isLoading: false,
+    isError: false,
+    refetchProfile: () => {},
   }
 }
