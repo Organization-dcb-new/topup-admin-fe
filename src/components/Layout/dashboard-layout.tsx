@@ -1,53 +1,63 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { Button } from '@/components/ui/button'
 import { useAuthUser } from '@/lib/auth'
-import { cn } from '@/lib/utils'
-import { Menu } from 'lucide-react'
+import { Navbar } from './navbar'
 import { Sidebar } from './sidebar'
 
+const COLLAPSED_STORAGE_KEY = 'pg_sidebar_collapsed'
+
+function getStoredCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COLLAPSED_STORAGE_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(getStoredCollapsed)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const navigate = useNavigate()
 
   const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser()
 
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated && !isMfaRequired) {
-        window.location.href = '/login'
+        navigate('/login', { replace: true })
       } else if (isMfaRequired) {
-        window.location.href = '/verify-otp'
+        navigate('/verify-otp', { replace: true })
       }
     }
-  }, [isAuthenticated, isMfaRequired, isLoading])
+  }, [isAuthenticated, isMfaRequired, isLoading, navigate])
+
+  const toggleCollapse = () => {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem(COLLAPSED_STORAGE_KEY, next ? '1' : '0')
+      } catch {
+        /* ignore */
+      }
+      return next
+    })
+  }
 
   if (isLoading || (!isAuthenticated && !isMfaRequired) || isMfaRequired) return null
+
   return (
-    <div className='flex'>
+    <div className='flex min-h-dvh bg-muted/30'>
       <Sidebar
         collapsed={collapsed}
         mobileOpen={mobileOpen}
-        onToggleCollapse={() => setCollapsed(!collapsed)}
+        onToggleCollapse={toggleCollapse}
         onCloseMobile={() => setMobileOpen(false)}
       />
 
-      <Button
-        type='button'
-        variant='outline'
-        size='icon'
-        className={cn(
-          'fixed left-4 top-4 z-30 h-10 w-10 bg-white shadow-md transition-opacity md:hidden',
-          mobileOpen && 'pointer-events-none opacity-0',
-        )}
-        onClick={() => setMobileOpen(true)}
-        aria-label='Buka menu navigasi'
-      >
-        <Menu className='h-5 w-5' aria-hidden />
-      </Button>
-
-      <div className='min-h-screen min-w-0 flex-1 bg-gray-50 md:ml-0'>
-        <main className='p-4 pt-16 md:p-6 md:pt-6'>{children}</main>
+      <div className='flex min-h-dvh min-w-0 flex-1 flex-col'>
+        <Navbar onOpenMobile={() => setMobileOpen(true)} />
+        <main className='min-w-0 flex-1 p-4 md:p-6'>{children}</main>
       </div>
     </div>
   )

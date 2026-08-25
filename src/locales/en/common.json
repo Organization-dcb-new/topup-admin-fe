@@ -42,6 +42,11 @@
       "productCallbackLog": "Product callback logs"
     }
   },
+  "navbar": {
+    "openMenu": "Open navigation menu",
+    "accountMenuAria": "Account menu",
+    "accountSecurity": "Account security"
+  },
   "transactionPage": {
     "toastLoading": "Loading transactions…",
     "toastError": "Failed to load transactions",

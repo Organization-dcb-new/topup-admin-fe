@@ -2,18 +2,14 @@ import { sidebarMenus, type SidebarMenu } from '@/constants/sidebar-menu'
 import { SIDEBAR_I18N_KEY_BY_TEXT } from '@/i18n/sidebar-label-keys'
 import { Button } from '@/components/ui/button'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import type { SidebarProps } from '@/types/sidebar'
-import { logout, useAuthUser } from '@/lib/auth'
+import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
-import { ChevronDown, ChevronLeft, LogOut, X } from 'lucide-react'
+import { ChevronDown, ChevronLeft, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, useLocation } from 'react-router-dom'
@@ -39,6 +35,18 @@ function useIsMdUp() {
   return isMdUp
 }
 
+const Monogram = ({ className }: { className?: string }) => (
+  <span
+    className={cn(
+      'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-indigo-500 to-violet-600 text-[11px] font-black tracking-tight text-white shadow-md shadow-indigo-500/30',
+      className,
+    )}
+    aria-hidden
+  >
+    PG
+  </span>
+)
+
 export function Sidebar({
   collapsed,
   mobileOpen,
@@ -47,12 +55,10 @@ export function Sidebar({
 }: SidebarProps) {
   const { pathname } = useLocation()
   const { role } = useAuthUser()
-  const { t, i18n } = useTranslation('common')
+  const { t } = useTranslation('common')
   const tr = useSidebarCopy()
-  const [openLogoutModal, setOpenLogoutModal] = useState(false)
   const isMdUp = useIsMdUp()
   const railCollapsed = collapsed && isMdUp
-  const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
 
   const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Ikhtisar', 'Konten', 'Banner', 'Acara', 'Artikel', 'Inventaris', 'Game', 'Produk', 'Kategori produk', 'Produk anomali', 'Field input']
   const DEV_ONLY_LABELS = ['Pembatas laju', 'Pengguna']
@@ -83,8 +89,8 @@ export function Sidebar({
     <>
       <div
         className={cn(
-          'fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden transition-opacity duration-300',
-          mobileOpen ? 'opacity-100 block' : 'opacity-0 hidden',
+          'fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity duration-300 md:hidden',
+          mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
         onClick={onCloseMobile}
         aria-hidden
@@ -92,8 +98,8 @@ export function Sidebar({
 
       <aside
         className={cn(
-          'z-50 flex min-h-0 flex-col overflow-hidden border-r border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 transition-[width,transform] duration-300 ease-out',
-          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:max-h-[100dvh]',
+          'z-50 flex min-h-0 flex-col overflow-hidden border-r border-white/10 bg-zinc-950 text-zinc-300 transition-[width,transform] duration-300 ease-out',
+          'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:max-h-dvh',
           'w-64 max-md:max-w-[min(100vw-1rem,16rem)]',
           railCollapsed && 'md:w-20',
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
@@ -102,38 +108,50 @@ export function Sidebar({
       >
         <div
           className={cn(
-            'relative flex h-14 shrink-0 items-center border-b border-slate-200 dark:border-zinc-800 md:h-16',
-            railCollapsed ? 'justify-center px-2 md:px-1' : 'justify-between px-4',
+            'relative flex h-14 shrink-0 items-center border-b border-white/10 md:h-16',
+            railCollapsed ? 'justify-center px-2' : 'justify-between px-4',
           )}
         >
-          {!railCollapsed && (
-            <span className='min-w-0 truncate font-extrabold tracking-tight text-base md:text-lg text-slate-900 dark:text-white px-1'>
-              Pakar<span className='bg-linear-to-r from-primary to-indigo-500 bg-clip-text text-transparent'>Gaming</span>
-            </span>
+          {railCollapsed ? (
+            <button
+              type='button'
+              onClick={onToggleCollapse}
+              className='cursor-pointer rounded-lg transition-transform duration-200 hover:scale-105 active:scale-95'
+              aria-label={t('sidebar.expandRail')}
+              title={t('sidebar.expandRail')}
+            >
+              <Monogram />
+            </button>
+          ) : (
+            <>
+              <div className='flex min-w-0 items-center gap-2.5'>
+                <Monogram />
+                <span className='min-w-0 truncate text-base font-extrabold tracking-tight text-white'>
+                  Pakar
+                  <span className='bg-linear-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent'>
+                    Gaming
+                  </span>
+                </span>
+              </div>
+
+              <Button
+                type='button'
+                variant='ghost'
+                size='icon'
+                onClick={onToggleCollapse}
+                className='hidden h-8 w-8 shrink-0 cursor-pointer text-zinc-500 transition-colors duration-200 hover:bg-white/10 hover:text-white md:flex'
+                aria-label={t('sidebar.collapseRail')}
+              >
+                <ChevronLeft className='h-4 w-4' aria-hidden />
+              </Button>
+            </>
           )}
 
           <Button
             type='button'
             variant='ghost'
             size='icon'
-            onClick={onToggleCollapse}
-            className={cn(
-              'hidden shrink-0 cursor-pointer md:flex h-8 w-8 hover:bg-slate-200 dark:hover:bg-zinc-800',
-              railCollapsed && 'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
-            )}
-            aria-label={railCollapsed ? t('sidebar.expandRail') : t('sidebar.collapseRail')}
-          >
-            <ChevronLeft
-              className={cn('h-4 w-4 transition-transform', railCollapsed && 'rotate-180')}
-              aria-hidden
-            />
-          </Button>
-
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            className='absolute right-2 top-1/2 -translate-y-1/2 md:hidden'
+            className='absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:bg-white/10 hover:text-white md:hidden'
             onClick={onCloseMobile}
             aria-label={t('sidebar.closeMenu')}
           >
@@ -143,7 +161,7 @@ export function Sidebar({
 
         <nav
           className={cn(
-            'min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden overscroll-y-contain py-4 custom-scrollbar',
+            'custom-scrollbar min-h-0 flex-1 space-y-5 overflow-y-auto overflow-x-hidden overscroll-y-contain py-4',
             railCollapsed ? 'px-2 md:px-1.5' : 'px-3',
           )}
         >
@@ -151,15 +169,15 @@ export function Sidebar({
             <div
               key={idx}
               className={cn(
-                railCollapsed && idx > 0 && 'border-t border-slate-200 dark:border-zinc-900 pt-3 md:border-t md:pt-3',
+                railCollapsed && idx > 0 && 'border-t border-white/10 pt-3',
               )}
             >
               {!railCollapsed && section.title && (
-                <p className='mb-2.5 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
+                <p className='mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-600'>
                   {tr(section.title)}
                 </p>
               )}
-              <div className='flex flex-col gap-1'>
+              <div className='flex flex-col gap-0.5'>
                 {section.menus.map((menu) => (
                   <NavItem
                     key={menu.label}
@@ -177,102 +195,13 @@ export function Sidebar({
 
         <div
           className={cn(
-            'shrink-0 border-t border-slate-200 dark:border-zinc-800 space-y-3 bg-slate-100/50 dark:bg-zinc-950/50',
-            railCollapsed ? 'p-2' : 'p-3.5',
+            'shrink-0 border-t border-white/10 bg-white/3',
+            railCollapsed ? 'p-2' : 'p-3',
           )}
         >
           <SidebarHealthIndicator collapsed={railCollapsed} />
-
-          {railCollapsed ? (
-            <Button
-              type='button'
-              variant='outline'
-              size='icon'
-              className='mx-auto h-10 w-10 shrink-0 font-bold text-xs select-none border-slate-200 dark:border-zinc-800'
-              onClick={() => i18n.changeLanguage(isIdLocale ? 'en' : 'id')}
-              title={t('sidebar.languageToggleAria')}
-            >
-              {isIdLocale ? 'ID' : 'EN'}
-            </Button>
-          ) : (
-            <div className='relative flex items-center p-1 rounded-xl bg-slate-200/50 dark:bg-zinc-900/60 border border-slate-200 dark:border-zinc-800/80 w-full overflow-hidden h-10'>
-              <div
-                className={cn(
-                  'absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-lg bg-white dark:bg-zinc-800 shadow-sm transition-transform duration-300 ease-out',
-                  isIdLocale ? 'translate-x-0' : 'translate-x-[calc(100%+8px)]'
-                )}
-              />
-              <button
-                type='button'
-                onClick={() => i18n.changeLanguage('id')}
-                className={cn(
-                  'relative z-10 flex-1 text-center text-xs font-bold select-none transition-colors duration-200',
-                  isIdLocale ? 'text-primary dark:text-white' : 'text-slate-500 dark:text-slate-400'
-                )}
-              >
-                ID
-              </button>
-              <button
-                type='button'
-                onClick={() => i18n.changeLanguage('en')}
-                className={cn(
-                  'relative z-10 flex-1 text-center text-xs font-bold select-none transition-colors duration-200',
-                  !isIdLocale ? 'text-primary dark:text-white' : 'text-slate-500 dark:text-slate-400'
-                )}
-              >
-                EN
-              </button>
-            </div>
-          )}
-
-          <Button
-            type='button'
-            variant='outline'
-            className={cn(
-              'cursor-pointer gap-2 font-semibold shadow-xs border-slate-200 dark:border-zinc-800 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900/50',
-              railCollapsed
-                ? 'mx-auto h-10 w-10 shrink-0 justify-center rounded-xl p-0 md:flex'
-                : 'h-10 w-full justify-start rounded-xl',
-            )}
-            onClick={() => setOpenLogoutModal(true)}
-            aria-label={t('sidebar.logoutAria')}
-            title={railCollapsed ? t('sidebar.logout') : undefined}
-          >
-            <LogOut className='h-4 w-4 shrink-0' aria-hidden />
-            {!railCollapsed && <span>{t('sidebar.logout')}</span>}
-          </Button>
         </div>
       </aside>
-
-      <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
-        <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950'>
-          <DialogHeader>
-            <DialogTitle className='font-extrabold text-slate-900 dark:text-white'>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
-            <DialogDescription className='text-slate-500 dark:text-slate-400'>{t('sidebar.confirmLogoutDescription')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter className='gap-2 sm:gap-0'>
-            <Button
-              type='button'
-              variant='outline'
-              className='rounded-xl border-slate-200 dark:border-zinc-800'
-              onClick={() => setOpenLogoutModal(false)}
-            >
-              {t('sidebar.cancel')}
-            </Button>
-            <Button
-              type='button'
-              variant='destructive'
-              className='rounded-xl bg-red-600 hover:bg-red-700 text-white'
-              onClick={async () => {
-                await logout()
-                setOpenLogoutModal(false)
-              }}
-            >
-              {t('sidebar.logout')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }
@@ -292,7 +221,14 @@ function NavItem({
 }) {
   const hasChildren = !!menu.children?.length
   const isChildActive = menu.children?.some((child) => child.path === pathname)
-  const [isOpen, setIsOpen] = useState(isChildActive)
+  // Default terbuka saat anaknya aktif; toggle manual hanya berlaku untuk
+  // pathname saat itu, jadi navigasi berikutnya kembali ke perilaku otomatis
+  const [override, setOverride] = useState<{
+    path: string
+    open: boolean
+  } | null>(null)
+  const isOpen = override?.path === pathname ? override.open : !!isChildActive
+  const toggleOpen = () => setOverride({ path: pathname, open: !isOpen })
 
   if (hasChildren && collapsed) {
     return (
@@ -301,10 +237,10 @@ function NavItem({
           <button
             type='button'
             className={cn(
-              'mx-auto flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-200',
+              'mx-auto flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl transition-all duration-200 active:scale-95',
               isChildActive
-                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 scale-105'
-                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 dark:hover:bg-zinc-900/60 hover:text-slate-950 dark:hover:text-white',
+                ? 'bg-indigo-500/20 text-white shadow-md shadow-indigo-500/20'
+                : 'text-zinc-500 hover:bg-white/5 hover:text-white',
             )}
             aria-haspopup='dialog'
             aria-label={tr(menu.label)}
@@ -317,13 +253,13 @@ function NavItem({
           side='right'
           align='start'
           sideOffset={12}
-          className='z-[60] w-56 p-2 rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-lg'
+          className='z-60 w-56 rounded-xl border-white/10 bg-zinc-950 p-2 text-zinc-300 shadow-xl'
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <p className='border-b border-slate-100 dark:border-zinc-900 px-2 pb-2 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider'>
+          <p className='border-b border-white/10 px-2 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-zinc-600'>
             {tr(menu.label)}
           </p>
-          <div className='mt-1.5 flex flex-col gap-1'>
+          <div className='mt-1.5 flex flex-col gap-0.5'>
             {menu.children?.map((child) => (
               <NavLink
                 key={child.label}
@@ -333,8 +269,8 @@ function NavItem({
                   cn(
                     'rounded-lg px-2.5 py-2 text-xs transition-all duration-200',
                     isActive
-                      ? 'bg-primary/10 font-bold text-primary dark:text-primary-foreground'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-900 hover:text-slate-950 dark:hover:text-white',
+                      ? 'bg-indigo-500/15 font-semibold text-indigo-300'
+                      : 'text-zinc-400 hover:bg-white/5 hover:text-white',
                   )
                 }
               >
@@ -349,43 +285,74 @@ function NavItem({
 
   if (hasChildren && !collapsed) {
     return (
-      <div className='space-y-1'>
+      <div className='space-y-0.5'>
         <button
           type='button'
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleOpen}
           className={cn(
-            'flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm transition-all duration-200 hover:bg-slate-200/50 dark:hover:bg-zinc-900/50',
-            isChildActive ? 'font-semibold text-primary dark:text-primary-foreground bg-primary/5 dark:bg-primary/10' : 'text-slate-700 dark:text-slate-300 hover:translate-x-0.5',
+            'flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition-all duration-200 hover:bg-white/5',
+            isChildActive ? 'font-medium text-white' : 'text-zinc-400 hover:text-white',
           )}
           aria-expanded={isOpen}
         >
           <div className='flex min-w-0 items-center gap-3'>
-            <menu.icon className={cn('h-4.5 w-4.5 shrink-0 transition-transform duration-200', isChildActive ? 'text-primary' : 'text-slate-500 dark:text-slate-400')} aria-hidden />
+            <menu.icon
+              className={cn(
+                'h-4.5 w-4.5 shrink-0 transition-colors duration-200',
+                isChildActive ? 'text-indigo-400' : 'text-zinc-500',
+              )}
+              aria-hidden
+            />
             <span className='truncate'>{tr(menu.label)}</span>
           </div>
-          <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 transition-transform duration-355 text-slate-400 dark:text-slate-500', isOpen && 'rotate-180')} />
+          <ChevronDown
+            className={cn(
+              'h-3.5 w-3.5 shrink-0 text-zinc-600 transition-transform duration-300',
+              isOpen && 'rotate-180',
+            )}
+            aria-hidden
+          />
         </button>
-        {isOpen && (
-          <div className='relative ml-5 pl-3 border-l border-slate-200 dark:border-zinc-800/80 space-y-1 py-1'>
-            {menu.children?.map((child) => (
-              <NavLink
-                key={child.label}
-                to={child.path!}
-                onClick={onNavigate}
-                className={({ isActive }) =>
-                  cn(
-                    'block rounded-lg py-1.5 pl-4 pr-2 text-xs transition-all duration-200',
-                    isActive
-                      ? 'font-bold text-primary dark:text-primary-foreground bg-primary/8 dark:bg-primary/15'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200/40 dark:hover:bg-zinc-900/40 hover:text-slate-900 dark:hover:text-white hover:translate-x-0.5',
-                  )
-                }
-              >
-                {tr(child.label)}
-              </NavLink>
-            ))}
+        {/* Grid-rows 0fr→1fr: animasi tinggi submenu yang mulus tanpa JS */}
+        <div
+          className={cn(
+            'grid transition-[grid-template-rows] duration-300 ease-out',
+            isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]',
+          )}
+        >
+          <div className='overflow-hidden'>
+            <div className='relative ml-5.5 space-y-0.5 border-l border-white/10 py-1 pl-3'>
+              {menu.children?.map((child) => (
+                <NavLink
+                  key={child.label}
+                  to={child.path!}
+                  onClick={onNavigate}
+                  tabIndex={isOpen ? undefined : -1}
+                  className={({ isActive }) =>
+                    cn(
+                      'relative block rounded-lg py-1.5 pl-3 pr-2 text-xs transition-all duration-200',
+                      isActive
+                        ? 'bg-indigo-500/15 font-semibold text-indigo-300'
+                        : 'text-zinc-500 hover:translate-x-0.5 hover:bg-white/5 hover:text-white',
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <span
+                          className='absolute -left-3.25 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full bg-indigo-400'
+                          aria-hidden
+                        />
+                      )}
+                      {tr(child.label)}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     )
   }
@@ -398,19 +365,35 @@ function NavItem({
       aria-label={collapsed ? tr(menu.label) : undefined}
       className={({ isActive }) =>
         cn(
-          'relative flex items-center transition-all duration-200',
+          'relative flex items-center transition-all duration-200 active:scale-[0.98]',
           collapsed
             ? 'mx-auto h-10 w-10 shrink-0 justify-center rounded-xl p-0'
-            : 'w-full gap-3 px-3 py-2 rounded-xl text-sm',
+            : 'w-full gap-3 rounded-lg px-3 py-2 text-sm',
           isActive
-            ? 'bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold scale-102'
-            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-200/50 dark:hover:bg-zinc-900/50 hover:text-slate-950 dark:hover:text-white hover:translate-x-0.5',
+            ? 'bg-indigo-500/15 font-medium text-white shadow-md shadow-indigo-500/10'
+            : 'text-zinc-400 hover:bg-white/5 hover:text-white',
+          !isActive && !collapsed && 'hover:translate-x-0.5',
         )
       }
     >
-      <menu.icon className='h-4.5 w-4.5 shrink-0' aria-hidden />
-      {!collapsed && <span className='min-w-0 truncate'>{tr(menu.label)}</span>}
+      {({ isActive }) => (
+        <>
+          {isActive && !collapsed && (
+            <span
+              className='absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-full bg-indigo-400'
+              aria-hidden
+            />
+          )}
+          <menu.icon
+            className={cn(
+              'h-4.5 w-4.5 shrink-0 transition-colors duration-200',
+              isActive ? 'text-indigo-400' : 'text-zinc-500',
+            )}
+            aria-hidden
+          />
+          {!collapsed && <span className='min-w-0 truncate'>{tr(menu.label)}</span>}
+        </>
+      )}
     </NavLink>
   )
 }
-

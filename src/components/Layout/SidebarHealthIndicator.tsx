@@ -55,7 +55,7 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
     <button
       type='button'
       className={cn(
-        'flex items-center rounded-lg border border-input bg-background shadow-sm transition-colors hover:bg-muted/60',
+        'flex cursor-pointer items-center rounded-lg border border-white/10 bg-white/5 transition-colors duration-200 hover:bg-white/10',
         collapsed
           ? 'mx-auto h-10 w-10 justify-center p-0'
           : 'h-10 w-full gap-3 px-3',
@@ -64,13 +64,13 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
       aria-label={`Server status: ${statusLabel}`}
     >
       <span className='relative flex h-4 w-4 shrink-0 items-center justify-center'>
-        <Activity className='h-4 w-4 text-muted-foreground' aria-hidden />
+        <Activity className='h-4 w-4 text-zinc-400' aria-hidden />
         <span
-          className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-background', dotColor)}
+          className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-zinc-950', dotColor)}
         />
       </span>
       {!collapsed && (
-        <span className='min-w-0 truncate text-xs font-medium text-foreground'>
+        <span className='min-w-0 truncate text-xs font-medium text-zinc-300'>
           {statusLabel}
         </span>
       )}

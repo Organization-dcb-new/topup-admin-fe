@@ -42,6 +42,11 @@
       "productCallbackLog": "Log callback produk"
     }
   },
+  "navbar": {
+    "openMenu": "Buka menu navigasi",
+    "accountMenuAria": "Menu akun",
+    "accountSecurity": "Keamanan akun"
+  },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
     "toastError": "Gagal memuat transaksi",
