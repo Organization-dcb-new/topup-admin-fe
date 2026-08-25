@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, type ReactNode } from 'react'
 import {
   createBrowserRouter,
   Outlet,
@@ -10,6 +10,15 @@ import { Loader2 } from 'lucide-react'
 import { RoleGuard } from '@/components/Auth/RoleGuard'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { resolvePageTitleKey } from '@/lib/title-map'
+import { ROUTE_ROLES } from '@/constants/route-roles'
+
+/**
+ * Mengambil daftar role dari ROUTE_ROLES, sumber yang sama dengan penyaring
+ * menu sidebar. Path tanpa entri menghasilkan daftar kosong (fail-closed).
+ */
+const Guarded = ({ path, children }: { path: string; children: ReactNode }) => (
+  <RoleGuard allowedRoles={ROUTE_ROLES[path] ?? []}>{children}</RoleGuard>
+)
 
 const LoginPage = lazy(() => import('@/pages/Login'))
 const VerifyOtpPage = lazy(() => import('@/pages/VerifyOTP'))
@@ -95,233 +104,233 @@ const router = createBrowserRouter([
           {
             index: true,
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/'>
                 <DashboardPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'summary',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/summary'>
                 <SpendingPages />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'cashflow',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/cashflow'>
                 <CashflowPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'blog',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/blog'>
                 <BlogPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'shows',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/shows'>
                 <ShowPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'orders',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/orders'>
                 <OrderPages />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'banners',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/banners'>
                 <BannerPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'transactions',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/transactions'>
                 <TransactionPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'transactions/:paymentId',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/transactions/:paymentId'>
                 <PaymentDetailPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'input',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/input'>
                 <InputPages />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'games',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/games'>
                 <GamePage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'games/:gameId',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/games/:gameId'>
                 <GameDetailPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'category-product',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/category-product'>
                 <CategoryProduct />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'categories',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/categories'>
                 <CategoryPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'products',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/products'>
                 <ProductPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'products/callback-logs',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/products/callback-logs'>
                 <ProductCallbackLogPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'products/callback-logs/:id',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/products/callback-logs/:id'>
                 <ProductCallbackLogDetailPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'anomaly',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+              <Guarded path='/anomaly'>
                 <AnomalyProduct />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'payment-methods',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/payment-methods'>
                 <PaymentMethodPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'payment-methods-categories',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/payment-methods-categories'>
                 <PaymentMethodCategoryPages />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'provider',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/provider'>
                 <ProviderPages />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'referral-codes',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/referral-codes'>
                 <ReferralPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'referral-codes/:id',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/referral-codes/:id'>
                 <ReferralDetailPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: '2fa-setup',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/2fa-setup'>
                 <Setup2FAPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'rate-limit',
             element: (
-              <RoleGuard allowedRoles={['dev']}>
+              <Guarded path='/rate-limit'>
                 <RateLimitPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'maintenances',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/maintenances'>
                 <MaintenancePage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'admin',
             element: (
-              <RoleGuard allowedRoles={['dev']}>
+              <Guarded path='/admin'>
                 <AdminManagementPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'admin-logs',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/admin-logs'>
                 <AdminLogPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {
             path: 'admin-logs/:id',
             element: (
-              <RoleGuard allowedRoles={['dev', 'admin']}>
+              <Guarded path='/admin-logs/:id'>
                 <AdminLogDetailPage />
-              </RoleGuard>
+              </Guarded>
             ),
           },
           {

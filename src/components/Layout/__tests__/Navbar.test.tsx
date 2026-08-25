@@ -1,34 +1,42 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Navbar } from '@/components/Layout/navbar'
 import { useAuthUser } from '@/lib/auth'
 
 vi.mock('@/lib/auth', () => ({
   useAuthUser: vi.fn(),
-  logout: vi.fn(),
+  apiLogout: vi.fn(),
 }))
 
 const mockUseAuthUser = vi.mocked(useAuthUser)
 
+const asRole = (role: string) => ({
+  isAuthenticated: true,
+  isMfaRequired: false,
+  role,
+  user: { username: 'vian', email: 'vian@example.com', role },
+  isLoading: false,
+})
+
 const renderNavbar = (initialPath = '/', onOpenMobile = vi.fn()) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
   render(
-    <MemoryRouter initialEntries={[initialPath]}>
-      <Navbar onOpenMobile={onOpenMobile} />
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <Navbar onOpenMobile={onOpenMobile} />
+      </MemoryRouter>
+    </QueryClientProvider>,
   )
   return onOpenMobile
 }
 
 describe('Navbar', () => {
   beforeEach(() => {
-    mockUseAuthUser.mockReturnValue({
-      isAuthenticated: true,
-      isMfaRequired: false,
-      role: 'admin',
-      user: { username: 'vian', email: 'vian@example.com', role: 'admin' },
-      isLoading: false,
-    })
+    mockUseAuthUser.mockReturnValue(asRole('admin'))
   })
 
   it('menampilkan judul halaman sesuai path', () => {
@@ -54,5 +62,38 @@ describe('Navbar', () => {
     expect(screen.getByText('vian@example.com')).toBeInTheDocument()
     expect(screen.getByText('admin')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Log out/ })).toBeInTheDocument()
+  })
+
+  it('halaman detail menampilkan breadcrumb dan tombol kembali', () => {
+    renderNavbar('/games/abc-123')
+    const parentLink = screen.getByRole('link', { name: 'Games' })
+    expect(parentLink).toHaveAttribute('href', '/games')
+    expect(screen.getByRole('heading', { name: 'abc-123' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Go back' })).toBeInTheDocument()
+  })
+
+  it('halaman biasa tanpa breadcrumb maupun tombol kembali', () => {
+    renderNavbar('/games')
+    expect(screen.getByRole('heading', { name: 'Games' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Go back' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('menyembunyikan tautan keamanan akun dari role noc yang akan ditolak guard', () => {
+    mockUseAuthUser.mockReturnValue(asRole('noc'))
+    renderNavbar('/')
+    fireEvent.click(screen.getByRole('button', { name: 'Account menu' }))
+    expect(
+      screen.queryByRole('link', { name: /Account security/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('menampilkan tautan keamanan akun untuk role admin', () => {
+    renderNavbar('/')
+    fireEvent.click(screen.getByRole('button', { name: 'Account menu' }))
+    expect(
+      screen.getByRole('link', { name: /Account security/ }),
+    ).toHaveAttribute('href', '/2fa-setup')
   })
 })

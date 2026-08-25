@@ -5,23 +5,26 @@ import { Activity, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 
-function formatTimeSince(date: Date): string {
+function formatTimeSince(date: Date, t: TFunction): string {
   const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
-  if (seconds < 60) return `${seconds}s ago`
+  if (seconds < 60) return t('health.secondsAgo', { count: seconds })
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return t('health.minutesAgo', { count: minutes })
   const hours = Math.floor(minutes / 60)
-  return `${hours}h ${minutes % 60}m ago`
+  return t('health.hoursAgo', { hours, minutes: minutes % 60 })
 }
 
 export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
+  const { t } = useTranslation('common')
   const { data, isLoading, isError, dataUpdatedAt } = useHealthCheck()
   const queryClient = useQueryClient()
   const [, setTick] = useState(0)
 
   useEffect(() => {
-    const interval = setInterval(() => setTick((t) => t + 1), 30_000)
+    const interval = setInterval(() => setTick((v) => v + 1), 30_000)
     return () => clearInterval(interval)
   }, [])
 
@@ -29,25 +32,27 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
     queryClient.invalidateQueries({ queryKey: ['health'] })
   }
 
-  const lastChecked = dataUpdatedAt ? formatTimeSince(new Date(dataUpdatedAt)) : null
+  const lastChecked = dataUpdatedAt
+    ? formatTimeSince(new Date(dataUpdatedAt), t)
+    : null
 
   const isHealthy = data?.status === 'healthy'
   const services = data?.services ?? {}
   const downServices = Object.entries(services).filter(([, status]) => status !== 'up')
 
-  let dotColor = 'bg-gray-400 animate-pulse' // loading
-  let statusLabel = 'Checking...'
+  let dotColor = 'bg-muted-foreground animate-pulse'
+  let statusLabel = t('health.statusChecking')
 
   if (!isLoading) {
     if (isError || !data) {
       dotColor = 'bg-red-500'
-      statusLabel = 'Unreachable'
+      statusLabel = t('health.statusUnreachable')
     } else if (isHealthy && downServices.length === 0) {
       dotColor = 'bg-emerald-500'
-      statusLabel = 'Operational'
+      statusLabel = t('health.statusOperational')
     } else {
       dotColor = 'bg-amber-500'
-      statusLabel = 'Degraded'
+      statusLabel = t('health.statusDegraded')
     }
   }
 
@@ -55,22 +60,23 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
     <button
       type='button'
       className={cn(
-        'flex cursor-pointer items-center rounded-lg border border-white/10 bg-white/5 transition-colors duration-200 hover:bg-white/10',
+        'flex cursor-pointer items-center rounded-lg border border-border bg-background shadow-xs transition-colors duration-200 hover:bg-muted',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
         collapsed
           ? 'mx-auto h-10 w-10 justify-center p-0'
           : 'h-10 w-full gap-3 px-3',
       )}
-      title={collapsed ? `Server: ${statusLabel}` : undefined}
-      aria-label={`Server status: ${statusLabel}`}
+      title={collapsed ? t('health.triggerTitle', { status: statusLabel }) : undefined}
+      aria-label={t('health.triggerAria', { status: statusLabel })}
     >
       <span className='relative flex h-4 w-4 shrink-0 items-center justify-center'>
-        <Activity className='h-4 w-4 text-zinc-400' aria-hidden />
+        <Activity className='h-4 w-4 text-muted-foreground' aria-hidden />
         <span
-          className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-zinc-950', dotColor)}
+          className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-background', dotColor)}
         />
       </span>
       {!collapsed && (
-        <span className='min-w-0 truncate text-xs font-medium text-zinc-300'>
+        <span className='min-w-0 truncate text-xs font-medium text-foreground'>
           {statusLabel}
         </span>
       )}
@@ -84,11 +90,13 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
         side={collapsed ? 'right' : 'top'}
         align='start'
         sideOffset={8}
-        className='z-[60] w-64 p-3'
+        className='z-60 w-64 p-3'
       >
         <div className='space-y-3'>
           <div className='flex items-center justify-between'>
-            <h4 className='text-sm font-semibold text-foreground'>Server Health</h4>
+            <h4 className='text-sm font-semibold text-foreground'>
+              {t('health.popoverTitle')}
+            </h4>
             <Button
               type='button'
               variant='ghost'
@@ -96,22 +104,23 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
               className='h-7 gap-1.5 text-xs'
               onClick={handleRefresh}
             >
-              <RefreshCw className='h-3 w-3' />
-              Refresh
+              <RefreshCw className='h-3 w-3' aria-hidden />
+              {t('common.refresh')}
             </Button>
           </div>
 
           {isLoading && (
-            <p className='text-xs text-muted-foreground'>Checking server health...</p>
+            <p className='text-xs text-muted-foreground'>{t('health.loadingText')}</p>
           )}
 
           {!isLoading && (isError || !data) && (
-            <div className='rounded-md bg-red-50 p-2 dark:bg-red-950/30'>
-              <p className='text-xs font-medium text-red-700 dark:text-red-300'>
-                Cannot connect to server
+            <div className='rounded-md bg-destructive/10 p-2'>
+              <p className='text-xs font-medium text-destructive'>
+                {t('health.errorTitle')}
               </p>
-              <p className='mt-0.5 text-xs text-red-600 dark:text-red-400'>
-                Backend may be down or unreachable.
+              {/* Warna penuh, bukan /80: opasitas menjatuhkan kontras di bawah AA */}
+              <p className='mt-0.5 text-xs text-destructive'>
+                {t('health.errorDescription')}
               </p>
             </div>
           )}
@@ -127,8 +136,8 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
                       className={cn(
                         'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium',
                         isUp
-                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
-                          : 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300',
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-red-100 text-red-700',
                       )}
                     >
                       <span
@@ -145,11 +154,11 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
 
               {lastChecked && (
                 <p className='text-xs text-muted-foreground'>
-                  Last checked: {lastChecked}
+                  {t('health.lastChecked', { time: lastChecked })}
                 </p>
               )}
               <p className='text-xs text-muted-foreground'>
-                Auto-refresh every 5 minutes
+                {t('health.autoRefresh')}
               </p>
             </div>
           )}

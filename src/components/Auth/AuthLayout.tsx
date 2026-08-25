@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { LanguageSwitch } from '@/components/ui/language-switch'
 
 interface AuthLayoutProps {
   icon: ReactNode
@@ -16,16 +16,13 @@ interface AuthLayoutProps {
   children: ReactNode
 }
 
-const LOCALES = ['id', 'en'] as const
-
 export const AuthLayout = ({
   icon,
   title,
   subtitle,
   children,
 }: AuthLayoutProps) => {
-  const { t, i18n } = useTranslation()
-  const activeLocale = i18n.language === 'id' ? 'id' : 'en'
+  const { t } = useTranslation()
 
   return (
     <main className='relative flex min-h-dvh items-center justify-center overflow-hidden bg-muted/40 px-4 py-10'>
@@ -61,24 +58,7 @@ export const AuthLayout = ({
         </Card>
 
         <footer className='mt-6 flex justify-center'>
-          <div className='flex items-center gap-1 rounded-full border border-border/80 bg-card p-1 shadow-xs'>
-            {LOCALES.map((locale) => (
-              <button
-                key={locale}
-                type='button'
-                onClick={() => i18n.changeLanguage(locale)}
-                aria-pressed={activeLocale === locale}
-                className={cn(
-                  'cursor-pointer rounded-full px-3 py-1 text-xs font-semibold uppercase transition-all duration-200',
-                  activeLocale === locale
-                    ? 'bg-primary text-primary-foreground shadow-xs'
-                    : 'text-muted-foreground hover:text-foreground',
-                )}
-              >
-                {locale}
-              </button>
-            ))}
-          </div>
+          <LanguageSwitch size='md' />
         </footer>
       </div>
     </main>

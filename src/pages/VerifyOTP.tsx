@@ -58,7 +58,9 @@ const VerifyOtpPage = () => {
     onSuccess: async () => {
       if (isRecoveryMode) {
         toast.success(t('verifyOtpPage.recoverySuccess'))
-        await apiLogout()
+        // Sesi tetap ditinggalkan walau permintaan logout gagal;
+        // status sebenarnya diverifikasi ulang lewat /admin/me
+        await apiLogout().catch(() => {})
         queryClient.invalidateQueries({ queryKey: ['auth-me'] })
       } else {
         toast.success(t('verifyOtpPage.verifySuccess'))
@@ -208,7 +210,9 @@ const VerifyOtpPage = () => {
               variant='link'
               className='h-auto p-0 font-medium text-primary'
               onClick={async () => {
-                await apiLogout()
+                // Sesi tetap ditinggalkan walau permintaan logout gagal;
+        // status sebenarnya diverifikasi ulang lewat /admin/me
+        await apiLogout().catch(() => {})
                 // Buang cache auth-me agar Login tidak membaca status
                 // MFA-pending lama lalu melempar balik ke halaman ini
                 queryClient.removeQueries({ queryKey: ['auth-me'] })

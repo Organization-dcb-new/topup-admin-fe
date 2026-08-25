@@ -40,12 +40,15 @@
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs"
-    }
+    },
+    "navigationAria": "Main navigation"
   },
   "navbar": {
     "openMenu": "Open navigation menu",
     "accountMenuAria": "Account menu",
-    "accountSecurity": "Account security"
+    "accountSecurity": "Account security",
+    "back": "Go back",
+    "breadcrumbAria": "Breadcrumb"
   },
   "transactionPage": {
     "toastLoading": "Loading transactions…",
@@ -1753,7 +1756,8 @@
     "otpRequired": "Enter the OTP code from your authenticator app to continue",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
-    "welcomeTitle": "Welcome back"
+    "welcomeTitle": "Welcome back",
+    "sessionIdle": "You were logged out after a period of inactivity."
   },
   "authLayout": {
     "tagline": "Admin Dashboard"
@@ -1812,7 +1816,12 @@
     "beforeActivationDescription": "Store the recovery codes in a safe place. Without them, account recovery is difficult if you lose your authenticator app."
   },
   "authToasts": {
-    "logoutSuccess": "Logged out successfully"
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Logout failed. Your session is still active.",
+    "loggingOut": "Logging out…"
+  },
+  "toast": {
+    "dismiss": "Dismiss notification"
   },
   "transactionDetailPage": {
     "title": "Transaction detail",
@@ -1951,5 +1960,34 @@
     "adminLogs": "Admin Logs",
     "unauthorized": "Access Denied",
     "notFound": "Page Not Found"
+  },
+  "health": {
+    "statusChecking": "Checking…",
+    "statusUnreachable": "Unreachable",
+    "statusOperational": "Operational",
+    "statusDegraded": "Degraded",
+    "triggerTitle": "Server: {{status}}",
+    "triggerAria": "Server status: {{status}}",
+    "popoverTitle": "Server health",
+    "loadingText": "Checking server health…",
+    "errorTitle": "Cannot connect to server",
+    "errorDescription": "Backend may be down or unreachable.",
+    "lastChecked": "Last checked: {{time}}",
+    "autoRefresh": "Auto-refresh every 5 minutes",
+    "secondsAgo": "{{count}}s ago",
+    "minutesAgo": "{{count}}m ago",
+    "hoursAgo": "{{hours}}h {{minutes}}m ago"
+  },
+  "commandPalette": {
+    "title": "Search pages",
+    "description": "Jump to any page you have access to",
+    "placeholder": "Search pages…",
+    "empty": "No pages found.",
+    "trigger": "Search",
+    "navigation": "Navigation"
+  },
+  "idleTimeout": {
+    "warning": "You have been idle. You will be logged out in {{minutes}} minute for security.",
+    "logoutFailed": "Could not end your session automatically. Please log out manually."
   }
 }

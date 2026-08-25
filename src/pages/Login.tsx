@@ -30,12 +30,14 @@ export default function LoginPage() {
   const justLoggedIn = useRef(false)
 
   useEffect(() => {
-    if (
-      searchParams.get('session') === 'expired' &&
-      !sessionExpiredNotified.current
-    ) {
+    const reason = searchParams.get('session')
+    if ((reason === 'expired' || reason === 'idle') && !sessionExpiredNotified.current) {
       sessionExpiredNotified.current = true
-      toast.error(t('loginPage.sessionExpired'))
+      toast.error(
+        reason === 'idle'
+          ? t('loginPage.sessionIdle')
+          : t('loginPage.sessionExpired'),
+      )
       setSearchParams({}, { replace: true })
     }
   }, [searchParams, setSearchParams, t])

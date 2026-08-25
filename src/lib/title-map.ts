@@ -31,13 +31,36 @@ export const pageTitleKeyMap: Record<string, string> = {
   '/unauthorized': 'unauthorized',
 }
 
-export function resolvePageTitleKey(pathname: string): string | null {
-  const match = Object.keys(pageTitleKeyMap)
+export interface PageMatch {
+  /** Key i18n di bawah `pageTitles.*` */
+  key: string
+  /** Path induk yang cocok, tujuan tautan breadcrumb */
+  basePath: string
+  /** True bila URL saat ini lebih dalam dari induknya (halaman detail) */
+  isDetail: boolean
+  /** Segmen terakhir URL — dipakai sebagai label detail */
+  detailSegment?: string
+}
+
+export function resolvePageMatch(pathname: string): PageMatch | null {
+  const basePath = Object.keys(pageTitleKeyMap)
     .filter(
       (path) =>
         pathname === path || (path !== '/' && pathname.startsWith(path + '/')),
     )
     .sort((a, b) => b.length - a.length)[0]
 
-  return match ? pageTitleKeyMap[match] : null
+  if (!basePath) return null
+
+  const isDetail = pathname !== basePath
+  return {
+    key: pageTitleKeyMap[basePath],
+    basePath,
+    isDetail,
+    detailSegment: isDetail ? pathname.split('/').filter(Boolean).pop() : undefined,
+  }
+}
+
+export function resolvePageTitleKey(pathname: string): string | null {
+  return resolvePageMatch(pathname)?.key ?? null
 }

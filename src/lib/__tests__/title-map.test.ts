@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { resolvePageTitleKey } from '@/lib/title-map'
+import { resolvePageTitleKey, resolvePageMatch } from '@/lib/title-map'
 
 describe('resolvePageTitleKey', () => {
   it('mencocokkan path persis', () => {
@@ -25,5 +25,35 @@ describe('resolvePageTitleKey', () => {
 
   it('path tak dikenal mengembalikan null', () => {
     expect(resolvePageTitleKey('/tidak-ada')).toBeNull()
+  })
+})
+
+describe('resolvePageMatch', () => {
+  it('halaman biasa bukan detail', () => {
+    const match = resolvePageMatch('/games')
+    expect(match).toMatchObject({ key: 'games', basePath: '/games', isDetail: false })
+    expect(match?.detailSegment).toBeUndefined()
+  })
+
+  it('halaman detail membawa basePath dan segmen terakhir', () => {
+    expect(resolvePageMatch('/games/abc-123')).toMatchObject({
+      key: 'games',
+      basePath: '/games',
+      isDetail: true,
+      detailSegment: 'abc-123',
+    })
+  })
+
+  it('detail bersarang memilih induk terpanjang', () => {
+    expect(resolvePageMatch('/products/callback-logs/77')).toMatchObject({
+      key: 'productCallbackLogs',
+      basePath: '/products/callback-logs',
+      isDetail: true,
+      detailSegment: '77',
+    })
+  })
+
+  it('path tak dikenal mengembalikan null', () => {
+    expect(resolvePageMatch('/entah-apa')).toBeNull()
   })
 })

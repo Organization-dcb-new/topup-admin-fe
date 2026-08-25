@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/api/axios'
-import toast from 'react-hot-toast'
-import i18n from '@/i18n'
 
 // Recovery code digenerate BE dalam huruf besar dan dibandingkan
 // case-sensitive, jadi input user dinormalisasi dulu sebelum dikirim
@@ -9,19 +7,12 @@ export const normalizeRecoveryCode = (code: string) => code.trim().toUpperCase()
 
 // Sesi murni berbasis cookie httpOnly yang dikelola BE — FE tidak pernah
 // menyimpan token, cukup memanggil endpoint logout untuk mengakhiri sesi.
+// Sengaja melempar error: kalau permintaan gagal, cookie sesi masih hidup dan
+// pemanggil berhak tahu alih-alih mengira sudah keluar.
 export async function apiLogout(): Promise<void> {
-  try {
-    await api.post('/admin/logout')
-  } catch {
-    /* ignore */
-  }
+  await api.post('/admin/logout')
 }
 
-export async function logout(): Promise<void> {
-  await apiLogout()
-  toast.success(i18n.t('authToasts.logoutSuccess'))
-  window.location.href = '/login'
-}
 
 export function useAuthUser() {
   const { data, isLoading } = useQuery({

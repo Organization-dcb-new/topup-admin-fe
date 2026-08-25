@@ -1,47 +1,71 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, LogOut, Menu, ShieldCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  ChevronDown,
+  ChevronRight,
+  LogOut,
+  Menu,
+  Search,
+  ShieldCheck,
+} from 'lucide-react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { LanguageSwitch } from '@/components/ui/language-switch'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { logout, useAuthUser } from '@/lib/auth'
-import { resolvePageTitleKey } from '@/lib/title-map'
+import { CommandPalette } from './CommandPalette'
+import { LogoutDialog } from './LogoutDialog'
+import { useAuthUser } from '@/lib/auth'
+import { canAccessPath } from '@/constants/route-roles'
+import { resolvePageMatch } from '@/lib/title-map'
 import { cn } from '@/lib/utils'
 
 interface NavbarProps {
   onOpenMobile: () => void
 }
 
+/** Deteksi platform hanya untuk label pintasan (⌘K vs Ctrl K) */
+const isMacPlatform = () =>
+  typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+
 export function Navbar({ onOpenMobile }: NavbarProps) {
   const { pathname } = useLocation()
-  const { t, i18n } = useTranslation('common')
+  const navigate = useNavigate()
+  const { t } = useTranslation('common')
   const { user, role } = useAuthUser()
   const [openLogoutModal, setOpenLogoutModal] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  const isIdLocale = i18n.language === 'id' || i18n.language.startsWith('id')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
 
-  const titleKey = resolvePageTitleKey(pathname) ?? 'notFound'
+  const match = resolvePageMatch(pathname)
+  const titleKey = match?.key ?? 'notFound'
   const username: string = user?.username ?? ''
   const email: string = user?.email ?? ''
   const initials = username.slice(0, 2).toUpperCase() || 'PG'
 
+  // Bayangan baru muncul setelah konten mulai lewat di bawah navbar
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 4)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
-      <header className='sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border/80 bg-background/85 px-3 backdrop-blur-md md:h-16 md:gap-3 md:px-6'>
+      <header
+        className={cn(
+          'sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/85 px-3 backdrop-blur-md transition-shadow duration-200 md:h-16 md:gap-3 md:px-6',
+          isScrolled && 'shadow-sm',
+        )}
+      >
         <Button
           type='button'
           variant='ghost'
@@ -53,56 +77,72 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
           <Menu className='h-5 w-5' aria-hidden />
         </Button>
 
-        <h1 className='min-w-0 truncate text-base font-semibold tracking-tight text-foreground'>
-          {t('pageTitles.' + titleKey)}
-        </h1>
-
-        <div className='ml-auto flex shrink-0 items-center gap-2 md:gap-3'>
-          <div
-            className='relative flex h-8 w-20 items-center rounded-full border border-border/80 bg-muted/60 p-0.5'
-            role='group'
-            aria-label={t('sidebar.languageToggleAria')}
+        {match?.isDetail && (
+          <Button
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='hidden h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground md:flex'
+            onClick={() => navigate(-1)}
+            aria-label={t('navbar.back')}
           >
-            <div
-              className={cn(
-                'absolute inset-y-0.5 w-[calc(50%-2px)] rounded-full bg-background shadow-xs transition-transform duration-300 ease-out',
-                isIdLocale ? 'translate-x-0' : 'translate-x-full',
-              )}
+            <ArrowLeft className='h-4 w-4' aria-hidden />
+          </Button>
+        )}
+
+        {match?.isDetail ? (
+          <div className='flex min-w-0 items-center gap-1.5'>
+            <nav
+              aria-label={t('navbar.breadcrumbAria')}
+              className='min-w-0 shrink'
+            >
+              <ol className='flex min-w-0 items-center'>
+                <li className='min-w-0'>
+                  <Link
+                    to={match.basePath}
+                    className='block truncate text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground'
+                  >
+                    {t('pageTitles.' + titleKey)}
+                  </Link>
+                </li>
+              </ol>
+            </nav>
+            <ChevronRight
+              className='h-3.5 w-3.5 shrink-0 text-muted-foreground/60'
               aria-hidden
             />
-            <button
-              type='button'
-              onClick={() => i18n.changeLanguage('id')}
-              aria-pressed={isIdLocale}
-              className={cn(
-                'relative z-10 flex-1 cursor-pointer text-center text-[11px] font-bold select-none transition-colors duration-200',
-                isIdLocale
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              ID
-            </button>
-            <button
-              type='button'
-              onClick={() => i18n.changeLanguage('en')}
-              aria-pressed={!isIdLocale}
-              className={cn(
-                'relative z-10 flex-1 cursor-pointer text-center text-[11px] font-bold select-none transition-colors duration-200',
-                !isIdLocale
-                  ? 'text-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              EN
-            </button>
+            {/* Judul halaman berada di luar landmark navigasi */}
+            <h1 className='min-w-0 truncate text-base font-semibold tracking-tight text-foreground'>
+              {match.detailSegment}
+            </h1>
           </div>
+        ) : (
+          <h1 className='min-w-0 truncate text-base font-semibold tracking-tight text-foreground'>
+            {t('pageTitles.' + titleKey)}
+          </h1>
+        )}
+
+        <div className='ml-auto flex shrink-0 items-center gap-2 md:gap-3'>
+          <button
+            type='button'
+            onClick={() => setSearchOpen(true)}
+            aria-label={t('commandPalette.title')}
+            className='flex h-8 cursor-pointer items-center gap-2 rounded-lg border border-border bg-muted/50 px-2.5 text-sm text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground'
+          >
+            <Search className='h-4 w-4 shrink-0' aria-hidden />
+            <span className='hidden lg:inline'>{t('commandPalette.trigger')}</span>
+            <kbd className='hidden shrink-0 rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] font-medium lg:inline'>
+              {isMacPlatform() ? '⌘K' : 'Ctrl K'}
+            </kbd>
+          </button>
+
+          <LanguageSwitch className='max-sm:hidden' />
 
           <Popover open={menuOpen} onOpenChange={setMenuOpen}>
             <PopoverTrigger asChild>
               <button
                 type='button'
-                className='flex cursor-pointer items-center gap-2 rounded-full border border-border/80 bg-background py-1 pl-1 pr-2 shadow-xs transition-all duration-200 hover:bg-muted/60 md:pr-3'
+                className='flex cursor-pointer items-center gap-2 rounded-full border border-border bg-background py-1 pl-1 pr-2 shadow-xs transition-all duration-200 hover:bg-muted/60 md:pr-3'
                 aria-label={t('navbar.accountMenuAria')}
               >
                 <Avatar className='h-7 w-7'>
@@ -151,17 +191,27 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
 
               <div className='my-1.5 border-t border-border/60' aria-hidden />
 
-              <Link
-                to='/2fa-setup'
-                onClick={() => setMenuOpen(false)}
-                className='flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-foreground transition-colors duration-200 hover:bg-muted/70'
-              >
-                <ShieldCheck
-                  className='h-4 w-4 text-muted-foreground'
-                  aria-hidden
-                />
-                {t('navbar.accountSecurity')}
-              </Link>
+              <div className='sm:hidden'>
+                <div className='flex items-center justify-between rounded-lg px-2.5 py-2 text-sm text-foreground'>
+                  <span>{t('sidebar.languageToggleAria')}</span>
+                  <LanguageSwitch />
+                </div>
+              </div>
+
+              {/* Hanya tampil bila role-nya memang diizinkan guard route ini */}
+              {canAccessPath('/2fa-setup', role) && (
+                <Link
+                  to='/2fa-setup'
+                  onClick={() => setMenuOpen(false)}
+                  className='flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-foreground transition-colors duration-200 hover:bg-muted/70'
+                >
+                  <ShieldCheck
+                    className='h-4 w-4 text-muted-foreground'
+                    aria-hidden
+                  />
+                  {t('navbar.accountSecurity')}
+                </Link>
+              )}
               <button
                 type='button'
                 onClick={() => {
@@ -178,37 +228,12 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
         </div>
       </header>
 
-      <Dialog open={openLogoutModal} onOpenChange={setOpenLogoutModal}>
-        <DialogContent className='rounded-2xl sm:max-w-md'>
-          <DialogHeader>
-            <DialogTitle>{t('sidebar.confirmLogoutTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('sidebar.confirmLogoutDescription')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className='gap-2 sm:gap-0'>
-            <Button
-              type='button'
-              variant='outline'
-              className='rounded-xl'
-              onClick={() => setOpenLogoutModal(false)}
-            >
-              {t('sidebar.cancel')}
-            </Button>
-            <Button
-              type='button'
-              variant='destructive'
-              className='rounded-xl'
-              onClick={async () => {
-                await logout()
-                setOpenLogoutModal(false)
-              }}
-            >
-              {t('sidebar.logout')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
+
+      <LogoutDialog
+        open={openLogoutModal}
+        onOpenChange={setOpenLogoutModal}
+      />
     </>
   )
 }

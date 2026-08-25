@@ -40,12 +40,15 @@
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk"
-    }
+    },
+    "navigationAria": "Navigasi utama"
   },
   "navbar": {
     "openMenu": "Buka menu navigasi",
     "accountMenuAria": "Menu akun",
-    "accountSecurity": "Keamanan akun"
+    "accountSecurity": "Keamanan akun",
+    "back": "Kembali",
+    "breadcrumbAria": "Remah roti"
   },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
@@ -1753,7 +1756,8 @@
     "otpRequired": "Masukkan kode OTP dari aplikasi autentikator untuk melanjutkan",
     "showPassword": "Tampilkan kata sandi",
     "hidePassword": "Sembunyikan kata sandi",
-    "welcomeTitle": "Selamat datang kembali"
+    "welcomeTitle": "Selamat datang kembali",
+    "sessionIdle": "Anda dikeluarkan karena tidak ada aktivitas."
   },
   "authLayout": {
     "tagline": "Dashboard Admin"
@@ -1812,7 +1816,12 @@
     "beforeActivationDescription": "Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun sulit dilakukan jika aplikasi autentikator hilang."
   },
   "authToasts": {
-    "logoutSuccess": "Berhasil logout"
+    "logoutSuccess": "Berhasil logout",
+    "logoutError": "Logout gagal. Sesi Anda masih aktif.",
+    "loggingOut": "Keluar…"
+  },
+  "toast": {
+    "dismiss": "Tutup notifikasi"
   },
   "transactionDetailPage": {
     "title": "Detail transaksi",
@@ -1951,5 +1960,34 @@
     "adminLogs": "Log Admin",
     "unauthorized": "Akses Ditolak",
     "notFound": "Halaman Tidak Ditemukan"
+  },
+  "health": {
+    "statusChecking": "Memeriksa…",
+    "statusUnreachable": "Tidak terjangkau",
+    "statusOperational": "Normal",
+    "statusDegraded": "Terganggu",
+    "triggerTitle": "Server: {{status}}",
+    "triggerAria": "Status server: {{status}}",
+    "popoverTitle": "Kesehatan server",
+    "loadingText": "Memeriksa kesehatan server…",
+    "errorTitle": "Tidak dapat terhubung ke server",
+    "errorDescription": "Backend mungkin mati atau tidak terjangkau.",
+    "lastChecked": "Terakhir diperiksa: {{time}}",
+    "autoRefresh": "Diperbarui otomatis tiap 5 menit",
+    "secondsAgo": "{{count}} dtk lalu",
+    "minutesAgo": "{{count}} mnt lalu",
+    "hoursAgo": "{{hours}} jam {{minutes}} mnt lalu"
+  },
+  "commandPalette": {
+    "title": "Cari halaman",
+    "description": "Lompat ke halaman mana pun yang boleh Anda akses",
+    "placeholder": "Cari halaman…",
+    "empty": "Halaman tidak ditemukan.",
+    "trigger": "Cari",
+    "navigation": "Navigasi"
+  },
+  "idleTimeout": {
+    "warning": "Anda sedang tidak aktif. Demi keamanan, sesi akan berakhir dalam {{minutes}} menit.",
+    "logoutFailed": "Sesi tidak dapat diakhiri otomatis. Silakan logout manual."
   }
 }
