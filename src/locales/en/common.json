@@ -1609,47 +1609,23 @@
     "selfRoleHint": "You cannot change your own role"
   },
   "adminLogPage": {
-    "title": "Admin logs",
-    "subtitle": "Administrator activity history from the admin-logs endpoint.",
-    "total": "Total {{total}} logs",
-    "listTitle": "Log list",
-    "listHint": "Shows recent activities. Use pagination to browse other pages.",
-    "loadingBody": "Loading admin logs…",
-    "pleaseWait": "Please wait a moment.",
-    "loadError": "Failed to load admin logs.",
+    "title": "Activity log",
+    "subtitle": "Who changed what, and when, across the admin dashboard.",
+    "total": "{{total}} entries",
+    "listTitle": "Recent activity",
+    "listHint": "Newest first. Open an entry to see exactly which fields changed.",
+    "rowsPerPage": "Rows",
+    "loadingBody": "Loading activity log…",
+    "loadError": "Failed to load the activity log.",
     "emptyMessage": "No admin activity has been recorded yet."
   },
   "adminLogTable": {
-    "colId": "ID",
     "colCreatedAt": "Time",
+    "colActor": "Admin",
     "colAction": "Action",
-    "colModule": "Module",
     "colDescription": "Description",
-    "colOldData": "Old data",
-    "colNewData": "New data",
-    "colIpAddress": "IP address",
-    "colUserAgent": "User agent"
-  },
-  "adminLogDetailPage": {
-    "title": "Admin log detail",
-    "subtitle": "Complete detail of administrator activity.",
-    "pageHint": "This page helps users understand who performed an action, when it happened, and what data changed.",
-    "backButton": "Back to log list",
-    "loading": "Loading admin log detail…",
-    "missingId": "Admin log ID is missing in the URL.",
-    "loadError": "Failed to load admin log detail.",
-    "readGuideTitle": "How to read this log",
-    "readGuideBody": "Old data contains values before the action, while new data contains values after the action. If one side is empty, the system did not provide that snapshot.",
-    "id": "Log ID",
-    "adminId": "Admin ID",
-    "createdAt": "Time",
-    "ipAddress": "IP address",
-    "description": "Description",
-    "oldData": "Old data",
-    "oldDataHint": "Values before the action was executed.",
-    "newData": "New data",
-    "newDataHint": "Values after the action was successfully executed.",
-    "userAgent": "User agent"
+    "colDetail": "Detail",
+    "hasSnapshot": "This entry records field changes"
   },
   "dashboardPage": {
     "title": "Dashboard"
@@ -2114,5 +2090,47 @@
     "view_anomaly": "View anomalies",
     "view_balance": "View balance",
     "view_callback_log": "View callback logs"
+  },
+  "adminLogActions": {
+    "CREATE": "Created",
+    "UPDATE": "Updated",
+    "DELETE": "Deleted",
+    "LOGIN": "Signed in",
+    "LOGOUT": "Signed out",
+    "RECOVERY": "Recovery"
+  },
+  "adminLogModules": {
+    "ADMIN": "Admin",
+    "USER": "User",
+    "CATEGORY": "Category",
+    "PROVIDER": "Provider",
+    "GAME": "Game",
+    "PRODUCT": "Product",
+    "PRICE": "Price",
+    "PAYMENT_METHOD": "Payment method",
+    "ROLE": "Role",
+    "AUTH": "Authentication"
+  },
+  "adminLogDrawer": {
+    "title": "Activity detail",
+    "subtitle": "Full record of this action, including field-level changes.",
+    "loading": "Loading detail…",
+    "loadError": "Failed to load this activity entry.",
+    "actor": "Admin",
+    "time": "Time",
+    "ipAddress": "IP address",
+    "userAgent": "Device",
+    "noDescription": "No description recorded.",
+    "changesTitle": "What changed",
+    "changedCount": "{{total}} field(s)",
+    "noSnapshot": "This action does not record data changes.",
+    "noChanges": "A snapshot was recorded, but no field differs.",
+    "change_added": "added",
+    "change_removed": "removed",
+    "change_changed": "changed",
+    "change_unchanged": "unchanged",
+    "copyRaw": "Copy raw JSON",
+    "copied": "Raw entry copied",
+    "copyError": "Failed to copy the entry"
   }
 }

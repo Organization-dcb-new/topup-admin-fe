@@ -1609,47 +1609,23 @@
     "selfRoleHint": "Tidak bisa mengubah role akun sendiri"
   },
   "adminLogPage": {
-    "title": "Log admin",
-    "subtitle": "Riwayat aktivitas administrator dari endpoint admin-logs.",
-    "total": "Total {{total}} log",
-    "listTitle": "Daftar log",
-    "listHint": "Menampilkan aktivitas terbaru. Gunakan paginasi untuk melihat data lainnya.",
-    "loadingBody": "Memuat data log admin…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "loadError": "Gagal memuat data log admin.",
+    "title": "Log aktivitas",
+    "subtitle": "Siapa mengubah apa, dan kapan, di seluruh dashboard admin.",
+    "total": "{{total}} entri",
+    "listTitle": "Aktivitas terbaru",
+    "listHint": "Terbaru di atas. Buka satu entri untuk melihat field mana yang berubah.",
+    "rowsPerPage": "Baris",
+    "loadingBody": "Memuat log aktivitas…",
+    "loadError": "Gagal memuat log aktivitas.",
     "emptyMessage": "Belum ada aktivitas admin yang tercatat."
   },
   "adminLogTable": {
-    "colId": "ID",
     "colCreatedAt": "Waktu",
+    "colActor": "Admin",
     "colAction": "Aksi",
-    "colModule": "Modul",
     "colDescription": "Deskripsi",
-    "colOldData": "Data lama",
-    "colNewData": "Data baru",
-    "colIpAddress": "IP address",
-    "colUserAgent": "User agent"
-  },
-  "adminLogDetailPage": {
-    "title": "Detail log admin",
-    "subtitle": "Detail lengkap aktivitas administrator.",
-    "pageHint": "Halaman ini membantu melacak siapa melakukan aksi apa, kapan, dan data apa yang berubah.",
-    "backButton": "Kembali ke daftar log",
-    "loading": "Memuat detail log admin…",
-    "missingId": "ID log admin tidak ditemukan di URL.",
-    "loadError": "Gagal memuat detail log admin.",
-    "readGuideTitle": "Panduan membaca log",
-    "readGuideBody": "Old data adalah nilai sebelum perubahan, sedangkan new data adalah nilai setelah perubahan. Jika salah satu kosong, berarti sistem tidak mengirim snapshot data pada sisi tersebut.",
-    "id": "ID log",
-    "adminId": "ID admin",
-    "createdAt": "Waktu",
-    "ipAddress": "IP address",
-    "description": "Deskripsi",
-    "oldData": "Data lama",
-    "oldDataHint": "Nilai sebelum aksi dijalankan.",
-    "newData": "Data baru",
-    "newDataHint": "Nilai setelah aksi berhasil dijalankan.",
-    "userAgent": "User agent"
+    "colDetail": "Detail",
+    "hasSnapshot": "Entri ini mencatat perubahan field"
   },
   "dashboardPage": {
     "title": "Dasbor"
@@ -2114,5 +2090,47 @@
     "view_anomaly": "Lihat anomali",
     "view_balance": "Lihat saldo",
     "view_callback_log": "Lihat log callback"
+  },
+  "adminLogActions": {
+    "CREATE": "Dibuat",
+    "UPDATE": "Diubah",
+    "DELETE": "Dihapus",
+    "LOGIN": "Masuk",
+    "LOGOUT": "Keluar",
+    "RECOVERY": "Pemulihan"
+  },
+  "adminLogModules": {
+    "ADMIN": "Admin",
+    "USER": "Pengguna",
+    "CATEGORY": "Kategori",
+    "PROVIDER": "Penyedia",
+    "GAME": "Game",
+    "PRODUCT": "Produk",
+    "PRICE": "Harga",
+    "PAYMENT_METHOD": "Metode pembayaran",
+    "ROLE": "Role",
+    "AUTH": "Autentikasi"
+  },
+  "adminLogDrawer": {
+    "title": "Detail aktivitas",
+    "subtitle": "Catatan lengkap aksi ini, termasuk perubahan per field.",
+    "loading": "Memuat detail…",
+    "loadError": "Gagal memuat entri aktivitas ini.",
+    "actor": "Admin",
+    "time": "Waktu",
+    "ipAddress": "Alamat IP",
+    "userAgent": "Perangkat",
+    "noDescription": "Tidak ada deskripsi tercatat.",
+    "changesTitle": "Yang berubah",
+    "changedCount": "{{total}} field",
+    "noSnapshot": "Aksi ini tidak mencatat perubahan data.",
+    "noChanges": "Snapshot tercatat, tetapi tidak ada field yang berbeda.",
+    "change_added": "ditambah",
+    "change_removed": "dihapus",
+    "change_changed": "diubah",
+    "change_unchanged": "tetap",
+    "copyRaw": "Salin JSON mentah",
+    "copied": "Entri mentah disalin",
+    "copyError": "Gagal menyalin entri"
   }
 }

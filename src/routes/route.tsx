@@ -51,7 +51,6 @@ const AdminManagementPage = lazy(() => import('@/pages/Admin'))
 const RoleManagementPage = lazy(() => import('@/pages/Role'))
 const MaintenancePage = lazy(() => import('@/pages/Maintenance'))
 const AdminLogPage = lazy(() => import('@/pages/AdminLog'))
-const AdminLogDetailPage = lazy(() => import('@/pages/AdminLogDetail'))
 const UnauthorizedPage = lazy(() => import('@/pages/Unauthorized'))
 const AnomalyProduct = lazy(() => import('@/pages/AnomalyProduct'))
 const ProductCallbackLogPage = lazy(() => import('@/pages/ProductCallbackLog'))
@@ -336,10 +335,12 @@ const router = createBrowserRouter([
             ),
           },
           {
+            // Detail tampil sebagai drawer di atas daftar, tapi tetap punya
+            // URL sendiri supaya tautannya bisa dibagikan
             path: 'admin-logs/:id',
             element: (
               <Guarded path='/admin-logs/:id'>
-                <AdminLogDetailPage />
+                <AdminLogPage />
               </Guarded>
             ),
           },

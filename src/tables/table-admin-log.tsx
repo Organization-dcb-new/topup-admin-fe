@@ -1,35 +1,30 @@
-import { Badge } from '@/components/ui/badge'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { hasSnapshot } from '@/lib/json-diff'
 import type { AdminLog } from '@/types/admin-log'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
-import { Link } from 'react-router-dom'
+import { ChevronRight, FileDiff } from 'lucide-react'
+import { ActionBadge, ModuleBadge } from '@/components/AdminLog/LogBadges'
 
-function formatJsonValue(value: Record<string, unknown> | null) {
-  if (!value || Object.keys(value).length === 0) return '—'
-  return JSON.stringify(value)
+interface AdminLogColumnOptions {
+  t: TFunction
+  /** UUID → nama admin; jatuh ke potongan UUID bila belum termuat */
+  adminName: (adminId: string) => string
+  onOpenDetail: (log: AdminLog) => void
 }
 
-function actionVariant(action: string): 'success' | 'destructive' | 'outline' {
-  if (action === 'LOGIN') return 'success'
-  if (action === 'DELETE') return 'destructive'
-  return 'outline'
-}
-
-export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
+/**
+ * Kolom sengaja dipangkas dari sembilan menjadi lima. Dua di antaranya dulu
+ * berisi `JSON.stringify` mentah dan satu berisi user-agent penuh, yang
+ * memaksa tabel melebar jauh dan tetap tidak terbaca. Semuanya kini ada di
+ * drawer detail dalam bentuk perbandingan per field.
+ */
+export function getAdminLogColumns({
+  t,
+  adminName,
+  onOpenDetail,
+}: AdminLogColumnOptions): ColumnDef<AdminLog>[] {
   return [
-    {
-      accessorKey: 'ID',
-      header: t('adminLogTable.colId'),
-      cell: ({ row }) => (
-        <Link
-          to={`/admin-logs/${row.original.ID}`}
-          className='font-mono text-sm text-primary underline-offset-4 hover:underline'
-        >
-          {row.original.ID}
-        </Link>
-      ),
-    },
     {
       accessorKey: 'CreatedAt',
       header: t('adminLogTable.colCreatedAt'),
@@ -40,68 +35,62 @@ export function getAdminLogColumns(t: TFunction): ColumnDef<AdminLog>[] {
       ),
     },
     {
-      accessorKey: 'Action',
-      header: t('adminLogTable.colAction'),
+      accessorKey: 'AdminID',
+      header: t('adminLogTable.colActor'),
       cell: ({ row }) => (
-        <Badge variant={actionVariant(row.original.Action)} className='font-medium'>
-          {row.original.Action}
-        </Badge>
+        <span className='block max-w-44 truncate text-sm font-medium text-foreground'>
+          {adminName(row.original.AdminID)}
+        </span>
       ),
     },
     {
-      accessorKey: 'Module',
-      header: t('adminLogTable.colModule'),
-      cell: ({ row }) => <span className='font-medium text-foreground'>{row.original.Module}</span>,
+      accessorKey: 'Action',
+      header: t('adminLogTable.colAction'),
+      cell: ({ row }) => (
+        <div className='flex flex-wrap items-center gap-1.5'>
+          <ActionBadge action={row.original.Action} />
+          <ModuleBadge module={row.original.Module} />
+        </div>
+      ),
     },
     {
       accessorKey: 'Description',
       header: t('adminLogTable.colDescription'),
-      cell: ({ row }) => (
-        <span className='line-clamp-2 min-w-[14rem] max-w-[22rem] text-sm text-muted-foreground'>
-          {row.original.Description || '—'}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const withSnapshot = hasSnapshot(
+          row.original.OldData,
+          row.original.NewData,
+        )
+        return (
+          <div className='flex min-w-56 max-w-96 items-start gap-2'>
+            <span className='line-clamp-2 min-w-0 text-sm text-muted-foreground'>
+              {row.original.Description || '—'}
+            </span>
+            {withSnapshot && (
+              <span
+                className='mt-0.5 shrink-0 text-muted-foreground'
+                title={t('adminLogTable.hasSnapshot')}
+              >
+                <FileDiff className='h-3.5 w-3.5' aria-hidden />
+                <span className='sr-only'>{t('adminLogTable.hasSnapshot')}</span>
+              </span>
+            )}
+          </div>
+        )
+      },
     },
     {
-      accessorKey: 'OldData',
-      header: t('adminLogTable.colOldData'),
+      id: 'actions',
+      header: () => <span className='sr-only'>{t('adminLogTable.colDetail')}</span>,
       cell: ({ row }) => (
-        <span
-          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs text-muted-foreground'
-          title={formatJsonValue(row.original.OldData)}
+        <button
+          type='button'
+          onClick={() => onOpenDetail(row.original)}
+          className='flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium text-primary transition-colors duration-200 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
         >
-          {formatJsonValue(row.original.OldData)}
-        </span>
-      ),
-    },
-    {
-      accessorKey: 'NewData',
-      header: t('adminLogTable.colNewData'),
-      cell: ({ row }) => (
-        <span
-          className='line-clamp-2 min-w-[14rem] max-w-[22rem] font-mono text-xs text-muted-foreground'
-          title={formatJsonValue(row.original.NewData)}
-        >
-          {formatJsonValue(row.original.NewData)}
-        </span>
-      ),
-    },
-    {
-      accessorKey: 'IPAddress',
-      header: t('adminLogTable.colIpAddress'),
-      cell: ({ row }) => (
-        <span className='font-mono text-sm tabular-nums text-muted-foreground'>
-          {row.original.IPAddress || '—'}
-        </span>
-      ),
-    },
-    {
-      accessorKey: 'UserAgent',
-      header: t('adminLogTable.colUserAgent'),
-      cell: ({ row }) => (
-        <span className='line-clamp-2 min-w-[14rem] max-w-[24rem] text-xs text-muted-foreground'>
-          {row.original.UserAgent || '—'}
-        </span>
+          {t('adminLogTable.colDetail')}
+          <ChevronRight className='h-3.5 w-3.5' aria-hidden />
+        </button>
       ),
     },
   ]
