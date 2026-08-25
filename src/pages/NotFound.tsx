@@ -13,7 +13,7 @@ export default function NotFoundPage() {
           <FileQuestion className='h-10 w-10' aria-hidden />
         </div>
         <p className='text-sm font-medium uppercase tracking-widest text-muted-foreground'>404</p>
-        <h1 className='mt-2 text-2xl font-semibold tracking-tight text-gray-900'>{t('notFoundPage.title')}</h1>
+        <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground'>{t('notFoundPage.title')}</h1>
         <p className='mt-3 text-sm text-muted-foreground'>
           {t('notFoundPage.subtitle')}
         </p>

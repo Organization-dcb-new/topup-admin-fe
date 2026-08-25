@@ -8,8 +8,9 @@ import slugify from 'slugify'
 export const useGetCategories = (page?: number, limit?: number, search?: string) =>
   useQuery<CategoryResponse>({
     queryKey: ['categories', page, limit, search],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await api.get('/categories', {
+        signal,
         params: {
           page,
           limit,

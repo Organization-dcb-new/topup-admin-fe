@@ -11,8 +11,9 @@ export const useGetGameInputs = (
 ) =>
   useQuery<GameInputResponse>({
     queryKey: ['game-inputs', search, page, limit, image],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await api.get('/game-inputs', {
+        signal,
         params: { page, limit, search, image },
       })
       return res.data

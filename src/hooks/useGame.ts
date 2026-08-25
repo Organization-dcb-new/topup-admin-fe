@@ -1,4 +1,5 @@
 import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
 import type { FormValuesEditGame } from '@/components/Games/EditGameModal'
 import type { FormValuesChangeImage } from '@/components/Games/UploadImageModal'
 import type { GameByIDResponse, GamesResponse } from '@/types/game'
@@ -59,8 +60,9 @@ export function useGetGames(page: number, limit: number, params: GetGamesParams 
       sort ?? '',
       order ?? '',
     ],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data } = await api.get('/games/pagination', {
+        signal,
         params: {
           page,
           limit,
@@ -208,9 +210,8 @@ export function useToggleGameShow(id: string) {
       queryClient.invalidateQueries({ queryKey: ['game', id] })
       queryClient.invalidateQueries({ queryKey: ['shows'] })
     },
-    onError: (err: any) => {
-      const errMsg = err?.response?.data?.message || err?.message || t('gameToasts.gameUpdateError') || 'Failed to update game'
-      toast.error(errMsg)
+    onError: (err: unknown) => {
+      toast.error(apiErrorMessage(err, t('gameToasts.gameUpdateError')))
     },
   })
 }

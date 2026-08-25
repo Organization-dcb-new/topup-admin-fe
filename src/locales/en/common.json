@@ -647,7 +647,6 @@
     "updating": "Updating…",
     "applyAll": "Apply to All Games"
   },
-
   "gameShowcase": {
     "label": "Showcase",
     "hideAria": "Hide {{name}} from showcase",
@@ -1742,7 +1741,17 @@
     "processing": "Processing…",
     "submit": "Login",
     "loginSuccess": "Login successful",
-    "loginError": "Login failed"
+    "loginError": "Login failed",
+    "sessionExpired": "Your session has expired. Please log in again.",
+    "identifierRequired": "Email or username is required",
+    "passwordMin": "Password must be at least 6 characters",
+    "otpRequired": "Enter the OTP code from your authenticator app to continue",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "welcomeTitle": "Welcome back"
+  },
+  "authLayout": {
+    "tagline": "Admin Dashboard"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Recovery successful. Please log in again.",
@@ -1760,6 +1769,45 @@
     "useRecovery": "Use recovery code",
     "trouble": "Having trouble?",
     "backToLogin": "Back to login"
+  },
+  "setup2faPage": {
+    "qrCreated": "QR code created",
+    "qrCreateError": "Failed to create 2FA setup",
+    "activateSuccess": "2FA activated successfully",
+    "activateError": "Invalid OTP code",
+    "deactivateSuccess": "2FA deactivated successfully",
+    "deactivateError": "Failed to deactivate 2FA",
+    "copyError": "Failed to copy recovery codes",
+    "copySuccess": "Recovery codes copied",
+    "checkingTitle": "Checking security status…",
+    "checkingSubtitle": "Please wait a moment.",
+    "title": "Account security",
+    "subtitle": "Manage two-factor authentication (2FA) for your admin account.",
+    "activeBadge": "2FA active",
+    "manageTitle": "Manage 2FA",
+    "manageSubtitle": "Your account is currently protected by two-step verification.",
+    "deactivateHeading": "Disable protection?",
+    "deactivateWarning": "This action increases the risk of unauthorized access. Make sure you understand the consequences.",
+    "deactivateButton": "Disable 2FA",
+    "finalVerifyTitle": "Final verification",
+    "finalVerifySubtitle": "Enter your OTP code to confirm",
+    "deactivating": "Disabling…",
+    "cancelDeactivate": "Cancel, keep 2FA enabled",
+    "setupHeading": "Strengthen account security",
+    "setupDescription": "Use an authenticator app to protect the admin dashboard from unauthorized access.",
+    "enableButton": "Enable 2FA",
+    "preparing": "Preparing…",
+    "stepScan": "1. Scan QR",
+    "stepBackup": "2. Recovery codes",
+    "stepActivate": "3. Activation",
+    "copied": "Copied",
+    "copyAll": "Copy all codes",
+    "verifying": "Verifying…",
+    "beforeActivationTitle": "Before activation",
+    "beforeActivationDescription": "Store the recovery codes in a safe place. Without them, account recovery is difficult if you lose your authenticator app."
+  },
+  "authToasts": {
+    "logoutSuccess": "Logged out successfully"
   },
   "transactionDetailPage": {
     "title": "Transaction detail",
@@ -1857,5 +1905,46 @@
   },
   "common": {
     "refresh": "Refresh"
+  },
+  "apiErrors": {
+    "tooManyRequests": "Too many attempts. Please try again later.",
+    "timeout": "The request timed out. Please try again.",
+    "network": "Cannot reach the server. Check your connection.",
+    "generic": "Something went wrong. Please try again."
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "subtitle": "An unexpected error occurred while rendering this page. Reloading usually fixes it.",
+    "reload": "Reload page"
+  },
+  "pageTitles": {
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "verifyOtp": "Verify OTP",
+    "summary": "Summary",
+    "cashflow": "Cashflow",
+    "blog": "Articles",
+    "shows": "Shows",
+    "orders": "Orders",
+    "banners": "Banners",
+    "transactions": "Transactions",
+    "input": "Input",
+    "games": "Games",
+    "categoryProduct": "Product Categories",
+    "categories": "Categories",
+    "products": "Products",
+    "productCallbackLogs": "Product Callback Logs",
+    "anomaly": "Product Anomalies",
+    "paymentMethods": "Payment Methods",
+    "paymentMethodCategories": "Payment Method Categories",
+    "provider": "Providers",
+    "referralCodes": "Referral Codes",
+    "twoFactorSetup": "Account Security",
+    "rateLimit": "Rate Limit",
+    "maintenances": "Maintenance",
+    "admin": "Admin Users",
+    "adminLogs": "Admin Logs",
+    "unauthorized": "Access Denied",
+    "notFound": "Page Not Found"
   }
 }

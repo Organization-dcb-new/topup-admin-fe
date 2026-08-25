@@ -1,17 +1,30 @@
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+import { ShieldOff, Home } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function UnauthorizedPage() {
   const { t } = useTranslation('common')
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-      <h1 className='text-4xl font-bold text-red-600'>{t('unauthorizedPage.title')}</h1>
-      <p className='mt-4 text-gray-600'>{t('unauthorizedPage.subtitle')}</p>
-      <button
-        onClick={() => (window.location.href = '/')}
-        className='mt-6 px-4 py-2 bg-primary text-white rounded-md cursor-pointer'
-      >
-        {t('unauthorizedPage.backButton')}
-      </button>
-    </div>
+    <main className='flex min-h-dvh flex-col items-center justify-center bg-muted/40 px-4 text-center'>
+      <div className='mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-destructive/10 text-destructive ring-1 ring-destructive/20'>
+        <ShieldOff className='h-10 w-10' aria-hidden />
+      </div>
+      <p className='text-sm font-medium uppercase tracking-widest text-muted-foreground'>
+        403
+      </p>
+      <h1 className='mt-2 text-2xl font-semibold tracking-tight text-foreground'>
+        {t('unauthorizedPage.title')}
+      </h1>
+      <p className='mt-3 max-w-sm text-sm text-muted-foreground'>
+        {t('unauthorizedPage.subtitle')}
+      </p>
+      <Button asChild className='mt-8 gap-2'>
+        <Link to='/'>
+          <Home className='h-4 w-4' aria-hidden />
+          {t('unauthorizedPage.backButton')}
+        </Link>
+      </Button>
+    </main>
   )
 }

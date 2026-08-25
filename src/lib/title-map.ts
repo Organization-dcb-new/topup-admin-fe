@@ -1,24 +1,43 @@
-export const pageTitleMap: Record<string, string> = {
-  '/': 'Dashboard',
-  '/payment-methods': 'Payments Method',
-  '/payment-methods-categories': 'Payments Method Categories',
-  '/summary': 'Summary',
-  '/rate-limit': 'Rate Limit',
-  '/maintenances': 'Pemeliharaan',
-  '/admin': 'Users',
+// Path → key i18n di bawah `pageTitles.*` untuk judul tab browser.
+// Prefix terpanjang yang cocok menang, jadi halaman detail
+// (mis. /games/:id) mewarisi judul halaman induknya.
+export const pageTitleKeyMap: Record<string, string> = {
+  '/': 'dashboard',
+  '/login': 'login',
+  '/verify-otp': 'verifyOtp',
+  '/summary': 'summary',
+  '/cashflow': 'cashflow',
+  '/blog': 'blog',
+  '/shows': 'shows',
+  '/orders': 'orders',
+  '/banners': 'banners',
+  '/transactions': 'transactions',
+  '/input': 'input',
+  '/games': 'games',
+  '/category-product': 'categoryProduct',
+  '/categories': 'categories',
+  '/products': 'products',
+  '/products/callback-logs': 'productCallbackLogs',
+  '/anomaly': 'anomaly',
+  '/payment-methods': 'paymentMethods',
+  '/payment-methods-categories': 'paymentMethodCategories',
+  '/provider': 'provider',
+  '/referral-codes': 'referralCodes',
+  '/2fa-setup': 'twoFactorSetup',
+  '/rate-limit': 'rateLimit',
+  '/maintenances': 'maintenances',
+  '/admin': 'admin',
+  '/admin-logs': 'adminLogs',
+  '/unauthorized': 'unauthorized',
+}
 
-  '/transactions': 'Transactions',
-  '/games': 'Games',
-  '/input': 'Input',
-  '/blog': 'Article',
+export function resolvePageTitleKey(pathname: string): string | null {
+  const match = Object.keys(pageTitleKeyMap)
+    .filter(
+      (path) =>
+        pathname === path || (path !== '/' && pathname.startsWith(path + '/')),
+    )
+    .sort((a, b) => b.length - a.length)[0]
 
-  '/category-product': 'Categories Product',
-  '/categories': 'Categories',
-  '/banners': 'Banners',
-  '/shows': 'Shows',
-  '/orders': 'Orders',
-  '/2fa-setup': '2FA',
-
-  '/products': 'Products',
-  '/provider': 'Provider',
+  return match ? pageTitleKeyMap[match] : null
 }

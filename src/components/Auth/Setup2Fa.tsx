@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { QRCodeSVG } from 'qrcode.react'
 import {
   Copy,
@@ -13,7 +14,8 @@ import {
 import toast from 'react-hot-toast'
 
 import { api } from '@/api/axios'
-import { authStorage } from '@/lib/auth'
+import { useAuthUser } from '@/lib/auth'
+import { apiErrorMessage } from '@/lib/api-error'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { Button } from '@/components/ui/button'
 import {
@@ -36,21 +38,17 @@ interface SetupData {
 }
 
 const Setup2FA = () => {
+  const { t } = useTranslation()
   const [setupData, setSetupData] = useState<SetupData | null>(null)
   const [isConfirmingDeactivate, setIsConfirmingDeactivate] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const {
-    data: profile,
-    isLoading: isChecking,
-    refetch: reloadProfile,
-  } = useQuery({
-    queryKey: ['admin-me'],
-    queryFn: async () => {
-      const res = await api.get('/admin/me')
-      return res.data.data
-    },
-  })
+  // Satu sumber data profil: query 'auth-me' yang juga dipakai RoleGuard,
+  // supaya status 2FA & guard tidak pernah beda versi
+  const { user: profile, isLoading: isChecking } = useAuthUser()
+  const queryClient = useQueryClient()
+  const reloadProfile = () =>
+    queryClient.invalidateQueries({ queryKey: ['auth-me'] })
 
   const isMfaActive = profile?.two_factor_enabled
 
@@ -61,9 +59,10 @@ const Setup2FA = () => {
     },
     onSuccess: (data) => {
       setSetupData(data)
-      toast.success('QR berhasil dibuat')
+      toast.success(t('setup2faPage.qrCreated'))
     },
-    onError: () => toast.error('Gagal membuat setup 2FA'),
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('setup2faPage.qrCreateError'))),
   })
 
   const { mutate: activateMfa, isPending: isActivating } = useMutation({
@@ -71,17 +70,13 @@ const Setup2FA = () => {
       const res = await api.post('/admin/activate', { code })
       return res.data
     },
-    onSuccess: (res) => {
-      toast.success('2FA berhasil diaktifkan')
-      if (res.token) authStorage.setToken(res.token)
+    onSuccess: () => {
+      toast.success(t('setup2faPage.activateSuccess'))
       setSetupData(null)
       reloadProfile()
     },
     onError: (err: unknown) => {
-      const msg = (
-        err as { response?: { data?: { message?: string } } }
-      )?.response?.data?.message
-      toast.error(msg || 'Kode OTP tidak valid')
+      toast.error(apiErrorMessage(err, t('setup2faPage.activateError')))
     },
   })
 
@@ -90,17 +85,13 @@ const Setup2FA = () => {
       const res = await api.post('/admin/deactivate', { code })
       return res.data
     },
-    onSuccess: (res) => {
-      toast.success('2FA berhasil dinonaktifkan')
-      if (res.token) authStorage.setToken(res.token)
+    onSuccess: () => {
+      toast.success(t('setup2faPage.deactivateSuccess'))
       setIsConfirmingDeactivate(false)
       reloadProfile()
     },
     onError: (err: unknown) => {
-      const msg = (
-        err as { response?: { data?: { message?: string } } }
-      )?.response?.data?.message
-      toast.error(msg || 'Gagal menonaktifkan 2FA')
+      toast.error(apiErrorMessage(err, t('setup2faPage.deactivateError')))
     },
   })
 
@@ -110,18 +101,18 @@ const Setup2FA = () => {
     try {
       await copyTextToClipboard(text)
     } catch {
-      toast.error('Gagal menyalin kode cadangan')
+      toast.error(t('setup2faPage.copyError'))
       return
     }
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
-    toast.success('Kode cadangan disalin')
+    toast.success(t('setup2faPage.copySuccess'))
   }
 
   if (isChecking)
     return (
       <div
-        className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
+        className='flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
         role='status'
         aria-live='polite'
         aria-busy='true'
@@ -129,10 +120,10 @@ const Setup2FA = () => {
         <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
         <div className='text-center'>
           <p className='text-sm font-medium text-foreground'>
-            Memeriksa status keamanan…
+            {t('setup2faPage.checkingTitle')}
           </p>
           <p className='mt-1 text-xs text-muted-foreground'>
-            Mohon tunggu sebentar.
+            {t('setup2faPage.checkingSubtitle')}
           </p>
         </div>
       </div>
@@ -147,10 +138,10 @@ const Setup2FA = () => {
           </div>
           <div className='min-w-0 space-y-1'>
             <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
-              Keamanan akun
+              {t('setup2faPage.title')}
             </h1>
             <p className='text-sm text-muted-foreground'>
-              Kelola autentikasi dua faktor (2FA) untuk akun admin Anda.
+              {t('setup2faPage.subtitle')}
             </p>
           </div>
         </div>
@@ -160,7 +151,7 @@ const Setup2FA = () => {
               className='h-2 w-2 shrink-0 rounded-full bg-emerald-500'
               aria-hidden
             />
-            2FA aktif
+            {t('setup2faPage.activeBadge')}
           </div>
         )}
       </div>
@@ -170,10 +161,10 @@ const Setup2FA = () => {
           <CardHeader className='border-b border-red-100/80 bg-white px-4 py-4 sm:px-5'>
             <CardTitle className='flex items-center gap-2 text-base font-semibold text-red-800'>
               <ShieldOff className='h-5 w-5 shrink-0' aria-hidden />
-              Kelola 2FA
+              {t('setup2faPage.manageTitle')}
             </CardTitle>
             <CardDescription className='text-sm text-muted-foreground'>
-              Akun Anda saat ini dilindungi verifikasi dua langkah.
+              {t('setup2faPage.manageSubtitle')}
             </CardDescription>
           </CardHeader>
 
@@ -188,11 +179,10 @@ const Setup2FA = () => {
                 </div>
                 <div className='space-y-2'>
                   <h3 className='text-xl font-semibold text-gray-900'>
-                    Nonaktifkan perlindungan?
+                    {t('setup2faPage.deactivateHeading')}
                   </h3>
                   <p className='mx-auto max-w-sm text-sm text-muted-foreground'>
-                    Tindakan ini meningkatkan risiko akses tidak sah. Pastikan
-                    Anda memahami konsekuensinya.
+                    {t('setup2faPage.deactivateWarning')}
                   </p>
                 </div>
                 <Button
@@ -201,17 +191,17 @@ const Setup2FA = () => {
                   onClick={() => setIsConfirmingDeactivate(true)}
                   className='h-12 rounded-xl px-10 font-semibold transition-transform active:scale-[0.98]'
                 >
-                  Nonaktifkan 2FA
+                  {t('setup2faPage.deactivateButton')}
                 </Button>
               </div>
             ) : (
               <div className='flex flex-col items-center space-y-6 duration-300 animate-in zoom-in-95'>
                 <div className='text-center'>
                   <h3 className='text-lg font-semibold text-red-800'>
-                    Verifikasi akhir
+                    {t('setup2faPage.finalVerifyTitle')}
                   </h3>
                   <p className='text-sm text-muted-foreground'>
-                    Masukkan kode OTP untuk mengonfirmasi
+                    {t('setup2faPage.finalVerifySubtitle')}
                   </p>
                 </div>
 
@@ -239,7 +229,7 @@ const Setup2FA = () => {
                         className='h-4 w-4 animate-spin'
                         aria-hidden
                       />
-                      Menonaktifkan…
+                      {t('setup2faPage.deactivating')}
                     </p>
                   ) : (
                     <Button
@@ -247,7 +237,7 @@ const Setup2FA = () => {
                       onClick={() => setIsConfirmingDeactivate(false)}
                       className='text-xs text-muted-foreground hover:text-red-600'
                     >
-                      Batal, tetap aktifkan 2FA
+                      {t('setup2faPage.cancelDeactivate')}
                     </Button>
                   )}
                 </div>
@@ -266,11 +256,10 @@ const Setup2FA = () => {
                 />
               </div>
               <h3 className='mb-2 text-xl font-semibold tracking-tight text-gray-900'>
-                Perkuat keamanan akun
+                {t('setup2faPage.setupHeading')}
               </h3>
               <p className='mb-8 max-w-xs px-4 text-center text-sm text-muted-foreground'>
-                Gunakan aplikasi autentikator untuk melindungi dashboard admin
-                dari akses tidak sah.
+                {t('setup2faPage.setupDescription')}
               </p>
               <Button
                 onClick={() => generateSetup()}
@@ -281,10 +270,10 @@ const Setup2FA = () => {
                 {isGenerating ? (
                   <span className='flex items-center gap-2'>
                     <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
-                    Menyiapkan…
+                    {t('setup2faPage.preparing')}
                   </span>
                 ) : (
-                  'Aktifkan 2FA'
+                  t('setup2faPage.enableButton')
                 )}
               </Button>
             </Card>
@@ -293,7 +282,7 @@ const Setup2FA = () => {
               <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
                 <CardHeader className='pb-2 pt-4'>
                   <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    1. Pindai QR
+                    {t('setup2faPage.stepScan')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='flex justify-center py-4 sm:py-6'>
@@ -306,7 +295,7 @@ const Setup2FA = () => {
               <Card className='rounded-xl border-0 shadow-sm ring-1 ring-gray-900/5'>
                 <CardHeader className='pb-2 pt-4'>
                   <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    2. Kode cadangan
+                    {t('setup2faPage.stepBackup')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='space-y-4 py-4 sm:py-6'>
@@ -331,7 +320,9 @@ const Setup2FA = () => {
                     ) : (
                       <Copy className='h-4 w-4' aria-hidden />
                     )}
-                    {copied ? 'Disalin' : 'Salin semua kode'}
+                    {copied
+                      ? t('setup2faPage.copied')
+                      : t('setup2faPage.copyAll')}
                   </Button>
                 </CardContent>
               </Card>
@@ -339,7 +330,7 @@ const Setup2FA = () => {
               <Card className='rounded-xl border border-primary/20 shadow-sm ring-2 ring-primary/10'>
                 <CardHeader className='pb-2 pt-4'>
                   <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                    3. Aktivasi
+                    {t('setup2faPage.stepActivate')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className='flex flex-col items-center space-y-6 pt-6 sm:space-y-8 sm:pt-8'>
@@ -361,7 +352,7 @@ const Setup2FA = () => {
                   {isActivating && (
                     <p className='flex items-center gap-2 text-xs font-medium text-muted-foreground'>
                       <Loader2 className='h-3.5 w-3.5 animate-spin' aria-hidden />
-                      Memverifikasi…
+                      {t('setup2faPage.verifying')}
                     </p>
                   )}
                 </CardContent>
@@ -376,11 +367,10 @@ const Setup2FA = () => {
         <Alert className='rounded-xl border-amber-200 border-l-4 bg-amber-50/90 shadow-sm ring-1 ring-amber-900/5'>
           <AlertTriangle className='h-5 w-5 text-amber-600' aria-hidden />
           <AlertTitle className='font-semibold text-amber-950'>
-            Sebelum aktivasi
+            {t('setup2faPage.beforeActivationTitle')}
           </AlertTitle>
           <AlertDescription className='text-xs text-amber-900/90'>
-            Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun
-            sulit dilakukan jika aplikasi autentikator hilang.
+            {t('setup2faPage.beforeActivationDescription')}
           </AlertDescription>
         </Alert>
       )}

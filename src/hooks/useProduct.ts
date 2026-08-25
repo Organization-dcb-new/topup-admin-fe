@@ -70,8 +70,9 @@ export const useGetProducts = (
       filters.last_updated_by,
       numeric,
     ],
-    queryFn: async (): Promise<ProductResponse> => {
+    queryFn: async ({ signal }): Promise<ProductResponse> => {
       const res = await api.get('/products/admin', {
+        signal,
         params: {
           page,
           limit,

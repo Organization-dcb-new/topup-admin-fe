@@ -28,8 +28,9 @@ export const useGetProductCallbackLogs = (
       sortBy,
       sortOrder,
     ],
-    queryFn: async (): Promise<ProductCallbackLogListResponse> => {
+    queryFn: async ({ signal }): Promise<ProductCallbackLogListResponse> => {
       const res = await api.get('/products/callback-logs', {
+        signal,
         params: {
           page,
           limit,

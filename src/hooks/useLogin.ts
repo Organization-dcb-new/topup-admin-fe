@@ -6,7 +6,6 @@ import { useMutation } from '@tanstack/react-query'
 import { loginSchema, type LoginFormValues } from '@/schemas/login'
 import type { LoginRequest, LoginResponse } from '@/types/login'
 import { api } from '@/api/axios'
-import { authStorage } from '@/lib/auth'
 
 export function useLoginForm() {
   return useForm<LoginFormValues>({
@@ -18,10 +17,9 @@ export function useLoginForm() {
   })
 }
 
+// Sesi diset lewat cookie httpOnly oleh BE; token di body respons tidak dipakai FE
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>('/admin/login', payload)
-
-  authStorage.setToken(data.token)
 
   return data
 }

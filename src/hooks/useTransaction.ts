@@ -34,8 +34,9 @@ export const useGetTransactions = (
       maxAmount,
       exactAmount,
     ],
-    queryFn: async (): Promise<PaymentResponse> => {
+    queryFn: async ({ signal }): Promise<PaymentResponse> => {
       const res = await api.get('/transactions', {
+        signal,
         params: {
           page,
           limit,

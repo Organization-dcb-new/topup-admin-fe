@@ -647,7 +647,6 @@
     "updating": "Memperbarui…",
     "applyAll": "Terapkan ke Semua Game"
   },
-
   "gameShowcase": {
     "label": "Etalase",
     "hideAria": "Sembunyikan {{name}} dari etalase",
@@ -1742,7 +1741,17 @@
     "processing": "Memproses…",
     "submit": "Masuk",
     "loginSuccess": "Login berhasil",
-    "loginError": "Login gagal"
+    "loginError": "Login gagal",
+    "sessionExpired": "Sesi Anda berakhir. Silakan login kembali.",
+    "identifierRequired": "Email atau username wajib diisi",
+    "passwordMin": "Password minimal 6 karakter",
+    "otpRequired": "Masukkan kode OTP dari aplikasi autentikator untuk melanjutkan",
+    "showPassword": "Tampilkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi",
+    "welcomeTitle": "Selamat datang kembali"
+  },
+  "authLayout": {
+    "tagline": "Dashboard Admin"
   },
   "verifyOtpPage": {
     "recoverySuccess": "Pemulihan berhasil. Silakan login kembali.",
@@ -1760,6 +1769,45 @@
     "useRecovery": "Gunakan kode recovery",
     "trouble": "Terjadi masalah?",
     "backToLogin": "Kembali ke login"
+  },
+  "setup2faPage": {
+    "qrCreated": "QR berhasil dibuat",
+    "qrCreateError": "Gagal membuat setup 2FA",
+    "activateSuccess": "2FA berhasil diaktifkan",
+    "activateError": "Kode OTP tidak valid",
+    "deactivateSuccess": "2FA berhasil dinonaktifkan",
+    "deactivateError": "Gagal menonaktifkan 2FA",
+    "copyError": "Gagal menyalin kode cadangan",
+    "copySuccess": "Kode cadangan disalin",
+    "checkingTitle": "Memeriksa status keamanan…",
+    "checkingSubtitle": "Mohon tunggu sebentar.",
+    "title": "Keamanan akun",
+    "subtitle": "Kelola autentikasi dua faktor (2FA) untuk akun admin Anda.",
+    "activeBadge": "2FA aktif",
+    "manageTitle": "Kelola 2FA",
+    "manageSubtitle": "Akun Anda saat ini dilindungi verifikasi dua langkah.",
+    "deactivateHeading": "Nonaktifkan perlindungan?",
+    "deactivateWarning": "Tindakan ini meningkatkan risiko akses tidak sah. Pastikan Anda memahami konsekuensinya.",
+    "deactivateButton": "Nonaktifkan 2FA",
+    "finalVerifyTitle": "Verifikasi akhir",
+    "finalVerifySubtitle": "Masukkan kode OTP untuk mengonfirmasi",
+    "deactivating": "Menonaktifkan…",
+    "cancelDeactivate": "Batal, tetap aktifkan 2FA",
+    "setupHeading": "Perkuat keamanan akun",
+    "setupDescription": "Gunakan aplikasi autentikator untuk melindungi dashboard admin dari akses tidak sah.",
+    "enableButton": "Aktifkan 2FA",
+    "preparing": "Menyiapkan…",
+    "stepScan": "1. Pindai QR",
+    "stepBackup": "2. Kode cadangan",
+    "stepActivate": "3. Aktivasi",
+    "copied": "Disalin",
+    "copyAll": "Salin semua kode",
+    "verifying": "Memverifikasi…",
+    "beforeActivationTitle": "Sebelum aktivasi",
+    "beforeActivationDescription": "Simpan kode cadangan di tempat aman. Tanpa kode ini, pemulihan akun sulit dilakukan jika aplikasi autentikator hilang."
+  },
+  "authToasts": {
+    "logoutSuccess": "Berhasil logout"
   },
   "transactionDetailPage": {
     "title": "Detail transaksi",
@@ -1857,5 +1905,46 @@
   },
   "common": {
     "refresh": "Muat Ulang"
+  },
+  "apiErrors": {
+    "tooManyRequests": "Terlalu banyak percobaan. Coba lagi nanti.",
+    "timeout": "Permintaan melebihi batas waktu. Silakan coba lagi.",
+    "network": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
+    "generic": "Terjadi kesalahan. Silakan coba lagi."
+  },
+  "errorBoundary": {
+    "title": "Terjadi kesalahan",
+    "subtitle": "Ada error tak terduga saat menampilkan halaman ini. Memuat ulang biasanya memperbaikinya.",
+    "reload": "Muat ulang halaman"
+  },
+  "pageTitles": {
+    "dashboard": "Dashboard",
+    "login": "Masuk",
+    "verifyOtp": "Verifikasi OTP",
+    "summary": "Ringkasan",
+    "cashflow": "Arus Kas",
+    "blog": "Artikel",
+    "shows": "Shows",
+    "orders": "Pesanan",
+    "banners": "Banner",
+    "transactions": "Transaksi",
+    "input": "Input",
+    "games": "Game",
+    "categoryProduct": "Kategori Produk",
+    "categories": "Kategori",
+    "products": "Produk",
+    "productCallbackLogs": "Log Callback Produk",
+    "anomaly": "Anomali Produk",
+    "paymentMethods": "Metode Pembayaran",
+    "paymentMethodCategories": "Kategori Metode Pembayaran",
+    "provider": "Provider",
+    "referralCodes": "Kode Referral",
+    "twoFactorSetup": "Keamanan Akun",
+    "rateLimit": "Rate Limit",
+    "maintenances": "Pemeliharaan",
+    "admin": "Pengguna Admin",
+    "adminLogs": "Log Admin",
+    "unauthorized": "Akses Ditolak",
+    "notFound": "Halaman Tidak Ditemukan"
   }
 }
