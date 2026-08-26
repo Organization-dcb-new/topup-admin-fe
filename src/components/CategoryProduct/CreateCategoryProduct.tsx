@@ -20,6 +20,7 @@ import { useCreateCategoryProduct } from '@/hooks/useCategoryProduct'
 import { useGetGameNamesWithType, type GameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 export type FormValuesCategoryProduct = {
   name: string
@@ -248,7 +249,7 @@ export function CreateCategoryProductModal() {
             <input
               ref={inputRef}
               type='file'
-              accept='image/*,.svg'
+              accept={ACCEPTED_IMAGE_ACCEPT}
               className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]

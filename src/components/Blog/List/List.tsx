@@ -1,196 +1,293 @@
 'use client'
 
-import { DataTable } from '@/components/Layout/table-data'
-import { getBlogColumns } from '@/tables/table-blog'
-import { useGetBlogs } from '@/components/Blog/hooks/useBlog'
-import ErrorComponent from '@/components/Layout/error'
-import { useMemo, useState } from 'react'
-import Pagination from '@/components/Layout/Pagination'
-import type { Blog } from '@/tables/table-blog'
-import { FileText, Loader2, Calendar, Edit, Copy, Check } from 'lucide-react'
+import { useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
+import { Calendar, RefreshCw } from 'lucide-react'
+
+import { DataTable } from '@/components/Layout/table-data'
+import ErrorComponent from '@/components/Layout/error'
+import Pagination from '@/components/Layout/Pagination'
+import { EmptyState, TableSkeleton } from '@/components/Layout/table-states'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { format } from 'date-fns'
-import { enUS, id as idLocale } from 'date-fns/locale'
-import i18n from '@/i18n'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
+import { getBlogColumns } from '@/tables/table-blog'
+import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { cn } from '@/lib/utils'
+import { useGetBlogs } from '@/components/Blog/hooks/useBlog'
+import { BlogStatusBadge } from '@/components/Blog/BlogStatusBadge'
+import { CopySlugButton } from '@/components/Blog/CopySlugButton'
+import { BlogRowActions } from '@/components/Blog/BlogRowActions'
+import type { Blog, BlogStatus } from '@/components/Blog/types/blog'
 
 interface BlogListProps {
   onEdit: (blog: Blog) => void
+  onCreate: () => void
   viewMode: 'table' | 'grid'
+  page: number
+  onPageChange: (page: number) => void
+  limit: number
+  search: string
+  status: BlogStatus | ''
+  category: string
+  onClearFilters: () => void
 }
 
-function ArticleCard({ blog, onEdit, t }: { blog: Blog; onEdit: (blog: Blog) => void; t: any }) {
-  const [copied, setCopied] = useState(false)
-  const isPublished = blog.status === 'published'
+/** Sama seperti versi tabel: tinggi blok tag jadi terprediksi antar kartu. */
+const MAX_VISIBLE_TAGS = 3
 
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    await navigator.clipboard.writeText(blog.slug)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+const tagBadgeClass =
+  'border-primary/25 bg-primary/10 px-1.5 py-0 text-[10px] font-semibold text-primary'
 
-  const locale = i18n.language.startsWith('id') ? idLocale : enUS
-  const formattedDate = format(new Date(blog.created_at), 'd MMM yyyy', { locale })
+function ArticleCard({ blog, onEdit }: { blog: Blog; onEdit: (blog: Blog) => void }) {
+  const { t } = useTranslation('common')
+  const visibleTags = blog.tags.slice(0, MAX_VISIBLE_TAGS)
+  const hiddenCount = blog.tags.length - visibleTags.length
 
   return (
-    <div className='group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-zinc-700'>
-      <div className='relative aspect-video w-full overflow-hidden bg-slate-50 dark:bg-zinc-900 border-b border-slate-100 dark:border-zinc-900'>
+    <div className='group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xs transition-all duration-200 ease-out hover:shadow-md motion-reduce:transition-none'>
+      <div className='relative aspect-video w-full overflow-hidden border-b border-border bg-muted/40'>
         <img
           src={blog.thumbnail}
           alt={blog.title}
-          className='h-full w-full object-cover transition-transform duration-300 group-hover:scale-103'
+          loading='lazy'
+          decoding='async'
+          className='h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-103 motion-reduce:transition-none motion-reduce:group-hover:scale-100'
           onError={(e) => {
             e.currentTarget.src = '/placeholder.png'
           }}
         />
-        <div className='absolute left-3 top-3'>
-          <span
-            className={cn(
-              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-xs',
-              isPublished
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-            )}
-          >
-            <span
-              className={cn(
-                'h-1.5 w-1.5 shrink-0 rounded-full',
-                isPublished ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-              )}
-            />
-            {isPublished ? t('blogTable.statusPublished') : t('blogTable.statusDraft')}
-          </span>
-        </div>
+        <BlogStatusBadge
+          status={blog.status}
+          variant='solid'
+          className='absolute left-3 top-3 shadow-xs'
+        />
       </div>
 
-      <div className='flex flex-col flex-1 p-4 gap-3'>
+      <div className='flex flex-1 flex-col gap-3 p-4'>
         <div className='space-y-1.5'>
-          {blog.category && (
+          {blog.category?.trim() && (
             <Badge
               variant='secondary'
-              className='text-[9px] font-extrabold uppercase tracking-wider bg-slate-100 dark:bg-zinc-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-zinc-800'
+              className='border border-border bg-muted text-[10px] font-extrabold uppercase tracking-wider text-muted-foreground'
             >
               {blog.category}
             </Badge>
           )}
-          
-          <h3 className='text-sm font-bold text-slate-900 dark:text-white line-clamp-2 min-h-[2.5rem]'>
-            {blog.title}
-          </h3>
+          <h3 className='line-clamp-2 text-sm font-bold text-foreground'>{blog.title}</h3>
         </div>
 
-        <div className='flex flex-col gap-1 text-[11px] text-slate-400 dark:text-slate-500 border-t border-slate-50 dark:border-zinc-900/50 pt-2.5 mt-auto'>
+        <div className='flex flex-col gap-1 border-t border-border pt-2.5 text-xs text-muted-foreground'>
           <div className='flex items-center gap-1.5'>
-            <Calendar className='h-3.5 w-3.5 shrink-0' />
-            <span>{formattedDate}</span>
+            <Calendar className='h-3.5 w-3.5 shrink-0' aria-hidden />
+            <time dateTime={blog.created_at}>
+              {formatBackendDateTime(blog.created_at, 'd MMM yyyy')}
+            </time>
           </div>
-          
-          <div className='flex items-center justify-between gap-2 group/slug'>
-            <span className='truncate italic font-medium'>/{blog.slug}</span>
-            <button
-              type='button'
-              onClick={handleCopy}
-              className='opacity-0 group-hover/slug:opacity-100 transition-opacity duration-200 cursor-pointer p-0.5 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded'
-              title='Copy Slug'
-            >
-              {copied ? <Check className='h-3.5 w-3.5 text-emerald-500' /> : <Copy className='h-3.5 w-3.5 text-slate-400' />}
-            </button>
+
+          <div className='group/slug flex items-center justify-between gap-2'>
+            <span className='truncate font-medium italic'>/{blog.slug}</span>
+            <CopySlugButton slug={blog.slug} />
           </div>
         </div>
 
-        {blog.tags && blog.tags.length > 0 && (
-          <div className='flex flex-wrap gap-1 mt-1'>
-            {blog.tags.map((tag) => (
-              <Badge
-                key={tag}
-                variant='outline'
-                className='border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-950/20 px-1.5 py-0 text-[8px] font-bold text-indigo-600 dark:text-indigo-400'
-              >
+        {visibleTags.length > 0 && (
+          <div className='flex flex-wrap gap-1'>
+            {visibleTags.map((tag, index) => (
+              <Badge key={`${tag}-${index}`} variant='outline' className={tagBadgeClass}>
                 #{tag}
               </Badge>
             ))}
+            {hiddenCount > 0 && (
+              <Badge
+                variant='outline'
+                className='border-border bg-muted px-1.5 py-0 text-[10px] font-semibold text-muted-foreground'
+                title={blog.tags.slice(MAX_VISIBLE_TAGS).join(', ')}
+                aria-label={t('blogTable.moreTags', { count: hiddenCount })}
+              >
+                +{hiddenCount}
+              </Badge>
+            )}
           </div>
         )}
 
-        <div className='flex items-center justify-end border-t border-slate-100 dark:border-zinc-900 pt-3 mt-1'>
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            onClick={() => onEdit(blog)}
-            className='h-8 gap-1.5 text-xs font-semibold border-slate-200 dark:border-zinc-800 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800'
-          >
-            <Edit className='h-3.5 w-3.5' />
-            Edit Article
-          </Button>
+        {/* `mt-auto` di baris aksi, bukan di blok meta: tombol dan garis
+            pemisah tetap sejajar walau jumlah tag antar kartu berbeda. */}
+        <div className='mt-auto flex items-center justify-end border-t border-border pt-3'>
+          <BlogRowActions blog={blog} onEdit={onEdit} />
         </div>
       </div>
     </div>
   )
 }
 
-export default function BlogList({ onEdit, viewMode }: BlogListProps) {
+function CardSkeleton() {
+  return (
+    <div className='overflow-hidden rounded-2xl border border-border bg-card shadow-xs'>
+      <Skeleton className='aspect-video w-full rounded-none' />
+      <div className='space-y-2 p-4'>
+        <Skeleton className='h-4 w-20' />
+        <Skeleton className='h-4 w-full' />
+        <Skeleton className='h-4 w-2/3' />
+        <Skeleton className='h-8 w-full' />
+      </div>
+    </div>
+  )
+}
+
+export default function BlogList({
+  onEdit,
+  onCreate,
+  viewMode,
+  page,
+  onPageChange,
+  limit,
+  search,
+  status,
+  category,
+  onClearFilters,
+}: BlogListProps) {
   const { t } = useTranslation('common')
-  const limit = 5
-  const [page, setPage] = useState(1)
-  const { data: blogs, isPending, isError } = useGetBlogs(page, limit)
+  const {
+    data: blogs,
+    isPending,
+    isError,
+    isSuccess,
+    isPlaceholderData,
+    refetch,
+  } = useGetBlogs({ page, limit, search, status, category })
 
   const columns = useMemo(() => getBlogColumns(t, onEdit), [t, onEdit])
 
-  if (isPending) {
-    return (
-      <div
-        className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12'
-        role='status'
-        aria-live='polite'
-        aria-busy='true'
-      >
-        <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-        <div className='text-center'>
-          <p className='text-sm font-medium text-foreground'>{t('blogList.loadingTitle')}</p>
-          <p className='mt-1 text-xs text-muted-foreground'>{t('blogList.loadingHint')}</p>
-        </div>
-      </div>
-    )
-  }
+  const rows = blogs?.data ?? []
+  const totalPage = blogs?.meta?.total_page ?? 1
+  const totalData = blogs?.meta?.total_data ?? 0
+  const hasFilters = Boolean(search.trim() || status || category)
 
-  if (isError) {
-    return <ErrorComponent message={t('blogList.loadError')} />
-  }
+  // Menghapus baris terakhir sebuah halaman membuat `page` menunjuk halaman
+  // yang sudah tidak ada. Nomor halaman dijepit setelah data terbaru tiba —
+  // state-nya milik halaman induk, jadi tidak bisa disesuaikan saat render.
+  useEffect(() => {
+    if (isSuccess && !isPlaceholderData && page > totalPage) {
+      onPageChange(totalPage)
+    }
+  }, [isSuccess, isPlaceholderData, page, totalPage, onPageChange])
 
-  if (!blogs || blogs.data.length === 0) {
-    return (
-      <div
-        className='flex min-h-[14rem] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border/80 bg-muted/20 px-6 py-12 text-center'
-        role='status'
-      >
-        <span className='flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground'>
-          <FileText className='h-6 w-6' aria-hidden />
-        </span>
-        <div className='space-y-1'>
-          <p className='text-sm font-medium text-foreground'>{t('blogList.emptyTitle')}</p>
-          <p className='max-w-sm text-xs text-muted-foreground'>{t('blogList.emptyHint')}</p>
-        </div>
-      </div>
+  const rangeFrom = totalData === 0 ? 0 : (page - 1) * limit + 1
+  const rangeTo = Math.min(page * limit, totalData)
+
+  const emptyState =
+    page > 1 && !isPlaceholderData ? (
+      <EmptyState
+        message={t('blogList.emptyPageRow')}
+        action={
+          <Button type='button' variant='outline' size='sm' onClick={() => onPageChange(1)}>
+            {t('blogList.backToFirstPage')}
+          </Button>
+        }
+      />
+    ) : hasFilters ? (
+      <EmptyState
+        message={t('blogList.filterNoMatch')}
+        action={
+          <Button type='button' variant='outline' size='sm' onClick={onClearFilters}>
+            {t('blogList.filterClear')}
+          </Button>
+        }
+      />
+    ) : (
+      <EmptyState
+        message={t('blogList.emptyTitle')}
+        action={
+          <Can perm={PERM.BLOG_CREATE}>
+            <Button type='button' size='sm' onClick={onCreate}>
+              {t('blogPage.addArticle')}
+            </Button>
+          </Can>
+        }
+      />
     )
-  }
 
   return (
     <div className='space-y-4'>
-      {viewMode === 'table' ? (
-        <DataTable columns={columns} data={blogs.data} emptyMessage={t('blogList.emptyPageRow')} />
-      ) : (
-        <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-          {blogs.data.map((blog) => (
-            <ArticleCard key={blog.id} blog={blog} onEdit={onEdit} t={t} />
-          ))}
+      {/* Wilayah live permanen: region yang baru dipasang bersamaan dengan
+          isinya tidak diumumkan sama sekali oleh pembaca layar. */}
+      <p className='sr-only' role='status' aria-live='polite'>
+        {isPending
+          ? t('blogList.loadingTitle')
+          : isError
+            ? t('blogList.loadError')
+            : t('blogList.resultsAnnounce', { shown: rows.length, total: totalData })}
+      </p>
+
+      {isPending && !isError && (
+        <div aria-busy='true'>
+          {viewMode === 'table' ? (
+            <TableSkeleton rows={limit} />
+          ) : (
+            <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+              {Array.from({ length: limit }).map((_, index) => (
+                <CardSkeleton key={index} />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      <Pagination page={page} totalPage={blogs?.meta?.total_page} onChange={setPage} />
+      {isError && (
+        <div className='flex flex-col items-center gap-3 py-6'>
+          <ErrorComponent message={t('blogList.loadError')} />
+          <Button type='button' variant='outline' className='gap-2' onClick={() => void refetch()}>
+            <RefreshCw className='h-3.5 w-3.5' aria-hidden />
+            {t('common.refresh')}
+          </Button>
+        </div>
+      )}
+
+      {isSuccess && (
+        <>
+          {totalData > 0 && (
+            <p className='text-xs text-muted-foreground'>
+              {t('blogList.showingRange', { from: rangeFrom, to: rangeTo, total: totalData })}
+            </p>
+          )}
+
+          {/* Daftar halaman sebelumnya sengaja dipertahankan selama halaman
+              berikutnya dimuat; peredupan inilah satu-satunya penanda bahwa
+              datanya belum yang terbaru. */}
+          <div
+            aria-busy={isPlaceholderData}
+            inert={isPlaceholderData}
+            className={cn(
+              'transition-opacity duration-200 ease-out motion-reduce:transition-none',
+              isPlaceholderData && 'opacity-60',
+            )}
+          >
+            {viewMode === 'table' ? (
+              <DataTable
+                columns={columns}
+                data={rows}
+                getRowId={(row) => row.id}
+                stickyHeader
+                caption={t('blogTable.tableCaption', { page, totalPage })}
+                emptyMessage={emptyState}
+              />
+            ) : rows.length === 0 ? (
+              emptyState
+            ) : (
+              <div className='grid gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+                {rows.map((blog) => (
+                  <ArticleCard key={blog.id} blog={blog} onEdit={onEdit} />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <Pagination page={page} totalPage={totalPage} onChange={onPageChange} />
+        </>
+      )}
     </div>
   )
 }

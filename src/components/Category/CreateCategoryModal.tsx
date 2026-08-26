@@ -16,6 +16,7 @@ import { UploadCloud } from 'lucide-react'
 import type { FormValuesCategory } from '@/types/category'
 import { useCreateCategory } from '@/hooks/useCategory'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 export function CreateCategoryModal() {
   const [open, setOpen] = useState(false)
@@ -148,7 +149,7 @@ export function CreateCategoryModal() {
             <input
               ref={inputRef}
               type='file'
-              accept='image/*,.svg'
+              accept={ACCEPTED_IMAGE_ACCEPT}
               className='hidden'
               onChange={(e) => {
                 const file = e.target.files?.[0]

@@ -1,7 +1,7 @@
 import { DeleteBlogDialog } from '@/components/Blog/Delete/Delete'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { Blog } from '@/tables/table-blog'
+import type { Blog } from '@/components/Blog/types/blog'
 import { Pencil } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Can } from '@/components/Auth/Can'
@@ -48,7 +48,7 @@ export function BlogRowActions({
           </Button>
         </Can>
         <Can perm={PERM.BLOG_DELETE}>
-          <DeleteBlogDialog blogId={blog.id} triggerClassName={toolbarBtn} />
+          <DeleteBlogDialog blog={blog} triggerLabel={t('deleteBlogModal.triggerLabel')} />
         </Can>
       </div>
     </div>

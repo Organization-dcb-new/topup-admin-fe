@@ -18,6 +18,7 @@ import { useUpdateImageProduct } from '@/hooks/useProduct'
 import { cn } from '@/lib/utils'
 import { ImagePlus, Loader2, UploadCloud } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 export type FormValuesProductImage = {
   image: string
@@ -189,7 +190,7 @@ export function ChangeImageByGame() {
             <input
               ref={inputRef}
               type='file'
-              accept='image/*,.svg'
+              accept={ACCEPTED_IMAGE_ACCEPT}
               className='hidden'
               tabIndex={-1}
               onChange={(e) => {

@@ -467,7 +467,10 @@
     "createHeading": "Artikel baru",
     "editHeading": "Ubah artikel",
     "addArticle": "Tambah artikel",
-    "backToList": "Kembali ke daftar"
+    "backToList": "Kembali ke daftar",
+    "viewModeGroupAria": "Mode tampilan artikel",
+    "gridView": "Tampilan kartu",
+    "tableView": "Tampilan tabel"
   },
   "blogTable": {
     "colThumbnail": "Gambar",
@@ -477,50 +480,60 @@
     "noTags": "Tanpa tag",
     "colStatus": "Status",
     "statusPublished": "Terbit",
-    "statusDraft": "Draf"
+    "statusDraft": "Draf",
+    "moreTags_other": "{{count}} tag lainnya",
+    "moreTags_one": "{{count}} tag lainnya",
+    "tableCaption": "Daftar artikel, halaman {{page}} dari {{totalPage}}."
   },
   "blogList": {
     "loadingTitle": "Memuat daftar artikel…",
-    "loadingHint": "Mohon tunggu sebentar.",
     "loadError": "Gagal memuat daftar artikel. Periksa koneksi atau coba lagi nanti.",
     "emptyTitle": "Belum ada artikel",
-    "emptyHint": "Tambah artikel pertama lewat tombol Tambah artikel di atas.",
-    "emptyPageRow": "Belum ada artikel di halaman ini."
+    "emptyPageRow": "Belum ada artikel di halaman ini.",
+    "copySlugError": "Gagal menyalin slug",
+    "copySlugAria": "Salin slug {{slug}}",
+    "backToFirstPage": "Kembali ke halaman pertama",
+    "copySlugDone": "Slug tersalin",
+    "filterNoMatch": "Tidak ada artikel yang cocok dengan filter yang dipilih.",
+    "resultsAnnounce": "Menampilkan {{shown}} dari {{total}} artikel.",
+    "showingRange": "Menampilkan {{from}}–{{to}} dari {{total}} artikel",
+    "filterClear": "Hapus filter"
   },
   "blogManage": {
     "excerptLabel": "Ringkasan (excerpt)",
     "excerptPlaceholder": "Ringkasan singkat untuk daftar artikel dan SEO…",
     "statusLabel": "Status",
-    "publishedChangesHint": "Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik."
+    "publishedChangesHint": "Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik.",
+    "excerptHint": "Maksimal {{max}} karakter. Tampil di daftar artikel dan hasil pencarian."
   },
   "blogField": {
     "titlePlaceholder": "Judul artikel…",
     "titleAria": "Judul artikel",
-    "editorPlaceholder": "Tulis konten di sini (Markdown didukung)…"
+    "editorPlaceholder": "Tulis konten di sini (Markdown didukung)…",
+    "slugLocked": "Artikel ini sudah pernah tayang, jadi URL-nya tetap /{{slug}} meski judulnya diubah.",
+    "slugWillChange": "URL artikel akan berubah dari /{{from}} menjadi /{{to}} setelah disimpan.",
+    "slugPreviewEmpty": "URL artikel dibuat otomatis dari judul.",
+    "slugPreviewLabel": "URL artikel:"
   },
   "blogThumbnail": {
     "label": "Gambar thumbnail",
-    "ratioBadge": "16:9",
-    "previewAlt": "Pratinjau thumbnail",
-    "uploading": "Mengunggah…",
-    "uploadHint": "Klik atau pilih file gambar",
-    "uploadAria": "Unggah thumbnail",
     "sizeHint": "Disarankan 1280×720 px (rasio 16:9)"
   },
   "blogCategory": {
-    "gameCategoryTitle": "Kategori game",
-    "selectPlaceholder": "Pilih kategori game",
-    "searchPlaceholder": "Cari game…",
-    "searchAria": "Cari kategori",
+    "selectPlaceholder": "Pilih kategori artikel",
     "noResults": "Tidak ada hasil",
     "tagsTitle": "Tag / kata kunci",
     "tagsInputPlaceholder": "Ketik tag, Enter atau koma",
     "tagsInputAria": "Tambah tag",
     "removeTagAria": "Hapus tag {{tag}}",
-    "quickAddTitle": "Tambah cepat dari game",
     "quickSearchPlaceholder": "Cari…",
     "quickSearchAria": "Cari untuk saran tag",
-    "noMatchingCategories": "Tidak ada kategori cocok"
+    "tagsLimitReached": "Batas tag tercapai ({{max}})",
+    "quickAddTagsTitle": "Tambah cepat dari tag yang sudah ada",
+    "categoryTitle": "Kategori artikel",
+    "useCustomCategory": "Pakai \"{{value}}\" sebagai kategori baru",
+    "searchCategoryPlaceholder": "Cari atau ketik kategori baru…",
+    "noMatchingTags": "Tidak ada tag yang cocok"
   },
   "blogPublish": {
     "sectionTitle": "Status publikasi",
@@ -532,16 +545,14 @@
     "processing": "Memproses…",
     "saveChanges": "Simpan perubahan",
     "publish": "Publikasikan",
-    "saveDraft": "Simpan draf"
+    "saveDraft": "Simpan draf",
+    "waitingUpload": "Menunggu unggahan gambar selesai…"
   },
   "deleteBlogModal": {
     "triggerAria": "Hapus artikel",
     "triggerLabel": "Hapus",
     "title": "Hapus artikel?",
-    "description": "Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server.",
-    "cancel": "Batal",
-    "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
+    "description": "Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server."
   },
   "blogRowActions": {
     "actionsHeader": "Aksi",
@@ -558,13 +569,11 @@
     "serverErrorFallback": "Terjadi kesalahan pada server",
     "updateFailed": "Gagal memperbarui artikel: {{error}}",
     "saveFailed": "Gagal menyimpan artikel: {{error}}",
-    "loadingList": "Sedang memuat daftar artikel…",
-    "loadError": "Gagal memuat daftar artikel",
-    "emptyList": "Belum ada artikel",
-    "loadSuccess": "Berhasil memuat daftar artikel",
     "deleteLoading": "Menghapus artikel…",
     "deleteSuccess": "Artikel berhasil dihapus",
-    "deleteError": "Gagal menghapus artikel"
+    "deleteError": "Gagal menghapus artikel",
+    "slugConflict": "Artikel dengan judul ini sudah ada. Gunakan judul lain.",
+    "inlineImageUploadError": "Gagal mengunggah gambar ke dalam artikel"
   },
   "gamePage": {
     "title": "Game",
@@ -794,7 +803,7 @@
     "changeImages": "Ubah Gambar",
     "openAria": "Ubah gambar game {{name}}",
     "title": "Ubah gambar game",
-    "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung gambar atau SVG.",
+    "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung JPG, PNG, atau WebP.",
     "thumbnailLabel": "Miniatur (thumbnail)",
     "bannerLabel": "Banner",
     "thumbnailRequired": "Miniatur wajib diunggah",
@@ -813,7 +822,7 @@
     "discardLeave": "Buang",
     "errors": {
       "invalidType": "Hanya file gambar yang diperbolehkan.",
-      "tooLarge": "Ukuran gambar maksimal 10 MB."
+      "tooLarge": "Ukuran gambar maksimal 2 MB."
     }
   },
   "bulkPriceModal": {
@@ -993,7 +1002,7 @@
   "productImageModal": {
     "openAria": "Ubah gambar produk {{name}}",
     "title": "Ubah gambar produk",
-    "description": "Produk: {{name}}. Unggah gambar baru; file akan diproses otomatis setelah dipilih. Format gambar atau SVG.",
+    "description": "Produk: {{name}}. Unggah gambar baru; file akan diproses otomatis setelah dipilih. Format JPG, PNG, atau WebP.",
     "required": "Gambar wajib diunggah",
     "label": "Gambar",
     "dropHint": "Klik atau letakkan gambar di sini",
@@ -1009,7 +1018,7 @@
     "selectGame": "— Pilih game —",
     "gameRequired": "Pilih game terlebih dahulu",
     "imageLabel": "Gambar produk",
-    "imageHint": "PNG, JPG, WebP, atau SVG. File diunggah otomatis setelah dipilih.",
+    "imageHint": "PNG, JPG, atau WebP. File diunggah otomatis setelah dipilih.",
     "uploadAria": "Unggah gambar: klik atau seret file ke sini",
     "previewAlt": "Pratinjau gambar yang dipilih",
     "dropHint": "Klik atau jatuhkan gambar",
@@ -2430,8 +2439,8 @@
     "uploading": "Mengunggah… {{percent}}%",
     "uploadFailed": "Unggahan gagal. Silakan coba lagi.",
     "invalidType": "Hanya berkas gambar yang diizinkan.",
-    "tooLarge": "Ukuran gambar melebihi 10 MB.",
-    "limit": "PNG, JPG, atau SVG · maks 10 MB",
+    "tooLarge": "Ukuran gambar melebihi 2 MB.",
+    "limit": "PNG, JPG, atau WebP · maks 2 MB",
     "remove": "Hapus"
   },
   "paymentMethodForm": {
@@ -2554,5 +2563,33 @@
       "sortInvalid": "Urutan harus berupa bilangan bulat",
       "sortNegative": "Urutan tidak boleh negatif"
     }
+  },
+  "blogFilters": {
+    "categoryOption": "{{category}} ({{total}})",
+    "statusLabel": "Saring berdasarkan status",
+    "statusAll": "Semua status",
+    "perPage": "Per halaman",
+    "categoryAll": "Semua kategori",
+    "searchClear": "Bersihkan pencarian",
+    "searchPlaceholder": "Cari judul artikel…",
+    "categoryLabel": "Saring berdasarkan kategori"
+  },
+  "blogForm": {
+    "errors": {
+      "excerptMax": "Ringkasan maksimal {{max}} karakter",
+      "excerptRequired": "Ringkasan wajib diisi",
+      "titleRequired": "Judul wajib diisi",
+      "contentRequired": "Konten artikel wajib diisi",
+      "slugTaken": "URL dari judul ini sudah dipakai artikel lain. Ubah sedikit judulnya.",
+      "thumbnailRequired": "Gambar thumbnail wajib diunggah",
+      "categoryRequired": "Kategori wajib dipilih",
+      "statusInvalid": "Pilih status publikasi"
+    }
+  },
+  "blogDiscard": {
+    "keepEditing": "Lanjut menulis",
+    "description": "Artikel ini masih punya perubahan yang belum disimpan. Keluar sekarang akan membuang semua yang sudah ditulis.",
+    "title": "Buang perubahan?",
+    "confirm": "Buang perubahan"
   }
 }

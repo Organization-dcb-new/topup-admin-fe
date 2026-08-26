@@ -467,7 +467,10 @@
     "createHeading": "New article",
     "editHeading": "Edit article",
     "addArticle": "Add article",
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "viewModeGroupAria": "Article display mode",
+    "gridView": "Card view",
+    "tableView": "Table view"
   },
   "blogTable": {
     "colThumbnail": "Image",
@@ -477,50 +480,60 @@
     "noTags": "No tags",
     "colStatus": "Status",
     "statusPublished": "Published",
-    "statusDraft": "Draft"
+    "statusDraft": "Draft",
+    "moreTags_other": "{{count}} more tags",
+    "moreTags_one": "{{count}} more tag",
+    "tableCaption": "Article list, page {{page}} of {{totalPage}}."
   },
   "blogList": {
     "loadingTitle": "Loading articles…",
-    "loadingHint": "Please wait a moment.",
     "loadError": "Failed to load articles. Check your connection or try again later.",
     "emptyTitle": "No articles yet",
-    "emptyHint": "Add your first article with the Add article button above.",
-    "emptyPageRow": "No articles on this page."
+    "emptyPageRow": "No articles on this page.",
+    "copySlugError": "Failed to copy slug",
+    "copySlugAria": "Copy slug {{slug}}",
+    "backToFirstPage": "Back to first page",
+    "copySlugDone": "Slug copied",
+    "filterNoMatch": "No article matches the filters you picked.",
+    "resultsAnnounce": "Showing {{shown}} of {{total}} articles.",
+    "showingRange": "Showing {{from}}–{{to}} of {{total}} articles",
+    "filterClear": "Clear filters"
   },
   "blogManage": {
     "excerptLabel": "Summary (excerpt)",
     "excerptPlaceholder": "Short summary for the article list and SEO…",
     "statusLabel": "Status",
-    "publishedChangesHint": "Changes to published articles appear on the public site immediately."
+    "publishedChangesHint": "Changes to published articles appear on the public site immediately.",
+    "excerptHint": "Maximum {{max}} characters. Shown in the article list and search results."
   },
   "blogField": {
     "titlePlaceholder": "Article title…",
     "titleAria": "Article title",
-    "editorPlaceholder": "Write content here (Markdown supported)…"
+    "editorPlaceholder": "Write content here (Markdown supported)…",
+    "slugLocked": "This article has been published, so its URL stays /{{slug}} even if you edit the title.",
+    "slugWillChange": "The article URL will change from /{{from}} to /{{to}} once saved.",
+    "slugPreviewEmpty": "The article URL is generated from the title.",
+    "slugPreviewLabel": "Article URL:"
   },
   "blogThumbnail": {
     "label": "Thumbnail image",
-    "ratioBadge": "16:9",
-    "previewAlt": "Thumbnail preview",
-    "uploading": "Uploading…",
-    "uploadHint": "Click or choose an image file",
-    "uploadAria": "Upload thumbnail",
     "sizeHint": "Recommended 1280×720 px (16:9)"
   },
   "blogCategory": {
-    "gameCategoryTitle": "Game category",
-    "selectPlaceholder": "Choose a game category",
-    "searchPlaceholder": "Search games…",
-    "searchAria": "Search categories",
+    "selectPlaceholder": "Choose an article category",
     "noResults": "No results",
     "tagsTitle": "Tags / keywords",
     "tagsInputPlaceholder": "Type a tag, Enter or comma",
     "tagsInputAria": "Add tag",
     "removeTagAria": "Remove tag {{tag}}",
-    "quickAddTitle": "Quick add from games",
     "quickSearchPlaceholder": "Search…",
     "quickSearchAria": "Search tag suggestions",
-    "noMatchingCategories": "No matching categories"
+    "tagsLimitReached": "Tag limit reached ({{max}})",
+    "quickAddTagsTitle": "Quick add from existing tags",
+    "categoryTitle": "Article category",
+    "useCustomCategory": "Use \"{{value}}\" as a new category",
+    "searchCategoryPlaceholder": "Search or type a new category…",
+    "noMatchingTags": "No matching tags"
   },
   "blogPublish": {
     "sectionTitle": "Publication status",
@@ -532,16 +545,14 @@
     "processing": "Processing…",
     "saveChanges": "Save changes",
     "publish": "Publish",
-    "saveDraft": "Save draft"
+    "saveDraft": "Save draft",
+    "waitingUpload": "Waiting for the image upload to finish…"
   },
   "deleteBlogModal": {
     "triggerAria": "Delete article",
     "triggerLabel": "Delete",
     "title": "Delete article?",
-    "description": "This cannot be undone. The article will be permanently removed from the server.",
-    "cancel": "Cancel",
-    "deleting": "Deleting…",
-    "confirmDelete": "Delete"
+    "description": "This cannot be undone. The article will be permanently removed from the server."
   },
   "blogRowActions": {
     "actionsHeader": "Actions",
@@ -558,13 +569,11 @@
     "serverErrorFallback": "A server error occurred",
     "updateFailed": "Failed to update article: {{error}}",
     "saveFailed": "Failed to save article: {{error}}",
-    "loadingList": "Loading article list…",
-    "loadError": "Failed to load article list",
-    "emptyList": "No articles yet",
-    "loadSuccess": "Article list loaded",
     "deleteLoading": "Deleting article…",
     "deleteSuccess": "Article deleted",
-    "deleteError": "Failed to delete article"
+    "deleteError": "Failed to delete article",
+    "slugConflict": "An article with this title already exists. Use a different title.",
+    "inlineImageUploadError": "Failed to upload the image into the article"
   },
   "gamePage": {
     "title": "Games",
@@ -794,7 +803,7 @@
     "changeImages": "Change Images",
     "openAria": "Change image for {{name}}",
     "title": "Change game images",
-    "description": "Game: {{name}}. Update thumbnail and banner. Files upload automatically after selection. Images or SVG supported.",
+    "description": "Game: {{name}}. Update thumbnail and banner. Files upload automatically after selection. JPG, PNG, or WebP supported.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
     "thumbnailRequired": "Thumbnail is required",
@@ -813,7 +822,7 @@
     "discardLeave": "Discard",
     "errors": {
       "invalidType": "Only image files are allowed.",
-      "tooLarge": "Image must be 10 MB or smaller."
+      "tooLarge": "Image must be 2 MB or smaller."
     }
   },
   "bulkPriceModal": {
@@ -993,7 +1002,7 @@
   "productImageModal": {
     "openAria": "Change image for product {{name}}",
     "title": "Change product image",
-    "description": "Product: {{name}}. Upload a new image; file is processed automatically after selection. Supports image or SVG.",
+    "description": "Product: {{name}}. Upload a new image; file is processed automatically after selection. Supports JPG, PNG, or WebP.",
     "required": "Image is required",
     "label": "Image",
     "dropHint": "Click or drop an image here",
@@ -1009,7 +1018,7 @@
     "selectGame": "— Select game —",
     "gameRequired": "Select a game first",
     "imageLabel": "Product image",
-    "imageHint": "PNG, JPG, WebP, or SVG. File uploads automatically after selection.",
+    "imageHint": "PNG, JPG, or WebP. File uploads automatically after selection.",
     "uploadAria": "Upload image: click or drag file here",
     "previewAlt": "Preview selected image",
     "dropHint": "Click or drop image",
@@ -2430,8 +2439,8 @@
     "uploading": "Uploading… {{percent}}%",
     "uploadFailed": "Upload failed. Please try again.",
     "invalidType": "Only image files are allowed.",
-    "tooLarge": "Image is larger than 10 MB.",
-    "limit": "PNG, JPG or SVG · max 10 MB",
+    "tooLarge": "Image is larger than 2 MB.",
+    "limit": "PNG, JPG or WebP · max 2 MB",
     "remove": "Remove"
   },
   "paymentMethodForm": {
@@ -2554,5 +2563,33 @@
       "sortInvalid": "Sort order must be a whole number",
       "sortNegative": "Sort order cannot be negative"
     }
+  },
+  "blogFilters": {
+    "categoryOption": "{{category}} ({{total}})",
+    "statusLabel": "Filter by status",
+    "statusAll": "All statuses",
+    "perPage": "Per page",
+    "categoryAll": "All categories",
+    "searchClear": "Clear search",
+    "searchPlaceholder": "Search article title…",
+    "categoryLabel": "Filter by category"
+  },
+  "blogForm": {
+    "errors": {
+      "excerptMax": "Excerpt may be at most {{max}} characters",
+      "excerptRequired": "Excerpt is required",
+      "titleRequired": "Title is required",
+      "contentRequired": "Article content is required",
+      "slugTaken": "Another article already uses this URL. Change the title slightly.",
+      "thumbnailRequired": "Thumbnail image is required",
+      "categoryRequired": "Category is required",
+      "statusInvalid": "Choose a publication status"
+    }
+  },
+  "blogDiscard": {
+    "keepEditing": "Keep editing",
+    "description": "This article still has unsaved changes. Leaving now discards everything you have written.",
+    "title": "Discard your changes?",
+    "confirm": "Discard changes"
   }
 }

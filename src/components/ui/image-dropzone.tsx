@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress'
 import { uploadFile } from '@/hooks/useUpload'
 import { getImageFileValidationError } from '@/helpers/validate'
 import { cn } from '@/lib/utils'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 interface ImageDropzoneProps {
   /** URL yang sudah tersimpan (mode edit) */
@@ -170,7 +171,7 @@ export function ImageDropzone({
         ref={inputRef}
         id={inputId}
         type='file'
-        accept='image/*'
+        accept={ACCEPTED_IMAGE_ACCEPT}
         className='sr-only'
         disabled={disabled || isUploading}
         onChange={(e) => {

@@ -1,30 +1,32 @@
-import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
-import type { BlogFormBlogMutationResult } from '../hooks/useBlog'
 import { Loader2, Save, Send } from 'lucide-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import type { BlogStatus } from '../types/blog'
+
 interface ButtonManageProps {
-  handlePublish: (status: 'draft' | 'published') => void
-  blogMutation: BlogFormBlogMutationResult
-  isFormValid: boolean
+  isPending: boolean
+  /** Simpan dikunci selama gambar masih diunggah agar PATCH tidak balapan dengan URL baru. */
+  isUploading?: boolean
   isEdit?: boolean
-  currentStatusValue: 'draft' | 'published'
-  onStatusChange: (status: 'draft' | 'published') => void
+  currentStatusValue: BlogStatus
+  onStatusChange: (status: BlogStatus) => void
 }
 
 export default function ButtonManage({
-  blogMutation,
-  handlePublish,
-  isFormValid,
+  isPending,
+  isUploading = false,
   isEdit = false,
   currentStatusValue,
   onStatusChange,
 }: ButtonManageProps) {
   const { t } = useTranslation('common')
-  const isPending = blogMutation.isPending
-  const isDisabled = isPending || !isFormValid
+  // Sengaja TIDAK dimatikan oleh validitas form: tombol mati tanpa penjelasan
+  // adalah dead-end. Submit yang gagal validasi memindahkan fokus ke field
+  // bermasalah, jadi penyebabnya selalu terlihat.
+  const isDisabled = isPending || isUploading
 
   const statusOptions = useMemo(
     () =>
@@ -60,7 +62,9 @@ export default function ButtonManage({
               aria-checked={selected}
               onClick={() => onStatusChange(item.id)}
               className={cn(
-                'flex w-full cursor-pointer items-center gap-3 rounded-xl border-2 p-3 text-left transition-colors',
+                'flex w-full cursor-pointer items-center gap-3 rounded-xl border-2 p-3 text-left',
+                'transition-colors duration-200 ease-out motion-reduce:transition-none',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50',
                 selected
                   ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
                   : 'border-border/60 bg-muted/20 hover:border-border hover:bg-muted/40',
@@ -90,16 +94,15 @@ export default function ButtonManage({
         })}
       </div>
 
-      <div className='border-t border-border/60 pt-4'>
+      <div className='space-y-2 border-t border-border/60 pt-4'>
         <Button
-          type='button'
+          type='submit'
           disabled={isDisabled}
           className='h-11 w-full text-xs font-semibold uppercase tracking-wide'
-          onClick={() => handlePublish(currentStatusValue)}
         >
           {isPending ? (
             <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' aria-hidden />
+              <Loader2 className='mr-2 h-4 w-4 animate-spin motion-reduce:animate-none' aria-hidden />
               {t('blogPublish.processing')}
             </>
           ) : isEdit ? (
@@ -110,10 +113,18 @@ export default function ButtonManage({
           ) : (
             <>
               <Send className='mr-2 h-4 w-4' aria-hidden />
-              {currentStatusValue === 'published' ? t('blogPublish.publish') : t('blogPublish.saveDraft')}
+              {currentStatusValue === 'published'
+                ? t('blogPublish.publish')
+                : t('blogPublish.saveDraft')}
             </>
           )}
         </Button>
+
+        {isUploading && !isPending && (
+          <p role='status' aria-live='polite' className='text-center text-[10px] text-muted-foreground'>
+            {t('blogPublish.waitingUpload')}
+          </p>
+        )}
       </div>
     </div>
   )
