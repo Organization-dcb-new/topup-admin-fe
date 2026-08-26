@@ -17,6 +17,8 @@ interface ImageDropzoneProps {
   disabled?: boolean
   error?: string
   label: string
+  /** Ruang nama object key di bucket; lihat `uploadFile`. */
+  scope?: string
 }
 
 /**
@@ -32,6 +34,7 @@ export function ImageDropzone({
   disabled,
   error,
   label,
+  scope,
 }: ImageDropzoneProps) {
   const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -75,7 +78,7 @@ export function ImageDropzone({
     try {
       setBusy(true)
       setProgress(0)
-      const res = await uploadFile(file, setProgress)
+      const res = await uploadFile(file, setProgress, scope)
       onChange(res.data.url)
     } catch {
       setLocalError(t('imageDropzone.uploadFailed'))
@@ -114,6 +117,10 @@ export function ImageDropzone({
         tabIndex={disabled || isUploading ? -1 : 0}
         aria-describedby={shownError ? errorId : undefined}
         aria-disabled={disabled || isUploading}
+        // Kolom yang ditolak wajib mengumumkan dirinya tidak sah. Tanpa ini,
+        // pengguna pembaca layar mendengar semua kolom lain ditandai invalid
+        // dan kolom gambar diumumkan sebagai tombol biasa.
+        aria-invalid={shownError ? true : undefined}
         onClick={openPicker}
         onKeyDown={(e) => {
           // Dropzone lama hanya bereaksi pada klik mouse
@@ -167,12 +174,17 @@ export function ImageDropzone({
         )}
       </div>
 
+      {/* `sr-only` memotong tampilan, bukan menghapus elemen dari urutan tab.
+          Tanpa tabIndex={-1} kolom ini jadi perhentian tab kedua yang tak
+          kelihatan untuk satu kontrol yang sama, sehingga fokus keyboard
+          seolah lenyap satu tekan. Berkas hanya dibuka lewat openPicker. */}
       <input
         ref={inputRef}
         id={inputId}
         type='file'
         accept={ACCEPTED_IMAGE_ACCEPT}
         className='sr-only'
+        tabIndex={-1}
         disabled={disabled || isUploading}
         onChange={(e) => {
           const file = e.target.files?.[0]

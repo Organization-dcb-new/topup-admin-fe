@@ -236,7 +236,10 @@
     },
     "va": {
       "label": "Virtual account number",
-      "hint": "Complete the transfer before the deadline"
+      "hint": "Complete the transfer before the deadline",
+      "instruction": "Transfer to the virtual account number below",
+      "notAvailable": "Number not available yet",
+      "footnote": "The transaction is confirmed automatically once the transfer is received."
     },
     "copy": {
       "ariaCopied": "Copied",
@@ -371,95 +374,6 @@
     "loadingLabel": "Loading banners…",
     "reorderHint": "Use the arrows to set the order visitors see."
   },
-  "bannerPreview": {
-    "prev": "Previous banner",
-    "next": "Next banner",
-    "position": "{{current}} of {{total}}",
-    "autoplayStart": "Play slideshow",
-    "autoplayStop": "Pause slideshow",
-    "noLink": "No link",
-    "viewportLabel": "Storefront banner carousel",
-    "goToSlide": "Go to banner {{index}}",
-    "roleDescription": "carousel"
-  },
-  "bannerList": {
-    "statusActive": "Active",
-    "statusInactive": "Inactive",
-    "toggleAria": "Show {{title}} on the storefront",
-    "moveUp": "Move up",
-    "moveDown": "Move down",
-    "orderBadge": "#{{order}}",
-    "noLink": "No link",
-    "copyLink": "Copy link",
-    "copied": "Copied",
-    "openExternal": "Opens an external site",
-    "openInternal": "Storefront path",
-    "edit": "Edit",
-    "scheduleAlways": "Always on",
-    "scheduleFrom": "From {{start}}",
-    "scheduleUntil": "Until {{end}}",
-    "scheduleBetween": "{{start}} – {{end}}",
-    "scheduleExpired": "Ended",
-    "scheduleScheduled": "Scheduled",
-    "rowAria": "Banner {{title}}, position {{order}} of {{total}}"
-  },
-  "bannerForm": {
-    "createTitle": "Add banner",
-    "createDescription": "Upload the image, then choose where it sends visitors and when it runs.",
-    "editTitle": "Edit banner",
-    "editDescription": "Changes reach the storefront as soon as you save.",
-    "titleLabel": "Title",
-    "titlePlaceholder": "Weekend top-up promo",
-    "titleHint": "An internal label so this list stays readable.",
-    "imageLabel": "Banner image",
-    "altLabel": "Alt text",
-    "altPlaceholder": "Poster for the weekend top-up promo",
-    "altHint": "Read aloud by screen readers and shown if the image fails to load.",
-    "linkLabel": "Redirect link",
-    "linkPlaceholder": "/promo or https://example.com/promo",
-    "linkHint": "Leave empty to make the banner unclickable. Use a path such as /promo, or a full https:// address.",
-    "activeLabel": "Show on storefront",
-    "activeHint": "Inactive banners stay saved here but never reach visitors.",
-    "scheduleLabel": "Schedule",
-    "scheduleHint": "Optional. Leave both empty to keep the banner running indefinitely.",
-    "startLabel": "Starts",
-    "endLabel": "Ends",
-    "cancel": "Cancel",
-    "save": "Save changes",
-    "saving": "Saving…",
-    "create": "Add banner",
-    "creating": "Adding…",
-    "uploadWait": "Wait for the image upload to finish.",
-    "errors": {
-      "titleRequired": "Title is required",
-      "titleTooLong": "Title cannot be longer than {{max}} characters",
-      "imageRequired": "Banner image is required",
-      "imageInvalid": "The image must be a full http:// or https:// address",
-      "altTooLong": "Alt text cannot be longer than {{max}} characters",
-      "linkInvalid": "Use a storefront path such as /promo, or a full http:// or https:// address",
-      "linkTooLong": "Link cannot be longer than {{max}} characters",
-      "endBeforeStart": "The end time cannot be earlier than the start time"
-    }
-  },
-  "bannerDelete": {
-    "title": "Delete this banner?",
-    "description": "{{title}} disappears from the storefront right away. This cannot be undone.",
-    "triggerAria": "Delete banner"
-  },
-  "bannerToasts": {
-    "createSuccess": "Banner added",
-    "createError": "Could not add the banner",
-    "updateSuccess": "Banner updated",
-    "updateError": "Could not update the banner",
-    "deleteSuccess": "Banner deleted",
-    "deleteError": "Could not delete the banner",
-    "statusSuccess": "Banner status updated",
-    "statusError": "Could not update the banner status",
-    "reorderSuccess": "New order saved",
-    "reorderError": "Could not save the new order",
-    "copySuccess": "Link copied",
-    "copyError": "Could not copy the link"
-  },
   "blogPage": {
     "title": "Blog",
     "subtitle": "Manage articles: view the list, create a new post, or edit published content. Use the buttons in the workspace below to switch modes.",
@@ -468,9 +382,9 @@
     "editHeading": "Edit article",
     "addArticle": "Add article",
     "backToList": "Back to list",
-    "viewModeGroupAria": "Article display mode",
+    "tableView": "Table view",
     "gridView": "Card view",
-    "tableView": "Table view"
+    "viewModeGroupAria": "Article display mode"
   },
   "blogTable": {
     "colThumbnail": "Image",
@@ -481,8 +395,8 @@
     "colStatus": "Status",
     "statusPublished": "Published",
     "statusDraft": "Draft",
-    "moreTags_other": "{{count}} more tags",
     "moreTags_one": "{{count}} more tag",
+    "moreTags_other": "{{count}} more tags",
     "tableCaption": "Article list, page {{page}} of {{totalPage}}."
   },
   "blogList": {
@@ -490,14 +404,14 @@
     "loadError": "Failed to load articles. Check your connection or try again later.",
     "emptyTitle": "No articles yet",
     "emptyPageRow": "No articles on this page.",
-    "copySlugError": "Failed to copy slug",
-    "copySlugAria": "Copy slug {{slug}}",
     "backToFirstPage": "Back to first page",
-    "copySlugDone": "Slug copied",
     "filterNoMatch": "No article matches the filters you picked.",
-    "resultsAnnounce": "Showing {{shown}} of {{total}} articles.",
+    "filterClear": "Clear filters",
     "showingRange": "Showing {{from}}–{{to}} of {{total}} articles",
-    "filterClear": "Clear filters"
+    "resultsAnnounce": "Showing {{shown}} of {{total}} articles.",
+    "copySlugAria": "Copy slug {{slug}}",
+    "copySlugDone": "Slug copied",
+    "copySlugError": "Failed to copy slug"
   },
   "blogManage": {
     "excerptLabel": "Summary (excerpt)",
@@ -510,10 +424,10 @@
     "titlePlaceholder": "Article title…",
     "titleAria": "Article title",
     "editorPlaceholder": "Write content here (Markdown supported)…",
-    "slugLocked": "This article has been published, so its URL stays /{{slug}} even if you edit the title.",
-    "slugWillChange": "The article URL will change from /{{from}} to /{{to}} once saved.",
+    "slugPreviewLabel": "Article URL:",
     "slugPreviewEmpty": "The article URL is generated from the title.",
-    "slugPreviewLabel": "Article URL:"
+    "slugWillChange": "The article URL will change from /{{from}} to /{{to}} once saved.",
+    "slugLocked": "This article has been published, so its URL stays /{{slug}} even if you edit the title."
   },
   "blogThumbnail": {
     "label": "Thumbnail image",
@@ -528,12 +442,12 @@
     "removeTagAria": "Remove tag {{tag}}",
     "quickSearchPlaceholder": "Search…",
     "quickSearchAria": "Search tag suggestions",
-    "tagsLimitReached": "Tag limit reached ({{max}})",
-    "quickAddTagsTitle": "Quick add from existing tags",
     "categoryTitle": "Article category",
-    "useCustomCategory": "Use \"{{value}}\" as a new category",
     "searchCategoryPlaceholder": "Search or type a new category…",
-    "noMatchingTags": "No matching tags"
+    "useCustomCategory": "Use \"{{value}}\" as a new category",
+    "quickAddTagsTitle": "Quick add from existing tags",
+    "noMatchingTags": "No matching tags",
+    "tagsLimitReached": "Tag limit reached ({{max}})"
   },
   "blogPublish": {
     "sectionTitle": "Publication status",
@@ -572,8 +486,36 @@
     "deleteLoading": "Deleting article…",
     "deleteSuccess": "Article deleted",
     "deleteError": "Failed to delete article",
-    "slugConflict": "An article with this title already exists. Use a different title.",
-    "inlineImageUploadError": "Failed to upload the image into the article"
+    "inlineImageUploadError": "Failed to upload the image into the article",
+    "slugConflict": "An article with this title already exists. Use a different title."
+  },
+  "blogFilters": {
+    "searchPlaceholder": "Search article title…",
+    "searchClear": "Clear search",
+    "statusLabel": "Filter by status",
+    "statusAll": "All statuses",
+    "categoryLabel": "Filter by category",
+    "categoryAll": "All categories",
+    "categoryOption": "{{category}} ({{total}})",
+    "perPage": "Per page"
+  },
+  "blogForm": {
+    "errors": {
+      "titleRequired": "Title is required",
+      "categoryRequired": "Category is required",
+      "contentRequired": "Article content is required",
+      "excerptRequired": "Excerpt is required",
+      "excerptMax": "Excerpt may be at most {{max}} characters",
+      "thumbnailRequired": "Thumbnail image is required",
+      "statusInvalid": "Choose a publication status",
+      "slugTaken": "Another article already uses this URL. Change the title slightly."
+    }
+  },
+  "blogDiscard": {
+    "title": "Discard your changes?",
+    "description": "This article still has unsaved changes. Leaving now discards everything you have written.",
+    "keepEditing": "Keep editing",
+    "confirm": "Discard changes"
   },
   "gamePage": {
     "title": "Games",
@@ -676,7 +618,8 @@
     "sellingPrice": "Selling",
     "stock": "Stock",
     "unlimited": "Unlimited stock",
-    "productActive": "Active"
+    "productActive": "Active",
+    "actions": "Actions"
   },
   "gameTable": {
     "colImage": "Image",
@@ -1406,24 +1349,94 @@
     "create": "Create",
     "saving": "Saving..."
   },
-  "createBannerModal": {
-    "trigger": "Add banner",
-    "title": "Add banner",
-    "description": "Upload an image and set the destination URL when users tap the banner in the app.",
-    "redirectLabel": "Redirect link",
-    "redirectRequired": "Redirect link is required",
-    "redirectHint": "Full URL (including https://) for a promo or product page.",
+  "bannerPreview": {
+    "prev": "Previous banner",
+    "next": "Next banner",
+    "position": "{{current}} of {{total}}",
+    "autoplayStart": "Play slideshow",
+    "autoplayStop": "Pause slideshow",
+    "noLink": "No link",
+    "viewportLabel": "Storefront banner carousel",
+    "goToSlide": "Go to banner {{index}}",
+    "roleDescription": "carousel"
+  },
+  "bannerList": {
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "toggleAria": "Show {{title}} on the storefront",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "orderBadge": "#{{order}}",
+    "noLink": "No link",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "openExternal": "Opens an external site",
+    "openInternal": "Storefront path",
+    "edit": "Edit",
+    "scheduleAlways": "Always on",
+    "scheduleFrom": "From {{start}}",
+    "scheduleUntil": "Until {{end}}",
+    "scheduleBetween": "{{start}} – {{end}}",
+    "scheduleExpired": "Ended",
+    "scheduleScheduled": "Scheduled",
+    "rowAria": "Banner {{title}}, position {{order}} of {{total}}"
+  },
+  "bannerForm": {
+    "createTitle": "Add banner",
+    "createDescription": "Upload the image, then choose where it sends visitors and when it runs.",
+    "editTitle": "Edit banner",
+    "editDescription": "Changes reach the storefront as soon as you save.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Weekend top-up promo",
+    "titleHint": "An internal label so this list stays readable.",
     "imageLabel": "Banner image",
-    "imageHint": "PNG, JPG, or SVG. Drag a file onto this area or tap to choose.",
-    "uploadAria": "Upload banner image",
-    "previewAlt": "Banner preview",
-    "changeImage": "Change image",
-    "uploadTitle": "Upload image",
-    "uploadDropHint": "Click or drop a file here",
-    "uploading": "Uploading… {{percent}}%",
+    "altLabel": "Alt text",
+    "altPlaceholder": "Poster for the weekend top-up promo",
+    "altHint": "Read aloud by screen readers and shown if the image fails to load.",
+    "linkLabel": "Redirect link",
+    "linkPlaceholder": "/promo or https://example.com/promo",
+    "linkHint": "Leave empty to make the banner unclickable. Use a path such as /promo, or a full https:// address.",
+    "activeLabel": "Show on storefront",
+    "activeHint": "Inactive banners stay saved here but never reach visitors.",
+    "scheduleLabel": "Schedule",
+    "scheduleHint": "Optional. Leave both empty to keep the banner running indefinitely.",
+    "startLabel": "Starts",
+    "endLabel": "Ends",
     "cancel": "Cancel",
-    "save": "Save",
-    "saving": "Saving…"
+    "save": "Save changes",
+    "saving": "Saving…",
+    "create": "Add banner",
+    "creating": "Adding…",
+    "uploadWait": "Wait for the image upload to finish.",
+    "errors": {
+      "titleRequired": "Title is required",
+      "titleTooLong": "Title cannot be longer than {{max}} characters",
+      "imageRequired": "Banner image is required",
+      "imageInvalid": "The image must be a full http:// or https:// address",
+      "altTooLong": "Alt text cannot be longer than {{max}} characters",
+      "linkInvalid": "Use a storefront path such as /promo, or a full http:// or https:// address",
+      "linkTooLong": "Link cannot be longer than {{max}} characters",
+      "endBeforeStart": "The end time cannot be earlier than the start time"
+    }
+  },
+  "bannerDelete": {
+    "title": "Delete this banner?",
+    "description": "{{title}} disappears from the storefront right away. This cannot be undone.",
+    "triggerAria": "Delete banner"
+  },
+  "bannerToasts": {
+    "createSuccess": "Banner added",
+    "createError": "Could not add the banner",
+    "updateSuccess": "Banner updated",
+    "updateError": "Could not update the banner",
+    "deleteSuccess": "Banner deleted",
+    "deleteError": "Could not delete the banner",
+    "statusSuccess": "Banner status updated",
+    "statusError": "Could not update the banner status",
+    "reorderSuccess": "New order saved",
+    "reorderError": "Could not save the new order",
+    "copySuccess": "Link copied",
+    "copyError": "Could not copy the link"
   },
   "showPage": {
     "title": "Shows",
@@ -1549,6 +1562,23 @@
     "saving": "Saving…",
     "sortLabel": "Sort order",
     "sortHint": "A smaller number appears earlier in the storefront."
+  },
+  "showForm": {
+    "discardTitle": "Discard changes?",
+    "discardDescription": "Your edits to this show have not been saved and will be lost.",
+    "discardKeep": "Keep editing",
+    "discardConfirm": "Discard",
+    "errors": {
+      "nameRequired": "Show name is required",
+      "nameTooLong": "Show name must be at most {{max}} characters",
+      "aliasRequired": "Alias is required",
+      "aliasTooLong": "Alias must be at most {{max}} characters",
+      "imageRequired": "Show image is required",
+      "imageInvalid": "Image must be a full http/https URL",
+      "sortRequired": "Sort order is required",
+      "sortInvalid": "Sort order must be a whole number",
+      "sortNegative": "Sort order cannot be negative"
+    }
   },
   "deleteShowModal": {
     "triggerAria": "Delete show",
@@ -2133,7 +2163,17 @@
     "mfaRequired": "Two-factor verification is required. Please sign in again.",
     "forbidden": "You do not have permission to perform this action.",
     "selfRoleChange": "You cannot change your own role.",
-    "selfDelete": "You cannot delete your own account."
+    "selfDelete": "You cannot delete your own account.",
+    "bannerNotFound": "That banner no longer exists. Refresh the list.",
+    "bannerInvalidId": "That banner id is not valid.",
+    "bannerInvalidSchedule": "The start time must not be later than the end time.",
+    "bannerReorderEmpty": "There is nothing to reorder.",
+    "bannerReorderDuplicate": "The new order lists the same banner twice.",
+    "bannerReorderUnknownId": "The new order includes a banner that no longer exists. Refresh the list.",
+    "bannerOperationFailed": "The banner request could not be processed. Please try again.",
+    "titleRequired": "The title is required.",
+    "imageRequired": "The image is required.",
+    "statusRequired": "The status is required."
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -2546,50 +2586,5 @@
     "inactive": "Inactive",
     "avgPercent": "Average commission",
     "scopedHint": "From the {{count}} rows on this page."
-  },
-  "showForm": {
-    "discardTitle": "Discard changes?",
-    "discardDescription": "Your edits to this show have not been saved and will be lost.",
-    "discardKeep": "Keep editing",
-    "discardConfirm": "Discard",
-    "errors": {
-      "nameRequired": "Show name is required",
-      "nameTooLong": "Show name must be at most {{max}} characters",
-      "aliasRequired": "Alias is required",
-      "aliasTooLong": "Alias must be at most {{max}} characters",
-      "imageRequired": "Show image is required",
-      "imageInvalid": "Image must be a full http/https URL",
-      "sortRequired": "Sort order is required",
-      "sortInvalid": "Sort order must be a whole number",
-      "sortNegative": "Sort order cannot be negative"
-    }
-  },
-  "blogFilters": {
-    "categoryOption": "{{category}} ({{total}})",
-    "statusLabel": "Filter by status",
-    "statusAll": "All statuses",
-    "perPage": "Per page",
-    "categoryAll": "All categories",
-    "searchClear": "Clear search",
-    "searchPlaceholder": "Search article title…",
-    "categoryLabel": "Filter by category"
-  },
-  "blogForm": {
-    "errors": {
-      "excerptMax": "Excerpt may be at most {{max}} characters",
-      "excerptRequired": "Excerpt is required",
-      "titleRequired": "Title is required",
-      "contentRequired": "Article content is required",
-      "slugTaken": "Another article already uses this URL. Change the title slightly.",
-      "thumbnailRequired": "Thumbnail image is required",
-      "categoryRequired": "Category is required",
-      "statusInvalid": "Choose a publication status"
-    }
-  },
-  "blogDiscard": {
-    "keepEditing": "Keep editing",
-    "description": "This article still has unsaved changes. Leaving now discards everything you have written.",
-    "title": "Discard your changes?",
-    "confirm": "Discard changes"
   }
 }
