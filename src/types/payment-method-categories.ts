@@ -14,3 +14,12 @@ export interface PaymentMethodCategory {
   created_at: string
   updated_at: string
 }
+
+/** Satu bentuk untuk create maupun update kategori. */
+export interface PaymentCategoryFormValues {
+  name: string
+  slug: string
+  icon_url: string
+  sort_order: number
+  is_active: boolean
+}

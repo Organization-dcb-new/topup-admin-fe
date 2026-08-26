@@ -1,104 +1,92 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
-import i18n from '@/i18n'
+
 import type { PaymentMethod } from '@/types/payment-method'
 import { Badge } from '@/components/ui/badge'
+import { EntityAvatar } from '@/components/ui/entity-avatar'
 import { DeletePaymentMethodModal } from '@/components/PaymentMethod/DeletePaymentMethodModal'
 import { EditPaymentMethodModal } from '@/components/PaymentMethod/EditPaymentMethodModal'
 import { Can } from '@/components/Auth/Can'
 import { PERM } from '@/constants/permissions'
-const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
+import { formatCurrency } from '@/lib/format'
 
-export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[] => [
+/**
+ * Sepuluh kolom dulu memaksa scroll horizontal di layar mana pun. Kolom yang
+ * saling berkaitan kini digabung jadi satu sel bertingkat: identitas (ikon,
+ * nama, kode), biaya (persen + tetap), dan batas nominal (min–maks).
+ */
+export const getPaymentMethodColumns = (
+  t: TFunction,
+): ColumnDef<PaymentMethod>[] => [
   {
-    accessorKey: 'icon_url',
-    header: t('paymentMethodTable.colIcon'),
-    cell: ({ row }) => {
-      const src = row.original.icon_url || FALLBACK_ICON
-      return (
-        <img
-          src={src}
+    accessorKey: 'name',
+    header: t('paymentMethodTable.colMethod'),
+    cell: ({ row }) => (
+      <div className='flex min-w-0 items-center gap-3'>
+        <EntityAvatar
+          src={row.original.icon_url}
           alt={
             row.original.name
               ? t('paymentMethodTable.iconAltName', { name: row.original.name })
               : t('paymentMethodTable.iconAltFallback')
           }
-          className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
-          onError={(e) => {
-            e.currentTarget.src = '/placeholder.png'
-          }}
         />
-      )
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: t('paymentMethodTable.colName'),
-    cell: ({ row }) => (
-      <div className='max-w-[10rem] font-medium text-gray-900 sm:max-w-xs'>{row.original.name}</div>
-    ),
-  },
-  {
-    accessorKey: 'code',
-    header: t('paymentMethodTable.colCode'),
-    cell: ({ row }) => (
-      <code className='rounded bg-muted/60 px-1.5 py-0.5 font-mono text-xs text-foreground'>
-        {row.original.code}
-      </code>
+        <div className='min-w-0'>
+          <span className='block max-w-48 truncate font-medium text-foreground'>
+            {row.original.name}
+          </span>
+          <code className='block max-w-48 truncate font-mono text-xs text-muted-foreground'>
+            {row.original.code}
+          </code>
+        </div>
+      </div>
     ),
   },
   {
     accessorKey: 'provider',
     header: t('paymentMethodTable.colProvider'),
     cell: ({ row }) => (
-      <Badge variant='outline' className='font-medium capitalize'>
-        {row.original.provider}
-      </Badge>
+      <div className='min-w-0 space-y-1'>
+        <Badge variant='outline' className='font-medium capitalize'>
+          {row.original.provider}
+        </Badge>
+        {row.original.type && (
+          <span className='block truncate text-xs capitalize text-muted-foreground'>
+            {row.original.type}
+          </span>
+        )}
+      </div>
     ),
   },
   {
-    accessorKey: 'fee_percentage',
-    header: t('paymentMethodTable.colFeePercent'),
+    id: 'fee',
+    header: t('paymentMethodTable.colFee'),
     cell: ({ row }) => (
-      <span className='tabular-nums text-sm text-foreground'>{row.original.fee_percentage}%</span>
+      <div className='whitespace-nowrap'>
+        <span className='block text-sm tabular-nums text-foreground'>
+          {row.original.fee_percentage}%
+        </span>
+        <span className='block text-xs tabular-nums text-muted-foreground'>
+          + {formatCurrency(row.original.fee_fixed)}
+        </span>
+      </div>
     ),
   },
   {
-    accessorKey: 'fee_fixed',
-    header: t('paymentMethodTable.colFeeFixed'),
+    id: 'amount_range',
+    header: t('paymentMethodTable.colAmountRange'),
     cell: ({ row }) => (
-      <span className='tabular-nums text-sm text-foreground'>
-        {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0,
-        }).format(row.original.fee_fixed)}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'min_amount',
-    header: t('paymentMethodTable.colMin'),
-    cell: ({ row }) => (
-      <span className='tabular-nums text-sm text-muted-foreground'>
-        {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0,
-        }).format(row.original.min_amount)}
-      </span>
-    ),
-  },
-  {
-    accessorKey: 'max_amount',
-    header: t('paymentMethodTable.colMax'),
-    cell: ({ row }) => (
-      <span className='tabular-nums text-sm text-muted-foreground'>
-        {new Intl.NumberFormat(i18n.language.startsWith('id') ? 'id-ID' : 'en-US', {
-          style: 'currency',
-          currency: 'IDR',
-          maximumFractionDigits: 0,
-        }).format(row.original.max_amount)}
+      <span className='block whitespace-nowrap text-sm tabular-nums text-muted-foreground'>
+        {/* max_amount 0 berarti tanpa batas; menampilkannya apa adanya
+            terbaca sebagai "sampai Rp0" alias metode yang mustahil dipakai */}
+        {row.original.max_amount > 0
+          ? t('paymentMethodTable.amountRange', {
+              min: formatCurrency(row.original.min_amount),
+              max: formatCurrency(row.original.max_amount),
+            })
+          : t('paymentMethodTable.amountFrom', {
+              min: formatCurrency(row.original.min_amount),
+            })}
       </span>
     ),
   },
@@ -111,7 +99,10 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
           {t('paymentMethodTable.statusActive')}
         </Badge>
       ) : (
-        <Badge variant='outline' className='border-border font-medium text-muted-foreground'>
+        <Badge
+          variant='outline'
+          className='border-border font-medium text-muted-foreground'
+        >
           {t('paymentMethodTable.statusInactive')}
         </Badge>
       ),
@@ -120,12 +111,21 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     id: 'actions',
     header: t('paymentMethodTable.colActions'),
     cell: ({ row }) => (
-      <div className='flex flex-wrap items-center gap-1'>
+      <div
+        className='inline-flex items-center gap-0.5 rounded-lg border border-border bg-muted/30 p-0.5'
+        role='group'
+        aria-label={t('paymentMethodTable.rowActionsAria', {
+          name: row.original.name,
+        })}
+      >
         <Can perm={PERM.PAYMENT_METHOD_UPDATE}>
           <EditPaymentMethodModal paymentMethod={row.original} />
         </Can>
         <Can perm={PERM.PAYMENT_METHOD_DELETE}>
-          <DeletePaymentMethodModal id={row.original.id} />
+          <DeletePaymentMethodModal
+            id={row.original.id}
+            name={row.original.name}
+          />
         </Can>
       </div>
     ),

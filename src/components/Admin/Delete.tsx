@@ -16,7 +16,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { StepUpOtpSection } from '@/components/Auth/twofa/StepUpOtpSection'
 import { useAdminMutation } from '@/hooks/useAdmin'
+import { useStepUp } from '@/hooks/useStepUp'
 
 export const DeleteAdminButton = ({
   id,
@@ -32,6 +34,9 @@ export const DeleteAdminButton = ({
 }) => {
   const { t } = useTranslation('common')
   const { deleteAdmin } = useAdminMutation()
+  // Dua penjaga dengan tugas berbeda: mengetik email menahan klik tak sengaja,
+  // kode TOTP membuktikan yang mengklik memang pemilik akun ini.
+  const stepUp = useStepUp()
   const [open, setOpen] = useState(false)
   const [confirmEmail, setConfirmEmail] = useState('')
 
@@ -64,8 +69,12 @@ export const DeleteAdminButton = ({
     <AlertDialog
       open={open}
       onOpenChange={(next) => {
+        if (deleteAdmin.isPending) return
         setOpen(next)
-        if (!next) setConfirmEmail('')
+        if (!next) {
+          setConfirmEmail('')
+          stepUp.reset()
+        }
       }}
     >
       <AlertDialogTrigger asChild>
@@ -110,6 +119,15 @@ export const DeleteAdminButton = ({
           )}
         </div>
 
+        {stepUp.required && (
+          <StepUpOtpSection
+            code={stepUp.code}
+            onCodeChange={stepUp.changeCode}
+            error={stepUp.error}
+            disabled={deleteAdmin.isPending}
+          />
+        )}
+
         <AlertDialogFooter className='gap-2 sm:gap-0'>
           <AlertDialogCancel
             autoFocus
@@ -123,10 +141,19 @@ export const DeleteAdminButton = ({
               // Tanpa preventDefault, AlertDialogAction (Dialog.Close) menutup
               // dialog di klik yang sama sehingga spinner tak pernah terlihat.
               event.preventDefault()
-              if (!matches) return
-              deleteAdmin.mutate(id, { onSuccess: () => setOpen(false) })
+              if (!matches || !stepUp.canSubmit) return
+              deleteAdmin.mutate(
+                { id, otp: stepUp.otp },
+                {
+                  onSuccess: () => {
+                    stepUp.reset()
+                    setOpen(false)
+                  },
+                  onError: stepUp.handleError,
+                },
+              )
             }}
-            disabled={deleteAdmin.isPending || !matches}
+            disabled={deleteAdmin.isPending || !matches || !stepUp.canSubmit}
             aria-busy={deleteAdmin.isPending}
             className='rounded-lg bg-destructive text-white hover:bg-destructive/90'
           >

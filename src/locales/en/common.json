@@ -1188,9 +1188,9 @@
     "subtitle": "Manage payment methods shown to customers. Add from toolbar below; edit or delete from Actions column in each row.",
     "loadingShort": "Loading…",
     "loadFailedShort": "Failed to load",
-    "totalMethods": "Total {{count}} methods",
+    "totalMethods": "{{total}} methods",
     "listTitle": "Payment method list",
-    "listHint": "{{limit}} items per page. Use pagination for other pages.",
+    "listHint": "Fees and limits shown here apply at checkout.",
     "tableLoadingTitle": "Loading payment methods…",
     "tableLoadingHint": "Please wait a moment.",
     "loadErrorDetail": "Failed to load payment methods. Check your connection or try reloading the page.",
@@ -1210,7 +1210,13 @@
     "colStatus": "Status",
     "statusActive": "Active",
     "statusInactive": "Inactive",
-    "colActions": "Actions"
+    "colActions": "Actions",
+    "colMethod": "Method",
+    "colFee": "Fee",
+    "colAmountRange": "Amount range",
+    "rowActionsAria": "Actions for {{name}}",
+    "amountRange": "{{min}} – {{max}}",
+    "amountFrom": "{{min}} and above"
   },
   "paymentMethodToasts": {
     "createSuccess": "Payment method created",
@@ -1221,7 +1227,7 @@
     "deleteError": "Failed to delete payment method"
   },
   "paymentMethodDelete": {
-    "triggerAria": "Delete payment method",
+    "triggerAria": "Delete {{name}}",
     "title": "Delete payment method?",
     "description": "This action cannot be undone. Payment method will be permanently removed from the system.",
     "cancel": "Cancel",
@@ -1475,7 +1481,7 @@
     "subtitle": "Group payment methods by category. Add a category from the toolbar below; link methods or remove categories from the actions column.",
     "loadingShort": "Loading…",
     "errorShort": "Failed to load",
-    "total": "Total {{total}} categories",
+    "total": "{{total}} categories",
     "listTitle": "Category list",
     "listHint": "All categories from the server are shown below.",
     "loadingBody": "Loading payment method categories…",
@@ -1495,7 +1501,15 @@
   },
   "paymentMethodCategoryToasts": {
     "loadSuccess": "Payment method categories loaded",
-    "loadError": "Failed to load payment method categories"
+    "loadError": "Failed to load payment method categories",
+    "createSuccess": "Category created",
+    "createError": "Failed to create the category",
+    "updateSuccess": "Category updated",
+    "updateError": "Failed to update the category",
+    "deleteSuccess": "Category deleted",
+    "deleteError": "Failed to delete the category",
+    "assignSuccess": "Linked methods updated",
+    "assignError": "Failed to update linked methods"
   },
   "inputPage": {
     "title": "Game inputs",
@@ -1876,7 +1890,6 @@
     "searchPlaceholder": "Search by name or code...",
     "statusActive": "Active",
     "statusInactive": "Inactive",
-    "toastSuccess": "Referral codes loaded successfully",
     "toastError": "Failed to load referral codes",
     "emptyPage": "No referral codes registered",
     "table": {
@@ -1903,9 +1916,15 @@
       "errors": {
         "nameRequired": "Name is required",
         "codeRequired": "Referral code is required",
-        "percentMin": "Commission percent must be at least 0",
-        "percentMax": "Commission percent cannot exceed 100"
-      }
+        "percentMin": "Commission percent must be greater than 0",
+        "percentMax": "Commission percent cannot exceed 100",
+        "codeFormat": "Use 3-20 characters: letters, numbers, hyphen or underscore.",
+        "percentRequired": "Commission percent is required",
+        "codeTaken": "That referral code already exists."
+      },
+      "addDescription": "Create a referral code and set its commission percentage.",
+      "editDescription": "Update this referral code's details.",
+      "saving": "Saving…"
     },
     "deleteConfirm": {
       "title": "Delete Referral Code",
@@ -1937,7 +1956,33 @@
         "status": "Status",
         "date": "Date"
       }
-    }
+    },
+    "listTitle": "Referral code list",
+    "listHint": "Toggle a code to stop or resume its commission.",
+    "subtitleReadOnly": "Referral codes and their commission rates. You have view-only access.",
+    "rowsPerPage": "Rows",
+    "loadingBody": "Loading referral codes…",
+    "loadError": "Failed to load referral codes.",
+    "total_one": "Total {{total}} referral code",
+    "total_other": "Total {{total}} referral codes",
+    "backToFirstPage": "Back to page 1",
+    "emptyPageMessage": "This page has no rows. Go back to the first page.",
+    "filterPlaceholder": "Filter this page…",
+    "filterScopeHint_one": "Filters only the {{count}} row loaded on this page.",
+    "filterScopeHint_other": "Filters only the {{count}} rows loaded on this page.",
+    "filterNoMatch_one": "No match among the {{count}} row on this page. Try another page.",
+    "filterNoMatch_other": "No match among the {{count}} rows on this page. Try another page.",
+    "filterClear": "Clear filter",
+    "tableCaption": "Referral codes, page {{page}} of {{totalPage}}",
+    "pageAnnounce_one": "Page {{page}} of {{totalPage}}, {{count}} referral code shown.",
+    "pageAnnounce_other": "Page {{page}} of {{totalPage}}, {{count}} referral codes shown.",
+    "editAria": "Edit referral code {{code}}",
+    "deleteAria": "Delete referral code {{code}}",
+    "toggleStatusAria": "Toggle active status for {{code}}",
+    "copyCode": "Copy code {{code}}",
+    "copied": "Code copied",
+    "copyFailed": "Could not copy the code",
+    "createdOn": "Created {{date}}"
   },
   "referralToasts": {
     "createSuccess": "Referral code created successfully",
@@ -2045,6 +2090,7 @@
     "edit": "Edit",
     "editPermissions": "Edit permissions",
     "delete": "Delete",
+    "deleting": "Deleting…",
     "formCreateTitle": "Create a role",
     "formEditTitle": "Edit role",
     "formDescription": "The role name is used to generate its slug automatically.",
@@ -2222,5 +2268,153 @@
     "deleting": "Deleting…",
     "success": "Admin deleted",
     "error": "Failed to delete the admin"
+  },
+  "stepUp": {
+    "title": "Two-factor verification",
+    "hint": "This action changes access rights. Enter the 6-digit code from your authenticator app to confirm.",
+    "otpLabel": "Verification code",
+    "errorRequired": "This action needs a code from your authenticator app.",
+    "errorInvalid": "That code is wrong or has expired. Enter the current code.",
+    "errorReused": "That code was already used. Wait for the next one in your authenticator app.",
+    "errorLocked": "Too many wrong codes. Try again in a few minutes.",
+    "errorUnavailable": "Two-factor verification is unavailable right now. Please try again shortly."
+  },
+  "referralDelete": {
+    "typeCodeLabel": "Type {{code}} to confirm",
+    "typeCodePlaceholder": "Enter the referral code",
+    "codeMismatch": "The code does not match.",
+    "deleting": "Deleting…"
+  },
+  "referralDetail": {
+    "totalUses": "Total uses",
+    "successfulUses": "Successful uses",
+    "salesVolume": "Sales volume",
+    "conversionRate": "Paid share",
+    "conversionHint": "Share of this code's transactions that were paid.",
+    "txTableCaption": "Transactions that used this referral code",
+    "missingId": "No referral code was specified.",
+    "loadError": "Failed to load this referral code.",
+    "showingTx_one": "Showing {{shown}} of {{count}} transaction",
+    "showingTx_other": "Showing {{shown}} of {{count}} transactions",
+    "showMoreTx": "Show more"
+  },
+  "confirmDelete": {
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "deleting": "Deleting…"
+  },
+  "imageDropzone": {
+    "hint": "Click or drop an image here",
+    "broken": "Image could not be loaded",
+    "uploading": "Uploading… {{percent}}%",
+    "uploadFailed": "Upload failed. Please try again.",
+    "invalidType": "Only image files are allowed.",
+    "tooLarge": "Image is larger than 10 MB.",
+    "limit": "PNG, JPG or SVG · max 10 MB",
+    "remove": "Remove"
+  },
+  "paymentMethodForm": {
+    "trigger": "Add method",
+    "createTitle": "Add payment method",
+    "editTitle": "Edit payment method",
+    "description": "Fees and limits here apply at checkout.",
+    "editAria": "Edit {{name}}",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. QRIS",
+    "codeLabel": "Code",
+    "codePlaceholder": "e.g. QRIS",
+    "codeHint": "Letters, digits, - and _ only. Saved in uppercase.",
+    "typeLabel": "Type",
+    "typePlaceholder": "e.g. ewallet",
+    "providerLabel": "Provider",
+    "providerPlaceholder": "e.g. midtrans",
+    "iconLabel": "Icon",
+    "feePercentLabel": "Fee (%)",
+    "feePercentHint": "0–100",
+    "feeFixedLabel": "Fixed fee (Rp)",
+    "minLabel": "Min amount (Rp)",
+    "maxLabel": "Max amount (Rp)",
+    "maxHint": "0 = no limit",
+    "sortLabel": "Sort order",
+    "statusLabel": "Active",
+    "statusHint": "Inactive methods stay hidden from checkout.",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save changes",
+    "errors": {
+      "nameRequired": "Name is required",
+      "codeRequired": "Code is required",
+      "codeFormat": "Use only letters, digits, - and _",
+      "typeRequired": "Type is required",
+      "providerRequired": "Provider is required",
+      "iconRequired": "An icon is required",
+      "feePercentRequired": "Fee percentage is required",
+      "feePercentRange": "Fee must be between 0 and 100",
+      "feeFixedRequired": "Fixed fee is required",
+      "minRequired": "Minimum amount is required",
+      "maxRequired": "Maximum amount is required",
+      "sortRequired": "Sort order is required",
+      "negative": "Value cannot be negative",
+      "maxBelowMin": "Maximum must be at least the minimum",
+      "tooLong": "Use at most {{max}} characters"
+    }
+  },
+  "paymentCategoryForm": {
+    "trigger": "Add category",
+    "createTitle": "Add payment category",
+    "editTitle": "Edit payment category",
+    "description": "Categories group payment methods at checkout.",
+    "editAria": "Edit {{name}}",
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. E-wallet",
+    "slugLabel": "Slug",
+    "slugPlaceholder": "e-wallet",
+    "slugHint": "Lowercase letters, digits and hyphens. Filled from the name.",
+    "iconLabel": "Icon",
+    "sortLabel": "Sort order",
+    "sortHint": "Lower numbers appear first.",
+    "statusLabel": "Active",
+    "statusHint": "Inactive categories stay hidden from checkout.",
+    "cancel": "Cancel",
+    "create": "Create",
+    "save": "Save changes",
+    "errors": {
+      "nameRequired": "Name is required",
+      "slugRequired": "Slug is required",
+      "slugFormat": "Use lowercase letters, digits and hyphens only",
+      "iconRequired": "An icon is required",
+      "sortRequired": "Sort order is required",
+      "negative": "Value cannot be negative",
+      "tooLong": "Use at most {{max}} characters"
+    }
+  },
+  "paymentCategoryAssign": {
+    "trigger": "Link payment methods to {{name}}",
+    "triggerShort": "Link payment methods",
+    "title": "Linked payment methods",
+    "description": "Tick every method that belongs to {{name}}. Saving replaces the whole list for this category.",
+    "searchPlaceholder": "Search name or code…",
+    "loading": "Loading payment methods…",
+    "empty": "No payment methods yet.",
+    "noMatch": "No method matches your search.",
+    "truncatedWarning": "Only {{shown}} of {{total}} methods could be loaded. Saving now would unlink the rest, so this action is disabled.",
+    "summaryAdd": "{{total}} will be added",
+    "summaryRemove": "{{total}} will be removed from this category",
+    "summaryMove": "{{total}} will be moved out of another category",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…"
+  },
+  "paymentCategoryDelete": {
+    "title": "Delete this category?",
+    "description": "This cannot be undone. Methods in it will be left without a category.",
+    "triggerAria": "Delete {{name}}"
+  },
+  "referralStats": {
+    "totalCodes": "Total codes",
+    "active": "Active",
+    "inactive": "Inactive",
+    "avgPercent": "Average commission",
+    "scopedHint": "From the {{count}} rows on this page."
   }
 }

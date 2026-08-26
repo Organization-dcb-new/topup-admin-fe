@@ -15,7 +15,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { PermissionMatrix } from '@/components/Role/PermissionMatrix'
+import { StepUpOtpSection } from '@/components/Auth/twofa/StepUpOtpSection'
 import { usePermissionCatalog } from '@/hooks/usePermissionCatalog'
+import { useStepUp } from '@/hooks/useStepUp'
 import {
   useCreateRole,
   useRoleDetail,
@@ -84,6 +86,11 @@ const RoleFormBody = ({
   const updateRole = useUpdateRole(role?.id ?? '', onDone)
   const setRolePermissions = useSetRolePermissions(role?.id ?? '', onDone)
 
+  // Mengubah permission sebuah role mengubah hak akses semua pemegangnya
+  // sekaligus, jadi backend menuntut kode TOTP sekali pakai kalau aktornya
+  // sudah mengaktifkan 2FA.
+  const stepUp = useStepUp()
+
   const isPending =
     createRole.isPending || updateRole.isPending || setRolePermissions.isPending
 
@@ -94,27 +101,42 @@ const RoleFormBody = ({
       return
     }
     setNameError(null)
+    if (!stepUp.canSubmit) return
 
     if (!isEdit) {
-      createRole.mutate({
-        name: trimmed,
-        description: description.trim(),
-        permission_codes: permissions,
-      })
+      createRole.mutate(
+        {
+          name: trimmed,
+          description: description.trim(),
+          permission_codes: permissions,
+          otp: stepUp.otp,
+        },
+        { onError: stepUp.handleError },
+      )
       return
     }
 
     // Nama dan permission adalah dua endpoint terpisah di backend. Role bawaan
     // sistem tidak bisa di-rename, jadi hanya permission-nya yang dikirim.
     if (isSystem) {
-      setRolePermissions.mutate({ permission_codes: permissions })
+      setRolePermissions.mutate(
+        { permission_codes: permissions, otp: stepUp.otp },
+        { onError: stepUp.handleError },
+      )
       return
     }
 
+    // Hanya panggilan kedua yang membawa kode: PUT /admin/roles/:id sengaja
+    // tidak digerbang di backend karena hanya mengubah nama dan deskripsi.
+    // Kalau keduanya digerbang, satu kali simpan menuntut dua kode berbeda.
     updateRole.mutate(
       { name: trimmed, description: description.trim() },
       {
-        onSuccess: () => setRolePermissions.mutate({ permission_codes: permissions }),
+        onSuccess: () =>
+          setRolePermissions.mutate(
+            { permission_codes: permissions, otp: stepUp.otp },
+            { onError: stepUp.handleError },
+          ),
       },
     )
   }
@@ -176,11 +198,24 @@ const RoleFormBody = ({
         />
       </div>
 
+      {/* Di luar badan yang menggulir: kolom OTP harus terlihat tanpa perlu
+          menggulir melewati seluruh matriks permission lebih dulu. */}
+      {stepUp.required && (
+        <div className='shrink-0 border-t border-border/70 px-6 py-4'>
+          <StepUpOtpSection
+            code={stepUp.code}
+            onCodeChange={stepUp.changeCode}
+            error={stepUp.error}
+            disabled={isPending}
+          />
+        </div>
+      )}
+
       <DialogFooter className='shrink-0 border-t border-border/70 px-6 py-4'>
         <Button variant='outline' onClick={onDone} disabled={isPending}>
           {t('rolePage.cancel')}
         </Button>
-        <Button onClick={handleSubmit} disabled={isPending}>
+        <Button onClick={handleSubmit} disabled={isPending || !stepUp.canSubmit}>
           {isPending && <Loader2 className='mr-2 h-4 w-4 animate-spin' aria-hidden />}
           {isPending ? t('rolePage.saving') : t('rolePage.save')}
         </Button>

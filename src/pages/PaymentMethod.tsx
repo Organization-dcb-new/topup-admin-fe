@@ -1,88 +1,103 @@
+import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { CreditCard, Inbox, RefreshCw } from 'lucide-react'
+
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import ModalAddPaymentMethod from '@/components/PaymentMethod/CreatePaymentMethodModal'
-import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
-import { getPaymentMethodColumns } from '@/tables/table-payment-method'
-import i18n from '@/i18n'
-import { AlertCircle, CheckCircle2, CreditCard, Loader2 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
-import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Can } from '@/components/Auth/Can'
 import { PERM } from '@/constants/permissions'
+import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
+import { getPaymentMethodColumns } from '@/tables/table-payment-method'
+import { formatNumber } from '@/lib/format'
+
+const PAGE_SIZE = 20
+
+function TableSkeleton() {
+  return (
+    <div className='space-y-2 p-1'>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <Skeleton key={i} className='h-14 w-full rounded-lg' />
+      ))}
+    </div>
+  )
+}
+
+function EmptyState({ message }: { message: string }) {
+  return (
+    <div className='flex flex-col items-center gap-3 px-4 py-14 text-center'>
+      <span
+        className='flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground'
+        aria-hidden
+      >
+        <Inbox className='h-6 w-6' />
+      </span>
+      <p className='text-sm text-muted-foreground'>{message}</p>
+    </div>
+  )
+}
 
 export default function PaymentMethodPage() {
   const { t } = useTranslation('common')
-  const limit = 5
   const [page, setPage] = useState(1)
-  const { data, isLoading, isError, isFetchedAfterMount, isSuccess } = useGetPaymentMethods(
-    page,
-    limit,
-  )
 
-  useEffect(() => {
-    if (isSuccess && isFetchedAfterMount) {
-      toast.success(t('paymentMethodPage.toastSuccess'))
-    }
-    if (isError && isFetchedAfterMount) {
-      toast.error(t('paymentMethodPage.toastError'))
-    }
-  }, [isSuccess, isError, isFetchedAfterMount, t])
+  const { data, isLoading, isError, isSuccess, isFetching, refetch } =
+    useGetPaymentMethods(page, PAGE_SIZE)
 
+  const columns = useMemo(() => getPaymentMethodColumns(t), [t])
   const rows = data?.data ?? []
-  const paymentMethodColumns = useMemo(() => getPaymentMethodColumns(t), [t])
+  const totalPage = data?.meta?.total_page ?? 1
+
+  // Menghapus baris terakhir di halaman terakhir dulu meninggalkan admin pada
+  // halaman di luar jangkauan yang isinya kosong. Dikoreksi saat render —
+  // pola resmi React untuk menyesuaikan state terhadap data baru; memakai
+  // useEffect di sini melanggar aturan set-state-in-effect repo ini.
+  if (isSuccess && page > totalPage) {
+    setPage(totalPage)
+  }
 
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-7xl space-y-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <header className='flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between'>
           <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <CreditCard className='h-5 w-5' aria-hidden />
-            </div>
+            <span
+              className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'
+              aria-hidden
+            >
+              <CreditCard className='h-5 w-5' />
+            </span>
             <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
+              {/* h2, bukan h1: navbar sudah merender h1 judul halaman */}
+              <h2 className='text-2xl font-semibold tracking-tight text-foreground'>
                 {t('paymentMethodPage.title')}
-              </h1>
-              <p className='text-sm text-muted-foreground'>{t('paymentMethodPage.subtitle')}</p>
+              </h2>
+              <p className='text-sm text-muted-foreground'>
+                {t('paymentMethodPage.subtitle')}
+              </p>
             </div>
           </div>
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
-            {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
-                {t('paymentMethodPage.loadingShort')}
-              </p>
-            )}
-            {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
-                {t('paymentMethodPage.loadFailedShort')}
-              </p>
-            )}
-            {isSuccess && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground'>
-                  {t('paymentMethodPage.totalMethods', {
-                    count: (data?.meta?.total_data ?? 0).toLocaleString(
-                      i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
-                    ),
-                  })}
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
 
-        <div className='overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5'>
-          <div className='flex flex-col gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
+          {isSuccess && (
+            <p className='shrink-0 text-sm font-medium tabular-nums text-muted-foreground'>
+              {t('paymentMethodPage.totalMethods', {
+                total: formatNumber(data?.meta?.total_data ?? 0),
+              })}
+            </p>
+          )}
+        </header>
+
+        <section className='overflow-hidden rounded-xl border border-border bg-card shadow-sm'>
+          <div className='flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
             <div className='min-w-0 space-y-0.5'>
-              <h2 className='text-sm font-semibold text-gray-900'>{t('paymentMethodPage.listTitle')}</h2>
+              <h3 className='text-sm font-semibold text-foreground'>
+                {t('paymentMethodPage.listTitle')}
+              </h3>
               <p className='text-xs text-muted-foreground'>
-                {t('paymentMethodPage.listHint', { limit })}
+                {t('paymentMethodPage.listHint')}
               </p>
             </div>
             <Can perm={PERM.PAYMENT_METHOD_CREATE}>
@@ -92,44 +107,59 @@ export default function PaymentMethodPage() {
 
           <div className='p-3 sm:p-4'>
             {isLoading && (
-              <div
-                className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12'
-                role='status'
-                aria-live='polite'
-                aria-busy='true'
-              >
-                <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {t('paymentMethodPage.tableLoadingTitle')}
-                  </p>
-                  <p className='mt-1 text-xs text-muted-foreground'>{t('paymentMethodPage.tableLoadingHint')}</p>
-                </div>
+              <div role='status' aria-busy='true' aria-live='polite'>
+                <span className='sr-only'>
+                  {t('paymentMethodPage.tableLoadingTitle')}
+                </span>
+                <TableSkeleton />
               </div>
             )}
 
             {isError && (
-              <ErrorComponent message={t('paymentMethodPage.loadErrorDetail')} />
+              <div className='flex flex-col items-center gap-3 px-4 py-12 text-center'>
+                <p className='text-sm text-destructive'>
+                  {t('paymentMethodPage.loadErrorDetail')}
+                </p>
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  className='gap-2'
+                  onClick={() => void refetch()}
+                  disabled={isFetching}
+                >
+                  <RefreshCw className='h-3.5 w-3.5' aria-hidden />
+                  {t('common.refresh')}
+                </Button>
+              </div>
             )}
 
             {isSuccess && (
               <>
-                <DataTable
-                  columns={paymentMethodColumns}
-                  data={rows}
-                  emptyMessage={t('paymentMethodPage.emptyPage')}
-                />
+                <div className='max-h-[min(70vh,40rem)] w-full min-w-0 overflow-auto overscroll-contain'>
+                  <DataTable
+                    columns={columns}
+                    data={rows}
+                    stickyHeader
+                    // Tanpa ini baris di-key berdasarkan indeks array, sehingga
+                    // dialog per baris bisa menempel ke record yang salah
+                    getRowId={(row) => row.id}
+                    emptyMessage={
+                      <EmptyState message={t('paymentMethodPage.emptyPage')} />
+                    }
+                  />
+                </div>
                 <div className='mt-4'>
                   <Pagination
                     page={page}
-                    totalPage={data?.meta?.total_page ?? 1}
+                    totalPage={totalPage}
                     onChange={setPage}
                   />
                 </div>
               </>
             )}
           </div>
-        </div>
+        </section>
       </div>
     </DashboardLayout>
   )

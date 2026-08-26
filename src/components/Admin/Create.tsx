@@ -22,8 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { StepUpOtpSection } from '@/components/Auth/twofa/StepUpOtpSection'
 import { useCreateAdmin } from '@/hooks/useAdmin'
 import { useRoles } from '@/hooks/useRoles'
+import { useStepUp } from '@/hooks/useStepUp'
 import { apiErrorMessage } from '@/lib/api-error'
 import type { CreateAdminPayload } from '@/types/admin'
 
@@ -128,14 +130,25 @@ const CreateAdminForm = ({
   })
 
   const { data: roles = [], isLoading: rolesLoading, isError: rolesError } = useRoles()
+  // Admin baru adalah pintu masuk baru ke sistem, jadi backend menuntut kode
+  // TOTP sekali pakai kalau aktornya sudah mengaktifkan 2FA.
+  const stepUp = useStepUp()
   const selectedRoleId = watch('role_id')
   // `/admin/roles` dijaga permission `role.view`, berbeda dari `admin.create`
   // yang membuka halaman ini. Daftar kosong karena itu bukan "tidak ada peran".
   const rolesUnavailable = rolesError || (!rolesLoading && roles.length === 0)
 
   const submit = (values: CreateAdminPayload) =>
-    mutate(values, {
+    mutate(
+      { ...values, otp: stepUp.otp },
+      {
       onError: (err: unknown) => {
+        // Kode OTP yang ditolak bukan kegagalan kredensial: permintaannya
+        // berhenti di middleware sebelum sandi apa pun diperiksa. Mengosongkan
+        // form di sini memaksa mengetik ulang seluruh sandi hanya karena satu
+        // digit TOTP meleset.
+        if (stepUp.handleError(err)) return
+
         // Kredensial tidak ditinggalkan di form setelah percobaan gagal.
         resetField('password')
         resetField('confirm_admin_password')
@@ -153,7 +166,8 @@ const CreateAdminForm = ({
 
         toast.error(apiErrorMessage(err, t('adminCreate.error')))
       },
-    })
+      },
+    )
 
   return (
     <>
@@ -315,10 +329,20 @@ const CreateAdminForm = ({
           )}
         </div>
 
+        {stepUp.required && (
+          <StepUpOtpSection
+            code={stepUp.code}
+            onCodeChange={stepUp.changeCode}
+            error={stepUp.error}
+            disabled={isPending}
+            className='mt-6'
+          />
+        )}
+
         <Button
           type='submit'
           className='mt-4 h-11 w-full rounded-xl font-bold'
-          disabled={isPending || rolesUnavailable}
+          disabled={isPending || rolesUnavailable || !stepUp.canSubmit}
         >
           {isPending ? (
             <span className='flex items-center gap-2'>

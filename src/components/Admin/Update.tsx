@@ -20,8 +20,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
+import { StepUpOtpSection } from '@/components/Auth/twofa/StepUpOtpSection'
 import { useAdminMutation } from '@/hooks/useAdmin'
 import { useRoles } from '@/hooks/useRoles'
+import { useStepUp } from '@/hooks/useStepUp'
 import { cn } from '@/lib/utils'
 
 export const UpdateAdminRole = ({
@@ -45,6 +47,9 @@ export const UpdateAdminRole = ({
   const { t } = useTranslation('common')
   const { updateRole } = useAdminMutation()
   const { data: roles = [], isLoading, isError } = useRoles()
+  // Memindahkan admin ke role lain mengubah hak aksesnya, jadi backend menuntut
+  // kode TOTP sekali pakai kalau aktornya sudah mengaktifkan 2FA.
+  const stepUp = useStepUp()
   const [open, setOpen] = useState(false)
   // Sengaja tidak diturunkan dari prop: instance komponen ini bisa dipakai
   // ulang untuk admin lain, dan nilai turunan prop tidak pernah ikut berganti.
@@ -111,8 +116,13 @@ export const UpdateAdminRole = ({
       <AlertDialog
         open={open}
         onOpenChange={(next) => {
+          // Menutup saat permintaan masih jalan hanya menyembunyikan prosesnya.
+          if (updateRole.isPending) return
           setOpen(next)
-          if (!next) setPendingRoleId(null)
+          if (!next) {
+            setPendingRoleId(null)
+            stepUp.reset()
+          }
         }}
       >
         <AlertDialogContent>
@@ -122,22 +132,40 @@ export const UpdateAdminRole = ({
               {t('adminUpdate.confirmDescription', { role: pendingRoleName })}
             </AlertDialogDescription>
           </AlertDialogHeader>
+
+          {stepUp.required && (
+            <StepUpOtpSection
+              code={stepUp.code}
+              onCodeChange={stepUp.changeCode}
+              error={stepUp.error}
+              disabled={updateRole.isPending}
+            />
+          )}
+
           <AlertDialogFooter>
             <AlertDialogCancel disabled={updateRole.isPending}>
               {t('adminUpdate.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              disabled={updateRole.isPending || !pendingRoleId}
+              disabled={updateRole.isPending || !pendingRoleId || !stepUp.canSubmit}
               aria-busy={updateRole.isPending}
               onClick={(event) => {
                 // AlertDialogAction adalah Dialog.Close: tanpa preventDefault
                 // dialog menutup sebelum mutasi selesai dan seluruh umpan
                 // balik in-flight tidak pernah sempat tampil.
                 event.preventDefault()
-                if (!pendingRoleId) return
+                if (!pendingRoleId || !stepUp.canSubmit) return
                 updateRole.mutate(
-                  { id, roleId: pendingRoleId },
-                  { onSuccess: () => setOpen(false) },
+                  { id, roleId: pendingRoleId, otp: stepUp.otp },
+                  {
+                    onSuccess: () => {
+                      stepUp.reset()
+                      setOpen(false)
+                    },
+                    // Kode yang ditolak tetap di dialog ini supaya operator bisa
+                    // mengetik ulang tanpa memilih perannya dari awal.
+                    onError: stepUp.handleError,
+                  },
                 )
               }}
             >

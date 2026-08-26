@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import i18n from '@/i18n'
 import { api } from '@/api/axios'
 import { apiErrorMessage } from '@/lib/api-error'
+import { isStepUpError, stepUpConfig } from '@/lib/step-up'
 import type {
   CreateRolePayload,
   RoleDetailResponse,
@@ -54,12 +55,17 @@ export function useRoleDetail(id: string | null) {
   })
 }
 
+/**
+ * Dijaga verifikasi 2FA per aksi di backend: `CreateRolePayload` membawa
+ * `permission_codes`, jadi satu permintaan ini sudah cukup untuk melahirkan
+ * role berhak penuh.
+ */
 export function useCreateRole(onDone?: () => void) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: CreateRolePayload) => {
-      const { data } = await api.post('/admin/roles', payload)
+    mutationFn: async ({ otp, ...payload }: CreateRolePayload & { otp?: string }) => {
+      const { data } = await api.post('/admin/roles', payload, stepUpConfig(otp))
       return data
     },
     onSuccess: () => {
@@ -67,8 +73,11 @@ export function useCreateRole(onDone?: () => void) {
       invalidateAfterRoleChange(queryClient)
       onDone?.()
     },
-    onError: (err) =>
-      toast.error(apiErrorMessage(err, i18n.t('rolePage.createFailed', { ns: 'common' }))),
+    // Penolakan gate 2FA ditampilkan di kolom OTP, bukan sebagai toast kedua.
+    onError: (err) => {
+      if (isStepUpError(err)) return
+      toast.error(apiErrorMessage(err, i18n.t('rolePage.createFailed', { ns: 'common' })))
+    },
   })
 }
 
@@ -93,13 +102,24 @@ export function useUpdateRole(id: string, onDone?: () => void) {
 /**
  * Mengganti seluruh himpunan permission role — bukan menambah.
  * Kirim daftar lengkap hasil centang, bukan selisihnya.
+ *
+ * Dijaga verifikasi 2FA per aksi di backend. `PUT /admin/roles/:id` yang hanya
+ * mengubah nama dan deskripsi sengaja tidak dijaga, sehingga satu kali simpan
+ * di form role tetap cukup satu kode.
  */
 export function useSetRolePermissions(id: string, onDone?: () => void) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: SetRolePermissionsPayload) => {
-      const { data } = await api.put(`/admin/roles/${id}/permissions`, payload)
+    mutationFn: async ({
+      otp,
+      ...payload
+    }: SetRolePermissionsPayload & { otp?: string }) => {
+      const { data } = await api.put(
+        `/admin/roles/${id}/permissions`,
+        payload,
+        stepUpConfig(otp),
+      )
       return data
     },
     onSuccess: () => {
@@ -107,24 +127,34 @@ export function useSetRolePermissions(id: string, onDone?: () => void) {
       invalidateAfterRoleChange(queryClient)
       onDone?.()
     },
-    onError: (err) =>
-      toast.error(apiErrorMessage(err, i18n.t('rolePage.permissionsFailed', { ns: 'common' }))),
+    onError: (err) => {
+      if (isStepUpError(err)) return
+      toast.error(apiErrorMessage(err, i18n.t('rolePage.permissionsFailed', { ns: 'common' })))
+    },
   })
 }
 
+/**
+ * Dijaga verifikasi 2FA per aksi di backend. Bukan karena bisa menaikkan hak
+ * akses — service menolak menghapus role bawaan sistem maupun role yang masih
+ * dipegang admin — tapi karena definisi role beserta seluruh centang
+ * permissionnya hilang dan tidak bisa dikembalikan.
+ */
 export function useDeleteRole(onDone?: () => void) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (id: string) => {
-      await api.delete(`/admin/roles/${id}`)
+    mutationFn: async ({ id, otp }: { id: string; otp?: string }) => {
+      await api.delete(`/admin/roles/${id}`, stepUpConfig(otp))
     },
     onSuccess: () => {
       toast.success(i18n.t('rolePage.deletedOk', { ns: 'common' }))
       invalidateAfterRoleChange(queryClient)
       onDone?.()
     },
-    onError: (err) =>
-      toast.error(apiErrorMessage(err, i18n.t('rolePage.deleteFailed', { ns: 'common' }))),
+    onError: (err) => {
+      if (isStepUpError(err)) return
+      toast.error(apiErrorMessage(err, i18n.t('rolePage.deleteFailed', { ns: 'common' })))
+    },
   })
 }

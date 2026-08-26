@@ -1,127 +1,107 @@
-import { api } from '@/api/axios'
-import type { PaymentCategoryPayload } from '@/components/PaymentMethodCategory/Create'
-import type { PaymentMethodCategoriesResponse } from '@/types/payment-method-categories'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
-export const useCreatePaymentCategory = (
-  reset: () => void,
-  setPreview: (url: string | null) => void,
-  setOpen: (open: boolean) => void
-) => {
+import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
+import type {
+  PaymentCategoryFormValues,
+  PaymentMethodCategoriesResponse,
+} from '@/types/payment-method-categories'
+
+const CATEGORY_KEY = ['payment-methods-categories'] as const
+const METHOD_KEY = ['payment-methods'] as const
+
+export const useGetPaymentMethodCategory = () =>
+  useQuery({
+    queryKey: CATEGORY_KEY,
+    queryFn: async ({ signal }): Promise<PaymentMethodCategoriesResponse> => {
+      const res = await api.get('/payment-categories', { signal })
+      return res.data
+    },
+  })
+
+export const useCreatePaymentCategory = () => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: async (payload: PaymentCategoryPayload) => {
+  return useMutation({
+    mutationFn: async (payload: PaymentCategoryFormValues) => {
       const res = await api.post('/payment-categories', payload)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Kategori berhasil dibuat')
-      queryClient.invalidateQueries({
-        queryKey: ['payment-methods-categories'],
-      })
-      reset()
-      setPreview(null)
-      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEY })
+      toast.success(t('paymentMethodCategoryToasts.createSuccess'))
     },
-    onError: () => {
-      toast.error('Gagal membuat kategori')
-    },
+    onError: (err: unknown) =>
+      toast.error(
+        apiErrorMessage(err, t('paymentMethodCategoryToasts.createError')),
+      ),
   })
-
-  return mutation
 }
 
-export type UpdatePaymentCategoryPayload = {
-  name: string
-  slug: string
-  icon_url: string
-  sort_order: number
-  is_active: boolean
-}
-
-export const useUpdatePaymentCategory = (
-  id: string,
-  onSuccessClose: () => void,
-  reset: () => void,
-  setPreview: (url: string | null) => void
-) => {
+export const useUpdatePaymentCategory = (id: string) => {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: UpdatePaymentCategoryPayload) => {
+    mutationFn: async (payload: PaymentCategoryFormValues) => {
       const res = await api.put(`/payment-categories/${id}`, payload)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Kategori berhasil diperbarui')
-      queryClient.invalidateQueries({
-        queryKey: ['payment-methods-categories'],
-      })
-      onSuccessClose()
-      reset()
-      setPreview(null)
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEY })
+      toast.success(t('paymentMethodCategoryToasts.updateSuccess'))
     },
-    onError: () => {
-      toast.error('Gagal memperbarui kategori')
-    },
+    onError: (err: unknown) =>
+      toast.error(
+        apiErrorMessage(err, t('paymentMethodCategoryToasts.updateError')),
+      ),
   })
 }
 
-export const useGetPaymentMethodCategory = () =>
-  useQuery<PaymentMethodCategoriesResponse>({
-    queryKey: ['payment-methods-categories'],
-    queryFn: async () => {
-      const res = await api.get('/payment-categories')
-      return res.data
-    },
-  })
-
 export function useDeletePaymentCategory(id: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
+  return useMutation({
     mutationFn: async () => {
-      const res = api.delete(`/payment-categories/${id}`)
-      return res
+      const res = await api.delete(`/payment-categories/${id}`)
+      return res.data
     },
     onSuccess: () => {
-      toast.success('Kategori berhasil dihapus')
-      queryClient.invalidateQueries({ queryKey: ['payment-methods-categories'] })
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEY })
+      toast.success(t('paymentMethodCategoryToasts.deleteSuccess'))
     },
-    onError: () => {
-      toast.error('Gagal menghapus kategori')
-    },
+    onError: (err: unknown) =>
+      toast.error(
+        apiErrorMessage(err, t('paymentMethodCategoryToasts.deleteError')),
+      ),
   })
-
-  return mutation
 }
 
 export function useAssignPaymentMethods(categoryId: string) {
+  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (payment_method_ids: string[]) => {
-      const res = await api.patch(`/payment-categories/${categoryId}/payment-methods`, {
-        payment_method_ids,
-      })
+      const res = await api.patch(
+        `/payment-categories/${categoryId}/payment-methods`,
+        { payment_method_ids },
+      )
       return res.data
     },
-
     onSuccess: () => {
-      toast.success('Metode pembayaran berhasil ditautkan ke kategori')
-
-      queryClient.invalidateQueries({
-        queryKey: ['payment-methods'],
-      })
-
-      queryClient.invalidateQueries({
-        queryKey: ['payment-methods-categories'],
-      })
+      // Penugasan mengubah kedua sisi relasi
+      queryClient.invalidateQueries({ queryKey: METHOD_KEY })
+      queryClient.invalidateQueries({ queryKey: CATEGORY_KEY })
+      toast.success(t('paymentMethodCategoryToasts.assignSuccess'))
     },
-    onError: () => {
-      toast.error('Gagal menautkan metode pembayaran')
-    },
+    onError: (err: unknown) =>
+      toast.error(
+        apiErrorMessage(err, t('paymentMethodCategoryToasts.assignError')),
+      ),
   })
 }

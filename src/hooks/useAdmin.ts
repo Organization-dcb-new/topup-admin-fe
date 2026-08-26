@@ -9,6 +9,7 @@ import toast from 'react-hot-toast'
 import i18n from '@/i18n'
 import { api } from '@/api/axios'
 import { apiErrorMessage } from '@/lib/api-error'
+import { isStepUpError, stepUpConfig } from '@/lib/step-up'
 import type {
   AdminBriefListResponse,
   AdminResponse,
@@ -56,12 +57,21 @@ export const useAdminData = (page: number, limit: number) => {
   })
 }
 
+/**
+ * Aksi yang mengubah siapa bisa apa dijaga verifikasi 2FA per aksi di backend.
+ * `otp` diteruskan sebagai header lewat `stepUpConfig`, bukan disatukan ke
+ * body: gate-nya middleware, jadi tidak satu pun handler perlu tahu.
+ */
 export const useCreateAdmin = (onDone?: () => void) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: CreateAdminPayload) => {
-      const { data } = await api.post<CreateAdminResponse>('/admin/users', payload)
+    mutationFn: async ({ otp, ...payload }: CreateAdminPayload & { otp?: string }) => {
+      const { data } = await api.post<CreateAdminResponse>(
+        '/admin/users',
+        payload,
+        stepUpConfig(otp),
+      )
       return data
     },
     onSuccess: () => {
@@ -78,8 +88,16 @@ export const useAdminMutation = () => {
   // Backend mendaftarkan endpoint ini sebagai PUT, bukan PATCH.
   // Sebelumnya FE mengirim PATCH dan selalu ditolak 405.
   const updateRole = useMutation({
-    mutationFn: async ({ id, roleId }: { id: string; roleId: string }) => {
-      return api.put(`/admin/users/${id}`, { role_id: roleId })
+    mutationFn: async ({
+      id,
+      roleId,
+      otp,
+    }: {
+      id: string
+      roleId: string
+      otp?: string
+    }) => {
+      return api.put(`/admin/users/${id}`, { role_id: roleId }, stepUpConfig(otp))
     },
     onSuccess: () => {
       invalidateAdminCaches(queryClient)
@@ -87,18 +105,26 @@ export const useAdminMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['auth-me'] })
       toast.success(t('adminUpdate.success'))
     },
-    onError: (err: unknown) => toast.error(apiErrorMessage(err, t('adminUpdate.error'))),
+    // Penolakan dari gate 2FA ditampilkan di kolom OTP tempat kodenya diketik.
+    // Tanpa penjagaan ini, satu kode salah muncul dua kali: di kolom dan di toast.
+    onError: (err: unknown) => {
+      if (isStepUpError(err)) return
+      toast.error(apiErrorMessage(err, t('adminUpdate.error')))
+    },
   })
 
   const deleteAdmin = useMutation({
-    mutationFn: async (id: string) => {
-      return api.delete(`/admin/users/${id}`)
+    mutationFn: async ({ id, otp }: { id: string; otp?: string }) => {
+      return api.delete(`/admin/users/${id}`, stepUpConfig(otp))
     },
     onSuccess: () => {
       invalidateAdminCaches(queryClient)
       toast.success(t('adminDelete.success'))
     },
-    onError: (err: unknown) => toast.error(apiErrorMessage(err, t('adminDelete.error'))),
+    onError: (err: unknown) => {
+      if (isStepUpError(err)) return
+      toast.error(apiErrorMessage(err, t('adminDelete.error')))
+    },
   })
 
   return { updateRole, deleteAdmin }

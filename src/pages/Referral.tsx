@@ -1,550 +1,343 @@
+import { useCallback, useMemo, useRef, useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Percent, Plus, Search, X } from 'lucide-react'
+import toast from 'react-hot-toast'
+
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
+import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
+import { EmptyState, TableSkeleton } from '@/components/Layout/table-states'
+import { DeleteReferralDialog } from '@/components/Referral/DeleteReferralDialog'
+import { ReferralStatStrip } from '@/components/Referral/ReferralStatStrip'
+import { ReferralFormDialog } from '@/components/Referral/ReferralForm'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
-  useCreateReferralCode,
-  useDeleteReferralCode,
-  useGetReferralCodes,
-  useUpdateReferralCode,
-} from '@/hooks/useReferral'
-import { referralCodeSchema, type ReferralCodeFormValues } from '@/schemas/referral'
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { PERM } from '@/constants/permissions'
+import { usePermission } from '@/hooks/usePermission'
+import { useGetReferralCodes, useUpdateReferralCode } from '@/hooks/useReferral'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
+import { cn } from '@/lib/utils'
+import { getReferralColumns } from '@/tables/table-referral'
 import type { ReferralCode } from '@/types/referral'
-import { zodResolver } from '@hookform/resolvers/zod'
-import type { ColumnDef } from '@tanstack/react-table'
-import { AlertCircle, CheckCircle2, Loader2, Percent, Plus, Trash2, Edit } from 'lucide-react'
-import { useEffect, useMemo, useState, useCallback } from 'react'
-import { useForm, type Resolver } from 'react-hook-form'
-import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+
+const PAGE_SIZES = [10, 20, 50, 100]
 
 export default function ReferralPage() {
   const { t } = useTranslation('common')
-  const [page, setPage] = useState(1)
-  const limit = 10
+  const { can } = usePermission()
 
-  const { data, isLoading, isError, isSuccess, isFetchedAfterMount } = useGetReferralCodes({
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(PAGE_SIZES[0])
+  const [filter, setFilter] = useState('')
+  const [formTarget, setFormTarget] = useState<ReferralCode | null>(null)
+  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<ReferralCode | null>(null)
+  const [togglingId, setTogglingId] = useState<string | null>(null)
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+  const listRef = useRef<HTMLElement>(null)
+
+  const { data, isPending, isError, isSuccess, isPlaceholderData, refetch } = useGetReferralCodes({
     page,
     limit,
   })
 
-  // Mutations
-  const { mutate: deleteMutate } = useDeleteReferralCode()
+  const canCreate = can(PERM.REFERRAL_CREATE)
+  const canUpdate = can(PERM.REFERRAL_UPDATE)
+  const canDelete = can(PERM.REFERRAL_DELETE)
+
   const { mutate: updateMutate } = useUpdateReferralCode()
 
-  // Modal open states
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [editingReferral, setEditingReferral] = useState<ReferralCode | null>(null)
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const handleToggle = useCallback(
+    (referral: ReferralCode) => {
+      setTogglingId(referral.id)
+      updateMutate(
+        { id: referral.id, payload: { is_active: !referral.is_active } },
+        { onSettled: () => setTogglingId(null) },
+      )
+    },
+    [updateMutate],
+  )
 
+  const handleCopy = useCallback(
+    (code: string) => {
+      void copyTextToClipboard(code)
+        .then(() => {
+          setCopiedCode(code)
+          toast.success(t('referralPage.copied'))
+        })
+        .catch(() => toast.error(t('referralPage.copyFailed')))
+    },
+    [t],
+  )
+
+  // Tanda "tersalin" hanya sesaat; tanpa pembersih ini centangnya menetap.
   useEffect(() => {
-    if (isSuccess && isFetchedAfterMount) {
-      toast.success(t('referralPage.toastSuccess') || 'Data loaded successfully')
-    }
-    if (isError && isFetchedAfterMount) {
-      toast.error(t('referralPage.toastError') || 'Failed to load data')
-    }
-  }, [isSuccess, isError, isFetchedAfterMount, t])
+    if (!copiedCode) return
+    const timer = setTimeout(() => setCopiedCode(null), 1500)
+    return () => clearTimeout(timer)
+  }, [copiedCode])
 
-  const handleToggleStatus = useCallback((referral: ReferralCode) => {
-    updateMutate({
-      id: referral.id,
-      payload: { is_active: !referral.is_active },
-    })
-  }, [updateMutate])
+  const openCreate = useCallback(() => {
+    setFormTarget(null)
+    setIsFormOpen(true)
+  }, [])
 
-  const handleDelete = (id: string) => {
-    deleteMutate(id, {
-      onSuccess: () => {
-        setDeletingId(null)
-      },
-    })
+  const openEdit = useCallback((referral: ReferralCode) => {
+    setFormTarget(referral)
+    setIsFormOpen(true)
+  }, [])
+
+  const columns = useMemo(
+    () =>
+      getReferralColumns({
+        t,
+        canUpdate,
+        canDelete,
+        onEdit: openEdit,
+        onDelete: setDeleteTarget,
+        onToggle: handleToggle,
+        onCopy: handleCopy,
+        togglingId,
+        copiedCode,
+      }),
+    [t, canUpdate, canDelete, openEdit, handleToggle, handleCopy, togglingId, copiedCode],
+  )
+
+  const rows = useMemo(() => data?.data ?? [], [data])
+  const totalPage = data?.meta?.total_page ?? 1
+  const total = data?.meta?.total_data ?? 0
+
+  // Menghapus baris terakhir sebuah halaman membuat `page` menunjuk halaman
+  // yang sudah tidak ada. Dijepit saat render, bukan lewat useEffect: efek
+  // akan sempat menggambar satu kali dengan nomor halaman yang sudah usang.
+  const [lastTotalPage, setLastTotalPage] = useState(totalPage)
+  if (isSuccess && totalPage !== lastTotalPage) {
+    setLastTotalPage(totalPage)
+    if (page > totalPage) setPage(totalPage)
   }
 
-  // React Table Columns
-  const columns = useMemo<ColumnDef<ReferralCode>[]>(() => {
-    return [
-      {
-        accessorKey: 'name',
-        header: t('referralPage.table.name'),
-        cell: ({ row }) => (
-          <Link
-            to={`/referral-codes/${row.original.id}`}
-            className='font-semibold text-primary hover:underline transition-all duration-200'
-          >
-            {row.original.name}
-          </Link>
-        ),
-      },
-      {
-        accessorKey: 'code',
-        header: t('referralPage.table.code'),
-        cell: ({ row }) => (
-          <code className='rounded bg-slate-100 px-1.5 py-0.5 text-xs font-mono font-bold uppercase tracking-wider text-slate-800 border border-slate-200'>
-            {row.original.code}
-          </code>
-        ),
-      },
-      {
-        accessorKey: 'percent',
-        header: t('referralPage.table.percent'),
-        cell: ({ row }) => <span className='font-semibold text-slate-700'>{row.original.percent}%</span>,
-      },
-      {
-        accessorKey: 'is_active',
-        header: t('referralPage.table.status'),
-        cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            <Switch
-              checked={row.original.is_active}
-              onCheckedChange={() => handleToggleStatus(row.original)}
-              aria-label={t('referralPage.form.statusLabel')}
-            />
-            <span className='text-xs font-medium text-slate-500'>
-              {row.original.is_active ? t('referralPage.statusActive') : t('referralPage.statusInactive')}
-            </span>
-          </div>
-        ),
-      },
-      {
-        id: 'actions',
-        header: t('referralPage.table.actions'),
-        cell: ({ row }) => (
-          <div className='flex items-center gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0 border-slate-200 hover:bg-slate-50'
-              onClick={() => setEditingReferral(row.original)}
-              title={t('referralPage.editBtn')}
-            >
-              <Edit className='h-4 w-4 text-slate-600' />
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0 border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-rose-600'
-              onClick={() => setDeletingId(row.original.id)}
-              title={t('referralPage.deleteBtn')}
-            >
-              <Trash2 className='h-4 w-4' />
-            </Button>
-          </div>
-        ),
-      },
-    ]
-  }, [t, handleToggleStatus])
+  const visibleRows = useMemo(() => {
+    const query = filter.trim().toLowerCase()
+    if (!query) return rows
+    return rows.filter((row) =>
+      [row.name, row.code].join(' ').toLowerCase().includes(query),
+    )
+  }, [rows, filter])
 
-  const rows = data?.data ?? []
-  const meta = data?.meta
+  const isFirstRender = useRef(true)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    listRef.current?.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' })
+  }, [page])
+
+  const emptyMessage = filter.trim() ? (
+    <EmptyState
+      message={t('referralPage.filterNoMatch', { count: rows.length })}
+      action={
+        <Button variant='outline' size='sm' onClick={() => setFilter('')}>
+          {t('referralPage.filterClear')}
+        </Button>
+      }
+    />
+  ) : page > 1 && !isPlaceholderData ? (
+    <EmptyState
+      message={t('referralPage.emptyPageMessage')}
+      action={
+        <Button variant='outline' size='sm' onClick={() => setPage(1)}>
+          {t('referralPage.backToFirstPage')}
+        </Button>
+      }
+    />
+  ) : (
+    <EmptyState message={t('referralPage.emptyPage')} />
+  )
 
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-7xl space-y-6'>
-        {/* Page Header */}
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        {/* h2, bukan h1: navbar sudah merender h1 judul halaman */}
+        <header className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
           <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <Percent className='h-5 w-5' aria-hidden />
-            </div>
+            <span
+              className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'
+              aria-hidden
+            >
+              <Percent className='h-5 w-5' />
+            </span>
             <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>{t('referralPage.title')}</h1>
-              <p className='text-sm text-muted-foreground'>{t('referralPage.subtitle')}</p>
+              <h2 className='text-2xl font-semibold tracking-tight text-foreground'>
+                {t('referralPage.title')}
+              </h2>
+              <p className='text-sm text-muted-foreground'>
+                {canCreate || canUpdate || canDelete
+                  ? t('referralPage.subtitle')
+                  : t('referralPage.subtitleReadOnly')}
+              </p>
             </div>
           </div>
 
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
-            {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
-                {t('providerPage.loadingShort') || 'Loading…'}
-              </p>
-            )}
-            {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
-                {t('providerPage.loadFailedShort') || 'Failed to load'}
-              </p>
-            )}
-            {isSuccess && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground'>
-                  {t('referralPage.table.totalData') || 'Total'}: {meta?.total_data ?? rows.length}
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
+        </header>
 
-        {/* Content Box */}
-        <div className='overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5'>
-          <div className='flex flex-col gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
+        {/* Angka ringkas dinaikkan ke atas: sebelumnya satu-satunya angka di
+            layar ini adalah total di sudut header, dan sisanya harus dihitung
+            sendiri dari tabel. */}
+        {!isError && <ReferralStatStrip rows={rows} total={total} isReady={isSuccess} />}
+
+        <section
+          ref={listRef}
+          className='overflow-hidden rounded-xl border border-border bg-card shadow-sm'
+        >
+          <div className='flex flex-col gap-3 border-b border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
             <div className='min-w-0 space-y-0.5'>
-              <h2 className='text-sm font-semibold text-gray-900'>{t('referralPage.title')}</h2>
-              <p className='text-xs text-muted-foreground'>
-                {t('referralPage.subtitle')}
-              </p>
+              <h3 className='text-sm font-semibold text-foreground'>
+                {t('referralPage.listTitle')}
+              </h3>
+              <p className='text-xs text-muted-foreground'>{t('referralPage.listHint')}</p>
             </div>
-            <div className='flex items-center gap-3'>
-              <Button
-                type='button'
-                onClick={() => setIsCreateOpen(true)}
-                className='flex items-center gap-1.5 rounded-lg text-sm font-semibold'
+
+            <div className='flex shrink-0 flex-wrap items-center gap-2'>
+              <Label
+                htmlFor='referral-page-size'
+                className='whitespace-nowrap text-xs font-medium text-muted-foreground'
               >
-                <Plus className='h-4 w-4' />
-                {t('referralPage.addBtn')}
-              </Button>
+                {t('referralPage.rowsPerPage')}
+              </Label>
+              <Select
+                value={String(limit)}
+                onValueChange={(value) => {
+                  setLimit(Number(value))
+                  setPage(1)
+                }}
+              >
+                <SelectTrigger id='referral-page-size' size='sm' className='w-20'>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZES.map((size) => (
+                    <SelectItem key={size} value={String(size)}>
+                      {size}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {canCreate && (
+                <Button type='button' onClick={openCreate} className='gap-1.5 rounded-lg font-semibold'>
+                  <Plus className='h-4 w-4' aria-hidden />
+                  {t('referralPage.addBtn')}
+                </Button>
+              )}
             </div>
           </div>
+
+          {/* Wilayah live permanen: region yang dipasang bersamaan dengan isinya
+              tidak diumumkan sama sekali oleh pembaca layar. */}
+          <p className='sr-only' role='status' aria-live='polite'>
+            {isPending
+              ? t('referralPage.loadingBody')
+              : isError
+                ? t('referralPage.loadError')
+                : t('referralPage.pageAnnounce', { page, totalPage, count: rows.length })}
+          </p>
 
           <div className='p-3 sm:p-4'>
-            {isLoading && (
-              <div className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12'>
-                <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
+            {isPending && !isError && (
+              <div aria-busy='true'>
+                <TableSkeleton />
               </div>
             )}
 
             {isError && (
-              <ErrorComponent message={t('referralPage.toastError') || 'Failed to load referral codes'} />
+              <div className='flex flex-col items-center gap-3 py-6'>
+                <ErrorComponent message={t('referralPage.loadError')} />
+                <Button variant='outline' onClick={() => void refetch()}>
+                  {t('common.refresh')}
+                </Button>
+              </div>
             )}
 
             {isSuccess && (
-              <div className='space-y-4'>
-                <div className='max-h-[min(70vh,40rem)] overflow-y-auto overflow-x-auto overscroll-contain'>
+              <>
+                {/* Endpoint hanya menerima page+limit, jadi kotak ini menyaring
+                    baris yang sudah dimuat saja — cakupannya ditulis permanen
+                    di bawahnya supaya tidak terbaca sebagai pencarian global. */}
+                <div className='mb-3 space-y-1'>
+                  <div className='relative w-full sm:max-w-xs'>
+                    <Search
+                      className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground'
+                      aria-hidden
+                    />
+                    <Input
+                      value={filter}
+                      onChange={(event) => setFilter(event.target.value)}
+                      placeholder={t('referralPage.filterPlaceholder')}
+                      aria-label={t('referralPage.filterPlaceholder')}
+                      className='pl-9 pr-9'
+                    />
+                    {filter && (
+                      <button
+                        type='button'
+                        onClick={() => setFilter('')}
+                        aria-label={t('referralPage.filterClear')}
+                        className='absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground'
+                      >
+                        <X className='h-4 w-4' aria-hidden />
+                      </button>
+                    )}
+                  </div>
+                  <p className='text-xs text-muted-foreground'>
+                    {t('referralPage.filterScopeHint', { count: rows.length })}
+                  </p>
+                </div>
+
+                <div
+                  aria-busy={isPlaceholderData}
+                  inert={isPlaceholderData}
+                  className={cn(
+                    'transition-opacity duration-200',
+                    isPlaceholderData && 'opacity-60',
+                  )}
+                >
                   <DataTable
                     columns={columns}
-                    data={rows}
-                    emptyMessage={t('referralPage.emptyPage') || 'No referral codes registered'}
+                    data={visibleRows}
+                    getRowId={(row) => row.id}
+                    caption={t('referralPage.tableCaption', { page, totalPage })}
+                    emptyMessage={emptyMessage}
                   />
                 </div>
 
-                {/* Pagination Footer */}
-                {meta && meta.total_page > 1 && (
-                  <div className='flex items-center justify-between border-t border-slate-100 pt-4 px-1'>
-                    <span className='text-xs text-slate-500'>
-                      {t('transactionPage.paginationInfo', {
-                        page: meta.page,
-                        totalPage: meta.total_page,
-                      }) || `Page ${meta.page} of ${meta.total_page}`}
-                    </span>
-                    <div className='flex items-center gap-2'>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        disabled={meta.page <= 1}
-                        onClick={() => setPage((prev) => prev - 1)}
-                      >
-                        {t('transactionPage.prev') || 'Prev'}
-                      </Button>
-                      <Button
-                        type='button'
-                        variant='outline'
-                        size='sm'
-                        disabled={meta.page >= meta.total_page}
-                        onClick={() => setPage((prev) => prev + 1)}
-                      >
-                        {t('transactionPage.next') || 'Next'}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                <div className='mt-4'>
+                  <Pagination page={page} totalPage={totalPage} onChange={setPage} />
+                </div>
+              </>
             )}
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* Create Dialog */}
-      <CreateReferralDialog open={isCreateOpen} setOpen={setIsCreateOpen} />
+      <ReferralFormDialog
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        referral={formTarget}
+      />
 
-      {/* Edit Dialog */}
-      {editingReferral && (
-        <EditReferralDialog
-          referral={editingReferral}
-          open={!!editingReferral}
-          setOpen={(open) => !open && setEditingReferral(null)}
-        />
-      )}
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deletingId} onOpenChange={(open) => !open && setDeletingId(null)}>
-        <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950'>
-          <DialogHeader>
-            <DialogTitle className='font-extrabold text-slate-900 dark:text-white'>
-              {t('referralPage.deleteConfirm.title')}
-            </DialogTitle>
-            <DialogDescription className='text-slate-500 dark:text-slate-400'>
-              {t('referralPage.deleteConfirm.description')}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className='gap-2 sm:gap-0 pt-2'>
-            <Button
-              type='button'
-              variant='outline'
-              className='rounded-xl border-slate-200 dark:border-zinc-800'
-              onClick={() => setDeletingId(null)}
-            >
-              {t('referralPage.deleteConfirm.cancel')}
-            </Button>
-            <Button
-              type='button'
-              variant='destructive'
-              className='rounded-xl bg-red-600 hover:bg-red-700 text-white'
-              onClick={() => deletingId && handleDelete(deletingId)}
-            >
-              {t('referralPage.deleteConfirm.confirm')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <DeleteReferralDialog
+        referral={deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      />
     </DashboardLayout>
-  )
-}
-
-// Sub-Component: Create Referral Dialog
-function CreateReferralDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
-  const { t } = useTranslation('common')
-  const { mutate: createMutate, isPending } = useCreateReferralCode(() => setOpen(false))
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<ReferralCodeFormValues>({
-    resolver: zodResolver(referralCodeSchema) as unknown as Resolver<ReferralCodeFormValues>,
-    defaultValues: {
-      name: '',
-      code: '',
-      percent: 0,
-      is_active: true,
-    },
-  })
-
-  // Watch status toggle value
-  const isActive = watch('is_active')
-
-  useEffect(() => {
-    if (!open) {
-      reset()
-    }
-  }, [open, reset])
-
-  const onSubmit = (values: ReferralCodeFormValues) => {
-    createMutate(values)
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 bg-white'>
-        <DialogHeader>
-          <DialogTitle className='font-extrabold text-slate-900'>{t('referralPage.form.addTitle')}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 pt-2'>
-          <div className='space-y-1.5'>
-            <Label htmlFor='create-name'>{t('referralPage.form.nameLabel')}</Label>
-            <Input
-              id='create-name'
-              placeholder={t('referralPage.form.namePlaceholder')}
-              {...register('name')}
-            />
-            {errors.name?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.name.message)}</p>}
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='create-code'>{t('referralPage.form.codeLabel')}</Label>
-            <Input
-              id='create-code'
-              placeholder={t('referralPage.form.codePlaceholder')}
-              {...register('code')}
-            />
-            {errors.code?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.code.message)}</p>}
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='create-percent'>{t('referralPage.form.percentLabel')}</Label>
-            <Input
-              id='create-percent'
-              type='number'
-              step='any'
-              placeholder={t('referralPage.form.percentPlaceholder')}
-              {...register('percent', { valueAsNumber: true })}
-            />
-            {errors.percent?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.percent.message)}</p>}
-          </div>
-
-          <div className='flex items-center justify-between py-1.5'>
-            <Label htmlFor='create-status' className='cursor-pointer'>
-              {t('referralPage.form.statusLabel')}
-            </Label>
-            <Switch
-              id='create-status'
-              checked={isActive}
-              onCheckedChange={(checked) => setValue('is_active', checked)}
-            />
-          </div>
-
-          <DialogFooter className='gap-2 sm:gap-0 pt-4'>
-            <Button
-              type='button'
-              variant='outline'
-              className='rounded-xl border-slate-200'
-              onClick={() => setOpen(false)}
-            >
-              {t('referralPage.form.cancel')}
-            </Button>
-            <Button
-              type='submit'
-              className='rounded-xl'
-              disabled={isPending}
-            >
-              {isPending && <Loader2 className='mr-1.5 h-4 w-4 animate-spin' />}
-              {t('referralPage.form.save')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-// Sub-Component: Edit Referral Dialog
-function EditReferralDialog({
-  referral,
-  open,
-  setOpen,
-}: {
-  referral: ReferralCode
-  open: boolean;
-  setOpen: (open: boolean) => void
-}) {
-  const { t } = useTranslation('common')
-  const { mutate: updateMutate, isPending } = useUpdateReferralCode(() => setOpen(false))
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<ReferralCodeFormValues>({
-    resolver: zodResolver(referralCodeSchema) as unknown as Resolver<ReferralCodeFormValues>,
-    defaultValues: {
-      name: referral.name,
-      code: referral.code,
-      percent: referral.percent,
-      is_active: referral.is_active,
-    },
-  })
-
-  // Watch status toggle value
-  const isActive = watch('is_active')
-
-  useEffect(() => {
-    reset({
-      name: referral.name,
-      code: referral.code,
-      percent: referral.percent,
-      is_active: referral.is_active,
-    })
-  }, [referral, open, reset])
-
-  const onSubmit = (values: ReferralCodeFormValues) => {
-    updateMutate({
-      id: referral.id,
-      payload: values,
-    })
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className='rounded-2xl sm:max-w-md border border-slate-200 bg-white'>
-        <DialogHeader>
-          <DialogTitle className='font-extrabold text-slate-900'>{t('referralPage.form.editTitle')}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className='space-y-4 pt-2'>
-          <div className='space-y-1.5'>
-            <Label htmlFor='edit-name'>{t('referralPage.form.nameLabel')}</Label>
-            <Input
-              id='edit-name'
-              placeholder={t('referralPage.form.namePlaceholder')}
-              {...register('name')}
-            />
-            {errors.name?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.name.message)}</p>}
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='edit-code'>{t('referralPage.form.codeLabel')}</Label>
-            <Input
-              id='edit-code'
-              placeholder={t('referralPage.form.codePlaceholder')}
-              {...register('code')}
-            />
-            {errors.code?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.code.message)}</p>}
-          </div>
-
-          <div className='space-y-1.5'>
-            <Label htmlFor='edit-percent'>{t('referralPage.form.percentLabel')}</Label>
-            <Input
-              id='edit-percent'
-              type='number'
-              step='any'
-              placeholder={t('referralPage.form.percentPlaceholder')}
-              {...register('percent', { valueAsNumber: true })}
-            />
-            {errors.percent?.message && <p className='text-xs text-rose-500 font-medium'>{t(errors.percent.message)}</p>}
-          </div>
-
-          <div className='flex items-center justify-between py-1.5'>
-            <Label htmlFor='edit-status' className='cursor-pointer'>
-              {t('referralPage.form.statusLabel')}
-            </Label>
-            <Switch
-              id='edit-status'
-              checked={isActive}
-              onCheckedChange={(checked) => setValue('is_active', checked)}
-            />
-          </div>
-
-          <DialogFooter className='gap-2 sm:gap-0 pt-4'>
-            <Button
-              type='button'
-              variant='outline'
-              className='rounded-xl border-slate-200'
-              onClick={() => setOpen(false)}
-            >
-              {t('referralPage.form.cancel')}
-            </Button>
-            <Button
-              type='submit'
-              className='rounded-xl'
-              disabled={isPending}
-            >
-              {isPending && <Loader2 className='mr-1.5 h-4 w-4 animate-spin' />}
-              {t('referralPage.form.save')}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
   )
 }

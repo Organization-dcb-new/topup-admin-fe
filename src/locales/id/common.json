@@ -1188,9 +1188,9 @@
     "subtitle": "Kelola metode pembayaran yang tampil untuk pelanggan. Tambah baru lewat toolbar di bawah; ubah atau hapus lewat kolom Aksi pada setiap baris.",
     "loadingShort": "Memuat…",
     "loadFailedShort": "Gagal memuat",
-    "totalMethods": "Total {{count}} metode",
+    "totalMethods": "{{total}} metode",
     "listTitle": "Daftar metode pembayaran",
-    "listHint": "Data per halaman {{limit}} item. Gunakan paginasi untuk halaman lain.",
+    "listHint": "Biaya dan batas di sini berlaku saat pembayaran.",
     "tableLoadingTitle": "Memuat daftar metode pembayaran…",
     "tableLoadingHint": "Mohon tunggu sebentar.",
     "loadErrorDetail": "Gagal memuat metode pembayaran. Periksa koneksi atau coba muat ulang halaman.",
@@ -1210,7 +1210,13 @@
     "colStatus": "Status",
     "statusActive": "Aktif",
     "statusInactive": "Nonaktif",
-    "colActions": "Aksi"
+    "colActions": "Aksi",
+    "colMethod": "Metode",
+    "colFee": "Biaya",
+    "colAmountRange": "Rentang nominal",
+    "rowActionsAria": "Aksi untuk {{name}}",
+    "amountRange": "{{min}} – {{max}}",
+    "amountFrom": "{{min}} ke atas"
   },
   "paymentMethodToasts": {
     "createSuccess": "Metode pembayaran berhasil dibuat",
@@ -1221,7 +1227,7 @@
     "deleteError": "Gagal menghapus metode pembayaran"
   },
   "paymentMethodDelete": {
-    "triggerAria": "Hapus metode pembayaran",
+    "triggerAria": "Hapus {{name}}",
     "title": "Hapus metode pembayaran?",
     "description": "Tindakan ini tidak dapat dibatalkan. Metode pembayaran akan dihapus permanen dari sistem.",
     "cancel": "Batal",
@@ -1475,7 +1481,7 @@
     "subtitle": "Kelompokkan metode pembayaran per kategori. Tambah kategori lewat toolbar di bawah; tautkan metode atau hapus kategori lewat kolom aksi.",
     "loadingShort": "Memuat…",
     "errorShort": "Gagal memuat",
-    "total": "Total {{total}} kategori",
+    "total": "{{total}} kategori",
     "listTitle": "Daftar kategori",
     "listHint": "Semua kategori dari server ditampilkan di bawah.",
     "loadingBody": "Memuat kategori metode pembayaran…",
@@ -1495,7 +1501,15 @@
   },
   "paymentMethodCategoryToasts": {
     "loadSuccess": "Berhasil memuat kategori metode pembayaran",
-    "loadError": "Gagal memuat kategori metode pembayaran"
+    "loadError": "Gagal memuat kategori metode pembayaran",
+    "createSuccess": "Kategori berhasil dibuat",
+    "createError": "Gagal membuat kategori",
+    "updateSuccess": "Kategori berhasil diperbarui",
+    "updateError": "Gagal memperbarui kategori",
+    "deleteSuccess": "Kategori berhasil dihapus",
+    "deleteError": "Gagal menghapus kategori",
+    "assignSuccess": "Metode tertaut berhasil diperbarui",
+    "assignError": "Gagal memperbarui metode tertaut"
   },
   "inputPage": {
     "title": "Input game",
@@ -1876,7 +1890,6 @@
     "searchPlaceholder": "Cari berdasarkan nama atau kode...",
     "statusActive": "Aktif",
     "statusInactive": "Tidak Aktif",
-    "toastSuccess": "Kode referral berhasil dimuat",
     "toastError": "Gagal memuat kode referral",
     "emptyPage": "Belum ada kode referral terdaftar",
     "table": {
@@ -1903,9 +1916,15 @@
       "errors": {
         "nameRequired": "Nama wajib diisi",
         "codeRequired": "Kode referral wajib diisi",
-        "percentMin": "Persentase komisi minimal 0",
-        "percentMax": "Persentase komisi maksimal 100"
-      }
+        "percentMin": "Persentase komisi harus lebih dari 0",
+        "percentMax": "Persentase komisi maksimal 100",
+        "codeFormat": "Gunakan 3-20 karakter: huruf, angka, tanda hubung, atau garis bawah.",
+        "percentRequired": "Persentase komisi wajib diisi",
+        "codeTaken": "Kode referral ini sudah dipakai."
+      },
+      "addDescription": "Buat kode referral dan tentukan persentase komisinya.",
+      "editDescription": "Perbarui detail kode referral ini.",
+      "saving": "Menyimpan…"
     },
     "deleteConfirm": {
       "title": "Hapus Kode Referral",
@@ -1937,7 +1956,33 @@
         "status": "Status",
         "date": "Tanggal"
       }
-    }
+    },
+    "listTitle": "Daftar kode referral",
+    "listHint": "Ubah status untuk menghentikan atau melanjutkan komisinya.",
+    "subtitleReadOnly": "Kode referral dan persentase komisinya. Anda hanya punya akses lihat.",
+    "rowsPerPage": "Baris",
+    "loadingBody": "Memuat kode referral…",
+    "loadError": "Gagal memuat kode referral.",
+    "total_one": "Total {{total}} kode referral",
+    "total_other": "Total {{total}} kode referral",
+    "backToFirstPage": "Kembali ke halaman 1",
+    "emptyPageMessage": "Halaman ini tidak punya baris. Kembali ke halaman pertama.",
+    "filterPlaceholder": "Saring halaman ini…",
+    "filterScopeHint_one": "Hanya menyaring {{count}} baris yang dimuat di halaman ini.",
+    "filterScopeHint_other": "Hanya menyaring {{count}} baris yang dimuat di halaman ini.",
+    "filterNoMatch_one": "Tidak ada yang cocok dari {{count}} baris di halaman ini. Coba halaman lain.",
+    "filterNoMatch_other": "Tidak ada yang cocok dari {{count}} baris di halaman ini. Coba halaman lain.",
+    "filterClear": "Hapus saringan",
+    "tableCaption": "Kode referral, halaman {{page}} dari {{totalPage}}",
+    "pageAnnounce_one": "Halaman {{page}} dari {{totalPage}}, {{count}} kode referral ditampilkan.",
+    "pageAnnounce_other": "Halaman {{page}} dari {{totalPage}}, {{count}} kode referral ditampilkan.",
+    "editAria": "Ubah kode referral {{code}}",
+    "deleteAria": "Hapus kode referral {{code}}",
+    "toggleStatusAria": "Ubah status aktif untuk {{code}}",
+    "copyCode": "Salin kode {{code}}",
+    "copied": "Kode disalin",
+    "copyFailed": "Kode gagal disalin",
+    "createdOn": "Dibuat {{date}}"
   },
   "referralToasts": {
     "createSuccess": "Kode referral berhasil dibuat",
@@ -2045,6 +2090,7 @@
     "edit": "Ubah",
     "editPermissions": "Atur permission",
     "delete": "Hapus",
+    "deleting": "Menghapus…",
     "formCreateTitle": "Buat role baru",
     "formEditTitle": "Ubah role",
     "formDescription": "Nama role dipakai untuk membuat slug secara otomatis.",
@@ -2222,5 +2268,153 @@
     "deleting": "Menghapus…",
     "success": "Admin berhasil dihapus",
     "error": "Gagal menghapus admin"
+  },
+  "stepUp": {
+    "title": "Verifikasi dua faktor",
+    "hint": "Aksi ini mengubah hak akses. Masukkan 6 digit kode dari aplikasi authenticator untuk mengonfirmasi.",
+    "otpLabel": "Kode verifikasi",
+    "errorRequired": "Aksi ini butuh kode dari aplikasi authenticator.",
+    "errorInvalid": "Kode salah atau sudah kedaluwarsa. Masukkan kode yang sedang berlaku.",
+    "errorReused": "Kode ini sudah dipakai. Tunggu kode berikutnya di aplikasi authenticator.",
+    "errorLocked": "Terlalu banyak kode salah. Coba lagi beberapa menit lagi.",
+    "errorUnavailable": "Verifikasi dua faktor sedang tidak tersedia. Coba lagi sebentar lagi."
+  },
+  "referralDelete": {
+    "typeCodeLabel": "Ketik {{code}} untuk konfirmasi",
+    "typeCodePlaceholder": "Masukkan kode referral",
+    "codeMismatch": "Kode tidak cocok.",
+    "deleting": "Menghapus…"
+  },
+  "referralDetail": {
+    "totalUses": "Total pemakaian",
+    "successfulUses": "Pemakaian berhasil",
+    "salesVolume": "Volume penjualan",
+    "conversionRate": "Porsi terbayar",
+    "conversionHint": "Porsi transaksi kode ini yang berstatus terbayar.",
+    "txTableCaption": "Transaksi yang memakai kode referral ini",
+    "missingId": "Kode referral tidak ditentukan.",
+    "loadError": "Gagal memuat kode referral ini.",
+    "showingTx_one": "Menampilkan {{shown}} dari {{count}} transaksi",
+    "showingTx_other": "Menampilkan {{shown}} dari {{count}} transaksi",
+    "showMoreTx": "Tampilkan lagi"
+  },
+  "confirmDelete": {
+    "cancel": "Batal",
+    "confirm": "Hapus",
+    "deleting": "Menghapus…"
+  },
+  "imageDropzone": {
+    "hint": "Klik atau letakkan gambar di sini",
+    "broken": "Gambar gagal dimuat",
+    "uploading": "Mengunggah… {{percent}}%",
+    "uploadFailed": "Unggahan gagal. Silakan coba lagi.",
+    "invalidType": "Hanya berkas gambar yang diizinkan.",
+    "tooLarge": "Ukuran gambar melebihi 10 MB.",
+    "limit": "PNG, JPG, atau SVG · maks 10 MB",
+    "remove": "Hapus"
+  },
+  "paymentMethodForm": {
+    "trigger": "Tambah metode",
+    "createTitle": "Tambah metode pembayaran",
+    "editTitle": "Ubah metode pembayaran",
+    "description": "Biaya dan batas di sini berlaku saat pembayaran.",
+    "editAria": "Ubah {{name}}",
+    "nameLabel": "Nama",
+    "namePlaceholder": "mis. QRIS",
+    "codeLabel": "Kode",
+    "codePlaceholder": "mis. QRIS",
+    "codeHint": "Hanya huruf, angka, - dan _. Disimpan dalam huruf besar.",
+    "typeLabel": "Tipe",
+    "typePlaceholder": "mis. ewallet",
+    "providerLabel": "Penyedia",
+    "providerPlaceholder": "mis. midtrans",
+    "iconLabel": "Ikon",
+    "feePercentLabel": "Biaya (%)",
+    "feePercentHint": "0–100",
+    "feeFixedLabel": "Biaya tetap (Rp)",
+    "minLabel": "Nominal minimum (Rp)",
+    "maxLabel": "Nominal maksimum (Rp)",
+    "maxHint": "0 = tanpa batas",
+    "sortLabel": "Urutan",
+    "statusLabel": "Aktif",
+    "statusHint": "Metode nonaktif tidak tampil saat pembayaran.",
+    "cancel": "Batal",
+    "create": "Tambah",
+    "save": "Simpan perubahan",
+    "errors": {
+      "nameRequired": "Nama wajib diisi",
+      "codeRequired": "Kode wajib diisi",
+      "codeFormat": "Gunakan hanya huruf, angka, - dan _",
+      "typeRequired": "Tipe wajib diisi",
+      "providerRequired": "Penyedia wajib diisi",
+      "iconRequired": "Ikon wajib diisi",
+      "feePercentRequired": "Biaya persen wajib diisi",
+      "feePercentRange": "Biaya harus antara 0 dan 100",
+      "feeFixedRequired": "Biaya tetap wajib diisi",
+      "minRequired": "Nominal minimum wajib diisi",
+      "maxRequired": "Nominal maksimum wajib diisi",
+      "sortRequired": "Urutan wajib diisi",
+      "negative": "Nilai tidak boleh negatif",
+      "maxBelowMin": "Maksimum minimal sama dengan minimum",
+      "tooLong": "Maksimal {{max}} karakter"
+    }
+  },
+  "paymentCategoryForm": {
+    "trigger": "Tambah kategori",
+    "createTitle": "Tambah kategori pembayaran",
+    "editTitle": "Ubah kategori pembayaran",
+    "description": "Kategori mengelompokkan metode pembayaran saat checkout.",
+    "editAria": "Ubah {{name}}",
+    "nameLabel": "Nama",
+    "namePlaceholder": "mis. E-wallet",
+    "slugLabel": "Slug",
+    "slugPlaceholder": "e-wallet",
+    "slugHint": "Huruf kecil, angka, dan tanda hubung. Terisi dari nama.",
+    "iconLabel": "Ikon",
+    "sortLabel": "Urutan",
+    "sortHint": "Angka lebih kecil tampil lebih dulu.",
+    "statusLabel": "Aktif",
+    "statusHint": "Kategori nonaktif tidak tampil saat pembayaran.",
+    "cancel": "Batal",
+    "create": "Tambah",
+    "save": "Simpan perubahan",
+    "errors": {
+      "nameRequired": "Nama wajib diisi",
+      "slugRequired": "Slug wajib diisi",
+      "slugFormat": "Gunakan huruf kecil, angka, dan tanda hubung saja",
+      "iconRequired": "Ikon wajib diisi",
+      "sortRequired": "Urutan wajib diisi",
+      "negative": "Nilai tidak boleh negatif",
+      "tooLong": "Maksimal {{max}} karakter"
+    }
+  },
+  "paymentCategoryAssign": {
+    "trigger": "Tautkan metode pembayaran ke {{name}}",
+    "triggerShort": "Tautkan metode pembayaran",
+    "title": "Metode pembayaran tertaut",
+    "description": "Centang setiap metode yang masuk ke {{name}}. Menyimpan akan mengganti seluruh isi kategori ini.",
+    "searchPlaceholder": "Cari nama atau kode…",
+    "loading": "Memuat metode pembayaran…",
+    "empty": "Belum ada metode pembayaran.",
+    "noMatch": "Tidak ada metode yang cocok.",
+    "truncatedWarning": "Baru {{shown}} dari {{total}} metode yang termuat. Menyimpan sekarang akan melepas sisanya, jadi aksi ini dinonaktifkan.",
+    "summaryAdd": "{{total}} akan ditambahkan",
+    "summaryRemove": "{{total}} akan dikeluarkan dari kategori ini",
+    "summaryMove": "{{total}} akan dipindahkan dari kategori lain",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…"
+  },
+  "paymentCategoryDelete": {
+    "title": "Hapus kategori ini?",
+    "description": "Tindakan ini tidak dapat dibatalkan. Metode di dalamnya akan kehilangan kategori.",
+    "triggerAria": "Hapus {{name}}"
+  },
+  "referralStats": {
+    "totalCodes": "Total kode",
+    "active": "Aktif",
+    "inactive": "Nonaktif",
+    "avgPercent": "Rata-rata komisi",
+    "scopedHint": "Dari {{count}} baris di halaman ini."
   }
 }

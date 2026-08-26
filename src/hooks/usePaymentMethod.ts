@@ -1,58 +1,63 @@
-import { api } from '@/api/axios'
-import type { FormValuesPaymentMethodEdit, PaymentMethodResponse } from '@/types/payment-method'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-export type PaymentMethodPayload = {
-  name: string
-  code: string
-  type: string
-  provider: string
-  icon_url: string
-  fee_percentage: number
-  fee_fixed: number
-  min_amount: number
-  max_amount: number
-  sort_order: number
-  config: string
-}
+import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
+import type {
+  PaymentMethodFormValues,
+  PaymentMethodResponse,
+} from '@/types/payment-method'
 
-export const useGetPaymentMethods = (page: number, limit: number) => {
-  return useQuery({
-    queryKey: ['payment-methods', page, limit],
-    queryFn: async (): Promise<PaymentMethodResponse> => {
+const LIST_KEY = ['payment-methods'] as const
+
+export const useGetPaymentMethods = (page: number, limit: number) =>
+  useQuery({
+    queryKey: [...LIST_KEY, page, limit],
+    queryFn: async ({ signal }): Promise<PaymentMethodResponse> => {
       const res = await api.get('/payment-methods/admin', {
-        params: {
-          page,
-          limit,
-        },
+        signal,
+        params: { page, limit },
       })
       return res.data
     },
+    // Data lama tetap tampil saat pindah halaman, jadi tabel tidak berkedip
+    placeholderData: (previous) => previous,
   })
-}
 
-interface CreatePaymentMethodProps {
-  setOpen: (open: boolean) => void
-}
-
-export const useCreatePaymentMethodSubmit = ({ setOpen }: CreatePaymentMethodProps) => {
+export const useCreatePaymentMethod = () => {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
+
   return useMutation({
-    mutationFn: async (payload: PaymentMethodPayload) => {
+    mutationFn: async (payload: PaymentMethodFormValues) => {
       const res = await api.post('/payment-methods', payload)
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
-      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: LIST_KEY })
       toast.success(t('paymentMethodToasts.createSuccess'))
     },
-    onError: () => {
-      toast.error(t('paymentMethodToasts.createError'))
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('paymentMethodToasts.createError'))),
+  })
+}
+
+export const useUpdatePaymentMethod = (id: string) => {
+  const { t } = useTranslation('common')
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (payload: PaymentMethodFormValues) => {
+      const res = await api.put(`/payment-methods/${id}`, payload)
+      return res.data
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: LIST_KEY })
+      toast.success(t('paymentMethodToasts.updateSuccess'))
+    },
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('paymentMethodToasts.updateError'))),
   })
 }
 
@@ -60,43 +65,16 @@ export function useDeletePaymentMethod(id: string) {
   const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
+  return useMutation({
     mutationFn: async () => {
-      const res = api.delete(`/payment-methods/${id}`)
-      return res
-    },
-    onSuccess: () => {
-      toast.success(t('paymentMethodToasts.deleteSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
-    },
-    onError: () => {
-      toast.error(t('paymentMethodToasts.deleteError'))
-    },
-  })
-
-  return mutation
-}
-
-export function useEditPaymentMethod(paymentMethodId: string, setOpen: (open: boolean) => void) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValuesPaymentMethodEdit) => {
-      const payload = {
-        ...values,
-      }
-
-      const res = await api.put(`/payment-methods/${paymentMethodId}`, payload)
+      const res = await api.delete(`/payment-methods/${id}`)
       return res.data
     },
     onSuccess: () => {
-      toast.success(t('paymentMethodToasts.updateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['payment-methods'] })
-      setOpen(false)
+      queryClient.invalidateQueries({ queryKey: LIST_KEY })
+      toast.success(t('paymentMethodToasts.deleteSuccess'))
     },
-    onError: () => toast.error(t('paymentMethodToasts.updateError')),
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('paymentMethodToasts.deleteError'))),
   })
-
-  return mutation
 }

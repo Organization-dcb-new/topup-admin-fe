@@ -18,6 +18,14 @@ const SENTINEL_KEYS: Record<string, string> = {
   'access denied: insufficient permissions': 'apiErrors.forbidden',
   'tidak bisa mengubah role akun sendiri': 'apiErrors.selfRoleChange',
   'You cannot delete your own account': 'apiErrors.selfDelete',
+  // Jaring pengaman. Penolakan gate 2FA biasanya ditangani di kolom OTP lewat
+  // `stepUpSentinel`; kalau toh sampai ke toast, jangan tampil sebagai
+  // STEP_UP_INVALID mentah.
+  STEP_UP_REQUIRED: 'stepUp.errorRequired',
+  STEP_UP_INVALID: 'stepUp.errorInvalid',
+  STEP_UP_REUSED: 'stepUp.errorReused',
+  STEP_UP_LOCKED: 'stepUp.errorLocked',
+  STEP_UP_UNAVAILABLE: 'stepUp.errorUnavailable',
 }
 
 // Satu pintu untuk menerjemahkan error axios jadi pesan yang layak tampil:
