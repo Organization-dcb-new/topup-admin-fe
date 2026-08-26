@@ -17,6 +17,7 @@ import { Pencil, UploadCloud } from 'lucide-react'
 import type { FormValuesCategory, PropsEditModal } from '@/types/category'
 import { useUpdateCategory } from '@/hooks/useCategory'
 import { handleFileAutoUpload } from '@/helpers/upload'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 export function EditCategoryModal({ category }: PropsEditModal) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -147,7 +148,7 @@ export function EditCategoryModal({ category }: PropsEditModal) {
               <Input
                 ref={inputRef}
                 type='file'
-                accept='image/*,.svg'
+                accept={ACCEPTED_IMAGE_ACCEPT}
                 className='hidden'
                 onChange={(e) => {
                   const file = e.target.files?.[0]

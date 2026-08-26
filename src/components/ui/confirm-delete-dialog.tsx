@@ -14,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface ConfirmDeleteDialogProps {
   /** Nama record yang akan dihapus — ditampilkan agar tidak salah baris */
@@ -21,6 +22,11 @@ interface ConfirmDeleteDialogProps {
   title: string
   description: string
   triggerAriaLabel: string
+  /**
+   * Label teks di samping ikon tong sampah. Dipakai modul yang menaruh tombol
+   * hapus di dalam toolbar beraksi ganda; tanpa ini pemicunya tetap tombol ikon.
+   */
+  triggerLabel?: string
   isPending?: boolean
   onConfirm: (done: () => void) => void
 }
@@ -38,6 +44,7 @@ export function ConfirmDeleteDialog({
   title,
   description,
   triggerAriaLabel,
+  triggerLabel,
   isPending,
   onConfirm,
 }: ConfirmDeleteDialogProps) {
@@ -55,13 +62,17 @@ export function ConfirmDeleteDialog({
       <AlertDialogTrigger asChild>
         <Button
           type='button'
-          variant='ghost'
-          size='icon'
-          className='h-8 w-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive'
+          variant={triggerLabel ? 'outline' : 'ghost'}
+          size={triggerLabel ? 'sm' : 'icon'}
+          className={cn(
+            'cursor-pointer text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
+            triggerLabel ? 'gap-1.5 border-0 bg-transparent shadow-none' : 'h-8 w-8',
+          )}
           disabled={isPending}
           aria-label={triggerAriaLabel}
         >
-          <Trash2 className='h-4 w-4' aria-hidden />
+          <Trash2 className='h-4 w-4 shrink-0' aria-hidden />
+          {triggerLabel ? <span className='hidden sm:inline'>{triggerLabel}</span> : null}
         </Button>
       </AlertDialogTrigger>
 

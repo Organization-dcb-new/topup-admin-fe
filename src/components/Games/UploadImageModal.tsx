@@ -30,6 +30,7 @@ import { handleFileAutoUpload } from '@/helpers/upload'
 import { getImageFileValidationError } from '@/helpers/validate'
 import { cn } from '@/lib/utils'
 import { useTranslation } from 'react-i18next'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 type PropsImageGame = {
   game: Game
@@ -296,7 +297,7 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
             id={`${inputId}-file`}
             ref={inputRef}
             type='file'
-            accept='image/*,.svg'
+            accept={ACCEPTED_IMAGE_ACCEPT}
             className='sr-only'
             tabIndex={-1}
             aria-hidden

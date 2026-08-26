@@ -236,7 +236,10 @@
     },
     "va": {
       "label": "Nomor virtual account",
-      "hint": "Selesaikan transfer sebelum batas waktu"
+      "hint": "Selesaikan transfer sebelum batas waktu",
+      "instruction": "Transfer ke nomor virtual account berikut",
+      "notAvailable": "Nomor belum tersedia",
+      "footnote": "Transaksi terkonfirmasi otomatis setelah transfer diterima."
     },
     "copy": {
       "ariaCopied": "Disalin",
@@ -353,16 +356,23 @@
   },
   "bannerPage": {
     "title": "Banner",
-    "subtitle": "Tambah banner dari toolbar di bawah. Untuk mengubah gambar atau link redirect, dan menghapus banner, gunakan tombol di kolom Aksi pada setiap baris.",
-    "loadingShort": "Memuat…",
-    "loadFailedShort": "Gagal memuat",
-    "totalBanners": "Total {{count}} banner",
+    "subtitle": "Kelola carousel storefront: apa yang tampil, urutannya, dan kapan tiap banner tayang.",
+    "activeCount": "{{count}} aktif",
+    "totalCount": "{{count}} total",
+    "previewTitle": "Pratinjau storefront",
+    "previewHint": "Beginilah carousel terlihat oleh pengunjung saat ini.",
+    "previewEmpty": "Belum ada banner yang tayang, jadi carousel tidak muncul di storefront.",
     "listTitle": "Daftar banner",
-    "listHint": "Buat baru di sini; ubah dan hapus lewat kolom Aksi.",
-    "tableLoadingTitle": "Memuat data banner…",
-    "tableLoadingHint": "Mohon tunggu sebentar.",
-    "loadErrorDetail": "Gagal memuat daftar banner. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Belum ada banner. Tambahkan lewat tombol Tambah banner di atas."
+    "listHint": "Semua banner, termasuk yang belum terlihat pengunjung.",
+    "addBanner": "Tambah banner",
+    "loadErrorTitle": "Gagal memuat banner",
+    "loadErrorDetail": "Periksa koneksi Anda, lalu coba lagi.",
+    "retry": "Coba lagi",
+    "emptyTitle": "Belum ada banner",
+    "emptyHint": "Tambahkan banner pertama untuk mengisi carousel storefront.",
+    "emptyAction": "Tambah banner",
+    "loadingLabel": "Memuat banner…",
+    "reorderHint": "Gunakan panah untuk mengatur urutan yang dilihat pengunjung."
   },
   "blogPage": {
     "title": "Blog",
@@ -371,7 +381,10 @@
     "createHeading": "Artikel baru",
     "editHeading": "Ubah artikel",
     "addArticle": "Tambah artikel",
-    "backToList": "Kembali ke daftar"
+    "backToList": "Kembali ke daftar",
+    "tableView": "Tampilan tabel",
+    "gridView": "Tampilan kartu",
+    "viewModeGroupAria": "Mode tampilan artikel"
   },
   "blogTable": {
     "colThumbnail": "Gambar",
@@ -381,50 +394,60 @@
     "noTags": "Tanpa tag",
     "colStatus": "Status",
     "statusPublished": "Terbit",
-    "statusDraft": "Draf"
+    "statusDraft": "Draf",
+    "moreTags_one": "{{count}} tag lainnya",
+    "moreTags_other": "{{count}} tag lainnya",
+    "tableCaption": "Daftar artikel, halaman {{page}} dari {{totalPage}}."
   },
   "blogList": {
     "loadingTitle": "Memuat daftar artikel…",
-    "loadingHint": "Mohon tunggu sebentar.",
     "loadError": "Gagal memuat daftar artikel. Periksa koneksi atau coba lagi nanti.",
     "emptyTitle": "Belum ada artikel",
-    "emptyHint": "Tambah artikel pertama lewat tombol Tambah artikel di atas.",
-    "emptyPageRow": "Belum ada artikel di halaman ini."
+    "emptyPageRow": "Belum ada artikel di halaman ini.",
+    "backToFirstPage": "Kembali ke halaman pertama",
+    "filterNoMatch": "Tidak ada artikel yang cocok dengan filter yang dipilih.",
+    "filterClear": "Hapus filter",
+    "showingRange": "Menampilkan {{from}}–{{to}} dari {{total}} artikel",
+    "resultsAnnounce": "Menampilkan {{shown}} dari {{total}} artikel.",
+    "copySlugAria": "Salin slug {{slug}}",
+    "copySlugDone": "Slug tersalin",
+    "copySlugError": "Gagal menyalin slug"
   },
   "blogManage": {
     "excerptLabel": "Ringkasan (excerpt)",
     "excerptPlaceholder": "Ringkasan singkat untuk daftar artikel dan SEO…",
     "statusLabel": "Status",
-    "publishedChangesHint": "Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik."
+    "publishedChangesHint": "Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik.",
+    "excerptHint": "Maksimal {{max}} karakter. Tampil di daftar artikel dan hasil pencarian."
   },
   "blogField": {
     "titlePlaceholder": "Judul artikel…",
     "titleAria": "Judul artikel",
-    "editorPlaceholder": "Tulis konten di sini (Markdown didukung)…"
+    "editorPlaceholder": "Tulis konten di sini (Markdown didukung)…",
+    "slugPreviewLabel": "URL artikel:",
+    "slugPreviewEmpty": "URL artikel dibuat otomatis dari judul.",
+    "slugWillChange": "URL artikel akan berubah dari /{{from}} menjadi /{{to}} setelah disimpan.",
+    "slugLocked": "Artikel ini sudah pernah tayang, jadi URL-nya tetap /{{slug}} meski judulnya diubah."
   },
   "blogThumbnail": {
     "label": "Gambar thumbnail",
-    "ratioBadge": "16:9",
-    "previewAlt": "Pratinjau thumbnail",
-    "uploading": "Mengunggah…",
-    "uploadHint": "Klik atau pilih file gambar",
-    "uploadAria": "Unggah thumbnail",
     "sizeHint": "Disarankan 1280×720 px (rasio 16:9)"
   },
   "blogCategory": {
-    "gameCategoryTitle": "Kategori game",
-    "selectPlaceholder": "Pilih kategori game",
-    "searchPlaceholder": "Cari game…",
-    "searchAria": "Cari kategori",
+    "selectPlaceholder": "Pilih kategori artikel",
     "noResults": "Tidak ada hasil",
     "tagsTitle": "Tag / kata kunci",
     "tagsInputPlaceholder": "Ketik tag, Enter atau koma",
     "tagsInputAria": "Tambah tag",
     "removeTagAria": "Hapus tag {{tag}}",
-    "quickAddTitle": "Tambah cepat dari game",
     "quickSearchPlaceholder": "Cari…",
     "quickSearchAria": "Cari untuk saran tag",
-    "noMatchingCategories": "Tidak ada kategori cocok"
+    "categoryTitle": "Kategori artikel",
+    "searchCategoryPlaceholder": "Cari atau ketik kategori baru…",
+    "useCustomCategory": "Pakai \"{{value}}\" sebagai kategori baru",
+    "quickAddTagsTitle": "Tambah cepat dari tag yang sudah ada",
+    "noMatchingTags": "Tidak ada tag yang cocok",
+    "tagsLimitReached": "Batas tag tercapai ({{max}})"
   },
   "blogPublish": {
     "sectionTitle": "Status publikasi",
@@ -436,16 +459,14 @@
     "processing": "Memproses…",
     "saveChanges": "Simpan perubahan",
     "publish": "Publikasikan",
-    "saveDraft": "Simpan draf"
+    "saveDraft": "Simpan draf",
+    "waitingUpload": "Menunggu unggahan gambar selesai…"
   },
   "deleteBlogModal": {
     "triggerAria": "Hapus artikel",
     "triggerLabel": "Hapus",
     "title": "Hapus artikel?",
-    "description": "Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server.",
-    "cancel": "Batal",
-    "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
+    "description": "Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server."
   },
   "blogRowActions": {
     "actionsHeader": "Aksi",
@@ -462,13 +483,39 @@
     "serverErrorFallback": "Terjadi kesalahan pada server",
     "updateFailed": "Gagal memperbarui artikel: {{error}}",
     "saveFailed": "Gagal menyimpan artikel: {{error}}",
-    "loadingList": "Sedang memuat daftar artikel…",
-    "loadError": "Gagal memuat daftar artikel",
-    "emptyList": "Belum ada artikel",
-    "loadSuccess": "Berhasil memuat daftar artikel",
     "deleteLoading": "Menghapus artikel…",
     "deleteSuccess": "Artikel berhasil dihapus",
-    "deleteError": "Gagal menghapus artikel"
+    "deleteError": "Gagal menghapus artikel",
+    "inlineImageUploadError": "Gagal mengunggah gambar ke dalam artikel",
+    "slugConflict": "Artikel dengan judul ini sudah ada. Gunakan judul lain."
+  },
+  "blogFilters": {
+    "searchPlaceholder": "Cari judul artikel…",
+    "searchClear": "Bersihkan pencarian",
+    "statusLabel": "Saring berdasarkan status",
+    "statusAll": "Semua status",
+    "categoryLabel": "Saring berdasarkan kategori",
+    "categoryAll": "Semua kategori",
+    "categoryOption": "{{category}} ({{total}})",
+    "perPage": "Per halaman"
+  },
+  "blogForm": {
+    "errors": {
+      "titleRequired": "Judul wajib diisi",
+      "categoryRequired": "Kategori wajib dipilih",
+      "contentRequired": "Konten artikel wajib diisi",
+      "excerptRequired": "Ringkasan wajib diisi",
+      "excerptMax": "Ringkasan maksimal {{max}} karakter",
+      "thumbnailRequired": "Gambar thumbnail wajib diunggah",
+      "statusInvalid": "Pilih status publikasi",
+      "slugTaken": "URL dari judul ini sudah dipakai artikel lain. Ubah sedikit judulnya."
+    }
+  },
+  "blogDiscard": {
+    "title": "Buang perubahan?",
+    "description": "Artikel ini masih punya perubahan yang belum disimpan. Keluar sekarang akan membuang semua yang sudah ditulis.",
+    "keepEditing": "Lanjut menulis",
+    "confirm": "Buang perubahan"
   },
   "gamePage": {
     "title": "Game",
@@ -571,7 +618,8 @@
     "sellingPrice": "Harga jual",
     "stock": "Stok",
     "unlimited": "Stok tak terbatas",
-    "productActive": "Aktif"
+    "productActive": "Aktif",
+    "actions": "Aksi"
   },
   "gameTable": {
     "colImage": "Gambar",
@@ -698,7 +746,7 @@
     "changeImages": "Ubah Gambar",
     "openAria": "Ubah gambar game {{name}}",
     "title": "Ubah gambar game",
-    "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung gambar atau SVG.",
+    "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung JPG, PNG, atau WebP.",
     "thumbnailLabel": "Miniatur (thumbnail)",
     "bannerLabel": "Banner",
     "thumbnailRequired": "Miniatur wajib diunggah",
@@ -717,7 +765,7 @@
     "discardLeave": "Buang",
     "errors": {
       "invalidType": "Hanya file gambar yang diperbolehkan.",
-      "tooLarge": "Ukuran gambar maksimal 10 MB."
+      "tooLarge": "Ukuran gambar maksimal 2 MB."
     }
   },
   "bulkPriceModal": {
@@ -897,7 +945,7 @@
   "productImageModal": {
     "openAria": "Ubah gambar produk {{name}}",
     "title": "Ubah gambar produk",
-    "description": "Produk: {{name}}. Unggah gambar baru; file akan diproses otomatis setelah dipilih. Format gambar atau SVG.",
+    "description": "Produk: {{name}}. Unggah gambar baru; file akan diproses otomatis setelah dipilih. Format JPG, PNG, atau WebP.",
     "required": "Gambar wajib diunggah",
     "label": "Gambar",
     "dropHint": "Klik atau letakkan gambar di sini",
@@ -913,7 +961,7 @@
     "selectGame": "— Pilih game —",
     "gameRequired": "Pilih game terlebih dahulu",
     "imageLabel": "Gambar produk",
-    "imageHint": "PNG, JPG, WebP, atau SVG. File diunggah otomatis setelah dipilih.",
+    "imageHint": "PNG, JPG, atau WebP. File diunggah otomatis setelah dipilih.",
     "uploadAria": "Unggah gambar: klik atau seret file ke sini",
     "previewAlt": "Pratinjau gambar yang dipilih",
     "dropHint": "Klik atau jatuhkan gambar",
@@ -1301,57 +1349,94 @@
     "create": "Create",
     "saving": "Saving..."
   },
-  "bannerTable": {
-    "colImage": "Gambar",
-    "colRedirectLink": "Link redirect",
-    "imageAlt": "Banner",
-    "actionsHeader": "Aksi",
-    "rowActionsAria": "Aksi untuk banner ini"
+  "bannerPreview": {
+    "prev": "Banner sebelumnya",
+    "next": "Banner berikutnya",
+    "position": "{{current}} dari {{total}}",
+    "autoplayStart": "Jalankan slideshow",
+    "autoplayStop": "Jeda slideshow",
+    "noLink": "Tanpa tautan",
+    "viewportLabel": "Carousel banner storefront",
+    "goToSlide": "Ke banner {{index}}",
+    "roleDescription": "carousel"
+  },
+  "bannerList": {
+    "statusActive": "Aktif",
+    "statusInactive": "Nonaktif",
+    "toggleAria": "Tampilkan {{title}} di storefront",
+    "moveUp": "Naikkan",
+    "moveDown": "Turunkan",
+    "orderBadge": "#{{order}}",
+    "noLink": "Tanpa tautan",
+    "copyLink": "Salin tautan",
+    "copied": "Tersalin",
+    "openExternal": "Membuka situs di luar storefront",
+    "openInternal": "Jalur storefront",
+    "edit": "Ubah",
+    "scheduleAlways": "Selalu tayang",
+    "scheduleFrom": "Mulai {{start}}",
+    "scheduleUntil": "Sampai {{end}}",
+    "scheduleBetween": "{{start}} – {{end}}",
+    "scheduleExpired": "Sudah berakhir",
+    "scheduleScheduled": "Terjadwal",
+    "rowAria": "Banner {{title}}, posisi {{order}} dari {{total}}"
+  },
+  "bannerForm": {
+    "createTitle": "Tambah banner",
+    "createDescription": "Unggah gambarnya, lalu tentukan tujuan klik dan jadwal tayangnya.",
+    "editTitle": "Ubah banner",
+    "editDescription": "Perubahan tayang di storefront begitu Anda simpan.",
+    "titleLabel": "Judul",
+    "titlePlaceholder": "Promo top-up akhir pekan",
+    "titleHint": "Label internal supaya daftar ini mudah dibaca.",
+    "imageLabel": "Gambar banner",
+    "altLabel": "Teks alternatif",
+    "altPlaceholder": "Poster promo top-up akhir pekan",
+    "altHint": "Dibacakan pembaca layar dan tampil bila gambar gagal dimuat.",
+    "linkLabel": "Link redirect",
+    "linkPlaceholder": "/promo atau https://example.com/promo",
+    "linkHint": "Kosongkan bila banner tidak perlu bisa diklik. Isi jalur seperti /promo, atau alamat https:// lengkap.",
+    "activeLabel": "Tampilkan di storefront",
+    "activeHint": "Banner nonaktif tetap tersimpan di sini tapi tidak sampai ke pengunjung.",
+    "scheduleLabel": "Jadwal",
+    "scheduleHint": "Opsional. Kosongkan keduanya agar banner tayang terus.",
+    "startLabel": "Mulai",
+    "endLabel": "Berakhir",
+    "cancel": "Batal",
+    "save": "Simpan perubahan",
+    "saving": "Menyimpan…",
+    "create": "Tambah banner",
+    "creating": "Menambahkan…",
+    "uploadWait": "Tunggu unggahan gambar selesai.",
+    "errors": {
+      "titleRequired": "Judul wajib diisi",
+      "titleTooLong": "Judul tidak boleh lebih dari {{max}} karakter",
+      "imageRequired": "Gambar banner wajib diisi",
+      "imageInvalid": "Gambar harus berupa alamat http:// atau https:// yang lengkap",
+      "altTooLong": "Teks alternatif tidak boleh lebih dari {{max}} karakter",
+      "linkInvalid": "Isi jalur storefront seperti /promo, atau alamat http:// atau https:// yang lengkap",
+      "linkTooLong": "Tautan tidak boleh lebih dari {{max}} karakter",
+      "endBeforeStart": "Waktu berakhir tidak boleh lebih awal dari waktu mulai"
+    }
+  },
+  "bannerDelete": {
+    "title": "Hapus banner ini?",
+    "description": "{{title}} langsung hilang dari storefront. Tindakan ini tidak bisa dibatalkan.",
+    "triggerAria": "Hapus banner"
   },
   "bannerToasts": {
-    "loadingList": "Sedang memuat daftar banner…",
-    "loadError": "Gagal memuat daftar banner",
-    "emptyList": "Belum ada banner",
-    "loadSuccess": "Berhasil memuat daftar banner",
-    "deleteSuccess": "Banner berhasil dihapus",
-    "deleteError": "Gagal menghapus banner",
+    "createSuccess": "Banner ditambahkan",
+    "createError": "Gagal menambahkan banner",
     "updateSuccess": "Banner diperbarui",
     "updateError": "Gagal memperbarui banner",
-    "createSuccess": "Banner berhasil dibuat",
-    "createError": "Gagal membuat banner"
-  },
-  "createBannerModal": {
-    "trigger": "Tambah banner",
-    "title": "Tambah banner",
-    "description": "Unggah gambar dan tentukan URL tujuan saat pengguna mengetuk banner di aplikasi.",
-    "redirectLabel": "Link redirect",
-    "redirectRequired": "Link redirect wajib diisi",
-    "redirectHint": "URL lengkap (termasuk https://) untuk halaman promo atau produk.",
-    "imageLabel": "Gambar banner",
-    "imageHint": "PNG, JPG, atau SVG. Seret file ke area ini atau ketuk untuk memilih.",
-    "uploadAria": "Unggah gambar banner",
-    "previewAlt": "Pratinjau banner",
-    "changeImage": "Ganti gambar",
-    "uploadTitle": "Unggah gambar",
-    "uploadDropHint": "Klik atau letakkan file di sini",
-    "uploading": "Mengunggah… {{percent}}%",
-    "cancel": "Batal",
-    "save": "Simpan",
-    "saving": "Menyimpan…"
-  },
-  "editBannerModal": {
-    "triggerShort": "Ubah",
-    "triggerAria": "Ubah banner",
-    "title": "Ubah banner",
-    "description": "Perbarui gambar atau link redirect. Perubahan akan terlihat setelah disimpan."
-  },
-  "deleteBannerModal": {
-    "triggerAria": "Hapus banner",
-    "triggerLabel": "Hapus",
-    "title": "Hapus banner?",
-    "description": "Tindakan ini tidak bisa dibatalkan. Banner akan dihapus dari daftar dan tidak lagi tampil di aplikasi.",
-    "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
+    "deleteSuccess": "Banner dihapus",
+    "deleteError": "Gagal menghapus banner",
+    "statusSuccess": "Status banner diperbarui",
+    "statusError": "Gagal memperbarui status banner",
+    "reorderSuccess": "Urutan baru disimpan",
+    "reorderError": "Gagal menyimpan urutan baru",
+    "copySuccess": "Tautan disalin",
+    "copyError": "Gagal menyalin tautan"
   },
   "showPage": {
     "title": "Acara",
@@ -1366,22 +1451,43 @@
     "loadErrorDetail": "Gagal memuat daftar show. Periksa koneksi atau coba muat ulang halaman.",
     "emptyPage": "Belum ada show. Tambahkan lewat tombol Tambah show di atas.",
     "subRowGamesTitle": "Game dalam show ini",
-    "subRowNoGames": "Belum ada game pada show ini."
+    "subRowNoGames": "Belum ada game pada show ini.",
+    "subRowVisibleCount": "{{visible}} dari {{total}} game tampil di storefront",
+    "subRowGameHidden": "Disembunyikan",
+    "removeGameTitle": "Keluarkan game dari show ini?",
+    "removeGameDescription": "Game akan dikeluarkan dari \"{{show}}\". Data gamenya sendiri tidak dihapus.",
+    "removeGameAria": "Keluarkan {{name}} dari show ini",
+    "searchPlaceholder": "Cari nama atau alias show…",
+    "searchAria": "Cari show",
+    "searchNoMatch": "Tidak ada show yang cocok dengan pencarian.",
+    "searchClear": "Bersihkan pencarian",
+    "tableCaption_one": "Daftar show, {{count}} baris",
+    "tableCaption_other": "Daftar show, {{count}} baris",
+    "totalShows_one": "Total {{count}} show",
+    "totalShows_other": "Total {{count}} show",
+    "tableCaption": "Daftar show, {{count}} baris"
   },
   "showTable": {
     "gameListColumn": "Daftar game",
-    "ariaOpenGameList": "Buka daftar game",
-    "ariaCloseGameList": "Tutup daftar game",
     "colName": "Nama",
     "colAlias": "Alias",
     "colGameCount": "Jumlah game",
     "actionsHeader": "Aksi",
-    "rowActionsAria": "Aksi untuk show ini"
+    "colImage": "Gambar",
+    "imageAltName": "Gambar show {{name}}",
+    "colFlags": "Penanda",
+    "flagShow": "Tampil",
+    "flagHidden": "Disembunyikan",
+    "colSortOrder": "Urutan",
+    "ariaOpenGameListNamed": "Buka daftar game untuk {{name}}",
+    "ariaCloseGameListNamed": "Tutup daftar game untuk {{name}}",
+    "ariaGameCount": "{{name}} punya {{total}} game, buka daftarnya",
+    "connectedGames_one": "{{count}} game di show ini",
+    "connectedGames_other": "{{count}} game di show ini",
+    "visibleGamesHint": "{{visible}} dari {{total}} game tampil di storefront.",
+    "rowActionsAriaNamed": "Aksi untuk show {{name}}"
   },
   "showToasts": {
-    "loading": "Sedang memuat…",
-    "loadSuccess": "Berhasil memuat data show",
-    "loadError": "Gagal memuat data show",
     "createSuccess": "Show berhasil dibuat",
     "createError": "Gagal membuat show",
     "deleteSuccess": "Show berhasil dihapus",
@@ -1389,7 +1495,11 @@
     "addGamesSuccess": "Daftar game pada show berhasil diperbarui",
     "addGamesError": "Gagal memperbarui game pada show",
     "updateSuccess": "Show berhasil diperbarui",
-    "updateError": "Gagal memperbarui show"
+    "updateError": "Gagal memperbarui show",
+    "removeGamesSuccess": "Game berhasil dilepas dari show",
+    "removeGamesError": "Gagal melepas game dari show",
+    "reorderSuccess": "Urutan show berhasil disimpan",
+    "reorderError": "Gagal menyimpan urutan show"
   },
   "createShowModal": {
     "trigger": "Tambah show",
@@ -1405,7 +1515,17 @@
     "aliasHint": "Identitas unik (biasanya huruf kecil, tanpa spasi) untuk sistem.",
     "imageLabel": "Gambar show",
     "uploadAria": "Unggah gambar show",
-    "previewAlt": "Pratinjau gambar show"
+    "previewAlt": "Pratinjau gambar show",
+    "imageHint": "PNG, JPG, atau WebP. Seret file ke area ini atau ketuk untuk memilih.",
+    "changeImage": "Ganti gambar",
+    "uploadTitle": "Unggah gambar",
+    "uploadDropHint": "Klik atau letakkan file di sini",
+    "uploading": "Mengunggah… {{percent}}%",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "hiddenNoticeTitle": "Show baru dibuat dalam keadaan tersembunyi",
+    "hiddenNotice": "Show belum tampil di storefront. Aktifkan penanda tampilan lewat Ubah show setelah gamenya diatur."
   },
   "editShowModal": {
     "triggerShort": "Ubah",
@@ -1431,7 +1551,34 @@
     "flagPopularLabel": "Populer",
     "flagPopularDesc": "Tandai sebagai populer.",
     "flagShowLabel": "Tampil sebagai show",
-    "flagShowDesc": "Show aktif di katalog."
+    "flagShowDesc": "Show aktif di katalog.",
+    "imageHint": "PNG, JPG, atau WebP. Seret file ke area ini atau ketuk untuk memilih.",
+    "changeImage": "Ganti gambar",
+    "uploadTitle": "Unggah gambar",
+    "uploadDropHint": "Klik atau letakkan file di sini",
+    "uploading": "Mengunggah… {{percent}}%",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "sortLabel": "Urutan tampil",
+    "sortHint": "Angka yang lebih kecil tampil lebih dulu di storefront."
+  },
+  "showForm": {
+    "discardTitle": "Buang perubahan?",
+    "discardDescription": "Perubahan pada show ini belum disimpan dan akan hilang.",
+    "discardKeep": "Lanjut mengubah",
+    "discardConfirm": "Buang",
+    "errors": {
+      "nameRequired": "Nama show wajib diisi",
+      "nameTooLong": "Nama show maksimal {{max}} karakter",
+      "aliasRequired": "Alias wajib diisi",
+      "aliasTooLong": "Alias maksimal {{max}} karakter",
+      "imageRequired": "Gambar show wajib diisi",
+      "imageInvalid": "Gambar harus berupa URL http/https lengkap",
+      "sortRequired": "Urutan wajib diisi",
+      "sortInvalid": "Urutan harus berupa bilangan bulat",
+      "sortNegative": "Urutan tidak boleh negatif"
+    }
   },
   "deleteShowModal": {
     "triggerAria": "Hapus show",
@@ -1439,7 +1586,10 @@
     "title": "Hapus show?",
     "description": "Tindakan ini tidak bisa dibatalkan. Show beserta pengaturan game di dalamnya akan dihapus dari daftar.",
     "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
+    "confirmDelete": "Hapus",
+    "triggerAriaNamed": "Hapus show {{name}}",
+    "gamesNotice": "{{total}} game di show ini akan dilepaskan. Data gamenya sendiri tetap tersimpan.",
+    "cancel": "Batal"
   },
   "addGamesModal": {
     "triggerAria": "Atur game pada show",
@@ -1456,7 +1606,17 @@
     "selectGameAria": "Pilih {{name}}",
     "cancel": "Batal",
     "save": "Simpan",
-    "saving": "Menyimpan…"
+    "saving": "Menyimpan…",
+    "descriptionReplace": "Daftar ini menggantikan isi show: game yang dilepas centangnya dikeluarkan, game yang dicentang ditambahkan.",
+    "currentMember": "Sudah di show ini",
+    "loadError": "Gagal memuat daftar game.",
+    "retry": "Coba lagi",
+    "summaryAdd": "{{total}} game akan ditambahkan.",
+    "summaryRemove": "{{total}} game akan dikeluarkan.",
+    "moveWarning": "Satu game hanya bisa berada di satu show — game yang sudah ada di show lain akan dipindahkan ke sini.",
+    "clearWarning": "Tidak ada game yang dipilih. Menyimpan sekarang akan mengosongkan show ini.",
+    "clearConfirmPrompt": "Tekan Simpan sekali lagi untuk memastikan show ini dikosongkan.",
+    "clearConfirm": "Ya, kosongkan show"
   },
   "categoryPage": {
     "searchPlaceholder": "Cari kategori...",
@@ -2003,7 +2163,17 @@
     "mfaRequired": "Verifikasi dua faktor diperlukan. Silakan masuk lagi.",
     "forbidden": "Anda tidak punya izin untuk melakukan tindakan ini.",
     "selfRoleChange": "Tidak bisa mengubah peran akun sendiri.",
-    "selfDelete": "Tidak bisa menghapus akun sendiri."
+    "selfDelete": "Tidak bisa menghapus akun sendiri.",
+    "bannerNotFound": "Banner itu sudah tidak ada. Muat ulang daftarnya.",
+    "bannerInvalidId": "Id banner tidak sah.",
+    "bannerInvalidSchedule": "Waktu mulai tidak boleh melewati waktu selesai.",
+    "bannerReorderEmpty": "Tidak ada yang bisa ditata ulang.",
+    "bannerReorderDuplicate": "Urutan baru memuat banner yang sama dua kali.",
+    "bannerReorderUnknownId": "Urutan baru memuat banner yang sudah tidak ada. Muat ulang daftarnya.",
+    "bannerOperationFailed": "Permintaan banner gagal diproses. Silakan coba lagi.",
+    "titleRequired": "Judul wajib diisi.",
+    "imageRequired": "Gambar wajib diisi.",
+    "statusRequired": "Status wajib diisi."
   },
   "errorBoundary": {
     "title": "Terjadi kesalahan",
@@ -2309,8 +2479,8 @@
     "uploading": "Mengunggah… {{percent}}%",
     "uploadFailed": "Unggahan gagal. Silakan coba lagi.",
     "invalidType": "Hanya berkas gambar yang diizinkan.",
-    "tooLarge": "Ukuran gambar melebihi 10 MB.",
-    "limit": "PNG, JPG, atau SVG · maks 10 MB",
+    "tooLarge": "Ukuran gambar melebihi 2 MB.",
+    "limit": "PNG, JPG, atau WebP · maks 2 MB",
     "remove": "Hapus"
   },
   "paymentMethodForm": {

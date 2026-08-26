@@ -6,6 +6,7 @@ import { Progress } from '../ui/progress'
 import type { UseFormSetValue } from 'react-hook-form'
 import type { CreateGamePayload } from '@/types/game'
 import { useTranslation } from 'react-i18next'
+import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 interface ImageComponentProps {
   title: string
@@ -49,7 +50,7 @@ export default function ImageComponent({
       <input
         ref={inputRef}
         type='file'
-        accept='image/*'
+        accept={ACCEPTED_IMAGE_ACCEPT}
         className='hidden'
         onChange={(e) => {
           const file = e.target.files?.[0]

@@ -12,6 +12,13 @@ interface ApiErrorShape {
  * Pesan yang dikirim backend apa adanya untuk semua bahasa. Diterjemahkan di
  * sini supaya tidak tampil mentah di toast — `MFA_REQUIRED` khususnya tidak
  * berarti apa pun bagi operator, dan sisanya terkunci pada satu bahasa.
+ *
+ * Perhatikan urutan keputusan di bawah: pesan server yang ada SELALU menang
+ * atas argumen `fallback`. Sebuah pesan backend yang tidak terdaftar di sini
+ * berarti argumen `fallback` yang sudah diterjemahkan tidak pernah terpakai,
+ * jadi setiap pesan baru yang bisa dilihat operator perlu masuk daftar ini.
+ * Obat yang sebenarnya adalah kode galat yang stabil dari backend; sampai itu
+ * ada, pemetaan teks inilah yang dipakai.
  */
 const SENTINEL_KEYS: Record<string, string> = {
   MFA_REQUIRED: 'apiErrors.mfaRequired',
@@ -26,6 +33,24 @@ const SENTINEL_KEYS: Record<string, string> = {
   STEP_UP_REUSED: 'stepUp.errorReused',
   STEP_UP_LOCKED: 'stepUp.errorLocked',
   STEP_UP_UNAVAILABLE: 'stepUp.errorUnavailable',
+
+  // Pesan modul banner (internal/constants/message.go). Tanpa pemetaan ini
+  // operator berbahasa Indonesia menerima kalimat Inggris apa adanya dari
+  // server, karena pesan server yang ada selalu menang atas `fallback`.
+  'Banner not found': 'apiErrors.bannerNotFound',
+  'Invalid banner id': 'apiErrors.bannerInvalidId',
+  'start_at must not be later than end_at': 'apiErrors.bannerInvalidSchedule',
+  'Reorder items must not be empty': 'apiErrors.bannerReorderEmpty',
+  'Reorder items contain a duplicate banner id': 'apiErrors.bannerReorderDuplicate',
+  'Reorder items contain a banner id that does not exist':
+    'apiErrors.bannerReorderUnknownId',
+  'Failed to process banner request': 'apiErrors.bannerOperationFailed',
+
+  // Tiga pesan berikut tidak menyebut modul, jadi terjemahannya pun dijaga
+  // netral supaya tetap benar bila modul lain memakai kalimat yang sama.
+  'Title is required': 'apiErrors.titleRequired',
+  'Image is required': 'apiErrors.imageRequired',
+  'is_active is required': 'apiErrors.statusRequired',
 }
 
 // Satu pintu untuk menerjemahkan error axios jadi pesan yang layak tampil:

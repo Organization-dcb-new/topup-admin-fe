@@ -1,4 +1,3 @@
-import type { GameName } from '@/components/Blog/types/blog'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -13,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { useGetGameNames } from '@/hooks/useGame'
+import { useGetGameNames, type GameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
 import { Check, ChevronsUpDown, FilterX, Gamepad2, Loader2 } from 'lucide-react'
 import { useState } from 'react'
@@ -30,7 +29,7 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
   const [open, setOpen] = useState(false)
   const { data: games, isLoading, isError } = useGetGameNames()
 
-  const selected = games?.find((g: GameName) => g.id === value)
+  const selected = games?.find((g: GameNames) => g.id === value)
   const label = isError
     ? t('transactionFilters.game.listError')
     : selected
@@ -92,7 +91,7 @@ export default function TransactionGameFilter({ value, onChange }: TransactionGa
                   {t('transactionFilters.game.allGames')}
                 </CommandItem>
                 {!isError &&
-                  games?.map((game: GameName) => (
+                  games?.map((game: GameNames) => (
                     <CommandItem
                       key={game.id}
                       value={`${game.name} ${game.id}`}
