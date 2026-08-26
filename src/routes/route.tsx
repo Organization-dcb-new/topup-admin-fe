@@ -1,9 +1,11 @@
 import { lazy, Suspense, useEffect, type ReactNode } from 'react'
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
   useLocation,
+  useParams,
 } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'
@@ -33,7 +35,6 @@ const PaymentMethodPage = lazy(() => import('@/pages/PaymentMethod'))
 const ProviderPages = lazy(() => import('@/pages/Provider'))
 const ReferralPage = lazy(() => import('@/pages/Referral'))
 const ReferralDetailPage = lazy(() => import('@/pages/ReferralDetail'))
-const PaymentDetailPage = lazy(() => import('@/pages/TransactionDetail'))
 const BannerPage = lazy(() => import('@/pages/Banner'))
 const ShowPage = lazy(() => import('@/pages/Show'))
 const InputPages = lazy(() => import('@/pages/Input'))
@@ -64,6 +65,25 @@ const PageLoader = () => (
     <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
   </div>
 )
+
+/**
+ * Deep-link lama `/transactions/:paymentId` tetap hidup: detail transaksi kini
+ * berupa drawer yang dikendalikan search param `?tx=` di `/transactions`,
+ * jadi rute lama cukup dialihkan. Tanpa guard — rute tujuan sudah di-guard.
+ */
+const LegacyTransactionDetailRedirect = () => {
+  const { paymentId } = useParams<{ paymentId: string }>()
+  return (
+    <Navigate
+      to={
+        paymentId
+          ? `/transactions?tx=${encodeURIComponent(paymentId)}`
+          : '/transactions'
+      }
+      replace
+    />
+  )
+}
 
 const RouteTitle = () => {
   const { pathname } = useLocation()
@@ -168,11 +188,7 @@ const router = createBrowserRouter([
           },
           {
             path: 'transactions/:paymentId',
-            element: (
-              <Guarded path='/transactions/:paymentId'>
-                <PaymentDetailPage />
-              </Guarded>
-            ),
+            element: <LegacyTransactionDetailRedirect />,
           },
           {
             path: 'input',

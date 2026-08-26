@@ -1,37 +1,37 @@
 import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 export const useResendVoucherCode = () => {
-  const mutation = useMutation({
+  const { t } = useTranslation('common')
+
+  return useMutation({
     mutationFn: async (id: string) => {
       const res = await api.post(`/transactions/${id}/resend-order-email`)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Resend Email Voucher Code  successfully')
+      toast.success(t('transactionDetail.resendVoucherSuccess'))
     },
-    onError: () => {
-      toast.error('Failed to Resend Email Voucher Code')
-    },
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('transactionDetail.resendVoucherError'))),
   })
-
-  return mutation
 }
 
 export const useResendEmail = () => {
-  const mutation = useMutation({
+  const { t } = useTranslation('common')
+
+  return useMutation({
     mutationFn: async (id: string) => {
       const res = await api.post(`/transactions/${id}/resend-email`)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Resend Email  successfully')
+      toast.success(t('transactionDetail.resendEmailSuccess'))
     },
-    onError: () => {
-      toast.error('Failed to Resend Email')
-    },
+    onError: (err: unknown) =>
+      toast.error(apiErrorMessage(err, t('transactionDetail.resendEmailError'))),
   })
-
-  return mutation
 }

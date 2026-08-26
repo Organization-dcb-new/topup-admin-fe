@@ -52,14 +52,10 @@
     "breadcrumbAria": "Breadcrumb"
   },
   "transactionPage": {
-    "toastLoading": "Loading transactions…",
-    "toastError": "Failed to load transactions",
-    "toastSuccess": "Transactions loaded",
     "title": "Transactions",
     "subtitle": "Search and filter payments; {{limit}} rows per page.",
     "loadingShort": "Loading…",
     "loadFailedShort": "Failed to load",
-    "totalCount": "Total {{count}} transactions",
     "filtersRegionAria": "Transaction filters",
     "filterHeading": "Filters",
     "filtersClickClose": "Click to collapse",
@@ -85,7 +81,38 @@
     "generateCSV": "Generate CSV",
     "generating": "Generating…",
     "exportSuccess": "CSV exported successfully",
-    "exportError": "Failed to export CSV"
+    "exportError": "Failed to export CSV",
+    "updatedAt": "Updated {{time}}",
+    "refreshingAria": "Refreshing data",
+    "retry": "Retry",
+    "showingRange": "Showing {{from}}–{{to}} of {{total}}",
+    "tableCaption": "Transaction list, page {{page}} of {{totalPage}}",
+    "activeFiltersAria": "{{count}} active filters",
+    "removeFilterAria": "Remove filter: {{label}}",
+    "stats": {
+      "totalVolume": "Total volume",
+      "paidCount": "Paid transactions",
+      "margin": "Est. margin",
+      "successRate": "Success rate",
+      "pageScope": "(this page)",
+      "txUnit": "txs"
+    },
+    "autoRefresh": {
+      "label": "Auto refresh",
+      "aria": "Auto refresh interval",
+      "off": "Off",
+      "s10": "10s",
+      "s30": "30s",
+      "m1": "1m"
+    },
+    "export": {
+      "dateRequiredHint": "Pick a start and end date — export requires a date range.",
+      "rangeTooLong": "Date range must not exceed 31 days.",
+      "presetsLabel": "Quick range",
+      "presetToday": "Today",
+      "preset7d": "Last 7 days",
+      "preset30d": "Last 30 days"
+    }
   },
   "paymentStatus": {
     "PAID": "Paid",
@@ -183,7 +210,9 @@
     "colVa": "VA number",
     "colStatus": "Status",
     "colStatusProvider": "Provider Status",
-    "colCreated": "Created"
+    "colCreated": "Created",
+    "copyValueError": "Failed to copy",
+    "copyValueAria": "Copy {{value}}"
   },
   "transactionDetail": {
     "backAria": "Back",
@@ -246,7 +275,25 @@
       "ariaCopy": "Copy to clipboard",
       "failed": "Could not copy. Try again or copy manually."
     },
-    "itemCount": "{{count}} item"
+    "itemCount": "{{count}} item",
+    "sectionBuyer": "Buyer",
+    "sectionActions": "Actions",
+    "labelChannel": "Payment channel",
+    "labelMethodId": "Payment method ID",
+    "labelOrderTotal": "Order total",
+    "labelUnitPrice": "Unit price",
+    "labelSubtotal": "Subtotal",
+    "openPaymentPage": "Open payment page",
+    "qrGenericAlt": "Payment QR code",
+    "qrLoadFailed": "QR code could not be loaded.",
+    "retry": "Try again",
+    "closeDrawer": "Close",
+    "confirmResend": "Click again to confirm",
+    "actionsPaidOnly": "Resend actions are only available for paid transactions.",
+    "resendEmailSuccess": "Email resent",
+    "resendEmailError": "Failed to resend email",
+    "resendVoucherSuccess": "Voucher code email resent",
+    "resendVoucherError": "Failed to resend voucher code email"
   },
   "summaryPage": {
     "title": "Summary",
@@ -2028,17 +2075,7 @@
     "dismiss": "Dismiss notification"
   },
   "transactionDetailPage": {
-    "title": "Transaction detail",
-    "backAria": "Back to transaction list",
-    "backButton": "Back to transaction list",
-    "missingIdSubtitle": "Transaction ID is missing from URL.",
-    "missingIdMessage": "Transaction ID was not found in the URL.",
-    "loadingSubtitle": "Loading payment data…",
-    "loadingTitle": "Loading transaction detail…",
-    "pleaseWait": "Please wait a moment.",
-    "errorSubtitle": "Unable to load data.",
     "errorMessage": "Failed to load transaction detail. Check your connection or try reloading this page.",
-    "notFoundSubtitle": "Data not found.",
     "notFoundMessage": "Transaction data was not found."
   },
   "referralPage": {

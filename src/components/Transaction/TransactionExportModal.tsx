@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Dialog,
   DialogContent,
@@ -9,34 +9,83 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Download, Loader2, CalendarRange } from 'lucide-react'
+import { AlertCircle, CalendarRange, Download, Loader2 } from 'lucide-react'
 import TransactionDateFilter from './TransactionDateFilter'
 import TransactionStatusFilter from './TransactionStatusFilter'
 import TransactionPaymentMethodFilter from './TransactionPaymentMethodFilter'
-import type { Payment } from '@/types/transaction'
+import type { PaymentStatus } from '@/types/transaction'
 import type { DateRange } from 'react-day-picker'
-import { format } from 'date-fns'
+import { format, startOfDay, subDays } from 'date-fns'
 import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+
+const DATETIME_PATTERN = 'yyyy-MM-dd HH:mm:ss'
+
+/** Sinkron dengan BE (`maxExportRange = 31 * 24 * time.Hour`). */
+const MAX_RANGE_MS = 31 * 24 * 60 * 60 * 1000
+
+/**
+ * Respons galat export datang sebagai Blob (karena `responseType: 'blob'`),
+ * jadi `message` JSON-nya perlu dibaca dulu sebelum diserahkan ke
+ * `apiErrorMessage` — tanpa ini pesan BE (mis. rentang > 31 hari) tidak pernah
+ * sampai ke operator.
+ */
+async function normalizeBlobError(err: unknown): Promise<unknown> {
+  const e = err as { response?: { data?: unknown } }
+  const body = e?.response?.data
+  if (e.response && body instanceof Blob) {
+    try {
+      const parsed = JSON.parse(await body.text()) as { message?: string }
+      if (parsed && typeof parsed.message === 'string') {
+        e.response.data = parsed
+      }
+    } catch {
+      // Bukan JSON — biarkan apa adanya, apiErrorMessage jatuh ke fallback.
+    }
+  }
+  return err
+}
 
 export default function TransactionExportModal() {
   const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [status, setStatus] = useState<'' | Payment['status']>('')
+  const [status, setStatus] = useState<'' | PaymentStatus>('')
   const [paymentMethodId, setPaymentMethodId] = useState('')
   const [isExporting, setIsExporting] = useState(false)
-
-  const datetimePattern = 'yyyy-MM-dd HH:mm:ss'
 
   const { startDate, endDate } = useMemo(() => {
     const from = dateRange?.from
     const to = dateRange?.to
-    const start = from ? format(from, datetimePattern) : ''
-    const end = to ? format(to, datetimePattern) : ''
-    return { startDate: start, endDate: end }
+    return {
+      startDate: from ? format(from, DATETIME_PATTERN) : '',
+      endDate: to ? format(to, DATETIME_PATTERN) : '',
+    }
   }, [dateRange])
+
+  const hasCompleteRange = Boolean(dateRange?.from && dateRange?.to)
+  const rangeTooLong = useMemo(() => {
+    if (!dateRange?.from || !dateRange?.to) return false
+    return dateRange.to.getTime() - dateRange.from.getTime() > MAX_RANGE_MS
+  }, [dateRange])
+
+  const canExport = hasCompleteRange && !rangeTooLong && !isExporting
+
+  const applyPreset = (days: number) => {
+    const now = new Date()
+    const to = new Date(now)
+    to.setHours(23, 59, 59, 0)
+    const from = days <= 1 ? startOfDay(now) : startOfDay(subDays(now, days - 1))
+    setDateRange({ from, to })
+  }
+
+  const presets = [
+    { key: 'today', label: t('transactionPage.export.presetToday'), days: 1 },
+    { key: '7d', label: t('transactionPage.export.preset7d'), days: 7 },
+    { key: '30d', label: t('transactionPage.export.preset30d'), days: 30 },
+  ]
 
   const handleOpenChange = (val: boolean) => {
     if (!val) {
@@ -48,21 +97,18 @@ export default function TransactionExportModal() {
   }
 
   const handleExport = async () => {
+    if (!canExport) return
     setIsExporting(true)
     try {
       const response = await api.get('/transactions/export-csv', {
         params: {
-          ...(startDate && { start_date: startDate }),
-          ...(endDate && { end_date: endDate }),
+          start_date: startDate,
+          end_date: endDate,
           ...(status && { status }),
-          ...(paymentMethodId && { payment_method: paymentMethodId }),
+          ...(paymentMethodId && { payment_method_id: paymentMethodId }),
         },
         responseType: 'blob',
       })
-
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement('a')
-      link.href = url
 
       let filename = 'payments_export.csv'
       const disposition = response.headers['content-disposition']
@@ -73,17 +119,26 @@ export default function TransactionExportModal() {
         }
       }
 
-      link.setAttribute('download', filename)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url)
+      const url = window.URL.createObjectURL(new Blob([response.data]))
+      try {
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+      } finally {
+        window.URL.revokeObjectURL(url)
+      }
 
       toast.success(t('transactionPage.exportSuccess'))
       setOpen(false)
+      setDateRange(undefined)
+      setStatus('')
+      setPaymentMethodId('')
     } catch (error) {
-      console.error('Export error:', error)
-      toast.error(t('transactionPage.exportError'))
+      const normalized = await normalizeBlobError(error)
+      toast.error(apiErrorMessage(normalized, t('transactionPage.exportError')))
     } finally {
       setIsExporting(false)
     }
@@ -92,11 +147,7 @@ export default function TransactionExportModal() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button
-          variant='outline'
-          size='sm'
-          className='h-9 shrink-0 gap-2 shadow-xs sm:self-center'
-        >
+        <Button variant='outline' size='sm' className='h-9 shrink-0 gap-2 rounded-lg shadow-xs sm:self-center'>
           <Download className='h-3.5 w-3.5' aria-hidden />
           {t('transactionPage.exportCSV')}
         </Button>
@@ -104,7 +155,6 @@ export default function TransactionExportModal() {
 
       {/* overflow-visible supaya Popover kalender tidak terpotong di dalam modal */}
       <DialogContent className='flex w-full max-w-lg flex-col gap-0 overflow-visible p-0'>
-        {/* ── Header ── */}
         <DialogHeader className='border-b border-border/80 px-6 py-5'>
           <div className='flex min-w-0 items-center gap-3'>
             <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
@@ -121,16 +171,49 @@ export default function TransactionExportModal() {
           </div>
         </DialogHeader>
 
-        {/* ── Body ── overflow-visible agar kalender bisa render ke luar modal */}
+        {/* overflow-visible agar kalender bisa render ke luar modal */}
         <div className='overflow-visible px-6 py-5'>
           <div className='flex flex-col gap-6'>
             <div className='space-y-2'>
               <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
                 {t('transactionPage.dateTimeRange')}
               </p>
+
+              <div className='flex flex-wrap items-center gap-1.5' role='group' aria-label={t('transactionPage.export.presetsLabel')}>
+                <span className='mr-1 text-xs text-muted-foreground'>
+                  {t('transactionPage.export.presetsLabel')}
+                </span>
+                {presets.map((preset) => (
+                  <Button
+                    key={preset.key}
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    className='h-8 rounded-lg px-2.5 text-xs shadow-xs'
+                    onClick={() => applyPreset(preset.days)}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+
               <div className='overflow-visible'>
                 <TransactionDateFilter date={dateRange} onChange={setDateRange} />
               </div>
+
+              {/* Rentang wajib + maksimal 31 hari; BE menolak dengan pesan yang
+                  sama, validasi klien hanya memangkas satu bolak-balik. */}
+              {!hasCompleteRange && (
+                <p className='text-xs text-muted-foreground'>
+                  {t('transactionPage.export.dateRequiredHint')}
+                </p>
+              )}
+              {rangeTooLong && (
+                <p className='flex items-center gap-1.5 text-xs font-medium text-destructive' role='alert'>
+                  <AlertCircle className='h-3.5 w-3.5 shrink-0' aria-hidden />
+                  {t('transactionPage.export.rangeTooLong')}
+                </p>
+              )}
             </div>
 
             <div className='space-y-2'>
@@ -149,7 +232,6 @@ export default function TransactionExportModal() {
           </div>
         </div>
 
-        {/* ── Footer ── */}
         <DialogFooter className='border-t border-border/80 px-6 py-4'>
           <Button
             type='button'
@@ -163,17 +245,15 @@ export default function TransactionExportModal() {
           <Button
             type='button'
             className='flex-1 gap-2 sm:flex-none'
-            onClick={handleExport}
-            disabled={isExporting}
+            onClick={() => void handleExport()}
+            disabled={!canExport}
           >
             {isExporting ? (
-              <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
+              <Loader2 className='h-4 w-4 animate-spin motion-reduce:animate-none' aria-hidden />
             ) : (
               <Download className='h-4 w-4' aria-hidden />
             )}
-            {isExporting
-              ? t('transactionPage.generating', 'Generating…')
-              : t('transactionPage.generateCSV')}
+            {isExporting ? t('transactionPage.generating') : t('transactionPage.generateCSV')}
           </Button>
         </DialogFooter>
       </DialogContent>

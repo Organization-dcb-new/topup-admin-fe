@@ -65,16 +65,16 @@ function ProviderStatusBadge({ status }: { status?: string }) {
     <span
       className={cn(
         'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border backdrop-blur-md shadow-xs transition-all duration-200',
-        isSuccess && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-450 border-emerald-500/20',
+        isSuccess && 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
         isPending && 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-        isFailed && 'bg-rose-500/10 text-rose-600 dark:text-rose-455 border-rose-500/20'
+        isFailed && 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
       )}
     >
       <span
         className={cn(
           'h-1.5 w-1.5 shrink-0 rounded-full',
           isSuccess && 'bg-emerald-500',
-          isPending && 'bg-amber-500 animate-pulse',
+          isPending && 'bg-amber-500 animate-pulse motion-reduce:animate-none',
           isFailed && 'bg-rose-500'
         )}
       />
@@ -118,7 +118,7 @@ export function getOrderItemColumns(t: TFunction): ColumnDef<OrderItemV2Response
     {
       accessorKey: 'unit_price',
       header: () => <span className='font-bold'>{t('orderTable.colUnitPrice')}</span>,
-      cell: ({ row }) => <span className='font-semibold tabular-nums text-slate-700 dark:text-slate-350'>{formatIdr(row.original.unit_price)}</span>,
+      cell: ({ row }) => <span className='font-semibold tabular-nums text-slate-700 dark:text-slate-300'>{formatIdr(row.original.unit_price)}</span>,
     },
     {
       accessorKey: 'subtotal',

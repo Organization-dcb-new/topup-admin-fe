@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowDownToLine, ArrowUpFromLine, Equal, FilterX } from 'lucide-react'
@@ -73,7 +74,7 @@ function AmountFilterRow({
                 )}
                 onClick={() => onChange(active ? '' : key)}
               >
-                {symbol}&nbsp;{n.toLocaleString('id-ID')}
+                {symbol}&nbsp;{formatNumber(n)}
               </Button>
             )
           })}
@@ -123,7 +124,7 @@ export default function TransactionAmountFilter({
   onExactChange,
 }: TransactionAmountFilterProps) {
   const { t } = useTranslation('common')
-  const fmt = (n: number) => n.toLocaleString('id-ID')
+  const fmt = (n: number) => formatNumber(n)
 
   return (
     <div className='overflow-hidden rounded-xl border border-border/80 bg-muted/20 px-4 py-1 sm:px-5'>

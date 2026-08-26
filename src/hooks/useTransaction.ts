@@ -1,24 +1,30 @@
 import { api } from '@/api/axios'
-import type { PaymentResponse } from '@/types/transaction'
-import { useQuery } from '@tanstack/react-query'
+import type { PaymentResponse, TransactionListParams } from '@/types/transaction'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
+/**
+ * Daftar transaksi admin. Seluruh parameter masuk lewat satu objek
+ * {@link TransactionListParams}; nilai pencarian/nominal sudah di-debounce
+ * oleh pemanggil — hook ini tidak men-debounce sendiri.
+ */
 export const useGetTransactions = (
-  page: number,
-  limit: number,
-  search: string,
-  startDate?: string,
-  endDate?: string,
-  gameId?: string,
-  paymentMethodId?: string,
-  status?: string,
-  /** Selaras `dto.TransactionListQuery.PriceAbove` — query `price_above` (≥) */
-  minAmount?: string,
-  /** Selaras `PriceBelow` — query `price_below` (≤) */
-  maxAmount?: string,
-  /** Selaras `PriceExact` — query `price` (=) */
-  exactAmount?: string,
-  refetchInterval: number | false = 10_000,
+  params: TransactionListParams,
+  refetchInterval: number | false,
 ) => {
+  const {
+    page,
+    limit,
+    search,
+    startDate,
+    endDate,
+    gameId,
+    paymentMethodId,
+    status,
+    minAmount,
+    maxAmount,
+    exactAmount,
+  } = params
+
   return useQuery({
     queryKey: [
       'transactions',
@@ -40,7 +46,7 @@ export const useGetTransactions = (
         params: {
           page,
           limit,
-          search,
+          ...(search && { search }),
           ...(startDate && { start_date: startDate }),
           ...(endDate && { end_date: endDate }),
           ...(gameId && { game_id: gameId }),
@@ -53,6 +59,7 @@ export const useGetTransactions = (
       })
       return res.data
     },
+    placeholderData: keepPreviousData,
     refetchInterval,
     refetchIntervalInBackground: false,
   })

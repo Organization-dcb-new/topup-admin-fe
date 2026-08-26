@@ -52,14 +52,10 @@
     "breadcrumbAria": "Remah roti"
   },
   "transactionPage": {
-    "toastLoading": "Memuat transaksi…",
-    "toastError": "Gagal memuat transaksi",
-    "toastSuccess": "Berhasil memuat transaksi",
     "title": "Transaksi",
     "subtitle": "Cari dan saring pembayaran; paginasi {{limit}} baris per halaman.",
     "loadingShort": "Memuat…",
     "loadFailedShort": "Gagal memuat",
-    "totalCount": "Total {{count}} transaksi",
     "filtersRegionAria": "Filter transaksi",
     "filterHeading": "Filter",
     "filtersClickClose": "Klik untuk menutup",
@@ -85,7 +81,38 @@
     "generateCSV": "Generate CSV",
     "generating": "Memproses…",
     "exportSuccess": "Berhasil mengekspor CSV",
-    "exportError": "Gagal mengekspor CSV"
+    "exportError": "Gagal mengekspor CSV",
+    "updatedAt": "Diperbarui {{time}}",
+    "refreshingAria": "Memperbarui data",
+    "retry": "Coba lagi",
+    "showingRange": "Menampilkan {{from}}–{{to}} dari {{total}}",
+    "tableCaption": "Daftar transaksi, halaman {{page}} dari {{totalPage}}",
+    "activeFiltersAria": "{{count}} filter aktif",
+    "removeFilterAria": "Hapus filter: {{label}}",
+    "stats": {
+      "totalVolume": "Total volume",
+      "paidCount": "Transaksi lunas",
+      "margin": "Estimasi margin",
+      "successRate": "Tingkat keberhasilan",
+      "pageScope": "(halaman ini)",
+      "txUnit": "trx"
+    },
+    "autoRefresh": {
+      "label": "Auto refresh",
+      "aria": "Interval auto refresh",
+      "off": "Mati",
+      "s10": "10d",
+      "s30": "30d",
+      "m1": "1m"
+    },
+    "export": {
+      "dateRequiredHint": "Pilih tanggal mulai dan akhir — ekspor membutuhkan rentang tanggal.",
+      "rangeTooLong": "Rentang tanggal maksimal 31 hari.",
+      "presetsLabel": "Rentang cepat",
+      "presetToday": "Hari ini",
+      "preset7d": "7 hari terakhir",
+      "preset30d": "30 hari terakhir"
+    }
   },
   "paymentStatus": {
     "PAID": "Lunas",
@@ -183,7 +210,9 @@
     "colVa": "Nomor VA",
     "colStatus": "Status",
     "colStatusProvider": "Status Provider",
-    "colCreated": "Dibuat"
+    "colCreated": "Dibuat",
+    "copyValueError": "Gagal menyalin",
+    "copyValueAria": "Salin {{value}}"
   },
   "transactionDetail": {
     "backAria": "Kembali",
@@ -246,7 +275,25 @@
       "ariaCopy": "Salin ke papan klip",
       "failed": "Tidak bisa menyalin. Coba lagi atau salin manual."
     },
-    "itemCount": "{{count}} item"
+    "itemCount": "{{count}} item",
+    "sectionBuyer": "Pembeli",
+    "sectionActions": "Aksi",
+    "labelChannel": "Kanal pembayaran",
+    "labelMethodId": "ID metode pembayaran",
+    "labelOrderTotal": "Total pesanan",
+    "labelUnitPrice": "Harga satuan",
+    "labelSubtotal": "Subtotal",
+    "openPaymentPage": "Buka halaman pembayaran",
+    "qrGenericAlt": "Kode QR pembayaran",
+    "qrLoadFailed": "Kode QR tidak dapat dimuat.",
+    "retry": "Coba lagi",
+    "closeDrawer": "Tutup",
+    "confirmResend": "Klik lagi untuk konfirmasi",
+    "actionsPaidOnly": "Aksi kirim ulang hanya tersedia untuk transaksi lunas.",
+    "resendEmailSuccess": "Email berhasil dikirim ulang",
+    "resendEmailError": "Gagal mengirim ulang email",
+    "resendVoucherSuccess": "Email kode voucher berhasil dikirim ulang",
+    "resendVoucherError": "Gagal mengirim ulang email kode voucher"
   },
   "summaryPage": {
     "title": "Ringkasan",
@@ -2028,17 +2075,7 @@
     "dismiss": "Tutup notifikasi"
   },
   "transactionDetailPage": {
-    "title": "Detail transaksi",
-    "backAria": "Kembali ke daftar transaksi",
-    "backButton": "Kembali ke daftar transaksi",
-    "missingIdSubtitle": "ID transaksi tidak ada di URL.",
-    "missingIdMessage": "ID transaksi tidak ditemukan di URL.",
-    "loadingSubtitle": "Memuat data pembayaran…",
-    "loadingTitle": "Memuat detail transaksi…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "errorSubtitle": "Tidak dapat memuat data.",
     "errorMessage": "Gagal memuat detail transaksi. Periksa koneksi atau coba muat ulang halaman.",
-    "notFoundSubtitle": "Data tidak ditemukan.",
     "notFoundMessage": "Data transaksi tidak ditemukan."
   },
   "referralPage": {

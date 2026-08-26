@@ -62,7 +62,7 @@ export default function TransactionPaymentMethodFilter({
             >
             <span className='flex min-w-0 items-center gap-2'>
               {isLoading ? (
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-muted-foreground' aria-hidden />
+                <Loader2 className='h-4 w-4 shrink-0 animate-spin motion-reduce:animate-none text-muted-foreground' aria-hidden />
               ) : (
                 <CreditCard className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
               )}
