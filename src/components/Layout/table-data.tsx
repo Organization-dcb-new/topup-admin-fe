@@ -4,10 +4,29 @@ import {
   getCoreRowModel,
   getExpandedRowModel,
   useReactTable,
+  type RowData,
 } from '@tanstack/react-table'
 import { Fragment } from 'react'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table'
 import { cn } from '@/lib/utils'
+
+declare module '@tanstack/react-table' {
+  // Kelas per-kolom, dipakai untuk menyembunyikan kolom sekunder di layar
+  // sempit. Header dan sel harus memakai kelas yang sama agar tidak bergeser.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends RowData, TValue> {
+    headerClassName?: string
+    cellClassName?: string
+  }
+}
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -17,6 +36,14 @@ interface DataTableProps<TData, TValue> {
   emptyMessage?: React.ReactNode
   /** Header mengikuti scroll vertikal (berguna saat tabel panjang) */
   stickyHeader?: boolean
+  /**
+   * Identitas baris yang stabil. Tanpa ini `row.id` adalah indeks, sehingga
+   * komponen per-baris (dialog, observer mutasi) dipakai ulang untuk entitas
+   * yang berbeda saat halaman berganti.
+   */
+  getRowId?: (row: TData, index: number) => string
+  /** Nama tabel untuk pembaca layar; dirender tersembunyi secara visual. */
+  caption?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -25,10 +52,13 @@ export function DataTable<TData, TValue>({
   renderSubRow,
   emptyMessage = 'No data',
   stickyHeader = false,
+  getRowId,
+  caption,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
+    getRowId,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: renderSubRow ? getExpandedRowModel() : undefined,
     enableExpanding: !!renderSubRow,
@@ -41,6 +71,7 @@ export function DataTable<TData, TValue>({
         className='min-w-max [&_td]:border-x-0 [&_th]:border-x-0'
         scrollContainer={false}
       >
+        {caption && <TableCaption className='sr-only'>{caption}</TableCaption>}
         <TableHeader
           className={cn(
             'bg-card',
@@ -51,7 +82,10 @@ export function DataTable<TData, TValue>({
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className={header.column.columnDef.meta?.headerClassName}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
@@ -68,7 +102,10 @@ export function DataTable<TData, TValue>({
                 {/* ROW UTAMA */}
                 <TableRow>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cell.column.columnDef.meta?.cellClassName}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/api/axios'
+import type { AdminProfileResponse } from '@/types/admin'
 
 // Recovery code digenerate BE dalam huruf besar dan dibandingkan
 // case-sensitive, jadi input user dinormalisasi dulu sebelum dikirim
@@ -19,7 +20,7 @@ export function useAuthUser() {
     queryKey: ['auth-me'],
     queryFn: async () => {
       try {
-        const res = await api.get('/admin/me')
+        const res = await api.get<AdminProfileResponse>('/admin/me')
         return { user: res.data.data, mfa_pending: false }
       } catch (err: unknown) {
         const message = (
@@ -48,7 +49,7 @@ export function useAuthUser() {
     role: data?.user?.role ?? null,
     roleName: data?.user?.role_name ?? null,
     /** Hak akses efektif. Satu-satunya sumber kebenaran untuk gating. */
-    permissions: (data?.user?.permissions ?? []) as string[],
+    permissions: data?.user?.permissions ?? [],
     user: data?.user ?? null,
     isLoading,
     /** Profil gagal dimuat. Halaman yang menyimpulkan status dari `user`

@@ -1589,14 +1589,30 @@
     "deleting": "Menghapus…"
   },
   "adminPage": {
-    "title": "Kelola admin",
+    "title": "Pengguna admin",
     "subtitle": "Tambah akun admin dari toolbar di bawah. Ubah peran atau hapus lewat kolom aksi pada setiap baris.",
-    "total": "Total {{total}} admin",
     "listTitle": "Daftar administrator",
-    "listHint": "Data dari server. Gunakan paginasi untuk melihat halaman lain.",
+    "listHint": "Data dari server. Gunakan baris per halaman dan paginasi untuk melihat lebih banyak.",
     "loadingBody": "Memuat data administrator…",
     "pleaseWait": "Mohon tunggu sebentar.",
-    "emptyMessage": "Belum ada administrator. Tambahkan lewat tombol di atas."
+    "emptyMessage": "Belum ada administrator. Tambahkan lewat tombol di atas.",
+    "subtitleReadOnly": "Akun administrator dan perannya. Anda hanya punya akses lihat.",
+    "total_one": "Total {{total}} admin",
+    "total_other": "Total {{total}} admin",
+    "rowsPerPage": "Baris",
+    "loadError": "Gagal memuat daftar administrator.",
+    "emptyPage": "Halaman ini tidak punya baris. Kembali ke halaman pertama.",
+    "backToFirstPage": "Kembali ke halaman 1",
+    "filterPlaceholder": "Saring halaman ini…",
+    "filterClear": "Hapus saringan",
+    "tableCaption": "Akun administrator, halaman {{page}} dari {{totalPage}}",
+    "rolesUnavailable": "Daftar peran gagal dimuat — Anda mungkin tidak punya izin melihat peran.",
+    "filterScopeHint_one": "Hanya menyaring {{count}} baris yang dimuat di halaman ini.",
+    "filterScopeHint_other": "Hanya menyaring {{count}} baris yang dimuat di halaman ini.",
+    "filterNoMatch_one": "Tidak ada yang cocok dari {{count}} baris di halaman ini. Coba halaman lain.",
+    "filterNoMatch_other": "Tidak ada yang cocok dari {{count}} baris di halaman ini. Coba halaman lain.",
+    "pageAnnounce_one": "Halaman {{page}} dari {{totalPage}}, {{count}} administrator ditampilkan.",
+    "pageAnnounce_other": "Halaman {{page}} dari {{totalPage}}, {{count}} administrator ditampilkan."
   },
   "adminTable": {
     "colUsername": "Nama pengguna",
@@ -1606,7 +1622,10 @@
     "enabled": "Aktif",
     "disabled": "Nonaktif",
     "colActions": "Aksi",
-    "selfRoleHint": "Tidak bisa mengubah role akun sendiri"
+    "selfRoleHint": "Tidak bisa mengubah role akun sendiri",
+    "colCreatedAt": "Dibuat",
+    "you": "Anda",
+    "selfDeleteHint": "Tidak bisa menghapus akun sendiri"
   },
   "adminLogPage": {
     "title": "Log aktivitas",
@@ -1935,7 +1954,11 @@
     "tooManyRequests": "Terlalu banyak percobaan. Coba lagi nanti.",
     "timeout": "Permintaan melebihi batas waktu. Silakan coba lagi.",
     "network": "Tidak dapat terhubung ke server. Periksa koneksi Anda.",
-    "generic": "Terjadi kesalahan. Silakan coba lagi."
+    "generic": "Terjadi kesalahan. Silakan coba lagi.",
+    "mfaRequired": "Verifikasi dua faktor diperlukan. Silakan masuk lagi.",
+    "forbidden": "Anda tidak punya izin untuk melakukan tindakan ini.",
+    "selfRoleChange": "Tidak bisa mengubah peran akun sendiri.",
+    "selfDelete": "Tidak bisa menghapus akun sendiri."
   },
   "errorBoundary": {
     "title": "Terjadi kesalahan",
@@ -2049,7 +2072,10 @@
     "createFailed": "Gagal membuat role",
     "updateFailed": "Gagal memperbarui role",
     "permissionsFailed": "Gagal memperbarui permission",
-    "deleteFailed": "Gagal menghapus role"
+    "deleteFailed": "Gagal menghapus role",
+    "searchPermission": "Cari resource atau kode permission…",
+    "filteredCount": "· {{shown}} dari {{total}} resource",
+    "noPermissionMatch": "Tidak ada resource yang cocok dengan pencarian."
   },
   "permissionResource": {
     "admin": "Pengguna admin",
@@ -2132,5 +2158,69 @@
     "copyRaw": "Salin JSON mentah",
     "copied": "Entri mentah disalin",
     "copyError": "Gagal menyalin entri"
+  },
+  "pagination": {
+    "prev": "Halaman sebelumnya",
+    "next": "Halaman berikutnya",
+    "jumpToPage": "Ke nomor halaman",
+    "jump": "Ke",
+    "label": "Paginasi"
+  },
+  "adminCreate": {
+    "trigger": "Tambah admin",
+    "title": "Tambah admin baru",
+    "description": "Isi detail akun untuk memberi akses ke dashboard admin.",
+    "fullNameLabel": "Nama lengkap",
+    "fullNamePlaceholder": "Contoh: Budi Santoso",
+    "fullNameRequired": "Nama lengkap wajib diisi",
+    "usernameLabel": "Nama pengguna",
+    "usernamePlaceholder": "budisantoso",
+    "usernameRequired": "Nama pengguna wajib diisi",
+    "roleLabel": "Peran",
+    "rolePlaceholder": "Pilih peran",
+    "roleRequired": "Peran wajib dipilih",
+    "emailLabel": "Email",
+    "emailPlaceholder": "admin@pakargaming.id",
+    "emailRequired": "Email wajib diisi",
+    "emailInvalid": "Format email tidak valid",
+    "passwordLabel": "Kata sandi",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Kata sandi wajib diisi",
+    "passwordMin": "Minimal 6 karakter",
+    "confirmLabel": "Konfirmasi dengan kata sandi Anda",
+    "confirmHint": "Membuat admin memerlukan kata sandi Anda sendiri.",
+    "confirmPlaceholder": "Kata sandi akun Anda",
+    "confirmRequired": "Kata sandi Anda wajib diisi untuk mengonfirmasi tindakan ini",
+    "submit": "Daftarkan",
+    "submitting": "Mendaftarkan…",
+    "success": "Admin baru berhasil didaftarkan",
+    "error": "Gagal mendaftarkan admin",
+    "emailTaken": "Email ini sudah terdaftar.",
+    "usernameTaken": "Nama pengguna ini sudah dipakai.",
+    "confirmWrong": "Itu bukan kata sandi akun Anda.",
+    "roleInvalid": "Peran yang dipilih sudah tidak ada. Pilih peran lain."
+  },
+  "adminUpdate": {
+    "roleAriaLabel": "Peran untuk {{email}}",
+    "confirmTitle": "Konfirmasi perubahan peran",
+    "confirmDescription": "Ubah peran menjadi {{role}}? Ini mengubah hak akses akun terkait.",
+    "cancel": "Batal",
+    "confirm": "Ubah peran",
+    "saving": "Menyimpan…",
+    "success": "Peran berhasil diperbarui",
+    "error": "Gagal memperbarui peran"
+  },
+  "adminDelete": {
+    "triggerLabel": "Hapus admin {{email}}",
+    "title": "Hapus akun admin ini?",
+    "description": "Ini menghapus {{email}} secara permanen dan tidak dapat dibatalkan.",
+    "typeEmailLabel": "Ketik {{email}} untuk konfirmasi",
+    "typeEmailPlaceholder": "Masukkan alamat email",
+    "emailMismatch": "Email tidak cocok.",
+    "cancel": "Batal",
+    "confirm": "Hapus",
+    "deleting": "Menghapus…",
+    "success": "Admin berhasil dihapus",
+    "error": "Gagal menghapus admin"
   }
 }

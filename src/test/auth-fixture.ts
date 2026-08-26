@@ -1,4 +1,5 @@
 import { PERM } from '@/constants/permissions'
+import type { AdminProfile } from '@/types/admin'
 
 /**
  * Cerminan preset role bawaan di backend (`internal/constants/permissions.go`).
@@ -61,13 +62,27 @@ export function permissionsForRole(role: string | null): string[] {
 
 /** Bentuk kembalian useAuthUser untuk keperluan mock. */
 export function authStateForRole(role: string | null) {
+  const permissions = permissionsForRole(role)
+  const user: AdminProfile | null = role
+    ? {
+        id: 'admin-1',
+        username: 'vian',
+        email: 'vian@example.com',
+        role,
+        role_id: `role-${role}`,
+        role_name: role,
+        permissions,
+        two_factor_enabled: false,
+      }
+    : null
+
   return {
     isAuthenticated: !!role,
     isMfaRequired: false,
     role,
     roleName: role,
-    permissions: permissionsForRole(role),
-    user: role ? { id: 'admin-1', username: 'vian', role } : null,
+    permissions,
+    user,
     isLoading: false,
     isError: false,
     refetchProfile: () => {},

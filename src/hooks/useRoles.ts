@@ -20,6 +20,13 @@ function invalidateAfterRoleChange(queryClient: ReturnType<typeof useQueryClient
   queryClient.invalidateQueries({ queryKey: ['auth-me'] })
 }
 
+/**
+ * Penolakan permission (mis. 403 karena aktor tak punya `role.view`) tidak
+ * akan berubah kalau diulang, jadi langsung dilaporkan sebagai `isError`
+ * supaya pemanggil bisa membedakannya dari "berhasil, nol role". Kegagalan
+ * sementara tetap diulang agar halaman Role tidak jatuh ke daftar kosong
+ * hanya karena satu permintaan meleset.
+ */
 export function useRoles() {
   return useQuery({
     queryKey: rolesQueryKey,
@@ -27,6 +34,12 @@ export function useRoles() {
       const { data } = await api.get<RoleListResponse>('/admin/roles')
       return data.data ?? []
     },
+    retry: (failureCount, error) => {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      if (status && status >= 400 && status < 500) return false
+      return failureCount < 2
+    },
+    staleTime: 60_000,
   })
 }
 

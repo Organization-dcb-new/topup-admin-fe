@@ -1589,14 +1589,30 @@
     "deleting": "Deleting…"
   },
   "adminPage": {
-    "title": "Manage admins",
+    "title": "Admin users",
     "subtitle": "Add admin accounts from the toolbar below. Update roles or delete from the actions column in each row.",
-    "total": "Total {{total}} admins",
     "listTitle": "Administrator list",
-    "listHint": "Data from the server. Use pagination to view other pages.",
+    "listHint": "Data from the server. Use rows per page and pagination to view more.",
     "loadingBody": "Loading administrator data…",
     "pleaseWait": "Please wait a moment.",
-    "emptyMessage": "No administrators yet. Add one from the button above."
+    "emptyMessage": "No administrators yet. Add one from the button above.",
+    "subtitleReadOnly": "Administrator accounts and their roles. You have view-only access.",
+    "total_one": "Total {{total}} admin",
+    "total_other": "Total {{total}} admins",
+    "rowsPerPage": "Rows",
+    "loadError": "Failed to load the administrator list.",
+    "emptyPage": "This page has no rows. Go back to the first page.",
+    "backToFirstPage": "Back to page 1",
+    "filterPlaceholder": "Filter this page…",
+    "filterClear": "Clear filter",
+    "tableCaption": "Administrator accounts, page {{page}} of {{totalPage}}",
+    "rolesUnavailable": "Role list could not be loaded — you may not have permission to view roles.",
+    "filterScopeHint_one": "Filters only the {{count}} row loaded on this page.",
+    "filterScopeHint_other": "Filters only the {{count}} rows loaded on this page.",
+    "filterNoMatch_one": "No match among the {{count}} row on this page. Try another page.",
+    "filterNoMatch_other": "No match among the {{count}} rows on this page. Try another page.",
+    "pageAnnounce_one": "Page {{page}} of {{totalPage}}, {{count}} administrator shown.",
+    "pageAnnounce_other": "Page {{page}} of {{totalPage}}, {{count}} administrators shown."
   },
   "adminTable": {
     "colUsername": "Username",
@@ -1606,7 +1622,10 @@
     "enabled": "Active",
     "disabled": "Inactive",
     "colActions": "Actions",
-    "selfRoleHint": "You cannot change your own role"
+    "selfRoleHint": "You cannot change your own role",
+    "colCreatedAt": "Created",
+    "you": "You",
+    "selfDeleteHint": "You cannot delete your own account"
   },
   "adminLogPage": {
     "title": "Activity log",
@@ -1935,7 +1954,11 @@
     "tooManyRequests": "Too many attempts. Please try again later.",
     "timeout": "The request timed out. Please try again.",
     "network": "Cannot reach the server. Check your connection.",
-    "generic": "Something went wrong. Please try again."
+    "generic": "Something went wrong. Please try again.",
+    "mfaRequired": "Two-factor verification is required. Please sign in again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "selfRoleChange": "You cannot change your own role.",
+    "selfDelete": "You cannot delete your own account."
   },
   "errorBoundary": {
     "title": "Something went wrong",
@@ -2049,7 +2072,10 @@
     "createFailed": "Could not create the role",
     "updateFailed": "Could not update the role",
     "permissionsFailed": "Could not update permissions",
-    "deleteFailed": "Could not delete the role"
+    "deleteFailed": "Could not delete the role",
+    "searchPermission": "Search resource or permission code…",
+    "filteredCount": "· {{shown}} of {{total}} resources",
+    "noPermissionMatch": "No resource matches your search."
   },
   "permissionResource": {
     "admin": "Admin users",
@@ -2132,5 +2158,69 @@
     "copyRaw": "Copy raw JSON",
     "copied": "Raw entry copied",
     "copyError": "Failed to copy the entry"
+  },
+  "pagination": {
+    "prev": "Previous page",
+    "next": "Next page",
+    "jumpToPage": "Go to page number",
+    "jump": "Go",
+    "label": "Pagination"
+  },
+  "adminCreate": {
+    "trigger": "Add admin",
+    "title": "Add a new admin",
+    "description": "Fill in the account details to grant access to the admin dashboard.",
+    "fullNameLabel": "Full name",
+    "fullNamePlaceholder": "e.g. Budi Santoso",
+    "fullNameRequired": "Full name is required",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "budisantoso",
+    "usernameRequired": "Username is required",
+    "roleLabel": "Role",
+    "rolePlaceholder": "Select a role",
+    "roleRequired": "A role is required",
+    "emailLabel": "Email",
+    "emailPlaceholder": "admin@pakargaming.id",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email format",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "passwordRequired": "Password is required",
+    "passwordMin": "At least 6 characters",
+    "confirmLabel": "Confirm with your own password",
+    "confirmHint": "Creating an admin requires your own password.",
+    "confirmPlaceholder": "Your account password",
+    "confirmRequired": "Your password is required to confirm this action",
+    "submit": "Register",
+    "submitting": "Registering…",
+    "success": "New admin registered",
+    "error": "Failed to register the admin",
+    "emailTaken": "This email is already registered.",
+    "usernameTaken": "This username is already taken.",
+    "confirmWrong": "That is not your account password.",
+    "roleInvalid": "The selected role no longer exists. Pick another one."
+  },
+  "adminUpdate": {
+    "roleAriaLabel": "Role for {{email}}",
+    "confirmTitle": "Confirm role change",
+    "confirmDescription": "Change the role to {{role}}? This changes what the account is allowed to do.",
+    "cancel": "Cancel",
+    "confirm": "Change role",
+    "saving": "Saving…",
+    "success": "Role updated",
+    "error": "Failed to update the role"
+  },
+  "adminDelete": {
+    "triggerLabel": "Delete admin {{email}}",
+    "title": "Delete this admin account?",
+    "description": "This permanently removes {{email}} and cannot be undone.",
+    "typeEmailLabel": "Type {{email}} to confirm",
+    "typeEmailPlaceholder": "Enter the email address",
+    "emailMismatch": "The email does not match.",
+    "cancel": "Cancel",
+    "confirm": "Delete",
+    "deleting": "Deleting…",
+    "success": "Admin deleted",
+    "error": "Failed to delete the admin"
   }
 }

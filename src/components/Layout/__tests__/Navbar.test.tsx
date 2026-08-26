@@ -13,10 +13,7 @@ vi.mock('@/lib/auth', () => ({
 
 const mockUseAuthUser = vi.mocked(useAuthUser)
 
-const asRole = (role: string) => ({
-  ...authStateForRole(role),
-  user: { id: 'admin-1', username: 'vian', email: 'vian@example.com', role },
-})
+const asRole = (role: string) => authStateForRole(role)
 
 const renderNavbar = (initialPath = '/', onOpenMobile = vi.fn()) => {
   const queryClient = new QueryClient({
