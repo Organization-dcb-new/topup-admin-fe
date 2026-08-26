@@ -1429,22 +1429,43 @@
     "loadErrorDetail": "Gagal memuat daftar show. Periksa koneksi atau coba muat ulang halaman.",
     "emptyPage": "Belum ada show. Tambahkan lewat tombol Tambah show di atas.",
     "subRowGamesTitle": "Game dalam show ini",
-    "subRowNoGames": "Belum ada game pada show ini."
+    "subRowNoGames": "Belum ada game pada show ini.",
+    "subRowVisibleCount": "{{visible}} dari {{total}} game tampil di storefront",
+    "subRowGameHidden": "Disembunyikan",
+    "removeGameTitle": "Keluarkan game dari show ini?",
+    "removeGameDescription": "Game akan dikeluarkan dari \"{{show}}\". Data gamenya sendiri tidak dihapus.",
+    "removeGameAria": "Keluarkan {{name}} dari show ini",
+    "searchPlaceholder": "Cari nama atau alias show…",
+    "searchAria": "Cari show",
+    "searchNoMatch": "Tidak ada show yang cocok dengan pencarian.",
+    "searchClear": "Bersihkan pencarian",
+    "tableCaption_one": "Daftar show, {{count}} baris",
+    "tableCaption_other": "Daftar show, {{count}} baris",
+    "totalShows_one": "Total {{count}} show",
+    "totalShows_other": "Total {{count}} show",
+    "tableCaption": "Daftar show, {{count}} baris"
   },
   "showTable": {
     "gameListColumn": "Daftar game",
-    "ariaOpenGameList": "Buka daftar game",
-    "ariaCloseGameList": "Tutup daftar game",
     "colName": "Nama",
     "colAlias": "Alias",
     "colGameCount": "Jumlah game",
     "actionsHeader": "Aksi",
-    "rowActionsAria": "Aksi untuk show ini"
+    "colImage": "Gambar",
+    "imageAltName": "Gambar show {{name}}",
+    "colFlags": "Penanda",
+    "flagShow": "Tampil",
+    "flagHidden": "Disembunyikan",
+    "colSortOrder": "Urutan",
+    "ariaOpenGameListNamed": "Buka daftar game untuk {{name}}",
+    "ariaCloseGameListNamed": "Tutup daftar game untuk {{name}}",
+    "ariaGameCount": "{{name}} punya {{total}} game, buka daftarnya",
+    "connectedGames_one": "{{count}} game di show ini",
+    "connectedGames_other": "{{count}} game di show ini",
+    "visibleGamesHint": "{{visible}} dari {{total}} game tampil di storefront.",
+    "rowActionsAriaNamed": "Aksi untuk show {{name}}"
   },
   "showToasts": {
-    "loading": "Sedang memuat…",
-    "loadSuccess": "Berhasil memuat data show",
-    "loadError": "Gagal memuat data show",
     "createSuccess": "Show berhasil dibuat",
     "createError": "Gagal membuat show",
     "deleteSuccess": "Show berhasil dihapus",
@@ -1452,7 +1473,11 @@
     "addGamesSuccess": "Daftar game pada show berhasil diperbarui",
     "addGamesError": "Gagal memperbarui game pada show",
     "updateSuccess": "Show berhasil diperbarui",
-    "updateError": "Gagal memperbarui show"
+    "updateError": "Gagal memperbarui show",
+    "removeGamesSuccess": "Game berhasil dilepas dari show",
+    "removeGamesError": "Gagal melepas game dari show",
+    "reorderSuccess": "Urutan show berhasil disimpan",
+    "reorderError": "Gagal menyimpan urutan show"
   },
   "createShowModal": {
     "trigger": "Tambah show",
@@ -1468,7 +1493,17 @@
     "aliasHint": "Identitas unik (biasanya huruf kecil, tanpa spasi) untuk sistem.",
     "imageLabel": "Gambar show",
     "uploadAria": "Unggah gambar show",
-    "previewAlt": "Pratinjau gambar show"
+    "previewAlt": "Pratinjau gambar show",
+    "imageHint": "PNG, JPG, atau WebP. Seret file ke area ini atau ketuk untuk memilih.",
+    "changeImage": "Ganti gambar",
+    "uploadTitle": "Unggah gambar",
+    "uploadDropHint": "Klik atau letakkan file di sini",
+    "uploading": "Mengunggah… {{percent}}%",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "hiddenNoticeTitle": "Show baru dibuat dalam keadaan tersembunyi",
+    "hiddenNotice": "Show belum tampil di storefront. Aktifkan penanda tampilan lewat Ubah show setelah gamenya diatur."
   },
   "editShowModal": {
     "triggerShort": "Ubah",
@@ -1494,7 +1529,17 @@
     "flagPopularLabel": "Populer",
     "flagPopularDesc": "Tandai sebagai populer.",
     "flagShowLabel": "Tampil sebagai show",
-    "flagShowDesc": "Show aktif di katalog."
+    "flagShowDesc": "Show aktif di katalog.",
+    "imageHint": "PNG, JPG, atau WebP. Seret file ke area ini atau ketuk untuk memilih.",
+    "changeImage": "Ganti gambar",
+    "uploadTitle": "Unggah gambar",
+    "uploadDropHint": "Klik atau letakkan file di sini",
+    "uploading": "Mengunggah… {{percent}}%",
+    "cancel": "Batal",
+    "save": "Simpan",
+    "saving": "Menyimpan…",
+    "sortLabel": "Urutan tampil",
+    "sortHint": "Angka yang lebih kecil tampil lebih dulu di storefront."
   },
   "deleteShowModal": {
     "triggerAria": "Hapus show",
@@ -1502,7 +1547,10 @@
     "title": "Hapus show?",
     "description": "Tindakan ini tidak bisa dibatalkan. Show beserta pengaturan game di dalamnya akan dihapus dari daftar.",
     "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
+    "confirmDelete": "Hapus",
+    "triggerAriaNamed": "Hapus show {{name}}",
+    "gamesNotice": "{{total}} game di show ini akan dilepaskan. Data gamenya sendiri tetap tersimpan.",
+    "cancel": "Batal"
   },
   "addGamesModal": {
     "triggerAria": "Atur game pada show",
@@ -1519,7 +1567,17 @@
     "selectGameAria": "Pilih {{name}}",
     "cancel": "Batal",
     "save": "Simpan",
-    "saving": "Menyimpan…"
+    "saving": "Menyimpan…",
+    "descriptionReplace": "Daftar ini menggantikan isi show: game yang dilepas centangnya dikeluarkan, game yang dicentang ditambahkan.",
+    "currentMember": "Sudah di show ini",
+    "loadError": "Gagal memuat daftar game.",
+    "retry": "Coba lagi",
+    "summaryAdd": "{{total}} game akan ditambahkan.",
+    "summaryRemove": "{{total}} game akan dikeluarkan.",
+    "moveWarning": "Satu game hanya bisa berada di satu show — game yang sudah ada di show lain akan dipindahkan ke sini.",
+    "clearWarning": "Tidak ada game yang dipilih. Menyimpan sekarang akan mengosongkan show ini.",
+    "clearConfirmPrompt": "Tekan Simpan sekali lagi untuk memastikan show ini dikosongkan.",
+    "clearConfirm": "Ya, kosongkan show"
   },
   "categoryPage": {
     "searchPlaceholder": "Cari kategori...",
@@ -2479,5 +2537,22 @@
     "inactive": "Nonaktif",
     "avgPercent": "Rata-rata komisi",
     "scopedHint": "Dari {{count}} baris di halaman ini."
+  },
+  "showForm": {
+    "discardTitle": "Buang perubahan?",
+    "discardDescription": "Perubahan pada show ini belum disimpan dan akan hilang.",
+    "discardKeep": "Lanjut mengubah",
+    "discardConfirm": "Buang",
+    "errors": {
+      "nameRequired": "Nama show wajib diisi",
+      "nameTooLong": "Nama show maksimal {{max}} karakter",
+      "aliasRequired": "Alias wajib diisi",
+      "aliasTooLong": "Alias maksimal {{max}} karakter",
+      "imageRequired": "Gambar show wajib diisi",
+      "imageInvalid": "Gambar harus berupa URL http/https lengkap",
+      "sortRequired": "Urutan wajib diisi",
+      "sortInvalid": "Urutan harus berupa bilangan bulat",
+      "sortNegative": "Urutan tidak boleh negatif"
+    }
   }
 }

@@ -20,9 +20,12 @@ export const handleFileAutoUpload = async ({
   fieldName = 'icon_url',
 }: HandleFileParams) => {
   if (!validateFileImage(file)) return
+  // Object URL menahan satu salinan penuh berkas di memori tab sampai
+  // di-revoke. Dipakai hanya selama unggahan berjalan; begitu URL remote ada,
+  // preview pindah ke sana dan salinan lokalnya dilepas.
   const localPreview = URL.createObjectURL(file)
   setPreview(localPreview)
-  try { 
+  try {
     setIsUploading(true)
     setUploadProgress(0)
 
@@ -30,10 +33,13 @@ export const handleFileAutoUpload = async ({
     const url = res.data.url
 
     setValue(fieldName, url)
+    setPreview(url)
+    URL.revokeObjectURL(localPreview)
     toast.success('Upload success')
   } catch {
     toast.error('Upload failed')
     setPreview(null)
+    URL.revokeObjectURL(localPreview)
   } finally {
     setIsUploading(false)
   }

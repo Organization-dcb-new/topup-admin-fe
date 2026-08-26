@@ -1,5 +1,19 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
+import { Clapperboard, EyeOff, Loader2, Plus } from 'lucide-react'
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,89 +22,98 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { Clapperboard, Plus, UploadCloud } from 'lucide-react'
 
-import { handleFileAutoUpload } from '@/helpers/upload'
 import { useCreateShow } from '@/hooks/useShow'
-import { useTranslation } from 'react-i18next'
-
-export type FormValuesShow = {
-  name: string
-  alias: string
-  image: string
-}
-
-export type ShowPayload = {
-  name: string
-  alias: string
-  image: string
-}
+import {
+  createShowDefaults,
+  createShowSchema,
+  toShowAlias,
+  type CreateShowFormValues,
+} from '@/schemas/show'
 
 export function CreateShowModal() {
   const { t } = useTranslation('common')
+
   const [open, setOpen] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  /** Alias hanya diturunkan otomatis dari nama selama admin belum mengetiknya sendiri. */
+  const [aliasTouched, setAliasTouched] = useState(false)
+  const [confirmDiscard, setConfirmDiscard] = useState(false)
+  /**
+   * ImageDropzone menyimpan pratinjaunya di state internal dan hanya membaca
+   * `value` saat mount, jadi dropzone dipasang ulang lewat key setiap kali form
+   * direset — tanpa ini gambar draft sebelumnya masih terlihat saat modal dibuka lagi.
+   */
+  const [dropzoneKey, setDropzoneKey] = useState(0)
+
+  const mutation = useCreateShow()
+
   const {
     register,
     handleSubmit,
     setValue,
+    getValues,
     reset,
-    formState: { errors },
-  } = useForm<FormValuesShow>({
-    defaultValues: { name: '', alias: '', image: '' },
+    formState: { errors, isDirty, submitCount },
+  } = useForm<CreateShowFormValues>({
+    resolver: zodResolver(createShowSchema),
+    defaultValues: createShowDefaults,
+    mode: 'onTouched',
   })
 
-  const setDialogOpen = (value: boolean) => {
-    if (!value) {
-      reset({ name: '', alias: '', image: '' })
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
+  const busy = mutation.isPending || isUploading
+
+  const closeAndReset = () => {
+    setConfirmDiscard(false)
+    setAliasTouched(false)
+    reset(createShowDefaults)
+    setDropzoneKey((key) => key + 1)
+    setOpen(false)
+  }
+
+  /**
+   * Esc, klik overlay, tombol silang, dan tombol Batal semuanya lewat sini:
+   * penutupan dikunci selama menyimpan atau mengunggah, dan draft yang sudah
+   * terisi meminta konfirmasi lebih dulu.
+   */
+  const requestOpenChange = (next: boolean) => {
+    if (next) {
+      setOpen(true)
+      return
     }
-    setOpen(value)
+    if (busy) return
+    if (isDirty) {
+      setConfirmDiscard(true)
+      return
+    }
+    closeAndReset()
   }
 
-  const mutation = useCreateShow(reset, setPreview, setDialogOpen)
-  const onSubmit = (values: FormValuesShow) => {
-    mutation.mutate(values)
-  }
-
-  const handleFile = (file: File) => {
-    handleFileAutoUpload({
-      file,
-      setPreview,
-      setIsUploading,
-      setUploadProgress,
-      setValue: setValue as Parameters<typeof handleFileAutoUpload>[0]['setValue'],
-      fieldName: 'image',
-    })
-  }
+  const nameField = register('name')
 
   return (
     <>
-      <Button
-        type='button'
-        className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'
-        onClick={() => setDialogOpen(true)}
-      >
-        <Plus className='h-4 w-4 shrink-0' aria-hidden />
-        {t('createShowModal.trigger')}
-      </Button>
+      <Dialog open={open} onOpenChange={requestOpenChange}>
+        {/* Pemicu wajib berada di dalam <Dialog> lewat DialogTrigger: hanya
+            dengan begitu Radix mengembalikan fokus keyboard ke tombol ini
+            setelah modal ditutup. */}
+        <DialogTrigger asChild>
+          <Button type='button' className='w-full cursor-pointer gap-2 shadow-sm sm:w-auto'>
+            <Plus className='h-4 w-4 shrink-0' aria-hidden />
+            {t('createShowModal.trigger')}
+          </Button>
+        </DialogTrigger>
 
-      <Dialog open={open} onOpenChange={setDialogOpen}>
-        <DialogContent className='gap-0 overflow-hidden p-0 sm:max-w-lg'>
-          <div className='border-b border-border bg-muted/30 px-6 py-5'>
+        <DialogContent className='flex max-h-[min(90vh,40rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-lg'>
+          <div className='shrink-0 border-b border-border bg-muted/30 px-6 py-5'>
             <DialogHeader className='gap-1.5 text-left'>
               <div className='flex items-center gap-2'>
-                <span className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                <span className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
                   <Clapperboard className='h-4 w-4' aria-hidden />
                 </span>
                 <DialogTitle className='text-xl font-semibold tracking-tight'>
@@ -101,140 +124,133 @@ export function CreateShowModal() {
             </DialogHeader>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-5 px-6 py-5'>
-            <div className='space-y-2'>
-              <Label htmlFor='show-name'>{t('createShowModal.nameLabel')}</Label>
-              <div className='space-y-1'>
+          <form
+            onSubmit={handleSubmit((values) =>
+              mutation.mutate(values, { onSuccess: closeAndReset }),
+            )}
+            className='flex min-h-0 flex-1 flex-col'
+          >
+            {/* Hanya badan form yang menggulir; judul dan tombol simpan tetap terlihat. */}
+            <div className='min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+              <div className='space-y-2'>
+                <Label htmlFor='show-name'>{t('createShowModal.nameLabel')}</Label>
                 <Input
                   id='show-name'
-                  {...register('name', {
-                    required: t('createShowModal.nameRequired'),
-                  })}
+                  {...nameField}
+                  onChange={(e) => {
+                    void nameField.onChange(e)
+                    // Alias adalah pengenal di storefront; menurunkannya dari
+                    // nama menghindari alias asal ketik pada show baru.
+                    if (!aliasTouched) {
+                      setValue('alias', toShowAlias(e.target.value), {
+                        shouldValidate: submitCount > 0,
+                        shouldDirty: true,
+                      })
+                    }
+                  }}
                   placeholder={t('createShowModal.namePlaceholder')}
+                  disabled={busy}
                   aria-invalid={!!errors.name}
                 />
-                {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
+                {errors.name ? (
+                  <p role='alert' className='text-xs font-medium text-destructive'>
+                    {errors.name.message}
+                  </p>
+                ) : (
+                  <p className='text-xs text-muted-foreground'>{t('createShowModal.nameHint')}</p>
+                )}
               </div>
-              <p className='text-xs text-muted-foreground'>{t('createShowModal.nameHint')}</p>
-            </div>
 
-            <div className='space-y-2'>
-              <Label htmlFor='show-alias'>{t('createShowModal.aliasLabel')}</Label>
-              <div className='space-y-1'>
+              <div className='space-y-2'>
+                <Label htmlFor='show-alias'>{t('createShowModal.aliasLabel')}</Label>
                 <Input
                   id='show-alias'
                   {...register('alias', {
-                    required: t('createShowModal.aliasRequired'),
+                    onChange: () => setAliasTouched(true),
+                    // Normalisasi ditampilkan saat blur supaya nilai yang
+                    // dikirim tidak berbeda dari yang dilihat admin.
+                    onBlur: () =>
+                      setValue('alias', toShowAlias(getValues('alias')), {
+                        shouldValidate: submitCount > 0,
+                      }),
                   })}
                   placeholder={t('createShowModal.aliasPlaceholder')}
                   autoComplete='off'
+                  disabled={busy}
                   aria-invalid={!!errors.alias}
                 />
-                {errors.alias && <p className='text-xs text-destructive'>{errors.alias.message}</p>}
-              </div>
-              <p className='text-xs text-muted-foreground'>{t('createShowModal.aliasHint')}</p>
-            </div>
-
-            <input type='hidden' {...register('image')} />
-
-            <div className='space-y-2'>
-              <Label>{t('createShowModal.imageLabel')}</Label>
-              <p className='text-xs text-muted-foreground'>{t('createBannerModal.imageHint')}</p>
-
-              <div
-                role='button'
-                tabIndex={0}
-                aria-label={t('createShowModal.uploadAria')}
-                onClick={() => inputRef.current?.click()}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    inputRef.current?.click()
-                  }
-                }}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFile(file)
-                }}
-                className={`group relative flex min-h-[11rem] w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/20 px-4 py-6 transition-colors outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/50 ${
-                  isUploading
-                    ? 'pointer-events-none opacity-60'
-                    : 'hover:border-primary/50 hover:bg-muted/35'
-                }`}
-              >
-                {preview ? (
-                  <>
-                    <img
-                      src={preview}
-                      alt={t('createShowModal.previewAlt')}
-                      className='max-h-44 w-full rounded-lg object-contain'
-                    />
-                    {!isUploading && (
-                      <div className='pointer-events-none absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 transition-opacity group-hover:bg-black/40 group-hover:opacity-100'>
-                        <span className='rounded-md bg-background/95 px-3 py-1.5 text-sm font-medium shadow-sm'>
-                          {t('createBannerModal.changeImage')}
-                        </span>
-                      </div>
-                    )}
-                  </>
+                {errors.alias ? (
+                  <p role='alert' className='text-xs font-medium text-destructive'>
+                    {errors.alias.message}
+                  </p>
                 ) : (
-                  <div className='flex flex-col items-center gap-2 text-center text-muted-foreground'>
-                    <span className='flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-sm ring-1 ring-border'>
-                      <UploadCloud className='h-6 w-6 text-primary' aria-hidden />
-                    </span>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploadTitle')}
-                    </span>
-                    <span className='max-w-[16rem] text-xs leading-relaxed'>
-                      {t('createBannerModal.uploadDropHint')}
-                    </span>
-                  </div>
-                )}
-
-                {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-xl bg-background/85 backdrop-blur-[2px]'>
-                    <span className='text-sm font-medium text-foreground'>
-                      {t('createBannerModal.uploading', { percent: uploadProgress })}
-                    </span>
-                    <Progress value={uploadProgress} className='h-2 w-[min(100%,12rem)]' />
-                  </div>
+                  <p className='text-xs text-muted-foreground'>{t('createShowModal.aliasHint')}</p>
                 )}
               </div>
 
-              <input
-                ref={inputRef}
-                type='file'
-                accept='image/*,.svg'
-                className='hidden'
-                onChange={(e) => {
-                  const file = e.target.files?.[0]
-                  if (file) handleFile(file)
-                }}
+              <ImageDropzone
+                key={dropzoneKey}
+                label={t('createShowModal.imageLabel')}
+                onChange={(url) =>
+                  setValue('image', url, { shouldValidate: true, shouldDirty: true })
+                }
+                onUploadingChange={setIsUploading}
+                disabled={mutation.isPending}
+                error={errors.image?.message}
               />
+
+              {/* Backend membuat show dalam keadaan belum tayang. Tanpa kalimat
+                  ini admin mengira show langsung muncul di storefront. */}
+              <div className='flex gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3'>
+                <EyeOff className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
+                <div className='min-w-0 space-y-0.5'>
+                  <p className='text-sm font-medium text-foreground'>
+                    {t('createShowModal.hiddenNoticeTitle')}
+                  </p>
+                  <p className='text-xs leading-relaxed text-muted-foreground'>
+                    {t('createShowModal.hiddenNotice')}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <DialogFooter className='gap-2 border-t border-border pt-5 sm:pt-5'>
+            <DialogFooter className='shrink-0 gap-2 border-t border-border px-6 py-5 sm:gap-2'>
               <Button
                 className='cursor-pointer sm:min-w-[5.5rem]'
                 variant='outline'
                 type='button'
-                onClick={() => setDialogOpen(false)}
+                disabled={busy}
+                onClick={() => requestOpenChange(false)}
               >
-                {t('createBannerModal.cancel')}
+                {t('createShowModal.cancel')}
               </Button>
-              <Button
-                className='cursor-pointer sm:min-w-[5.5rem]'
-                type='submit'
-                disabled={isUploading || mutation.isPending}
-              >
-                {mutation.isPending ? t('createBannerModal.saving') : t('createBannerModal.save')}
+              <Button className='cursor-pointer sm:min-w-[5.5rem]' type='submit' disabled={busy}>
+                {mutation.isPending && (
+                  <Loader2 className='mr-2 h-4 w-4 shrink-0 animate-spin' aria-hidden />
+                )}
+                {mutation.isPending ? t('createShowModal.saving') : t('createShowModal.save')}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={confirmDiscard} onOpenChange={setConfirmDiscard}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('showForm.discardTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('showForm.discardDescription')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className='cursor-pointer'>
+              {t('showForm.discardKeep')}
+            </AlertDialogCancel>
+            <AlertDialogAction className='cursor-pointer' onClick={closeAndReset}>
+              {t('showForm.discardConfirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

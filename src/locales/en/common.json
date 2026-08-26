@@ -1429,22 +1429,43 @@
     "loadErrorDetail": "Failed to load the show list. Check your connection or try reloading the page.",
     "emptyPage": "No shows yet. Add one with the Add show button above.",
     "subRowGamesTitle": "Games in this show",
-    "subRowNoGames": "No games in this show yet."
+    "subRowNoGames": "No games in this show yet.",
+    "subRowVisibleCount": "{{visible}} of {{total}} games visible in the storefront",
+    "subRowGameHidden": "Hidden",
+    "removeGameTitle": "Remove game from this show?",
+    "removeGameDescription": "The game is removed from \"{{show}}\". The game data itself is not deleted.",
+    "removeGameAria": "Remove {{name}} from this show",
+    "searchPlaceholder": "Search show name or alias…",
+    "searchAria": "Search show",
+    "searchNoMatch": "No show matches your search.",
+    "searchClear": "Clear search",
+    "tableCaption_one": "Show list, 1 row",
+    "tableCaption_other": "Show list, {{count}} rows",
+    "totalShows_one": "Total {{count}} show",
+    "totalShows_other": "Total {{count}} shows",
+    "tableCaption": "Show list, {{count}} rows"
   },
   "showTable": {
     "gameListColumn": "Games",
-    "ariaOpenGameList": "Open game list",
-    "ariaCloseGameList": "Close game list",
     "colName": "Name",
     "colAlias": "Alias",
     "colGameCount": "Game count",
     "actionsHeader": "Actions",
-    "rowActionsAria": "Actions for this show"
+    "colImage": "Image",
+    "imageAltName": "Image for show {{name}}",
+    "colFlags": "Flags",
+    "flagShow": "Shown",
+    "flagHidden": "Hidden",
+    "colSortOrder": "Order",
+    "ariaOpenGameListNamed": "Open the game list for {{name}}",
+    "ariaCloseGameListNamed": "Close the game list for {{name}}",
+    "ariaGameCount": "{{name}} has {{total}} games, open the list",
+    "connectedGames_one": "{{count}} game in this show",
+    "connectedGames_other": "{{count}} games in this show",
+    "visibleGamesHint": "{{visible}} of {{total}} games are shown on the storefront.",
+    "rowActionsAriaNamed": "Actions for show {{name}}"
   },
   "showToasts": {
-    "loading": "Loading…",
-    "loadSuccess": "Show data loaded",
-    "loadError": "Failed to load show data",
     "createSuccess": "Show created",
     "createError": "Failed to create show",
     "deleteSuccess": "Show deleted",
@@ -1452,7 +1473,11 @@
     "addGamesSuccess": "Games for this show updated",
     "addGamesError": "Failed to update games for this show",
     "updateSuccess": "Show updated",
-    "updateError": "Failed to update show"
+    "updateError": "Failed to update show",
+    "removeGamesSuccess": "Games removed from the show",
+    "removeGamesError": "Failed to remove games from the show",
+    "reorderSuccess": "Show order saved",
+    "reorderError": "Failed to save the show order"
   },
   "createShowModal": {
     "trigger": "Add show",
@@ -1468,7 +1493,17 @@
     "aliasHint": "Unique identifier for the system (usually lowercase, no spaces).",
     "imageLabel": "Show image",
     "uploadAria": "Upload show image",
-    "previewAlt": "Show image preview"
+    "previewAlt": "Show image preview",
+    "imageHint": "PNG, JPG, or WebP. Drag a file onto this area or tap to choose.",
+    "changeImage": "Change image",
+    "uploadTitle": "Upload image",
+    "uploadDropHint": "Click or drop a file here",
+    "uploading": "Uploading… {{percent}}%",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "hiddenNoticeTitle": "The new show starts hidden",
+    "hiddenNotice": "It is not shown in the storefront yet. Turn on the display flags from Edit show once its games are set."
   },
   "editShowModal": {
     "triggerShort": "Edit",
@@ -1494,7 +1529,17 @@
     "flagPopularLabel": "Popular",
     "flagPopularDesc": "Mark as popular.",
     "flagShowLabel": "Show in catalog",
-    "flagShowDesc": "Show is active in the catalog."
+    "flagShowDesc": "Show is active in the catalog.",
+    "imageHint": "PNG, JPG, or WebP. Drag a file onto this area or tap to choose.",
+    "changeImage": "Change image",
+    "uploadTitle": "Upload image",
+    "uploadDropHint": "Click or drop a file here",
+    "uploading": "Uploading… {{percent}}%",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "sortLabel": "Sort order",
+    "sortHint": "A smaller number appears earlier in the storefront."
   },
   "deleteShowModal": {
     "triggerAria": "Delete show",
@@ -1502,7 +1547,10 @@
     "title": "Delete show?",
     "description": "This cannot be undone. The show and its game settings will be removed from the list.",
     "deleting": "Deleting…",
-    "confirmDelete": "Delete"
+    "confirmDelete": "Delete",
+    "triggerAriaNamed": "Delete show {{name}}",
+    "gamesNotice": "{{total}} game(s) in this show will be unlinked. The games themselves are kept.",
+    "cancel": "Cancel"
   },
   "addGamesModal": {
     "triggerAria": "Manage games for show",
@@ -1519,7 +1567,17 @@
     "selectGameAria": "Select {{name}}",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "descriptionReplace": "This list replaces the show's contents: games you untick are removed, games you tick are added.",
+    "currentMember": "In this show",
+    "loadError": "Failed to load the game list.",
+    "retry": "Try again",
+    "summaryAdd": "{{total}} game(s) will be added.",
+    "summaryRemove": "{{total}} game(s) will be removed.",
+    "moveWarning": "A game can belong to only one show — any game already in another show is moved here.",
+    "clearWarning": "No game is selected. Saving now empties this show.",
+    "clearConfirmPrompt": "Press Save once more to confirm emptying this show.",
+    "clearConfirm": "Yes, empty the show"
   },
   "categoryPage": {
     "searchPlaceholder": "Search categories...",
@@ -2479,5 +2537,22 @@
     "inactive": "Inactive",
     "avgPercent": "Average commission",
     "scopedHint": "From the {{count}} rows on this page."
+  },
+  "showForm": {
+    "discardTitle": "Discard changes?",
+    "discardDescription": "Your edits to this show have not been saved and will be lost.",
+    "discardKeep": "Keep editing",
+    "discardConfirm": "Discard",
+    "errors": {
+      "nameRequired": "Show name is required",
+      "nameTooLong": "Show name must be at most {{max}} characters",
+      "aliasRequired": "Alias is required",
+      "aliasTooLong": "Alias must be at most {{max}} characters",
+      "imageRequired": "Show image is required",
+      "imageInvalid": "Image must be a full http/https URL",
+      "sortRequired": "Sort order is required",
+      "sortInvalid": "Sort order must be a whole number",
+      "sortNegative": "Sort order cannot be negative"
+    }
   }
 }

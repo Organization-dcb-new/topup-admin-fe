@@ -177,13 +177,19 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
   return mutation
 }
 
-export function useGetGameNames() {
-  return useQuery({
+/**
+ * Daftar ringkas nama game. `enabled` ada supaya pemakai di dalam modal bisa
+ * menahan permintaan sampai modalnya benar-benar dibuka — tanpa itu, membuka
+ * sebuah halaman ikut menarik seluruh daftar game.
+ */
+export function useGetGameNames({ enabled = true }: { enabled?: boolean } = {}) {
+  return useQuery<GameNames[]>({
     queryKey: ['game-names'],
-    queryFn: async () => {
-      const res = await api.get('/games/names')
+    queryFn: async ({ signal }) => {
+      const res = await api.get('/games/names', { signal })
       return res.data.data
     },
+    enabled,
   })
 }
 
