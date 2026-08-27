@@ -38,11 +38,17 @@ const showAlias = z
     error: tr('showForm.errors.aliasTooLong', { max: MAX_ALIAS }),
   })
 
+/**
+ * Gambar show bersifat opsional: storefront tidak pernah merendernya (pemakainya
+ * nol di pakargaming-fe), jadi mewajibkannya hanya memaksa admin mengunggah aset
+ * yang tidak dibaca siapa pun. Yang tetap ditegakkan adalah bentuknya — begitu
+ * diisi, nilainya berakhir di atribut `src`, sehingga hanya URL absolut
+ * http/https yang boleh lolos.
+ */
 const showImage = z
   .string()
   .trim()
-  .min(1, { error: tr('showForm.errors.imageRequired') })
-  .refine((v) => toSafeLink(v)?.isExternal === true, {
+  .refine((v) => v === '' || toSafeLink(v)?.isExternal === true, {
     error: tr('showForm.errors.imageInvalid'),
   })
 
@@ -55,13 +61,18 @@ const showSortOrder = z
   .min(0, { error: tr('showForm.errors.sortNegative') })
 
 /**
- * POST /shows hanya menerima nama, alias, dan gambar. Flag dan urutan baru
- * bisa diatur setelah show ada, jadi form pembuatan sengaja tidak memintanya.
+ * POST /shows menerima nama, alias, gambar, keempat flag, dan urutan. Form
+ * pembuatan sengaja hanya meminta yang dibutuhkan untuk menayangkan show;
+ * penanda hot/new/popular dan urutan diatur setelahnya lewat form edit dan
+ * tombol urutan di tabel.
  */
 export const createShowSchema = z.object({
   name: showName,
   alias: showAlias,
   image: showImage,
+  /** Backend sudah menerima flag ini saat pembuatan, jadi show tidak perlu
+   *  dibuat dulu lalu disunting lagi hanya untuk menayangkannya. */
+  is_show: z.boolean(),
 })
 
 export type CreateShowFormValues = z.infer<typeof createShowSchema>
@@ -84,6 +95,7 @@ export const createShowDefaults: CreateShowFormValues = {
   name: '',
   alias: '',
   image: '',
+  is_show: false,
 }
 
 /** Nilai awal form edit dari satu baris show. */

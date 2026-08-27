@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
           className={cn(
             'bg-card',
             stickyHeader &&
-              'sticky top-0 z-10 border-b border-border/80 bg-card/95 shadow-sm backdrop-blur-sm [&_th]:bg-card/95',
+              'sticky top-0 z-10 border-b border-border/80 bg-card/95 shadow-sm backdrop-blur-sm group-data-[shell-shift=on]/shell:backdrop-blur-none [&_th]:bg-card/95',
           )}
         >
           {table.getHeaderGroups().map((headerGroup) => (

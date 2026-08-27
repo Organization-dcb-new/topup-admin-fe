@@ -71,34 +71,101 @@ const renderTable = (rows: Show[] = [shown, hidden]) =>
 /** Baris data ke-n (baris 0 adalah header). */
 const dataRow = (index: number) => screen.getAllByRole('row')[index + 1]
 
-describe('kolom penanda tabel Show', () => {
-  it('membedakan show yang tayang dari yang disembunyikan', () => {
+describe('kolom status storefront', () => {
+  it('membedakan show yang sampai ke pengunjung dari yang disembunyikan', () => {
     renderTable()
 
-    expect(within(dataRow(0)).getByText(t('showTable.flagShow'))).toBeInTheDocument()
+    expect(within(dataRow(0)).getByText(t('showTable.statusLive'))).toBeInTheDocument()
     expect(within(dataRow(0)).queryByText(t('showTable.flagHidden'))).not.toBeInTheDocument()
 
     expect(within(dataRow(1)).getByText(t('showTable.flagHidden'))).toBeInTheDocument()
-    expect(within(dataRow(1)).queryByText(t('showTable.flagShow'))).not.toBeInTheDocument()
+    expect(within(dataRow(1)).queryByText(t('showTable.statusLive'))).not.toBeInTheDocument()
   })
 
-  // Hanya penanda yang menyala yang dirender, supaya baris polos tidak penuh
-  // chip abu-abu yang tidak berarti apa-apa.
-  it('hanya merender penanda yang menyala', () => {
+  // Sebab paling sering "kok show saya tidak muncul": is_show=true tapi jalur
+  // publik menyaring lewat game yang tampil, jadi show tanpa satu pun anggota
+  // tampil hilang dari storefront tanpa galat apa pun.
+  it('menandai show yang tayang tapi tidak punya game tampil', () => {
+    renderTable([{ ...shown, visible_game_count: 0 }])
+    const row = dataRow(0)
+
+    expect(within(row).getByText(t('showTable.statusNoGames'))).toBeInTheDocument()
+    expect(within(row).getByText(t('showTable.statusNoGamesHint'))).toBeInTheDocument()
+    expect(within(row).queryByText(t('showTable.statusLive'))).not.toBeInTheDocument()
+  })
+})
+
+describe('kolom penanda tabel Show', () => {
+  // Storefront hanya merender SATU badge dengan prioritas popular > new > hot,
+  // jadi tabel tidak boleh menampilkan ketiganya seolah setara.
+  it('hanya merender penanda yang benar-benar dipakai storefront', () => {
     renderTable()
     const row = dataRow(0)
 
-    expect(within(row).getByText(t('editShowModal.flagHotLabel'))).toBeInTheDocument()
     expect(within(row).getByText(t('editShowModal.flagPopularLabel'))).toBeInTheDocument()
     expect(within(row).queryByText(t('editShowModal.flagNewLabel'))).not.toBeInTheDocument()
   })
 
-  it('baris tanpa penanda hanya menampilkan status tayang', () => {
+  it('menyebut penanda yang tersimpan tapi kalah prioritas', () => {
+    renderTable()
+
+    expect(
+      within(dataRow(0)).getByText(
+        t('showTable.badgeOverridden', { labels: t('editShowModal.flagHotLabel') }),
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('baris tanpa penanda tidak merender badge apa pun', () => {
     renderTable([hidden])
     const row = dataRow(0)
 
     expect(within(row).queryByText(t('editShowModal.flagHotLabel'))).not.toBeInTheDocument()
     expect(within(row).queryByText(t('editShowModal.flagPopularLabel'))).not.toBeInTheDocument()
+  })
+})
+
+describe('tombol urutan', () => {
+  const move = vi.fn()
+
+  const renderWithReorder = (canReorder: boolean) =>
+    render(
+      <DataTable
+        columns={getShowColumns(t, { onMove: move, canReorder })}
+        data={[shown, hidden]}
+        getRowId={(row) => row.id}
+      />,
+    )
+
+  it('memanggil onMove dengan arahnya', () => {
+    move.mockClear()
+    renderWithReorder(true)
+
+    fireEvent.click(
+      screen.getByRole('button', { name: t('showTable.ariaMoveDown', { name: 'Etalase Utama' }) }),
+    )
+    expect(move).toHaveBeenCalledWith(shown, 'down')
+  })
+
+  it('baris pertama tidak bisa dinaikkan, baris terakhir tidak bisa diturunkan', () => {
+    renderWithReorder(true)
+
+    expect(
+      screen.getByRole('button', { name: t('showTable.ariaMoveUp', { name: 'Etalase Utama' }) }),
+    ).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: t('showTable.ariaMoveDown', { name: 'Etalase Draft' }) }),
+    ).toBeDisabled()
+  })
+
+  // Menyimpan urutan menulis ulang sort_order seluruh daftar, jadi itu hanya
+  // benar kalau daftar yang terlihat memang daftar lengkapnya.
+  it('mati sepenuhnya ketika penataan ulang tidak diizinkan', () => {
+    renderWithReorder(false)
+
+    expect(
+      screen.getByRole('button', { name: t('showTable.ariaMoveDown', { name: 'Etalase Utama' }) }),
+    ).toBeDisabled()
   })
 })
 

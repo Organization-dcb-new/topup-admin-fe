@@ -10,6 +10,8 @@ import {
 } from 'lucide-react'
 
 import { Can } from '@/components/Auth/Can'
+import { BANNER_ASPECT } from '@/constants/image-ratios'
+import { cn } from '@/lib/utils'
 import { BannerCarouselPreview } from '@/components/Banner/BannerCarouselPreview'
 import { BannerFormDialog } from '@/components/Banner/BannerFormDialog'
 import { BannerListRow } from '@/components/Banner/BannerListRow'
@@ -36,7 +38,7 @@ function BannerPageSkeleton({ label }: { label: string }) {
           <Skeleton className='h-4 w-44' />
           <Skeleton className='h-3 w-64' />
         </div>
-        <Skeleton className='aspect-video w-full rounded-xl' />
+        <Skeleton className={cn(BANNER_ASPECT, 'w-full rounded-xl')} />
         <div className='flex items-center justify-between'>
           <Skeleton className='h-8 w-24 rounded-lg' />
           <Skeleton className='h-2 w-20 rounded-full' />

@@ -60,6 +60,33 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, isMfaRequired, isLoading, navigate, t])
 
+  // Sesi sudah pasti hidup: halaman ini tidak boleh melukis APA PUN, karena
+  // efek di atas sedang memindahkan user. Menahan hanya <form>-nya tidak cukup
+  // — kerangka AuthLayout (wordmark, kartu, judul sambutan) tetap ter-paint
+  // satu frame lebih dulu, dan justru kerangka itulah yang terbaca sebagai
+  // "halaman login masih ke-render" saat seseorang kembali ke /login dengan
+  // sesi yang masih berjalan.
+  //
+  // Sengaja `null` dan bukan <Navigate>: efek di atas sudah satu-satunya yang
+  // memindahkan halaman sekaligus pemilik toast-nya, dan menambah jalur kedua
+  // hanya membuat urutannya rapuh.
+  // Status sesi belum diketahui. Jangan melukis kerangka login dulu: kalau
+  // ternyata sesinya masih hidup, apa pun yang sempat tampil di sini adalah
+  // halaman login yang berkedip sebelum user dilempar ke dashboard — dan itu
+  // terjadi tiap kali seseorang memuat /login dari nol (refresh, ketik URL,
+  // buka tab baru), karena /admin/me perlu waktu untuk menjawab.
+  //
+  // Loader ini sengaja disamakan dengan fallback Suspense di router, jadi
+  // pergantiannya tidak terbaca sebagai pindah layar.
+  if (isLoading)
+    return (
+      <div className='flex min-h-dvh items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
+      </div>
+    )
+
+  if (isAuthenticated || isMfaRequired) return null
+
   const onSubmit = (values: {
     email_or_username: string
     password: string

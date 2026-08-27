@@ -21,6 +21,7 @@ const validCreate = {
   name: 'Free Fire',
   alias: 'Free Fire',
   image: IMAGE,
+  is_show: false,
 }
 
 const validUpdate = {
@@ -86,9 +87,8 @@ describe('createShowSchema', () => {
     expect(issuePaths(result)).toContain('name')
   })
 
-  // `image` dirender sebagai src; hanya hasil unggahan (URL absolut) yang sah.
+  // `image` dirender sebagai src; begitu diisi, hanya URL absolut yang sah.
   it.each([
-    ['kosong', ''],
     ['path relatif', '/uploads/show.png'],
     ['protocol-relative', '//evil.example.com/show.png'],
     ['skema javascript', 'javascript:alert(1)'],
@@ -97,6 +97,14 @@ describe('createShowSchema', () => {
     const result = createShowSchema.safeParse({ ...validCreate, image })
     expect(result.success).toBe(false)
     expect(issuePaths(result)).toContain('image')
+  })
+
+  // Storefront tidak pernah merender gambar show, jadi kolomnya opsional —
+  // yang ditegakkan hanya bentuknya begitu diisi.
+  it('menerima image kosong', () => {
+    const result = createShowSchema.safeParse({ ...validCreate, image: '' })
+    expect(result.success).toBe(true)
+    expect(issuePaths(result)).not.toContain('image')
   })
 
   it('menerima URL http/https absolut', () => {
@@ -108,10 +116,17 @@ describe('createShowSchema', () => {
   })
 
   // Nilai awal form memang belum sah: tombol simpan tidak boleh lolos begitu saja.
+  // `image` tidak lagi ikut karena kolomnya opsional.
   it('nilai default form belum lolos validasi', () => {
     const result = createShowSchema.safeParse(createShowDefaults)
     expect(result.success).toBe(false)
-    expect(issuePaths(result)).toEqual(expect.arrayContaining(['name', 'alias', 'image']))
+    expect(issuePaths(result)).toEqual(expect.arrayContaining(['name', 'alias']))
+    expect(issuePaths(result)).not.toContain('image')
+  })
+
+  // Show baru dibuat sebagai draf; menayangkannya adalah pilihan sadar.
+  it('nilai awal form tidak menayangkan show', () => {
+    expect(createShowDefaults.is_show).toBe(false)
   })
 })
 

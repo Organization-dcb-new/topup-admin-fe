@@ -165,7 +165,12 @@ describe('mutasi Show', () => {
     mockApi.post.mockResolvedValue({ data: detailResponse })
     const { result } = renderHook(() => useCreateShow(), { wrapper: withClient(makeClient()) })
 
-    const payload = { name: 'Free Fire', alias: 'free-fire', image: 'https://cdn.example.com/ff.png' }
+    const payload = {
+      name: 'Free Fire',
+      alias: 'free-fire',
+      image: 'https://cdn.example.com/ff.png',
+      is_show: true,
+    }
     await expect(result.current.mutateAsync(payload)).resolves.toEqual(detailResponse)
     expect(mockApi.post).toHaveBeenCalledWith('/shows', payload)
     expect(mockToast.success).toHaveBeenCalledTimes(1)
@@ -254,7 +259,9 @@ describe('galat mutasi Show', () => {
     mockApi.post.mockRejectedValue(axiosError({ message: 'Alias already used' }))
     const { result } = renderHook(() => useCreateShow(), { wrapper: withClient(makeClient()) })
 
-    await expect(result.current.mutateAsync({ name: 'a', alias: 'a', image: 'a' })).rejects.toBeTruthy()
+    await expect(
+      result.current.mutateAsync({ name: 'a', alias: 'a', image: 'a', is_show: false }),
+    ).rejects.toBeTruthy()
     expect(mockToast.error).toHaveBeenCalledWith('Alias already used')
   })
 

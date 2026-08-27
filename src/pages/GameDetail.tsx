@@ -1,4 +1,6 @@
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { GAME_BANNER_ASPECT } from '@/constants/image-ratios'
+import { cn } from '@/lib/utils'
 import ErrorComponent from '@/components/Layout/error'
 import type { GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
 import type { ProductProviderStatusFilterValue } from '@/components/Product/Filter/ProductProviderStatusFilter'
@@ -356,7 +358,12 @@ function GameDetailView({ game }: { game: Game }) {
       {/* Hero Banner Section */}
       <div className='relative overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm'>
         {/* Banner Background with Gradient Overlay */}
-        <div className='relative aspect-[21/5] w-full overflow-hidden bg-muted/30'>
+        <div
+          className={cn(
+            GAME_BANNER_ASPECT,
+            'relative w-full overflow-hidden bg-muted/30',
+          )}
+        >
           {game.banner_url ? (
             <img
               src={game.banner_url}

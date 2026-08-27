@@ -14,6 +14,7 @@ import {
 
 import { BannerImage } from '@/components/Banner/BannerImage'
 import { toSafeLink } from '@/lib/safe-url'
+import { BANNER_ASPECT } from '@/constants/image-ratios'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/types/banner'
 
@@ -131,7 +132,12 @@ export function BannerCarouselPreview({ banners }: { banners: Banner[] }) {
 
   if (total === 0) {
     return (
-      <div className='flex aspect-video w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted/30 px-6 text-center'>
+      <div
+        className={cn(
+          BANNER_ASPECT,
+          'flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border bg-muted/30 px-6 text-center',
+        )}
+      >
         <span
           className='flex h-11 w-11 items-center justify-center rounded-xl bg-background text-muted-foreground shadow-xs'
           aria-hidden
@@ -153,7 +159,10 @@ export function BannerCarouselPreview({ banners }: { banners: Banner[] }) {
         aria-label={t('bannerPreview.viewportLabel')}
         tabIndex={0}
         onKeyDown={onKeyDown}
-        className='relative aspect-video w-full overflow-hidden rounded-xl border border-border bg-muted outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50'
+        className={cn(
+          BANNER_ASPECT,
+          'relative w-full overflow-hidden rounded-xl border border-border bg-muted outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50',
+        )}
       >
         <div
           className='flex h-full w-full transition-transform duration-500 ease-out motion-reduce:transition-none'

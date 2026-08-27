@@ -1,4 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
+import {
+  GAME_BANNER_ASPECT,
+  GAME_THUMBNAIL_ASPECT,
+} from '@/constants/image-ratios'
 import { useForm } from 'react-hook-form'
 import {
   Dialog,
@@ -216,11 +220,13 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
     inputRef,
     field,
     variant,
+    hint,
   }: {
     labelId: string
     inputId: string
     label: string
     requiredMessage: string
+    hint: string
     state: UploadState
     inputRef: React.RefObject<HTMLInputElement | null>
     field: FileField
@@ -266,8 +272,9 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
               'relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed bg-muted/15 text-left transition outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
               state.uploading ? 'pointer-events-none opacity-60' : 'hover:border-primary',
               fieldError || fileError ? 'border-destructive' : 'border-border/80',
-              variant === 'thumbnail' && 'aspect-square max-h-44 max-w-[11rem] mx-auto',
-              variant === 'banner' && 'aspect-[21/9] min-h-[7.5rem] w-full',
+              variant === 'thumbnail' &&
+                `${GAME_THUMBNAIL_ASPECT} max-h-44 max-w-[11rem] mx-auto`,
+              variant === 'banner' && `${GAME_BANNER_ASPECT} min-h-[7.5rem] w-full`,
             )}
           >
             {hasImage ? (
@@ -308,6 +315,8 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
             }}
           />
         </div>
+
+        <p className='text-xs text-muted-foreground'>{hint}</p>
 
         {state.uploading && <Progress value={state.progress} />}
 
@@ -393,6 +402,7 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
               inputRef: inputThumbnailRef,
               field: 'thumbnail_url',
               variant: 'thumbnail',
+              hint: t('gameImageModal.thumbnailHint'),
             })}
 
             {renderUploadBox({
@@ -404,6 +414,7 @@ export function ChangeImageModal({ game, image, children }: PropsImageGame) {
               inputRef: inputBannerRef,
               field: 'banner_url',
               variant: 'banner',
+              hint: t('gameImageModal.bannerHint'),
             })}
 
             <DialogFooter className='gap-2 sm:gap-2'>

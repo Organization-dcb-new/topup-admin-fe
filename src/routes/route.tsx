@@ -1,14 +1,17 @@
-import { lazy, Suspense, useEffect, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useRef, type ReactNode } from 'react'
 import {
   createBrowserRouter,
   Navigate,
   Outlet,
   RouterProvider,
   useLocation,
+  useNavigate,
   useParams,
 } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Loader2 } from 'lucide-react'
+import { onSessionExpired } from '@/lib/session-expiry'
 import { PermissionGuard } from '@/components/Auth/PermissionGuard'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { resolvePageTitleKey } from '@/lib/title-map'
@@ -98,9 +101,47 @@ const RouteTitle = () => {
   return null
 }
 
+/**
+ * Menerjemahkan 401 dari interceptor axios menjadi navigasi router biasa.
+ *
+ * Dulu interceptor melakukannya sendiri lewat `window.location.href`, dan
+ * reload penuh itulah yang membuat halaman login ter-render dari nol sebelum
+ * `/admin/me` sempat menjawab. Di sini URL berpindah tanpa memuat ulang
+ * aplikasi, jadi tidak ada lagi yang berkedip.
+ */
+const SessionExpiryWatcher = () => {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { pathname } = useLocation()
+  const handled = useRef(false)
+
+  // Penanda dilepas begitu sampai di /login, supaya sesi berikutnya yang
+  // berakhir tetap terdeteksi.
+  useEffect(() => {
+    if (pathname === '/login') handled.current = false
+  }, [pathname])
+
+  useEffect(
+    () =>
+      onSessionExpired(() => {
+        // Beberapa request bisa 401 berbarengan — cukup satu yang ditindaklanjuti.
+        if (handled.current) return
+        handled.current = true
+        navigate('/login?session=expired', { replace: true })
+        // Data sesi lama tidak boleh tertinggal di memori. Dulu ini efek
+        // samping dari reload; sekarang harus disebutkan.
+        queryClient.clear()
+      }),
+    [navigate, queryClient],
+  )
+
+  return null
+}
+
 const RootLayout = () => (
   <ErrorBoundary>
     <RouteTitle />
+    <SessionExpiryWatcher />
     <Suspense fallback={<PageLoader />}>
       <Outlet />
     </Suspense>

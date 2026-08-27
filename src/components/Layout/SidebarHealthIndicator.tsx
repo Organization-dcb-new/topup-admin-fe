@@ -56,30 +56,36 @@ export function SidebarHealthIndicator({ collapsed }: { collapsed: boolean }) {
     }
   }
 
+  // Kotak tombol dibekukan (`h-10 w-full px-3`) dan labelnya dijepit, bukan
+  // dilepas: kalau tidak, footer menyentak ke bentuk akhirnya di frame 0
+  // sementara lebar sidebar masih beranimasi 300ms lagi. Slot ikon 18px
+  // menyamakan titik tengahnya dengan ikon-ikon nav di atasnya.
   const trigger = (
     <button
       type='button'
       className={cn(
-        'flex cursor-pointer items-center rounded-lg border border-border bg-background shadow-xs transition-colors duration-200 hover:bg-muted',
+        'flex h-10 w-full cursor-pointer items-center rounded-lg border border-border bg-background px-3 shadow-xs transition-colors duration-200 ease-out hover:bg-muted',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-        collapsed
-          ? 'mx-auto h-10 w-10 justify-center p-0'
-          : 'h-10 w-full gap-3 px-3',
       )}
       title={collapsed ? t('health.triggerTitle', { status: statusLabel }) : undefined}
       aria-label={t('health.triggerAria', { status: statusLabel })}
     >
-      <span className='relative flex h-4 w-4 shrink-0 items-center justify-center'>
+      <span className='relative flex h-4.5 w-4.5 shrink-0 items-center justify-center'>
         <Activity className='h-4 w-4 text-muted-foreground' aria-hidden />
         <span
           className={cn('absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full ring-2 ring-background', dotColor)}
         />
       </span>
-      {!collapsed && (
-        <span className='min-w-0 truncate text-xs font-medium text-foreground'>
+      <span
+        className={cn(
+          'ml-3 grid min-w-0 grid-cols-[1fr] transition-[grid-template-columns,margin,opacity] duration-300 ease-out motion-reduce:transition-none',
+          collapsed && 'md:ml-0 md:grid-cols-[0fr] md:opacity-0',
+        )}
+      >
+        <span className='overflow-hidden whitespace-nowrap text-xs font-medium text-foreground'>
           {statusLabel}
         </span>
-      )}
+      </span>
     </button>
   )
 

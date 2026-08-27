@@ -29,6 +29,7 @@ import { useNow } from '@/hooks/useNow'
 import { bannerScheduleState, toTime } from '@/lib/banner-schedule'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { toSafeLink } from '@/lib/safe-url'
+import { BANNER_ASPECT } from '@/constants/image-ratios'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/types/banner'
 
@@ -125,7 +126,12 @@ export function BannerListRow({
           {t('bannerList.orderBadge', { order: index + 1 })}
         </span>
 
-        <span className='flex aspect-video w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted sm:w-32'>
+        <span
+          className={cn(
+            BANNER_ASPECT,
+            'flex w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted sm:w-32',
+          )}
+        >
           <BannerImage banner={banner} />
         </span>
 

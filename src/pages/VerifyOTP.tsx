@@ -36,9 +36,12 @@ const VerifyOtpPage = () => {
   const [isRecoveryMode, setIsRecoveryMode] = useState(false)
   const queryClient = useQueryClient()
 
+  // `replace`: mendarat di sini tanpa OTP yang tertunda selalu berarti salah
+  // alamat, jadi jangan tinggalkan jejak riwayat yang memantulkan user balik
+  // ke sini saat menekan Back. Sama seperti perlakuan di halaman login.
   useEffect(() => {
     if (!isLoading && !isMfaRequired) {
-      navigate(isAuthenticated ? '/' : '/login')
+      navigate(isAuthenticated ? '/' : '/login', { replace: true })
     }
   }, [isMfaRequired, isAuthenticated, isLoading, navigate])
 
@@ -84,6 +87,11 @@ const VerifyOtpPage = () => {
         <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
       </div>
     )
+
+  // Status sesi sudah pasti dan ujungnya BUKAN halaman ini: efek di atas sedang
+  // memindahkan user. Tanpa ini kerangka AuthLayout-nya tetap ter-paint satu
+  // frame — kedipan yang sama seperti di halaman login.
+  if (!isMfaRequired) return null
 
   return (
     <AuthLayout

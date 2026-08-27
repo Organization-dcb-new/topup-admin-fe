@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { PermissionGuard } from '@/components/Auth/PermissionGuard'
 import { useAuthUser } from '@/lib/auth'
@@ -80,6 +80,24 @@ describe('PermissionGuard', () => {
     )
     renderGuard(PERM.GAME_VIEW)
     expect(screen.getByText('halaman-otp')).toBeInTheDocument()
+  })
+
+  // Profil yang gagal dimuat BUKAN bukti bahwa sesi berakhir. Mengusir user
+  // ke /login di sini justru sumber kedipan halaman login: begitu request
+  // berikutnya berhasil, /admin/me menjawab 200 dan dia dipantulkan balik ke
+  // halaman ini.
+  it('profil gagal dimuat: menawarkan coba lagi, bukan mengalihkan ke login', () => {
+    const refetchProfile = vi.fn()
+    mockUseAuthUser.mockReturnValue(
+      authState({ isAuthenticated: false, isError: true, refetchProfile }),
+    )
+    renderGuard(PERM.GAME_VIEW)
+
+    expect(screen.queryByText('halaman-login')).not.toBeInTheDocument()
+    expect(screen.queryByText('konten-rahasia')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /Try again/ }))
+    expect(refetchProfile).toHaveBeenCalledTimes(1)
   })
 
   // Selama profil dimuat, permission belum diketahui. Menampilkan konten di

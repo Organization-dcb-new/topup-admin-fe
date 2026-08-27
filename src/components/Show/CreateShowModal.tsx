@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Clapperboard, EyeOff, Loader2, Plus } from 'lucide-react'
+import { AlertTriangle, Clapperboard, Loader2, Plus } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -27,6 +27,7 @@ import {
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 
 import { useCreateShow } from '@/hooks/useShow'
 import {
@@ -54,6 +55,7 @@ export function CreateShowModal() {
   const mutation = useCreateShow()
 
   const {
+    control,
     register,
     handleSubmit,
     setValue,
@@ -66,6 +68,9 @@ export function CreateShowModal() {
     mode: 'onTouched',
   })
 
+  // useWatch, bukan watch(): nilainya dirender langsung, dan watch()
+  // mengembalikan fungsi yang tidak aman dimemo oleh React Compiler.
+  const willPublish = useWatch({ control, name: 'is_show' })
   const busy = mutation.isPending || isUploading
 
   const closeAndReset = () => {
@@ -190,7 +195,7 @@ export function CreateShowModal() {
 
               <ImageDropzone
                 key={dropzoneKey}
-                label={t('createShowModal.imageLabel')}
+                label={t('createShowModal.imageLabelOptional')}
                 onChange={(url) =>
                   setValue('image', url, { shouldValidate: true, shouldDirty: true })
                 }
@@ -199,18 +204,38 @@ export function CreateShowModal() {
                 error={errors.image?.message}
               />
 
-              {/* Backend membuat show dalam keadaan belum tayang. Tanpa kalimat
-                  ini admin mengira show langsung muncul di storefront. */}
-              <div className='flex gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3'>
-                <EyeOff className='mt-0.5 h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
-                <div className='min-w-0 space-y-0.5'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {t('createShowModal.hiddenNoticeTitle')}
+              <div className='space-y-3 rounded-lg border border-border bg-muted/30 px-4 py-3'>
+                <label
+                  htmlFor='show-publish'
+                  className='flex cursor-pointer items-start justify-between gap-3'
+                >
+                  <span className='min-w-0 space-y-0.5'>
+                    <span className='block text-sm font-medium text-foreground'>
+                      {t('createShowModal.publishLabel')}
+                    </span>
+                    <span className='block text-xs leading-relaxed text-muted-foreground'>
+                      {t('createShowModal.publishHint')}
+                    </span>
+                  </span>
+                  <Switch
+                    id='show-publish'
+                    checked={willPublish}
+                    onCheckedChange={(checked) =>
+                      setValue('is_show', checked, { shouldDirty: true })
+                    }
+                    disabled={busy}
+                  />
+                </label>
+
+                {/* Menayangkan show baru tidak membuatnya muncul: jalur publik
+                    menyaring lewat game yang tampil, dan show baru selalu lahir
+                    tanpa satu pun anggota. */}
+                {willPublish && (
+                  <p className='flex gap-2 border-t border-border pt-3 text-xs leading-relaxed text-muted-foreground'>
+                    <AlertTriangle className='mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500' aria-hidden />
+                    {t('createShowModal.publishEmptyWarning')}
                   </p>
-                  <p className='text-xs leading-relaxed text-muted-foreground'>
-                    {t('createShowModal.hiddenNotice')}
-                  </p>
-                </div>
+                )}
               </div>
             </div>
 

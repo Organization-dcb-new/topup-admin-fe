@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Loader2, Pencil } from 'lucide-react'
+import { Info, Loader2, Pencil } from 'lucide-react'
 
 import {
   AlertDialog,
@@ -37,7 +37,18 @@ import {
   type UpdateShowFormValues,
 } from '@/schemas/show'
 import type { Show } from '@/types/show'
+import {
+  getEffectiveShowBadge,
+  getOverriddenShowBadges,
+  type ShowBadgeKey,
+} from '@/lib/show-status'
 import { cn } from '@/lib/utils'
+
+const BADGE_LABEL_KEY: Record<ShowBadgeKey, string> = {
+  is_popular: 'editShowModal.flagPopularLabel',
+  is_new: 'editShowModal.flagNewLabel',
+  is_hot: 'editShowModal.flagHotLabel',
+}
 
 export function UpdateShowModal({
   show,
@@ -96,6 +107,19 @@ export function UpdateShowModal({
       })),
     [t],
   )
+
+  /**
+   * Storefront hanya merender SATU penanda per show, dengan prioritas
+   * popular > new > hot. Ketiga checkbox di bawah terlihat setara, jadi tanpa
+   * ringkasan ini admin mencentang tiga dan menyangka tiga-tiganya tampil.
+   */
+  const badgeFlags = {
+    is_popular: values.is_popular ?? false,
+    is_new: values.is_new ?? false,
+    is_hot: values.is_hot ?? false,
+  }
+  const effectiveBadge = getEffectiveShowBadge(badgeFlags)
+  const overriddenBadges = getOverriddenShowBadges(badgeFlags)
 
   const busy = mutation.isPending || isUploading
 
@@ -231,7 +255,7 @@ export function UpdateShowModal({
 
               <ImageDropzone
                 key={dropzoneKey}
-                label={t('editShowModal.imageLabel')}
+                label={t('editShowModal.imageLabelOptional')}
                 value={values.image ?? ''}
                 onChange={(url) =>
                   setValue('image', url, { shouldValidate: true, shouldDirty: true })
@@ -277,6 +301,23 @@ export function UpdateShowModal({
                     </label>
                   ))}
                 </div>
+
+                <p className='flex gap-2 border-t border-border/70 pt-3 text-xs leading-relaxed text-muted-foreground'>
+                  <Info className='mt-0.5 h-3.5 w-3.5 shrink-0' aria-hidden />
+                  <span>
+                    {effectiveBadge
+                      ? t('editShowModal.badgeEffective', {
+                          label: t(BADGE_LABEL_KEY[effectiveBadge]),
+                        })
+                      : t('editShowModal.badgeNone')}
+                    {overriddenBadges.length > 0 &&
+                      ` ${t('editShowModal.badgeOverridden', {
+                        labels: overriddenBadges
+                          .map((key) => t(BADGE_LABEL_KEY[key]))
+                          .join(', '),
+                      })}`}
+                  </span>
+                </p>
               </div>
             </div>
 

@@ -796,6 +796,8 @@
     "description": "Game: {{name}}. Update thumbnail and banner. Files upload automatically after selection. JPG, PNG, or WebP supported.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
+    "thumbnailHint": "Square image — recommended 512×512 px, minimum 256×256. WebP keeps the file smallest.",
+    "bannerHint": "Recommended 1600×400 px (4:1), minimum 1200×300 — WebP keeps the file smallest. Off-ratio images are cropped to fill.",
     "thumbnailRequired": "Thumbnail is required",
     "bannerRequired": "Banner is required",
     "dropHint": "Click or drop an image here",
@@ -1437,6 +1439,7 @@
     "titlePlaceholder": "Weekend top-up promo",
     "titleHint": "An internal label so this list stays readable.",
     "imageLabel": "Banner image",
+    "imageHint": "Recommended 1920×600 px (16:5), minimum 1280×400 — WebP keeps the file smallest. Off-ratio images are cropped to fill, and on phones the strip is only ~110 px tall, so keep any text large.",
     "altLabel": "Alt text",
     "altPlaceholder": "Poster for the weekend top-up promo",
     "altHint": "Read aloud by screen readers and shown if the image fails to load.",
@@ -1487,7 +1490,7 @@
   },
   "showPage": {
     "title": "Shows",
-    "subtitle": "Manage shows and their games. Add a new show from the toolbar below; use the arrow on a row to expand the game list.",
+    "subtitle": "Curate the storefront showcases. Only a show that is published AND has at least one visible game reaches visitors.",
     "loadingShort": "Loading…",
     "loadFailedShort": "Failed to load",
     "totalShows": "Total {{count}} shows",
@@ -1512,7 +1515,13 @@
     "tableCaption_other": "Show list, {{count}} rows",
     "totalShows_one": "Total {{count}} show",
     "totalShows_other": "Total {{count}} shows",
-    "tableCaption": "Show list, {{count}} rows"
+    "tableCaption": "Show list, {{count}} rows",
+    "liveCount_one": "{{count}} live",
+    "liveCount_other": "{{count}} live",
+    "reorderHint": "Use the arrows in the Order column to change the storefront order.",
+    "reorderDisabledSearch": "Clear the search to change the order.",
+    "reorderDisabledPaged": "Reordering needs every show on one page.",
+    "liveCount": "{{count}} live"
   },
   "showTable": {
     "gameListColumn": "Games",
@@ -1523,7 +1532,6 @@
     "colImage": "Image",
     "imageAltName": "Image for show {{name}}",
     "colFlags": "Flags",
-    "flagShow": "Shown",
     "flagHidden": "Hidden",
     "colSortOrder": "Order",
     "ariaOpenGameListNamed": "Open the game list for {{name}}",
@@ -1532,7 +1540,15 @@
     "connectedGames_one": "{{count}} game in this show",
     "connectedGames_other": "{{count}} games in this show",
     "visibleGamesHint": "{{visible}} of {{total}} games are shown on the storefront.",
-    "rowActionsAriaNamed": "Actions for show {{name}}"
+    "rowActionsAriaNamed": "Actions for show {{name}}",
+    "colStatus": "Storefront",
+    "colBadge": "Badge",
+    "statusLive": "Live",
+    "statusNoGames": "Not showing",
+    "statusNoGamesHint": "Published, but no visible game.",
+    "badgeOverridden": "Saved but hidden: {{labels}}",
+    "ariaMoveUp": "Move {{name}} up",
+    "ariaMoveDown": "Move {{name}} down"
   },
   "showToasts": {
     "createSuccess": "Show created",
@@ -1560,7 +1576,6 @@
     "aliasRequired": "Alias is required",
     "aliasPlaceholder": "topup-deals",
     "aliasHint": "Unique identifier for the system (usually lowercase, no spaces).",
-    "imageLabel": "Show image",
     "uploadAria": "Upload show image",
     "previewAlt": "Show image preview",
     "imageHint": "PNG, JPG, or WebP. Drag a file onto this area or tap to choose.",
@@ -1571,8 +1586,10 @@
     "cancel": "Cancel",
     "save": "Save",
     "saving": "Saving…",
-    "hiddenNoticeTitle": "The new show starts hidden",
-    "hiddenNotice": "It is not shown in the storefront yet. Turn on the display flags from Edit show once its games are set."
+    "imageLabelOptional": "Cover image (optional)",
+    "publishLabel": "Publish right away",
+    "publishHint": "Off means the show is created as a draft and stays out of the storefront.",
+    "publishEmptyWarning": "A new show has no games yet, so it still will not appear until you add at least one visible game."
   },
   "editShowModal": {
     "triggerShort": "Edit",
@@ -1586,7 +1603,6 @@
     "aliasRequired": "Alias is required",
     "aliasPlaceholder": "topup-deals",
     "aliasHint": "Unique system identifier (usually lowercase, no spaces).",
-    "imageLabel": "Show image",
     "uploadAria": "Upload show image",
     "previewAlt": "Show image preview",
     "flagsTitle": "Badges",
@@ -1608,7 +1624,11 @@
     "save": "Save",
     "saving": "Saving…",
     "sortLabel": "Sort order",
-    "sortHint": "A smaller number appears earlier in the storefront."
+    "sortHint": "A smaller number appears earlier in the storefront.",
+    "imageLabelOptional": "Cover image (optional)",
+    "badgeEffective": "The storefront shows one badge: {{label}}.",
+    "badgeNone": "No badge is shown on the storefront.",
+    "badgeOverridden": "Saved but never visible: {{labels}}."
   },
   "showForm": {
     "discardTitle": "Discard changes?",
@@ -2217,6 +2237,12 @@
     "subtitle": "An unexpected error occurred while rendering this page. Reloading usually fixes it.",
     "reload": "Reload page"
   },
+  "profileError": {
+    "title": "Can't load your profile",
+    "subtitle": "We couldn't reach the server to confirm your session. Your login is most likely still valid — check your connection and try again.",
+    "retry": "Try again",
+    "backToLogin": "Back to login"
+  },
   "pageTitles": {
     "dashboard": "Dashboard",
     "login": "Login",
@@ -2623,5 +2649,21 @@
     "inactive": "Inactive",
     "avgPercent": "Average commission",
     "scopedHint": "From the {{count}} rows on this page."
+  },
+  "showPreview": {
+    "title": "Storefront preview",
+    "hint": "How these showcases render on the homepage, in the same order visitors see.",
+    "partialHint": "Shows this page only.",
+    "navAria": "Showcase navigation preview",
+    "emptyTitle": "Nothing reaches the storefront yet",
+    "emptyHint": "A show appears only when it is published and holds at least one visible game.",
+    "gamesCount_one": "{{count}} game",
+    "gamesCount_other": "{{count}} games",
+    "moreGames_one": "+{{count}} more game",
+    "moreGames_other": "+{{count}} more games",
+    "gamesCount": "{{count}} games",
+    "moreGames": "+{{count}} more games",
+    "collapse": "Hide preview",
+    "expand": "Show preview"
   }
 }

@@ -129,14 +129,19 @@ function FormBody({
       className='flex min-h-0 flex-col duration-200 animate-in fade-in zoom-in-95 motion-reduce:animate-none'
     >
       <div className='min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5'>
-        <ImageDropzone
-          label={t('bannerForm.imageLabel')}
-          value={image}
-          onChange={(url) => setValue('image', url, { shouldValidate: true })}
-          onUploadingChange={setIsUploading}
-          disabled={isPending}
-          error={errors.image?.message}
-        />
+        <div className='space-y-2'>
+          <ImageDropzone
+            label={t('bannerForm.imageLabel')}
+            value={image}
+            onChange={(url) => setValue('image', url, { shouldValidate: true })}
+            onUploadingChange={setIsUploading}
+            disabled={isPending}
+            error={errors.image?.message}
+          />
+          <p className='text-xs text-muted-foreground'>
+            {t('bannerForm.imageHint')}
+          </p>
+        </div>
 
         <div className='space-y-1.5'>
           <Label htmlFor={FIELD.title}>{t('bannerForm.titleLabel')}</Label>

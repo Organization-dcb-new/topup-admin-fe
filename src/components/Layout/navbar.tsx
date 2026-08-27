@@ -67,7 +67,7 @@ export function Navbar({ onOpenMobile }: NavbarProps) {
     <>
       <header
         className={cn(
-          'sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/85 px-3 backdrop-blur-md transition-shadow duration-200 md:h-16 md:gap-3 md:px-6',
+          'sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background/85 px-3 backdrop-blur-md transition-shadow duration-200 group-data-[shell-shift=on]/shell:backdrop-blur-none md:h-16 md:gap-3 md:px-6',
           isScrolled && 'shadow-sm',
         )}
       >

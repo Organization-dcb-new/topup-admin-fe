@@ -78,13 +78,16 @@ export type GetShowsParams = {
 }
 
 /**
- * POST /shows. Backend hanya menerima tiga kolom ini saat pembuatan; flag dan
- * urutan diatur lewat PUT setelah show ada.
+ * POST /shows. Backend menerima pula is_hot/is_new/is_popular/sort_order di sini,
+ * tetapi form pembuatan sengaja hanya mengirim yang dibutuhkan untuk menayangkan
+ * show — penanda dan urutan diatur setelahnya lewat form edit dan tombol urutan.
  */
 export type CreateShowPayload = {
   name: string
   alias: string
+  /** Boleh string kosong: storefront tidak merender gambar show. */
   image: string
+  is_show: boolean
 }
 
 /** PUT /shows/:id — update parsial, hanya field yang dikirim yang ditulis. */

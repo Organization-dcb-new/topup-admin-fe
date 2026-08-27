@@ -796,6 +796,8 @@
     "description": "Game: {{name}}. Perbarui miniatur (thumbnail) dan banner. File diunggah otomatis setelah dipilih. Mendukung JPG, PNG, atau WebP.",
     "thumbnailLabel": "Miniatur (thumbnail)",
     "bannerLabel": "Banner",
+    "thumbnailHint": "Gambar persegi — disarankan 512×512 px, minimal 256×256. WebP paling ringan.",
+    "bannerHint": "Disarankan 1600×400 px (rasio 4:1), minimal 1200×300 — WebP paling ringan. Gambar di luar rasio akan dipotong agar penuh.",
     "thumbnailRequired": "Miniatur wajib diunggah",
     "bannerRequired": "Banner wajib diunggah",
     "dropHint": "Klik atau letakkan gambar di sini",
@@ -1437,6 +1439,7 @@
     "titlePlaceholder": "Promo top-up akhir pekan",
     "titleHint": "Label internal supaya daftar ini mudah dibaca.",
     "imageLabel": "Gambar banner",
+    "imageHint": "Disarankan 1920×600 px (rasio 16:5), minimal 1280×400 — WebP paling ringan. Gambar di luar rasio akan dipotong agar penuh, dan di ponsel tingginya cuma ~110 px, jadi pakai teks berukuran besar.",
     "altLabel": "Teks alternatif",
     "altPlaceholder": "Poster promo top-up akhir pekan",
     "altHint": "Dibacakan pembaca layar dan tampil bila gambar gagal dimuat.",
@@ -1487,7 +1490,7 @@
   },
   "showPage": {
     "title": "Acara",
-    "subtitle": "Kelola show dan game yang tergabung di dalamnya. Tambah show baru dari toolbar di bawah, klik panah pada baris untuk melihat daftar game.",
+    "subtitle": "Kurasi etalase storefront. Sebuah show baru sampai ke pengunjung kalau tayang DAN punya minimal satu game yang tampil.",
     "loadingShort": "Memuat…",
     "loadFailedShort": "Gagal memuat",
     "totalShows": "Total {{count}} show",
@@ -1512,7 +1515,13 @@
     "tableCaption_other": "Daftar show, {{count}} baris",
     "totalShows_one": "Total {{count}} show",
     "totalShows_other": "Total {{count}} show",
-    "tableCaption": "Daftar show, {{count}} baris"
+    "tableCaption": "Daftar show, {{count}} baris",
+    "liveCount_one": "{{count}} tayang",
+    "liveCount_other": "{{count}} tayang",
+    "reorderHint": "Pakai panah di kolom Urutan untuk mengubah urutan di storefront.",
+    "reorderDisabledSearch": "Kosongkan pencarian untuk mengubah urutan.",
+    "reorderDisabledPaged": "Penataan urutan butuh semua show muat dalam satu halaman.",
+    "liveCount": "{{count}} tayang"
   },
   "showTable": {
     "gameListColumn": "Daftar game",
@@ -1523,7 +1532,6 @@
     "colImage": "Gambar",
     "imageAltName": "Gambar show {{name}}",
     "colFlags": "Penanda",
-    "flagShow": "Tampil",
     "flagHidden": "Disembunyikan",
     "colSortOrder": "Urutan",
     "ariaOpenGameListNamed": "Buka daftar game untuk {{name}}",
@@ -1532,7 +1540,15 @@
     "connectedGames_one": "{{count}} game di show ini",
     "connectedGames_other": "{{count}} game di show ini",
     "visibleGamesHint": "{{visible}} dari {{total}} game tampil di storefront.",
-    "rowActionsAriaNamed": "Aksi untuk show {{name}}"
+    "rowActionsAriaNamed": "Aksi untuk show {{name}}",
+    "colStatus": "Storefront",
+    "colBadge": "Penanda",
+    "statusLive": "Tayang",
+    "statusNoGames": "Tidak tampil",
+    "statusNoGamesHint": "Sudah tayang, tapi tidak ada game yang tampil.",
+    "badgeOverridden": "Tersimpan tapi tidak tampil: {{labels}}",
+    "ariaMoveUp": "Naikkan {{name}}",
+    "ariaMoveDown": "Turunkan {{name}}"
   },
   "showToasts": {
     "createSuccess": "Show berhasil dibuat",
@@ -1560,7 +1576,6 @@
     "aliasRequired": "Alias wajib diisi",
     "aliasPlaceholder": "topup-hemat",
     "aliasHint": "Identitas unik (biasanya huruf kecil, tanpa spasi) untuk sistem.",
-    "imageLabel": "Gambar show",
     "uploadAria": "Unggah gambar show",
     "previewAlt": "Pratinjau gambar show",
     "imageHint": "PNG, JPG, atau WebP. Seret file ke area ini atau ketuk untuk memilih.",
@@ -1571,8 +1586,10 @@
     "cancel": "Batal",
     "save": "Simpan",
     "saving": "Menyimpan…",
-    "hiddenNoticeTitle": "Show baru dibuat dalam keadaan tersembunyi",
-    "hiddenNotice": "Show belum tampil di storefront. Aktifkan penanda tampilan lewat Ubah show setelah gamenya diatur."
+    "imageLabelOptional": "Gambar sampul (opsional)",
+    "publishLabel": "Langsung tayangkan",
+    "publishHint": "Kalau mati, show dibuat sebagai draf dan tidak masuk storefront.",
+    "publishEmptyWarning": "Show baru belum punya game, jadi tetap tidak akan muncul sampai kamu menambahkan minimal satu game yang tampil."
   },
   "editShowModal": {
     "triggerShort": "Ubah",
@@ -1586,7 +1603,6 @@
     "aliasRequired": "Alias wajib diisi",
     "aliasPlaceholder": "topup-hemat",
     "aliasHint": "Identitas unik untuk sistem (biasanya huruf kecil, tanpa spasi).",
-    "imageLabel": "Gambar show",
     "uploadAria": "Unggah gambar show",
     "previewAlt": "Pratinjau gambar show",
     "flagsTitle": "Penanda",
@@ -1608,7 +1624,11 @@
     "save": "Simpan",
     "saving": "Menyimpan…",
     "sortLabel": "Urutan tampil",
-    "sortHint": "Angka yang lebih kecil tampil lebih dulu di storefront."
+    "sortHint": "Angka yang lebih kecil tampil lebih dulu di storefront.",
+    "imageLabelOptional": "Gambar sampul (opsional)",
+    "badgeEffective": "Storefront menampilkan satu penanda: {{label}}.",
+    "badgeNone": "Tidak ada penanda yang tampil di storefront.",
+    "badgeOverridden": "Tersimpan tapi tidak pernah terlihat: {{labels}}."
   },
   "showForm": {
     "discardTitle": "Buang perubahan?",
@@ -2217,6 +2237,12 @@
     "subtitle": "Ada error tak terduga saat menampilkan halaman ini. Memuat ulang biasanya memperbaikinya.",
     "reload": "Muat ulang halaman"
   },
+  "profileError": {
+    "title": "Profil tidak bisa dimuat",
+    "subtitle": "Server tidak bisa dihubungi untuk memastikan sesi Anda. Kemungkinan besar sesi Anda masih sah — periksa koneksi lalu coba lagi.",
+    "retry": "Coba lagi",
+    "backToLogin": "Kembali ke login"
+  },
   "pageTitles": {
     "dashboard": "Dashboard",
     "login": "Masuk",
@@ -2623,5 +2649,21 @@
     "inactive": "Nonaktif",
     "avgPercent": "Rata-rata komisi",
     "scopedHint": "Dari {{count}} baris di halaman ini."
+  },
+  "showPreview": {
+    "title": "Pratinjau storefront",
+    "hint": "Tampilan etalase ini di homepage, dengan urutan yang sama seperti dilihat pengunjung.",
+    "partialHint": "Menampilkan halaman ini saja.",
+    "navAria": "Pratinjau navigasi etalase",
+    "emptyTitle": "Belum ada yang sampai ke storefront",
+    "emptyHint": "Show baru muncul kalau sudah tayang dan berisi minimal satu game yang tampil.",
+    "gamesCount_one": "{{count}} game",
+    "gamesCount_other": "{{count}} game",
+    "moreGames_one": "+{{count}} game lagi",
+    "moreGames_other": "+{{count}} game lagi",
+    "gamesCount": "{{count}} game",
+    "moreGames": "+{{count}} game lagi",
+    "collapse": "Sembunyikan pratinjau",
+    "expand": "Tampilkan pratinjau"
   }
 }

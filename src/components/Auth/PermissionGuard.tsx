@@ -1,5 +1,6 @@
 import { useAuthUser } from '@/lib/auth'
 import { usePermission } from '@/hooks/usePermission'
+import { ProfileLoadError } from '@/components/Auth/ProfileLoadError'
 import { Navigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 
@@ -17,7 +18,8 @@ interface PermissionGuardProps {
 }
 
 export const PermissionGuard = ({ children, requires }: PermissionGuardProps) => {
-  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser()
+  const { isAuthenticated, isMfaRequired, isLoading, isError, refetchProfile } =
+    useAuthUser()
   const { canAny } = usePermission()
 
   if (isLoading)
@@ -26,6 +28,12 @@ export const PermissionGuard = ({ children, requires }: PermissionGuardProps) =>
         <Loader2 className='h-8 w-8 animate-spin text-primary' aria-hidden />
       </div>
     )
+
+  // Profil gagal dimuat ≠ tidak punya sesi. Statusnya belum diketahui, jadi
+  // konten tetap ditahan — tapi user juga tidak dilempar ke /login, karena
+  // di sana `/admin/me` akan berhasil begitu gangguannya lewat dan
+  // memantulkannya kembali ke sini. Itulah kedipan halaman login.
+  if (isError) return <ProfileLoadError onRetry={refetchProfile} />
 
   if (!isAuthenticated) {
     if (isMfaRequired) {
