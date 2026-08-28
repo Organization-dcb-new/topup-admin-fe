@@ -1,6 +1,7 @@
 import { api } from '@/api/axios'
+import { apiErrorMessage } from '@/lib/api-error'
 import type { PaginationMeta } from '@/types/game'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -13,8 +14,17 @@ export type categoryProductPayload = {
   is_active: boolean
 }
 
+/**
+ * Sengaja seluruhnya opsional: dialog ubah hanya mengirim kolom yang benar-benar
+ * disunting admin. Bentuk ini benar terhadap backend lama (yang cuma membaca
+ * `name`) maupun backend baru yang menerima slug, ikon, deskripsi, dan status.
+ */
 export type updateCategoryProductPayload = {
-  name: string
+  name?: string
+  slug?: string
+  icon_url?: string
+  description?: string
+  is_active?: boolean
 }
 export type ProductResponseOnly = {
   id: string
@@ -42,7 +52,7 @@ export type CategoryProduct = {
   slug: string
   icon_url: string
   description: string
-  is_active: boolean | null
+  is_active: boolean
   product: ProductResponseOnly[]
 }
 
@@ -52,11 +62,20 @@ export interface CategoryProductResponse {
   meta: PaginationMeta
   status: string
 }
+/**
+ * Daftar kategori produk untuk admin.
+ *
+ * `signal` diteruskan ke axios supaya permintaan halaman lama ikut dibatalkan
+ * saat admin menekan next beberapa kali beruntun. `placeholderData` menahan
+ * baris halaman sebelumnya selama halaman baru dimuat sehingga tabel dan
+ * paginasi tidak berkedip kosong di tiap langkah halaman.
+ */
 export const useGetCategoryProduct = (page: number, limit: number) =>
   useQuery<CategoryProductResponse>({
     queryKey: ['categories-product', page, limit],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const res = await api.get('/category-product', {
+        signal,
         params: {
           page,
           limit,
@@ -64,6 +83,9 @@ export const useGetCategoryProduct = (page: number, limit: number) =>
       })
       return res.data
     },
+    staleTime: 30_000,
+    refetchOnWindowFocus: false,
+    placeholderData: keepPreviousData,
   })
 
 export const useCreateCategoryProduct = (
@@ -134,8 +156,10 @@ export function useDeleteCategoryProduct(id: string) {
       toast.success(t('categoryProductToasts.deleteSuccess'))
       queryClient.invalidateQueries({ queryKey: ['categories-product'] })
     },
-    onError: () => {
-      toast.error(t('categoryProductToasts.deleteError'))
+    // Galat axios jangan dibuang: batas laju dan penolakan backend punya pesan
+    // sendiri yang perlu dilihat operator, bukan kalimat umum "gagal menghapus".
+    onError: (err) => {
+      toast.error(apiErrorMessage(err, t('categoryProductToasts.deleteError')))
     },
   })
 

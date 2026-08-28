@@ -140,13 +140,34 @@ export function useUpdateImageProductV2(onClose: () => void) {
   return mutation
 }
 
-export function useGetProductNames(id: string) {
+/** Satu baris produk pada endpoint `/products/game/:id/available`. */
+export type ProductName = {
+  id: string
+  name: string
+  provider_status: string
+  price: number
+}
+
+/**
+ * Daftar produk yang tersedia untuk satu game.
+ *
+ * `enabled` wajib disebut pemanggil yang merender hook ini per baris tabel:
+ * tanpa gerbang itu setiap baris menembak satu permintaan sebelum operator
+ * menyentuh apa pun, dan endpointnya dibatasi 30 permintaan per menit.
+ * `staleTime` + `refetchOnWindowFocus: false` menahan tembakan ulang saat
+ * jendela kembali fokus. Pola yang sama dipakai `useProductsByGame`.
+ */
+export function useGetProductNames(id: string, enabled = true) {
   return useQuery({
     queryKey: ['product-names', id],
-    queryFn: async () => {
+    queryFn: async (): Promise<ProductName[]> => {
       const res = await api.get(`/products/game/${id}/available`)
-      return res.data.data
+      const raw = res.data?.data
+      return Array.isArray(raw) ? raw : []
     },
+    enabled: Boolean(id) && enabled,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   })
 }
 

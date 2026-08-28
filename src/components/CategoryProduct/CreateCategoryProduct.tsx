@@ -1,26 +1,25 @@
-import { useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import { Loader2, Plus } from 'lucide-react'
+
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, Plus, UploadCloud } from 'lucide-react'
-
-import { handleFileAutoUpload } from '@/helpers/upload'
 import { useCreateCategoryProduct } from '@/hooks/useCategoryProduct'
 import { useGetGameNamesWithType, type GameNames } from '@/hooks/useGame'
 import { cn } from '@/lib/utils'
-import { useTranslation } from 'react-i18next'
-import { ACCEPTED_IMAGE_ACCEPT } from '@/lib/file'
 
 export type FormValuesCategoryProduct = {
   name: string
@@ -31,20 +30,45 @@ export type FormValuesCategoryProduct = {
   is_active: boolean
 }
 
-export function CreateCategoryProductModal() {
+const FIELD = {
+  name: 'ccp-name',
+  slug: 'ccp-slug',
+  game: 'ccp-game',
+  description: 'ccp-description',
+  active: 'ccp-active',
+} as const
+
+/** Slug otomatis dari nama, hanya selama admin belum menyuntingnya sendiri. */
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+/**
+ * Isi form dipasang hanya saat dialog terbuka, jadi setiap kali dibuka form
+ * mulai dari keadaan bersih tanpa reset lewat effect — pola yang sama dengan
+ * BannerFormDialog dan CategoryFormDialog.
+ */
+function FormBody({
+  isPending,
+  onSubmit,
+  onOpenChange,
+}: {
+  isPending: boolean
+  onSubmit: (values: FormValuesCategoryProduct) => void
+  onOpenChange: (open: boolean) => void
+}) {
   const { t } = useTranslation('common')
-  const [open, setOpen] = useState(false)
-  const [preview, setPreview] = useState<string | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [slugTouched, setSlugTouched] = useState(false)
 
   const {
     register,
     handleSubmit,
     setValue,
-    reset,
-    control,
+    watch,
     formState: { errors },
   } = useForm<FormValuesCategoryProduct>({
     defaultValues: {
@@ -57,232 +81,264 @@ export function CreateCategoryProductModal() {
     },
   })
 
-  const applyOpen = (next: boolean) => {
-    setOpen(next)
-    if (!next) {
-      reset()
-      setPreview(null)
-      setUploadProgress(0)
-      setIsUploading(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
-  }
+  const { data: gameNames } = useGetGameNamesWithType()
 
-  const mutation = useCreateCategoryProduct(reset, setPreview, applyOpen)
-  const { data: dataGameNames } = useGetGameNamesWithType()
+  const iconUrl = watch('icon_url')
+  const isActive = watch('is_active')
+  const busy = isPending || isUploading
 
-  const onSubmit = (values: FormValuesCategoryProduct) => {
-    mutation.mutate(values)
-  }
-
-  const handleFile = (file: File) => {
-    handleFileAutoUpload({
-      file,
-      setPreview,
-      setIsUploading,
-      setUploadProgress,
-      setValue: (_field, value, options) => {
-        setValue('icon_url', value, options)
-      },
-      fieldName: 'icon_url',
+  const submit = (values: FormValuesCategoryProduct) => {
+    // Penjaga kirim-ganda: tombol sudah nonaktif saat sibuk, tapi Enter di
+    // kolom teks tetap bisa mengirim form sebelum React sempat merender ulang.
+    if (busy) return
+    onSubmit({
+      ...values,
+      name: values.name.trim(),
+      slug: values.slug.trim(),
+      description: values.description.trim(),
     })
   }
+
+  return (
+    <form
+      onSubmit={handleSubmit(submit)}
+      className='flex min-h-0 flex-col duration-200 animate-in fade-in zoom-in-95 motion-reduce:animate-none'
+    >
+      <div className='min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-5'>
+        <div className='space-y-2'>
+          <ImageDropzone
+            label={t('categoryProductCreate.iconLabel')}
+            value={iconUrl}
+            onChange={(url) => setValue('icon_url', url, { shouldValidate: true })}
+            onUploadingChange={setIsUploading}
+            disabled={isPending}
+          />
+          <p className='text-xs text-muted-foreground'>
+            {t('categoryProductCreate.iconHint')}
+          </p>
+        </div>
+
+        <div className='space-y-1.5'>
+          <Label htmlFor={FIELD.name}>{t('categoryProductCreate.nameLabel')}</Label>
+          <Input
+            id={FIELD.name}
+            placeholder={t('categoryProductCreate.namePlaceholder')}
+            disabled={busy}
+            aria-invalid={!!errors.name}
+            aria-describedby={
+              errors.name ? `${FIELD.name}-error` : `${FIELD.name}-hint`
+            }
+            {...register('name', {
+              required: t('categoryProductCreate.nameRequired'),
+              onChange: (e) => {
+                if (slugTouched) return
+                setValue('slug', slugify(e.target.value))
+              },
+            })}
+          />
+          {errors.name ? (
+            <p
+              id={`${FIELD.name}-error`}
+              role='alert'
+              className='text-xs font-medium text-destructive'
+            >
+              {errors.name.message}
+            </p>
+          ) : (
+            <p id={`${FIELD.name}-hint`} className='text-xs text-muted-foreground'>
+              {t('categoryProductCreate.nameHint')}
+            </p>
+          )}
+        </div>
+
+        <div className='space-y-1.5'>
+          <Label htmlFor={FIELD.slug}>{t('categoryProductCreate.slugLabel')}</Label>
+          <Input
+            id={FIELD.slug}
+            placeholder={t('categoryProductCreate.slugPlaceholder')}
+            disabled={busy}
+            aria-invalid={!!errors.slug}
+            aria-describedby={
+              errors.slug ? `${FIELD.slug}-error` : `${FIELD.slug}-hint`
+            }
+            {...register('slug', {
+              required: t('categoryProductCreate.slugRequired'),
+              onChange: () => setSlugTouched(true),
+            })}
+          />
+          {errors.slug ? (
+            <p
+              id={`${FIELD.slug}-error`}
+              role='alert'
+              className='text-xs font-medium text-destructive'
+            >
+              {errors.slug.message}
+            </p>
+          ) : (
+            <p id={`${FIELD.slug}-hint`} className='text-xs text-muted-foreground'>
+              {t('categoryProductCreate.slugHint')}
+            </p>
+          )}
+        </div>
+
+        <div className='space-y-1.5'>
+          <Label htmlFor={FIELD.game}>{t('categoryProductCreate.gameLabel')}</Label>
+          <select
+            id={FIELD.game}
+            disabled={busy}
+            aria-invalid={!!errors.game_id}
+            aria-describedby={
+              errors.game_id ? `${FIELD.game}-error` : `${FIELD.game}-hint`
+            }
+            className={cn(
+              'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground shadow-xs',
+              'focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
+              'disabled:cursor-not-allowed disabled:opacity-50',
+              errors.game_id && 'border-destructive/60',
+            )}
+            {...register('game_id', {
+              required: t('categoryProductCreate.gameRequired'),
+            })}
+          >
+            <option value=''>{t('categoryProductCreate.selectGame')}</option>
+            {gameNames?.map((game: GameNames) => (
+              <option key={game.id} value={game.id}>
+                {game.name}
+              </option>
+            ))}
+          </select>
+          {errors.game_id ? (
+            <p
+              id={`${FIELD.game}-error`}
+              role='alert'
+              className='text-xs font-medium text-destructive'
+            >
+              {errors.game_id.message}
+            </p>
+          ) : (
+            <p id={`${FIELD.game}-hint`} className='text-xs text-muted-foreground'>
+              {t('categoryProductCreate.gameHint')}
+            </p>
+          )}
+        </div>
+
+        <div className='space-y-1.5'>
+          <Label htmlFor={FIELD.description}>
+            {t('categoryProductCreate.descriptionLabel')}
+          </Label>
+          <Textarea
+            id={FIELD.description}
+            rows={3}
+            placeholder={t('categoryProductCreate.descriptionPlaceholder')}
+            disabled={busy}
+            aria-describedby={`${FIELD.description}-hint`}
+            className='min-h-[4.5rem] resize-y rounded-lg'
+            {...register('description')}
+          />
+          <p
+            id={`${FIELD.description}-hint`}
+            className='text-xs text-muted-foreground'
+          >
+            {t('categoryProductCreate.descriptionHint')}
+          </p>
+        </div>
+
+        <div className='flex items-center justify-between gap-4 rounded-lg border border-border bg-muted/30 px-4 py-3'>
+          <div className='min-w-0'>
+            <Label htmlFor={FIELD.active} className='cursor-pointer'>
+              {t('categoryProductCreate.statusLabel')}
+            </Label>
+            <p id={`${FIELD.active}-hint`} className='text-xs text-muted-foreground'>
+              {t('categoryProductCreate.statusHint')}
+            </p>
+          </div>
+          <Switch
+            id={FIELD.active}
+            checked={isActive}
+            disabled={busy}
+            aria-describedby={`${FIELD.active}-hint`}
+            onCheckedChange={(checked) => setValue('is_active', checked)}
+          />
+        </div>
+      </div>
+
+      <DialogFooter className='shrink-0 items-center gap-2 border-t border-border px-6 py-4 sm:gap-2'>
+        {isUploading && (
+          <p className='text-xs text-muted-foreground duration-200 animate-in fade-in motion-reduce:animate-none sm:mr-auto'>
+            {t('categoryProductCreate.uploadWait')}
+          </p>
+        )}
+        <Button
+          type='button'
+          variant='outline'
+          className='rounded-lg'
+          disabled={busy}
+          onClick={() => onOpenChange(false)}
+        >
+          {t('categoryProductCreate.cancel')}
+        </Button>
+        <Button type='submit' className='rounded-lg font-semibold' disabled={busy}>
+          {isPending && (
+            <Loader2 className='mr-2 h-4 w-4 shrink-0 animate-spin' aria-hidden />
+          )}
+          {isPending
+            ? t('categoryProductCreate.saving')
+            : t('categoryProductCreate.save')}
+        </Button>
+      </DialogFooter>
+    </form>
+  )
+}
+
+export function CreateCategoryProductModal() {
+  const { t } = useTranslation('common')
+  const [open, setOpen] = useState(false)
+
+  // Dua argumen pertama hook adalah `reset` form dan penyetel pratinjau milik
+  // dropzone buatan tangan yang sudah dibuang. Isi dialog baru dipasang saat
+  // terbuka dan ikut dilepas saat tertutup, jadi tidak ada state sisa yang
+  // perlu dibersihkan di sini.
+  const mutation = useCreateCategoryProduct(
+    () => {},
+    () => {},
+    setOpen,
+  )
 
   return (
     <>
       <Button
         type='button'
-        className='w-full gap-2 rounded-xl font-semibold shadow-sm sm:w-auto'
-        onClick={() => applyOpen(true)}
+        className='w-full gap-2 rounded-lg font-semibold shadow-sm sm:w-auto'
+        onClick={() => setOpen(true)}
       >
         <Plus className='h-4 w-4 shrink-0' aria-hidden />
         {t('categoryProductCreate.trigger')}
       </Button>
 
-      <Dialog open={open} onOpenChange={applyOpen}>
-        <DialogContent className='rounded-xl sm:max-w-md'>
-          <DialogHeader className='space-y-1 text-left'>
-            <DialogTitle className='text-lg font-semibold tracking-tight'>
-              {t('categoryProductCreate.title')}
-            </DialogTitle>
-            <p className='text-sm text-muted-foreground'>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          // Jangan biarkan Esc atau klik overlay menutup dialog di tengah
+          // penyimpanan; tanpa ini indikator "menyimpan…" tidak pernah terlihat.
+          if (mutation.isPending) return
+          setOpen(next)
+        }}
+      >
+        <DialogContent className='flex max-h-[85vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-2xl'>
+          <DialogHeader className='shrink-0 space-y-1 border-b border-border px-6 py-4 text-left'>
+            <DialogTitle>{t('categoryProductCreate.title')}</DialogTitle>
+            <DialogDescription>
               {t('categoryProductCreate.description')}
-            </p>
+            </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
-            <input type='hidden' {...register('icon_url')} />
-
-            <div className='space-y-2'>
-              <Label htmlFor='ccp-name' className='text-sm font-medium'>
-                {t('categoryProductCreate.nameLabel')}
-              </Label>
-              <Input
-                id='ccp-name'
-                {...register('name', { required: t('categoryProductCreate.nameRequired') })}
-                placeholder={t('categoryProductCreate.namePlaceholder')}
-                className='rounded-lg'
-                aria-invalid={!!errors.name}
-              />
-              {errors.name && <p className='text-xs text-destructive'>{errors.name.message}</p>}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='ccp-slug' className='text-sm font-medium'>
-                {t('categoryProductCreate.slugLabel')}
-              </Label>
-              <Input
-                id='ccp-slug'
-                {...register('slug', { required: t('categoryProductCreate.slugRequired') })}
-                placeholder={t('categoryProductCreate.slugPlaceholder')}
-                className='rounded-lg'
-              />
-              {errors.slug && <p className='text-xs text-destructive'>{errors.slug.message}</p>}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='ccp-game' className='text-sm font-medium'>
-                {t('categoryProductCreate.gameLabel')}
-              </Label>
-              <select
-                id='ccp-game'
-                {...register('game_id', { required: t('categoryProductCreate.gameRequired') })}
-                className={cn(
-                  'flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-xs',
-                  'ring-offset-background focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none',
-                  'disabled:cursor-not-allowed disabled:opacity-50',
-                )}
-              >
-                <option value='' disabled>
-                  {t('categoryProductCreate.selectGame')}
-                </option>
-                {dataGameNames?.map((game: GameNames) => (
-                  <option key={game.id} value={game.id}>
-                    {game.name}
-                  </option>
-                ))}
-              </select>
-              {errors.game_id && (
-                <p className='text-xs text-destructive'>{errors.game_id.message}</p>
-              )}
-            </div>
-
-            <div className='space-y-2'>
-              <Label htmlFor='ccp-desc' className='text-sm font-medium'>
-                {t('categoryProductCreate.descriptionLabel')}
-              </Label>
-              <Textarea
-                id='ccp-desc'
-                {...register('description')}
-                placeholder={t('categoryProductCreate.descriptionPlaceholder')}
-                rows={3}
-                className='min-h-[4.5rem] resize-y rounded-lg'
-              />
-            </div>
-
-            <div className='space-y-2'>
-              <Label className='text-sm font-medium'>{t('categoryProductCreate.statusLabel')}</Label>
-              <Controller
-                name='is_active'
-                control={control}
-                render={({ field }) => (
-                  <div className='flex items-center justify-between rounded-lg border border-border/80 px-3 py-2'>
-                    <span className='text-sm text-muted-foreground'>
-                      {field.value
-                        ? t('categoryProductCreate.statusActive')
-                        : t('categoryProductCreate.statusInactive')}
-                    </span>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      disabled={isUploading || mutation.isPending}
-                    />
-                  </div>
-                )}
-              />
-            </div>
-
-            <div className='space-y-2'>
-              <Label className='text-sm font-medium'>{t('categoryProductCreate.iconLabel')}</Label>
-
-              <div
-                role='button'
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    inputRef.current?.click()
-                  }
-                }}
-                onClick={() => inputRef.current?.click()}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFile(file)
-                }}
-                className={cn(
-                  'relative flex h-40 w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed transition',
-                  isUploading ? 'pointer-events-none opacity-60' : 'hover:border-primary',
-                  'border-border/80',
-                )}
-              >
-                {preview ? (
-                  <img src={preview} alt='' className='h-full w-full rounded-lg object-contain' />
-                ) : (
-                  <div className='flex flex-col items-center gap-2 text-muted-foreground'>
-                    <UploadCloud className='h-6 w-6' aria-hidden />
-                    <span className='text-sm'>{t('categoryProductCreate.iconDropHint')}</span>
-                  </div>
-                )}
-
-                {isUploading && (
-                  <div className='absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-sm font-medium text-white'>
-                    {t('categoryProductCreate.uploading', { percent: uploadProgress })}
-                  </div>
-                )}
-              </div>
-
-              {isUploading && <Progress value={uploadProgress} />}
-            </div>
-
-            <input
-              ref={inputRef}
-              type='file'
-              accept={ACCEPTED_IMAGE_ACCEPT}
-              className='hidden'
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) handleFile(file)
-              }}
+          {open && (
+            <FormBody
+              isPending={mutation.isPending}
+              onSubmit={(values) => mutation.mutate(values)}
+              onOpenChange={setOpen}
             />
-
-            <DialogFooter className='gap-2 sm:gap-3 sm:justify-end'>
-              <Button
-                type='button'
-                variant='outline'
-                className='rounded-lg'
-                onClick={() => applyOpen(false)}
-                disabled={mutation.isPending}
-              >
-                {t('categoryProductCreate.cancel')}
-              </Button>
-              <Button
-                type='submit'
-                className='rounded-lg font-semibold'
-                disabled={isUploading || mutation.isPending}
-              >
-                {mutation.isPending ? (
-                  <span className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin' aria-hidden />
-                    {t('categoryProductCreate.saving')}
-                  </span>
-                ) : (
-                  t('categoryProductCreate.save')
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
+          )}
         </DialogContent>
       </Dialog>
     </>
