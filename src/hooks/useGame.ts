@@ -64,6 +64,8 @@ export function useGetGameById(gameId: string) {
       return data
     },
     enabled: !!gameId,
+    // The backend answers a missing game with a 500, which retrying won't change.
+    retry: (failures, err) => gameServerMessage(err) !== 'Game Not Found' && failures < 3,
     staleTime: 5000,
   })
 }
