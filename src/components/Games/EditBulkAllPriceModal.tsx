@@ -37,7 +37,8 @@ export default function EditBulkAllPriceModal() {
           className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
         >
           <div className='h-1 bg-linear-to-r from-amber-400 to-rose-500' aria-hidden />
-          {open && <BulkAllForm onDone={() => setOpen(false)} />}
+          {/* The content unmounts once the dialog has closed, so every open starts blank. */}
+          <BulkAllForm onDone={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

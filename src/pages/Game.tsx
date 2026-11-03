@@ -201,6 +201,7 @@ export default function GamePage() {
                     key={game.id}
                     game={game}
                     order={index}
+                    listSearch={params.toString()}
                     canUpdate={can(PERM.gameUpdate)}
                     onImage={() => setImageTarget(game)}
                     onEdit={() => setFormTarget(game)}
@@ -282,14 +283,17 @@ function StatTile({ order, icon: Icon, label, hint, value, locale, tone }: StatT
 interface GameRowProps {
   game: Game
   order: number
+  /** The list's query string, so the detail page's back link returns to the same view. */
+  listSearch: string
   canUpdate: boolean
   onImage: () => void
   onEdit: () => void
   onPrice: () => void
 }
 
-function GameRow({ game, order, canUpdate, onImage, onEdit, onPrice }: GameRowProps) {
+function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice }: GameRowProps) {
   const { t } = useTranslation('common')
+  const linkState = { search: listSearch }
   const markup = formatMarkup(game.additional_percent, game.additional_fee)
   const thumb = <GameThumb src={game.thumbnail_url} className='size-full' />
 
@@ -319,6 +323,7 @@ function GameRow({ game, order, canUpdate, onImage, onEdit, onPrice }: GameRowPr
           <div className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1'>
             <Link
               to={`/games/${game.id}`}
+              state={linkState}
               className={cn('truncate font-semibold transition-colors hover:text-brand-purple', game.is_active ? 'text-slate-900' : 'text-slate-500')}
             >
               {game.name}
@@ -364,6 +369,7 @@ function GameRow({ game, order, canUpdate, onImage, onEdit, onPrice }: GameRowPr
         </Can>
         <Link
           to={`/games/${game.id}`}
+          state={linkState}
           className='group/open ml-1 inline-flex h-8 items-center gap-1 px-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple hud-clip-sm transition-colors hover:bg-brand-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40'
         >
           {t('gamePage.open')}

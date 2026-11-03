@@ -239,14 +239,16 @@ function ProductRow({ product, order, adminName, onPrice, onImage }: ProductRowP
         </p>
       </div>
 
-      <div className='col-span-2 flex flex-wrap items-center gap-1.5 xl:col-span-1'>
-        <StockChip product={product} />
-        <ActiveChip active={product.is_active} />
-      </div>
-
-      <div className='col-span-2 min-w-0 space-y-0.5 xl:col-span-1'>
-        <UpdatedBy raw={product.last_updated_by} adminName={adminName} />
-        <p className='pl-5 text-[11px] tabular-nums text-slate-400'>{formatBackendDateTime(product.updated_at, 'dd MMM yyyy, HH:mm')}</p>
+      {/* One line on small screens; two grid columns from xl (display: contents). */}
+      <div className='col-span-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 xl:contents'>
+        <div className='flex flex-wrap items-center gap-1.5'>
+          <StockChip product={product} />
+          <ActiveChip active={product.is_active} />
+        </div>
+        <div className='min-w-0 space-y-0.5 text-right xl:text-left'>
+          <UpdatedBy raw={product.last_updated_by} adminName={adminName} />
+          <p className='text-[11px] tabular-nums text-slate-400 xl:pl-5'>{formatBackendDateTime(product.updated_at, 'dd MMM yyyy, HH:mm')}</p>
+        </div>
       </div>
 
       <div className='col-start-2 row-start-1 flex shrink-0 items-center gap-0.5 xl:col-start-auto xl:row-start-auto'>

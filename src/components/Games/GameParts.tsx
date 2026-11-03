@@ -10,6 +10,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import type { Game } from '@/types/game'
+import { gameChipClass } from './game-utils'
 
 /** Game artwork with a neutral fallback when the URL is missing or broken. */
 export function GameThumb({ src, className, iconClassName }: { src?: string | null; className?: string; iconClassName?: string }) {
@@ -27,9 +28,6 @@ export function GameThumb({ src, className, iconClassName }: { src?: string | nu
   return <img src={url} alt='' loading='lazy' onError={() => setFailedSrc(url)} className={cn('object-cover', className)} />
 }
 
-const chipClass =
-  'inline-flex items-center gap-1 px-2 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.12em] hud-clip-sm'
-
 interface GameStatusChipsProps {
   game: Pick<Game, 'is_active' | 'is_show' | 'is_featured' | 'is_check_id'>
   /** Leave out the active/shown chips, e.g. where switches already show them. */
@@ -45,24 +43,24 @@ export function GameStatusChips({ game, flagsOnly, className }: GameStatusChipsP
     <div className={cn('flex flex-wrap items-center gap-1.5', className)}>
       {!flagsOnly && (
         <>
-          <span className={cn(chipClass, game.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500')}>
+          <span className={cn(gameChipClass, game.is_active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500')}>
             <span className={cn('size-1.5 rounded-full', game.is_active ? 'bg-emerald-500' : 'bg-slate-400')} aria-hidden />
             {game.is_active ? t('gamePage.status.active') : t('gamePage.status.inactive')}
           </span>
-          <span className={cn(chipClass, game.is_show ? 'bg-cyan-50 text-cyan-700' : 'bg-slate-100 text-slate-500')}>
+          <span className={cn(gameChipClass, game.is_show ? 'bg-cyan-50 text-cyan-700' : 'bg-slate-100 text-slate-500')}>
             {game.is_show ? <Eye className='size-3' aria-hidden /> : <EyeOff className='size-3' aria-hidden />}
             {game.is_show ? t('gamePage.status.shown') : t('gamePage.status.hidden')}
           </span>
         </>
       )}
       {game.is_featured && (
-        <span className={cn(chipClass, 'bg-amber-50 text-amber-700')}>
+        <span className={cn(gameChipClass, 'bg-amber-50 text-amber-700')}>
           <Star className='size-3' aria-hidden />
           {t('gamePage.status.featured')}
         </span>
       )}
       {game.is_check_id && (
-        <span className={cn(chipClass, 'bg-brand-purple/10 text-brand-purple')}>
+        <span className={cn(gameChipClass, 'bg-brand-purple/10 text-brand-purple')}>
           <BadgeCheck className='size-3' aria-hidden />
           {t('gamePage.status.checkId')}
         </span>

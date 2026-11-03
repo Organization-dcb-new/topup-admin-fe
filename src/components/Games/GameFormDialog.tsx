@@ -30,6 +30,7 @@ import type { Game, GameUpdateRequest } from '@/types/game'
 import { CategorySelect } from './CategorySelect'
 import { GameInputsBuilder } from './GameInputsBuilder'
 import { gameSelectTriggerClass, toSlug } from './game-utils'
+import { useRetained } from './useRetained'
 
 interface GameFormDialogProps {
   open: boolean
@@ -39,18 +40,20 @@ interface GameFormDialogProps {
 }
 
 export function GameFormDialog({ open, onOpenChange, game }: GameFormDialogProps) {
+  const target = useRetained(open ? (game ?? 'new') : null)
+  const done = () => onOpenChange(false)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
         className={cn(
           'max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl',
-          game ? 'sm:max-w-2xl' : 'sm:max-w-5xl'
+          target === 'new' ? 'sm:max-w-5xl' : 'sm:max-w-2xl'
         )}
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so every open starts from the saved values. */}
-        {open && (game ? <EditGameForm game={game} onDone={() => onOpenChange(false)} /> : <CreateGameForm onDone={() => onOpenChange(false)} />)}
+        {/* The content unmounts once the dialog has closed, so every open starts from the saved values. */}
+        {target === 'new' ? <CreateGameForm onDone={done} /> : target && <EditGameForm key={target.id} game={target} onDone={done} />}
       </DialogContent>
     </Dialog>
   )

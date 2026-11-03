@@ -16,7 +16,8 @@ import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { gamePriceSchema, type GamePriceFormInput, type GamePriceFormValues } from '@/schemas/game'
 import type { Game } from '@/types/game'
-import { formatPercent, PRICE_MAX_PERCENT, sellingFromPercent } from './game-utils'
+import { formatPercent, listingBasePrice, PRICE_MAX_PERCENT, sellingFromPercent } from './game-utils'
+import { useRetained } from './useRetained'
 
 type PriceGame = Pick<Game, 'id' | 'name' | 'additional_percent'>
 
@@ -27,6 +28,7 @@ interface GamePriceDialogProps {
 
 /** One markup percentage for every product of a game. */
 export function GamePriceDialog({ game, onOpenChange }: GamePriceDialogProps) {
+  const shown = useRetained(game)
   return (
     <Dialog open={!!game} onOpenChange={onOpenChange}>
       <DialogContent
@@ -34,7 +36,7 @@ export function GamePriceDialog({ game, onOpenChange }: GamePriceDialogProps) {
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {game && <GamePriceForm key={game.id} game={game} onDone={() => onOpenChange(false)} />}
+        {shown && <GamePriceForm key={shown.id} game={shown} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )
@@ -61,8 +63,7 @@ function GamePriceForm({ game, onDone }: { game: PriceGame; onDone: () => void }
   const percent = Math.min(PRICE_MAX_PERCENT, Math.max(0, Number(raw) || 0))
 
   const list = products.data ?? []
-  const sample = [...list].sort((a, b) => a.base_price - b.base_price).slice(0, 4)
-  const withFee = list.filter((p) => (p.additional_fee ?? 0) > 0).length
+  const sample = [...list].sort((a, b) => listingBasePrice(a) - listingBasePrice(b)).slice(0, 4)
   const noProducts = canSeeProducts && products.isSuccess && list.length === 0
 
   return (
@@ -124,22 +125,20 @@ function GamePriceForm({ game, onDone }: { game: PriceGame; onDone: () => void }
             <p className='px-4 py-4 text-sm text-slate-500'>{t('gamePriceDialog.noProducts')}</p>
           ) : (
             <ul className='divide-y divide-slate-100'>
-              {sample.map((p) => (
-                <li key={p.id} className='flex items-center justify-between gap-3 px-4 py-2 text-xs'>
-                  <span className='min-w-0 truncate text-slate-700'>{p.name}</span>
-                  <span className='flex shrink-0 items-center gap-1.5 tabular-nums'>
-                    <span className='text-slate-400'>{formatCurrency(p.selling_price)}</span>
-                    <ArrowRight className='size-3 text-slate-300' aria-hidden />
-                    <span className='font-semibold text-slate-900'>{formatCurrency(sellingFromPercent(p.base_price, percent))}</span>
-                  </span>
-                </li>
-              ))}
+              {sample.map((p) => {
+                const base = listingBasePrice(p)
+                return (
+                  <li key={p.id} className='flex items-center justify-between gap-3 px-4 py-2 text-xs'>
+                    <span className='min-w-0 truncate text-slate-700'>{p.name}</span>
+                    <span className='flex shrink-0 items-center gap-1.5 tabular-nums'>
+                      <span className='text-slate-400'>{formatCurrency(base)}</span>
+                      <ArrowRight className='size-3 text-slate-300' aria-hidden />
+                      <span className='font-semibold text-slate-900'>{formatCurrency(sellingFromPercent(base, percent))}</span>
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
-          )}
-          {withFee > 0 && (
-            <p className='border-t border-slate-100 bg-amber-50/60 px-4 py-2 text-xs text-amber-800'>
-              {t('gamePriceDialog.feeNote', { count: withFee })}
-            </p>
           )}
         </div>
       )}

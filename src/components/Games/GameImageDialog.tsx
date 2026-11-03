@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { useUpdateGameImage } from '@/hooks/useGame'
 import type { Game } from '@/types/game'
+import { useRetained } from './useRetained'
 
 type ImageGame = Pick<Game, 'id' | 'name' | 'thumbnail_url' | 'banner_url'>
 
@@ -17,6 +18,7 @@ interface GameImageDialogProps {
 }
 
 export function GameImageDialog({ game, onOpenChange }: GameImageDialogProps) {
+  const shown = useRetained(game)
   return (
     <Dialog open={!!game} onOpenChange={onOpenChange}>
       <DialogContent
@@ -24,7 +26,7 @@ export function GameImageDialog({ game, onOpenChange }: GameImageDialogProps) {
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-2xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {game && <GameImageForm key={game.id} game={game} onDone={() => onOpenChange(false)} />}
+        {shown && <GameImageForm key={shown.id} game={shown} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )

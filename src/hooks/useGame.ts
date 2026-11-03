@@ -156,14 +156,22 @@ export function useUpdateGameImage(onDone?: () => void) {
 
 export function useDeleteGame(onDone?: () => void) {
   const invalidate = useInvalidateGame()
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => api.delete(`/games/${id}`),
-    onSuccess: () => {
+    onSuccess: (_res, id) => {
       toast.success(i18n.t('gamePage.toasts.deleted'))
       invalidate()
+      // Dropped rather than refetched: the game no longer exists.
+      queryClient.removeQueries({ queryKey: ['game', id] })
       onDone?.()
     },
-    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.deleteError')),
+    onError: (err) => {
+      const message = serverMessage(err)
+      // Products and orders reference the game, so the database refuses while any exist.
+      if (message && /foreign key|23503/i.test(message)) toast.error(i18n.t('gamePage.toasts.deleteInUse'))
+      else toast.error(message || i18n.t('gamePage.toasts.deleteError'))
+    },
   })
 }
 
