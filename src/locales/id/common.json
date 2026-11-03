@@ -10,6 +10,30 @@
     "confirmLogoutDescription": "Apakah Anda yakin ingin keluar dari akun?",
     "cancel": "Batal",
     "sectionDataMaster": "Data master",
+    "openMenu": "Buka menu navigasi",
+    "navLabel": "Navigasi utama",
+    "language": "Bahasa",
+    "roles": {
+      "dev": "Developer",
+      "admin": "Admin",
+      "noc": "NOC"
+    },
+    "twoFaOff": "2FA mati",
+    "twoFaOffHint": "Aktifkan autentikasi dua faktor untuk akun ini",
+    "health": {
+      "title": "Kesehatan server",
+      "refresh": "Muat ulang",
+      "checking": "Memeriksa kesehatan server…",
+      "unreachableTitle": "Tidak dapat terhubung ke server",
+      "unreachableBody": "Backend mungkin sedang mati atau tidak terjangkau.",
+      "lastChecked": "Terakhir dicek {{time}}",
+      "autoRefresh": "Otomatis diperbarui tiap {{minutes}} menit",
+      "up": "Berjalan",
+      "down": "Mati"
+    },
+    "userMenu": "Menu akun",
+    "twoFaOffTitle": "Autentikasi dua faktor mati",
+    "enable2fa": "Aktifkan untuk melindungi akun admin ini.",
     "menu": {
       "dasbor": "Dasbor",
       "transaksi": "Transaksi",
@@ -1789,12 +1813,22 @@
     "accessGrantedBody": "Menyiapkan pusat kendali…",
     "credentialsVerified": "Kredensial terverifikasi",
     "mfaNextTitle": "Satu langkah lagi",
-    "mfaNextBody": "Membuka cek keamanan…",
-    "status": {
-      "checking": "Memeriksa server…",
-      "operational": "Semua sistem normal",
-      "degraded": "Sebagian layanan terganggu",
-      "unreachable": "Server tidak terjangkau"
+    "mfaNextBody": "Membuka cek keamanan…"
+  },
+  "navbar": {
+    "breadcrumb": "Breadcrumb",
+    "detail": "Detail"
+  },
+  "serverStatus": {
+    "checking": "Memeriksa server…",
+    "operational": "Semua sistem normal",
+    "degraded": "Sebagian layanan terganggu",
+    "unreachable": "Server tidak terjangkau",
+    "short": {
+      "checking": "Memeriksa",
+      "operational": "Online",
+      "degraded": "Terganggu",
+      "unreachable": "Offline"
     }
   },
   "authErrors": {

@@ -30,6 +30,7 @@ import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { AuthLayout } from '@/components/Auth/AuthLayout'
+import { AppShell } from '@/components/Layout/app-shell'
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
 import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
@@ -53,6 +54,8 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    // Persistent dashboard chrome: the sidebar mounts once instead of once per page.
+    element: <AppShell />,
     children: [
       {
         index: true,

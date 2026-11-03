@@ -10,6 +10,30 @@
     "confirmLogoutDescription": "Are you sure you want to log out?",
     "cancel": "Cancel",
     "sectionDataMaster": "Master data",
+    "openMenu": "Open navigation menu",
+    "navLabel": "Main navigation",
+    "language": "Language",
+    "roles": {
+      "dev": "Developer",
+      "admin": "Admin",
+      "noc": "NOC"
+    },
+    "twoFaOff": "2FA off",
+    "twoFaOffHint": "Turn on two-factor authentication for this account",
+    "health": {
+      "title": "Server health",
+      "refresh": "Refresh",
+      "checking": "Checking server health…",
+      "unreachableTitle": "Cannot connect to server",
+      "unreachableBody": "The backend may be down or unreachable.",
+      "lastChecked": "Last checked {{time}}",
+      "autoRefresh": "Auto-refreshes every {{minutes}} min",
+      "up": "Running",
+      "down": "Down"
+    },
+    "userMenu": "Account menu",
+    "twoFaOffTitle": "Two-factor authentication is off",
+    "enable2fa": "Turn it on to protect this admin account.",
     "menu": {
       "dasbor": "Dashboard",
       "transaksi": "Transactions",
@@ -1789,12 +1813,22 @@
     "accessGrantedBody": "Loading your command center…",
     "credentialsVerified": "Credentials verified",
     "mfaNextTitle": "One more step",
-    "mfaNextBody": "Opening the security check…",
-    "status": {
-      "checking": "Checking server…",
-      "operational": "All systems operational",
-      "degraded": "Some services degraded",
-      "unreachable": "Server unreachable"
+    "mfaNextBody": "Opening the security check…"
+  },
+  "navbar": {
+    "breadcrumb": "Breadcrumb",
+    "detail": "Detail"
+  },
+  "serverStatus": {
+    "checking": "Checking server…",
+    "operational": "All systems operational",
+    "degraded": "Some services degraded",
+    "unreachable": "Server unreachable",
+    "short": {
+      "checking": "Checking",
+      "operational": "Online",
+      "degraded": "Degraded",
+      "unreachable": "Offline"
     }
   },
   "authErrors": {

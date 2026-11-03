@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { flushSync } from 'react-dom'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Activity, Boxes, Crosshair, ShieldCheck } from 'lucide-react'
 
 import brandMark from '@/assets/brand/pakargaming-mark.webp'
 import brandWordmark from '@/assets/brand/pakargaming-wordmark.webp'
-import { useHealthCheck } from '@/hooks/useHealth'
+import { LanguageSwitch } from '@/components/Layout/language-switch'
+import { useServerStatus } from '@/hooks/useHealth'
 import { useHeroArt, type HeroArt } from '@/hooks/useHeroArt'
 import { cn } from '@/lib/utils'
 
@@ -35,7 +35,7 @@ export function AuthLayout() {
               alt='PakarGaming'
               className='h-8 w-auto lg:hidden'
             />
-            <LanguageSwitch />
+            <LanguageSwitch className='ml-auto' />
           </header>
 
           <main className='flex flex-1 items-center justify-center py-8'>
@@ -115,74 +115,9 @@ function AnimatedHeight({ children }: { children: ReactNode }) {
   )
 }
 
-const LANGUAGES = ['en', 'id'] as const
-
-function LanguageSwitch() {
-  const { t, i18n } = useTranslation()
-  const switchRef = useRef<HTMLDivElement>(null)
-  const active = i18n.resolvedLanguage === 'id' ? 'id' : 'en'
-
-  // Crossfade the whole page so every translated string and reflow changes together,
-  // instead of all text swapping in a single frame.
-  const changeLanguage = (lng: (typeof LANGUAGES)[number]) => {
-    if (lng === active) return
-    const apply = () => flushSync(() => void i18n.changeLanguage(lng))
-    const shell = switchRef.current?.closest<HTMLElement>('[data-auth-shell]')
-    if (!('startViewTransition' in document) || !shell) return apply()
-
-    // Enables the per-block `vt-*` transition names (style.css) for this switch only,
-    // so the dashboard handoff keeps its plain crossfade.
-    shell.dataset.switchingLanguage = ''
-    document.startViewTransition(apply).finished.finally(() => {
-      delete shell.dataset.switchingLanguage
-    })
-  }
-
-  return (
-    <div
-      ref={switchRef}
-      role='group'
-      aria-label={t('sidebar.languageToggleAria')}
-      className='vt-lang-switch relative ml-auto grid grid-cols-2 rounded-md border border-slate-200 bg-white p-0.5 font-display text-xs font-semibold shadow-sm'
-    >
-      {/* Sliding pill behind the active option. */}
-      <span
-        className={cn(
-          'absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded bg-brand-purple transition-transform duration-300 ease-hud',
-          active === 'id' && 'translate-x-full'
-        )}
-        aria-hidden
-      />
-      {LANGUAGES.map((lng) => (
-        <button
-          key={lng}
-          type='button'
-          aria-pressed={active === lng}
-          onClick={() => changeLanguage(lng)}
-          className={cn(
-            'relative z-10 w-10 rounded py-1 uppercase tracking-wider transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
-            active === lng ? 'text-white' : 'text-slate-500 hover:text-slate-900'
-          )}
-        >
-          {lng}
-        </button>
-      ))}
-    </div>
-  )
-}
-
 function ServerStatus() {
   const { t } = useTranslation()
-  const { data, isLoading, isError } = useHealthCheck()
-
-  const downServices = Object.values(data?.services ?? {}).filter((s) => s !== 'up')
-  const status = isLoading
-    ? 'checking'
-    : isError || !data
-      ? 'unreachable'
-      : data.status === 'healthy' && downServices.length === 0
-        ? 'operational'
-        : 'degraded'
+  const { status } = useServerStatus()
 
   const dot = {
     checking: 'bg-slate-400',
@@ -200,7 +135,7 @@ function ServerStatus() {
         <span className={cn('relative size-2 rounded-full transition-colors duration-500', dot)} />
       </span>
       <span key={status} className='animate-in fade-in duration-500'>
-        {t(`authLayout.status.${status}`)}
+        {t(`serverStatus.${status}`)}
       </span>
     </span>
   )
