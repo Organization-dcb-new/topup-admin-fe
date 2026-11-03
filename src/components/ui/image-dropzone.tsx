@@ -106,7 +106,8 @@ export function ImageDropzone({
           if (file) void handleFile(file)
         }}
         className={cn(
-          'group relative block w-full overflow-hidden rounded-lg border-2 border-dashed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
+          // A container, so narrow frames (e.g. a square icon slot) get the compact layout.
+          '@container group relative block w-full overflow-hidden rounded-lg border-2 border-dashed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
           aspectClassName,
           dragging
             ? 'border-brand-purple bg-brand-purple/[0.06]'
@@ -121,28 +122,35 @@ export function ImageDropzone({
             <img src={preview} alt='' className={cn('size-full', fit === 'cover' ? 'object-cover' : 'object-contain p-3')} />
             {!uploading && (
               <span className='absolute inset-0 grid place-items-center bg-slate-950/0 opacity-0 transition-all duration-300 group-hover:bg-slate-950/45 group-hover:opacity-100 group-focus-visible:bg-slate-950/45 group-focus-visible:opacity-100'>
-                <span className='inline-flex items-center gap-2 bg-white px-3 py-1.5 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-800 hud-clip-sm'>
+                <span className='inline-flex items-center gap-2 bg-white px-3 py-1.5 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-800 hud-clip-sm @max-[13rem]:p-2'>
                   <RefreshCw className='size-3.5' aria-hidden />
-                  {t('imageDropzone.replace')}
+                  <span className='@max-[13rem]:sr-only'>{t('imageDropzone.replace')}</span>
                 </span>
               </span>
             )}
           </>
         ) : (
-          <span className='flex size-full flex-col items-center justify-center gap-2 px-4 text-center'>
-            <span className='grid size-11 place-items-center bg-white text-brand-purple shadow-sm ring-1 ring-slate-200 hud-clip-sm'>
-              <UploadCloud className='size-5' aria-hidden />
+          <span className='flex size-full flex-col items-center justify-center gap-2 px-4 text-center @max-[13rem]:gap-1.5 @max-[13rem]:px-2'>
+            <span className='grid size-11 place-items-center bg-brand-purple/10 text-brand-purple transition-colors group-hover:bg-brand-purple/15 hud-clip-sm @max-[13rem]:size-9'>
+              <UploadCloud className='size-5 @max-[13rem]:size-4' aria-hidden />
             </span>
-            <span className='text-sm font-medium text-slate-800'>
-              {dragging ? t('imageDropzone.dropNow') : t('imageDropzone.title')}
+            <span className='text-sm font-medium leading-snug text-slate-800 @max-[13rem]:text-xs'>
+              {dragging ? (
+                t('imageDropzone.dropNow')
+              ) : (
+                <>
+                  <span className='@max-[13rem]:hidden'>{t('imageDropzone.title')}</span>
+                  <span className='hidden @max-[13rem]:inline'>{t('imageDropzone.titleShort')}</span>
+                </>
+              )}
             </span>
-            <span className='text-xs text-slate-500'>{t('imageDropzone.formats')}</span>
+            <span className='text-xs text-slate-500 @max-[13rem]:hidden'>{t('imageDropzone.formats')}</span>
           </span>
         )}
 
         {uploading && (
           <span className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/85 backdrop-blur-[2px]'>
-            <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-700'>
+            <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-700 @max-[13rem]:text-[10px] @max-[13rem]:tracking-[0.1em]'>
               {t('imageDropzone.uploading', { percent: progress })}
             </span>
             <span className='h-1.5 w-48 max-w-[70%] overflow-hidden rounded-full bg-slate-200'>
