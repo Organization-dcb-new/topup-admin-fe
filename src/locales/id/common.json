@@ -62,13 +62,18 @@
       "referral": "Kode referral",
       "keamanan": "Keamanan",
       "twoFa": "2FA",
-      "pembatasLaju": "Pembatas laju",
       "pemeliharaan": "Pemeliharaan",
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk",
       "roles": "Role & akses"
     }
+  },
+  "pagination": {
+    "label": "Halaman",
+    "pageInfo": "Halaman {{page}} dari {{total}}",
+    "prev": "Halaman sebelumnya",
+    "next": "Halaman berikutnya"
   },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
@@ -675,7 +680,6 @@
     "updating": "Memperbarui…",
     "applyAll": "Terapkan ke Semua Game"
   },
-
   "gameShowcase": {
     "label": "Etalase",
     "hideAria": "Sembunyikan {{name}} dari etalase",
@@ -1544,132 +1548,216 @@
     "loadError": "Gagal memuat input game"
   },
   "maintenancePage": {
+    "eyebrow": "// Kontrol sistem",
     "title": "Pemeliharaan",
-    "subtitle": "Kelola jadwal dan status pemeliharaan (mode aktif, waktu mulai dan selesai).",
-    "loadingShort": "Memuat…",
-    "errorShort": "Gagal memuat",
-    "total": "{{total}} entri",
-    "listTitle": "Daftar pemeliharaan",
-    "listHint": "Buat, ubah, atau hapus entri pemeliharaan dari server.",
-    "loadingBody": "Memuat data…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "errorMessage": "Gagal memuat daftar pemeliharaan. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyMessage": "Belum ada entri pemeliharaan. Tambahkan lewat tombol di atas."
-  },
-  "maintenanceTable": {
-    "colName": "Nama",
-    "colStatus": "Status",
-    "statusMaintenance": "Pemeliharaan",
-    "statusNormal": "Normal",
-    "colStart": "Mulai",
-    "colEnd": "Selesai",
-    "colUpdatedAt": "Diperbarui",
-    "colCreatedBy": "Dibuat oleh",
-    "colUpdatedBy": "Diperbarui oleh",
-    "emptyFallback": "—",
-    "colActions": "Aksi",
-    "rowActionsAria": "Aksi untuk {{name}}"
-  },
-  "maintenanceToasts": {
-    "loadSuccess": "Berhasil memuat data pemeliharaan",
-    "loadError": "Gagal memuat data pemeliharaan"
-  },
-  "maintenanceForm": {
-    "nameLabel": "Nama",
-    "namePlaceholder": "Contoh: Upgrade server pembayaran",
-    "nameRequired": "Nama wajib diisi",
-    "modeLabel": "Mode pemeliharaan",
-    "modeHint": "Tandai entri ini sedang dalam pemeliharaan.",
-    "modeAria": "Mode pemeliharaan",
-    "startLabel": "Mulai",
-    "startRequired": "Waktu mulai wajib diisi",
-    "endLabel": "Selesai",
-    "endRequired": "Waktu selesai wajib diisi",
-    "orderInvalid": "Waktu mulai tidak boleh setelah waktu selesai.",
-    "cancel": "Batal",
-    "save": "Simpan",
-    "saving": "Menyimpan…"
-  },
-  "maintenanceCreateModal": {
-    "trigger": "Tambah pemeliharaan",
-    "title": "Tambah pemeliharaan",
-    "description": "Nama, waktu mulai, dan waktu selesai wajib diisi. Atur mode pemeliharaan sesuai kebutuhan."
-  },
-  "maintenanceEditModal": {
-    "triggerAria": "Ubah pemeliharaan {{name}}",
-    "title": "Ubah pemeliharaan",
-    "description": "Perbarui nama, status, dan jadwal waktu."
-  },
-  "maintenanceDeleteModal": {
-    "triggerAria": "Hapus pemeliharaan {{name}}",
-    "title": "Hapus pemeliharaan?",
-    "description": "Entri \"{{name}}\" akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.",
-    "cancel": "Batal",
-    "confirmDelete": "Hapus",
-    "deleting": "Menghapus…"
+    "subtitle": "Jadwalkan jendela downtime untuk storefront. Selama mode aktif dan jendela berjalan, pemain melihat pemberitahuan pemeliharaan.",
+    "addBtn": "Jadwalkan pemeliharaan",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat jadwal pemeliharaan. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada jadwal pemeliharaan",
+    "emptyBody": "Storefront berjalan normal. Jadwalkan jendela sebelum upgrade terencana agar pemain tahu apa yang terjadi.",
+    "wib": "WIB",
+    "toggleMode": "Mode pemeliharaan untuk {{name}}",
+    "editBtn": "Ubah {{name}}",
+    "deleteBtn": "Hapus {{name}}",
+    "updatedBy": "Diperbarui {{who}} · {{date}}",
+    "durationHours": "{{count}} jam",
+    "durationMinutes": "{{count}} mnt",
+    "status": {
+      "live": "Berlangsung",
+      "scheduled": "Terjadwal",
+      "ended": "Selesai",
+      "off": "Nonaktif"
+    },
+    "stats": {
+      "live": "Berlangsung",
+      "scheduled": "Terjadwal",
+      "total": "Total entri"
+    },
+    "liveBanner": {
+      "eyebrow": "Pemeliharaan sedang berlangsung"
+    },
+    "relative": {
+      "starts": "Mulai {{when}}",
+      "ends": "Berakhir {{when}}",
+      "ended": "Berakhir {{when}}"
+    },
+    "window": {
+      "start": "Mulai",
+      "end": "Selesai",
+      "duration": "Durasi {{duration}}"
+    },
+    "form": {
+      "addEyebrow": "// Jendela baru",
+      "editEyebrow": "// Ubah jendela",
+      "addTitle": "Jadwalkan pemeliharaan",
+      "editTitle": "Ubah pemeliharaan",
+      "description": "Waktu dalam WIB (UTC+7). Mode menentukan apakah jendela ini benar-benar menutup storefront.",
+      "nameLabel": "Nama",
+      "namePlaceholder": "Contoh: Upgrade server pembayaran",
+      "windowLabel": "Jendela waktu",
+      "startLabel": "Mulai",
+      "endLabel": "Selesai",
+      "quickDuration": "Durasi",
+      "modeLabel": "Mode pemeliharaan",
+      "modeOnHint": "Aktif: pemain melihat pemberitahuan pemeliharaan selama jendela ini.",
+      "modeOffHint": "Nonaktif: disimpan sebagai draf, storefront tetap buka.",
+      "cancel": "Batal",
+      "create": "Jadwalkan",
+      "save": "Simpan perubahan",
+      "saving": "Menyimpan…",
+      "errors": {
+        "nameRequired": "Beri nama jendela ini.",
+        "startRequired": "Pilih waktu mulai.",
+        "endRequired": "Pilih waktu selesai.",
+        "orderInvalid": "Waktu selesai harus setelah waktu mulai."
+      }
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Hapus jendela",
+      "title": "Hapus “{{name}}”?",
+      "description": "Jadwal ini akan dihapus permanen. Jika sedang berlangsung, storefront langsung dibuka kembali.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "toasts": {
+      "created": "Pemeliharaan dijadwalkan",
+      "updated": "Pemeliharaan diperbarui",
+      "deleted": "Pemeliharaan dihapus",
+      "createError": "Gagal menjadwalkan pemeliharaan",
+      "updateError": "Gagal memperbarui pemeliharaan",
+      "deleteError": "Gagal menghapus pemeliharaan"
+    }
   },
   "adminPage": {
-    "title": "Kelola admin",
-    "subtitle": "Tambah akun admin dari toolbar di bawah. Ubah peran atau hapus lewat kolom aksi pada setiap baris.",
-    "total": "Total {{total}} admin",
-    "listTitle": "Daftar administrator",
-    "listHint": "Data dari server. Gunakan paginasi untuk melihat halaman lain.",
-    "loadingBody": "Memuat data administrator…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "emptyMessage": "Belum ada administrator. Tambahkan lewat tombol di atas."
-  },
-  "adminTable": {
-    "cannotChangeOwnRole": "Role akun sendiri tidak bisa diubah.",
-    "colUsername": "Nama pengguna",
-    "colEmail": "Email",
-    "colRole": "Peran",
-    "colTwoFactor": "2FA",
-    "enabled": "Aktif",
-    "disabled": "Nonaktif",
-    "colActions": "Aksi"
+    "eyebrow": "// Kontrol akses",
+    "title": "Pengguna admin",
+    "subtitle": "Semua orang yang bisa masuk ke dashboard ini. Role menentukan apa yang bisa mereka lihat dan ubah.",
+    "total": "{{formatted}} admin",
+    "addBtn": "Tambah admin",
+    "manageRoles": "Kelola role",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat pengguna admin. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada admin",
+    "emptyBody": "Tambahkan admin untuk memberi seseorang akses ke dashboard ini.",
+    "you": "Anda",
+    "joined": "Bergabung {{date}}",
+    "twoFactorOn": "2FA aktif",
+    "twoFactorOff": "2FA mati",
+    "currentRole": "Saat ini",
+    "changeRole": "Ubah role",
+    "deleteBtn": "Hapus {{name}}",
+    "selfLocked": "Akun Anda sendiri tidak bisa diubah atau dihapus di sini.",
+    "form": {
+      "eyebrow": "// Admin baru",
+      "title": "Tambah admin",
+      "description": "Mereka masuk dengan username atau email ini dan kata sandi di bawah.",
+      "fullNameLabel": "Nama lengkap",
+      "fullNamePlaceholder": "Contoh: Budi Santoso",
+      "usernameLabel": "Username",
+      "emailLabel": "Email",
+      "passwordLabel": "Kata sandi",
+      "passwordHint": "Minimal 6 karakter. Bagikan kepada mereka secara pribadi.",
+      "roleLabel": "Role",
+      "confirmLabel": "Konfirmasi dengan kata sandi Anda",
+      "confirmHint": "Menambah admin berarti memberi akses, jadi masukkan kata sandi Anda sendiri untuk menyetujuinya.",
+      "showPassword": "Tampilkan kata sandi",
+      "hidePassword": "Sembunyikan kata sandi",
+      "cancel": "Batal",
+      "create": "Tambah admin",
+      "creating": "Menambahkan…",
+      "errors": {
+        "fullNameRequired": "Masukkan nama lengkapnya.",
+        "usernameRequired": "Pilih username.",
+        "usernameFormat": "Gunakan huruf, angka, titik, strip, atau garis bawah saja.",
+        "usernameTaken": "Username ini sudah dipakai.",
+        "emailRequired": "Masukkan emailnya.",
+        "emailInvalid": "Format email tidak valid.",
+        "emailTaken": "Admin dengan email ini sudah ada.",
+        "passwordMin": "Gunakan minimal 6 karakter.",
+        "confirmRequired": "Masukkan kata sandi Anda untuk menyetujui.",
+        "confirmInvalid": "Kata sandi Anda salah.",
+        "generic": "Gagal menambah admin. Periksa data lalu coba lagi."
+      }
+    },
+    "roleDialog": {
+      "eyebrow": "// Ubah role",
+      "title": "Pilih role",
+      "description": "Ini mengubah apa yang bisa mereka lihat dan lakukan di dashboard.",
+      "cancel": "Batal",
+      "confirm": "Simpan role",
+      "saving": "Menyimpan…"
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Cabut akses",
+      "title": "Hapus {{name}}?",
+      "description": "{{email}} langsung kehilangan akses ke dashboard. Riwayat aktivitasnya tetap ada di log admin.",
+      "confirm": "Hapus admin",
+      "cancel": "Batal"
+    },
+    "toasts": {
+      "created": "{{name}} sekarang bisa masuk",
+      "roleUpdated": "Role diperbarui",
+      "roleError": "Gagal memperbarui role",
+      "deleted": "Admin dihapus",
+      "deleteError": "Gagal menghapus admin"
+    }
   },
   "adminLogPage": {
+    "eyebrow": "// Jejak audit",
     "title": "Log admin",
-    "subtitle": "Riwayat aktivitas administrator dari endpoint admin-logs.",
-    "total": "Total {{total}} log",
-    "listTitle": "Daftar log",
-    "listHint": "Menampilkan aktivitas terbaru. Gunakan paginasi untuk melihat data lainnya.",
-    "loadingBody": "Memuat data log admin…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "loadError": "Gagal memuat data log admin.",
-    "emptyMessage": "Belum ada aktivitas admin yang tercatat."
-  },
-  "adminLogTable": {
-    "colId": "ID",
-    "colCreatedAt": "Waktu",
-    "colAction": "Aksi",
-    "colModule": "Modul",
-    "colDescription": "Deskripsi",
-    "colOldData": "Data lama",
-    "colNewData": "Data baru",
-    "colIpAddress": "IP address",
-    "colUserAgent": "User agent"
+    "subtitle": "Setiap login dan perubahan dari dashboard ini, terbaru di atas. Buka entri untuk melihat persis apa yang berubah.",
+    "total": "{{formatted}} entri",
+    "entries": "{{count}} entri",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat log admin. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada aktivitas",
+    "emptyBody": "Login dan perubahan yang dilakukan admin akan muncul di sini.",
+    "fallbackDescription": "{{action}} · {{module}}",
+    "changedFields": "{{count}} field berubah",
+    "snapshotFields": "{{count}} field",
+    "actions": {
+      "CREATE": "Buat",
+      "UPDATE": "Ubah",
+      "DELETE": "Hapus",
+      "LOGIN": "Masuk",
+      "LOGOUT": "Keluar"
+    },
+    "modules": {
+      "ADMIN": "Admin",
+      "USER": "Pengguna",
+      "CATEGORY": "Kategori",
+      "PROVIDER": "Penyedia",
+      "GAME": "Game",
+      "PRODUCT": "Produk",
+      "PRICE": "Harga",
+      "PAYMENT_METHOD": "Metode bayar",
+      "ROLE": "Role"
+    }
   },
   "adminLogDetailPage": {
-    "title": "Detail log admin",
-    "subtitle": "Detail lengkap aktivitas administrator.",
-    "pageHint": "Halaman ini membantu melacak siapa melakukan aksi apa, kapan, dan data apa yang berubah.",
-    "backButton": "Kembali ke daftar log",
-    "loading": "Memuat detail log admin…",
-    "missingId": "ID log admin tidak ditemukan di URL.",
-    "loadError": "Gagal memuat detail log admin.",
-    "readGuideTitle": "Panduan membaca log",
-    "readGuideBody": "Old data adalah nilai sebelum perubahan, sedangkan new data adalah nilai setelah perubahan. Jika salah satu kosong, berarti sistem tidak mengirim snapshot data pada sisi tersebut.",
-    "id": "ID log",
-    "adminId": "ID admin",
+    "backButton": "Kembali ke log admin",
+    "loadError": "Gagal memuat entri log ini. Mungkin sudah dihapus.",
+    "eyebrow": "// Entri log",
+    "admin": "Admin",
     "createdAt": "Waktu",
-    "ipAddress": "IP address",
-    "description": "Deskripsi",
-    "oldData": "Data lama",
-    "oldDataHint": "Nilai sebelum aksi dijalankan.",
-    "newData": "Data baru",
-    "newDataHint": "Nilai setelah aksi berhasil dijalankan.",
-    "userAgent": "User agent"
+    "ipAddress": "Alamat IP",
+    "device": "Perangkat",
+    "unknownDevice": "Perangkat tidak dikenal",
+    "id": "ID log",
+    "changesTitle": "Perubahan data",
+    "changesSummary": "{{count}} field diubah oleh aksi ini.",
+    "snapshotAfter": "Data seperti yang disimpan oleh aksi ini.",
+    "snapshotBefore": "Data sebelum dihapus oleh aksi ini.",
+    "noSnapshot": "Aksi ini tidak mencatat data apa pun.",
+    "noChanges": "Tidak ada nilai field yang berubah.",
+    "showUnchanged": "Tampilkan {{count}} field yang tidak berubah",
+    "hideUnchanged": "Sembunyikan field yang tidak berubah",
+    "showRaw": "JSON mentah",
+    "showTable": "Tampilan tabel",
+    "field": "Field",
+    "before": "Sebelum",
+    "after": "Sesudah"
   },
   "dashboardPage": {
     "title": "Dasbor"
@@ -2018,14 +2106,13 @@
   },
   "referralPage": {
     "title": "Kode Referral",
-    "subtitle": "Kelola kode referral diskon untuk promosi transaksi.",
-    "addBtn": "Tambah kode referral",
+    "subtitle": "Kode yang dibagikan partner ke pembeli. Setiap transaksi lunas yang memakai kode memberi pemiliknya bagian dari margin.",
+    "addBtn": "Kode baru",
     "editBtn": "Ubah",
     "deleteBtn": "Hapus",
     "searchPlaceholder": "Cari berdasarkan nama atau kode...",
     "statusActive": "Aktif",
     "statusInactive": "Tidak Aktif",
-    "toastSuccess": "Kode referral berhasil dimuat",
     "toastError": "Gagal memuat kode referral",
     "emptyPage": "Belum ada kode referral terdaftar",
     "table": {
@@ -2038,39 +2125,48 @@
       "totalData": "Total Data"
     },
     "form": {
-      "addTitle": "Tambah Kode Referral Baru",
-      "editTitle": "Ubah Kode Referral",
+      "addTitle": "Kode referral baru",
+      "editTitle": "Ubah kode referral",
       "nameLabel": "Nama",
       "namePlaceholder": "contoh: Promo Musim Panas",
       "codeLabel": "Kode Referral",
       "codePlaceholder": "contoh: SUMMER50",
-      "percentLabel": "Persentase Komisi",
+      "percentLabel": "Komisi",
       "percentPlaceholder": "contoh: 10",
-      "statusLabel": "Status Aktif",
+      "statusLabel": "Aktif",
       "cancel": "Batal",
-      "save": "Simpan",
+      "save": "Simpan perubahan",
       "errors": {
         "nameRequired": "Nama wajib diisi",
         "codeRequired": "Kode referral wajib diisi",
         "percentMin": "Persentase komisi minimal 0",
-        "percentMax": "Persentase komisi maksimal 100"
-      }
+        "percentMax": "Persentase komisi maksimal 100",
+        "percentRequired": "Masukkan komisi antara 0 dan 100"
+      },
+      "addEyebrow": "Kode baru",
+      "editEyebrow": "Ubah kode",
+      "description": "Kode yang dimasukkan pembeli saat checkout, dan bagian margin yang didapat pemiliknya.",
+      "percentHint": "Bagian dari margin transaksi lunas. 10% dari margin Rp 5.000 menghasilkan Rp 500.",
+      "statusHint": "Kode nonaktif ditolak saat checkout.",
+      "create": "Buat kode",
+      "saving": "Menyimpan…"
     },
     "deleteConfirm": {
-      "title": "Hapus Kode Referral",
-      "description": "Apakah Anda yakin ingin menghapus kode referral ini? Tindakan ini tidak dapat dibatalkan.",
+      "title": "Hapus “{{code}}”?",
+      "description": "Pembeli tidak akan bisa memakai kode ini lagi. Tindakan ini tidak bisa dibatalkan.",
       "cancel": "Batal",
-      "confirm": "Hapus"
+      "confirm": "Hapus",
+      "eyebrow": "Hapus kode"
     },
     "detail": {
       "title": "Detail Kode Referral",
-      "subtitle": "Informasi rinci dan daftar transaksi yang menggunakan kode referral ini.",
-      "backBtn": "Kembali",
+      "subtitle": "Performa kode ini, beserta setiap transaksi yang memakainya.",
+      "backBtn": "Kode referral",
       "cardTitle": "Informasi Kode Referral",
       "name": "Nama",
       "code": "Kode",
       "percent": "Komisi (%)",
-      "totalEarnings": "Total Pendapatan",
+      "totalEarnings": "Total komisi",
       "status": "Status",
       "createdAt": "Tanggal Dibuat",
       "updatedAt": "Terakhir Diubah",
@@ -2084,9 +2180,31 @@
         "method": "Metode Pembayaran",
         "channel": "Saluran",
         "status": "Status",
-        "date": "Tanggal"
+        "date": "Tanggal",
+        "margin": "Margin",
+        "commission": "Komisi"
+      },
+      "eyebrow": "Detail referral",
+      "metrics": {
+        "uses": "Total pemakaian",
+        "paid": "Lunas",
+        "volume": "Volume lunas",
+        "conversion": "Konversi"
       }
-    }
+    },
+    "eyebrow": "Program afiliasi",
+    "view": "Detail",
+    "totalCodes_other": "{{count}} kode",
+    "retry": "Coba lagi",
+    "emptyTitle": "Belum ada kode referral",
+    "emptyBody": "Buat kode untuk partner, lalu biarkan mereka membagikannya ke audiens.",
+    "codeShort": "Kode",
+    "commission": "Komisi",
+    "copy": "Salin kode",
+    "copied": "Kode {{code}} disalin",
+    "copyFailed": "Gagal menyalin ke clipboard",
+    "createdOn": "Dibuat {{date}}",
+    "toggleStatus": "Aktifkan atau nonaktifkan {{name}}"
   },
   "referralToasts": {
     "createSuccess": "Kode referral berhasil dibuat",

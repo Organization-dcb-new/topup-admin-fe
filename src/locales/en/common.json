@@ -62,13 +62,18 @@
       "referral": "Referral codes",
       "keamanan": "Security",
       "twoFa": "2FA",
-      "pembatasLaju": "Rate limit",
       "pemeliharaan": "Maintenance",
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs",
       "roles": "Roles & access"
     }
+  },
+  "pagination": {
+    "label": "Pages",
+    "pageInfo": "Page {{page}} of {{total}}",
+    "prev": "Previous page",
+    "next": "Next page"
   },
   "transactionPage": {
     "toastLoading": "Loading transactions…",
@@ -675,7 +680,6 @@
     "updating": "Updating…",
     "applyAll": "Apply to All Games"
   },
-
   "gameShowcase": {
     "label": "Showcase",
     "hideAria": "Hide {{name}} from showcase",
@@ -1544,132 +1548,223 @@
     "loadError": "Failed to load game inputs"
   },
   "maintenancePage": {
+    "eyebrow": "// System control",
     "title": "Maintenance",
-    "subtitle": "Manage maintenance schedule and status (active mode, start and end time).",
-    "loadingShort": "Loading…",
-    "errorShort": "Failed to load",
-    "total": "{{total}} entries",
-    "listTitle": "Maintenance list",
-    "listHint": "Create, edit, or delete maintenance entries from the server.",
-    "loadingBody": "Loading data…",
-    "pleaseWait": "Please wait a moment.",
-    "errorMessage": "Failed to load maintenance list. Check your connection or try reloading this page.",
-    "emptyMessage": "No maintenance entries yet. Add one from the button above."
-  },
-  "maintenanceTable": {
-    "colName": "Name",
-    "colStatus": "Status",
-    "statusMaintenance": "Maintenance",
-    "statusNormal": "Normal",
-    "colStart": "Start",
-    "colEnd": "End",
-    "colUpdatedAt": "Updated",
-    "colCreatedBy": "Created by",
-    "colUpdatedBy": "Updated by",
-    "emptyFallback": "—",
-    "colActions": "Actions",
-    "rowActionsAria": "Actions for {{name}}"
-  },
-  "maintenanceToasts": {
-    "loadSuccess": "Maintenance data loaded",
-    "loadError": "Failed to load maintenance data"
-  },
-  "maintenanceForm": {
-    "nameLabel": "Name",
-    "namePlaceholder": "e.g. Payment server upgrade",
-    "nameRequired": "Name is required",
-    "modeLabel": "Maintenance mode",
-    "modeHint": "Mark this entry as under maintenance.",
-    "modeAria": "Maintenance mode",
-    "startLabel": "Start",
-    "startRequired": "Start time is required",
-    "endLabel": "End",
-    "endRequired": "End time is required",
-    "orderInvalid": "Start time must be on or before end (WIB).",
-    "cancel": "Cancel",
-    "save": "Save",
-    "saving": "Saving…"
-  },
-  "maintenanceCreateModal": {
-    "trigger": "Add maintenance",
-    "title": "Add maintenance",
-    "description": "Name, start, and end are required. Toggle maintenance mode as needed."
-  },
-  "maintenanceEditModal": {
-    "triggerAria": "Edit maintenance {{name}}",
-    "title": "Edit maintenance",
-    "description": "Update name, status, and schedule."
-  },
-  "maintenanceDeleteModal": {
-    "triggerAria": "Delete maintenance {{name}}",
-    "title": "Delete maintenance?",
-    "description": "The entry \"{{name}}\" will be permanently removed. This cannot be undone.",
-    "cancel": "Cancel",
-    "confirmDelete": "Delete",
-    "deleting": "Deleting…"
+    "subtitle": "Schedule downtime windows for the storefront. While mode is on and the window is running, players see the maintenance notice.",
+    "addBtn": "Schedule maintenance",
+    "retry": "Try again",
+    "loadError": "Couldn’t load maintenance schedules. Check your connection and try again.",
+    "emptyTitle": "No maintenance scheduled",
+    "emptyBody": "The storefront is running normally. Schedule a window before planned upgrades so players know what’s happening.",
+    "wib": "WIB",
+    "toggleMode": "Maintenance mode for {{name}}",
+    "editBtn": "Edit {{name}}",
+    "deleteBtn": "Delete {{name}}",
+    "updatedBy": "Updated by {{who}} · {{date}}",
+    "durationHours": "{{count}}h",
+    "durationMinutes": "{{count}}m",
+    "status": {
+      "live": "Live",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "off": "Off"
+    },
+    "stats": {
+      "live": "Live now",
+      "scheduled": "Scheduled",
+      "total": "Total entries"
+    },
+    "liveBanner": {
+      "eyebrow": "Maintenance is live"
+    },
+    "relative": {
+      "starts": "Starts {{when}}",
+      "ends": "Ends {{when}}",
+      "ended": "Ended {{when}}"
+    },
+    "window": {
+      "start": "Start",
+      "end": "End",
+      "duration": "Window {{duration}}"
+    },
+    "form": {
+      "addEyebrow": "// New window",
+      "editEyebrow": "// Edit window",
+      "addTitle": "Schedule maintenance",
+      "editTitle": "Edit maintenance",
+      "description": "Times are in WIB (UTC+7). Mode decides whether the window actually takes the storefront down.",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Payment server upgrade",
+      "windowLabel": "Window",
+      "startLabel": "Start",
+      "endLabel": "End",
+      "quickDuration": "Duration",
+      "modeLabel": "Maintenance mode",
+      "modeOnHint": "On: players see the maintenance notice during this window.",
+      "modeOffHint": "Off: saved as a draft, the storefront stays open.",
+      "cancel": "Cancel",
+      "create": "Schedule",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "errors": {
+        "nameRequired": "Give this window a name.",
+        "startRequired": "Pick a start time.",
+        "endRequired": "Pick an end time.",
+        "orderInvalid": "End time must be after the start time."
+      }
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Delete window",
+      "title": "Delete “{{name}}”?",
+      "description": "This schedule will be removed permanently. If it’s live, the storefront reopens right away.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "created": "Maintenance scheduled",
+      "updated": "Maintenance updated",
+      "deleted": "Maintenance deleted",
+      "createError": "Couldn’t schedule maintenance",
+      "updateError": "Couldn’t update maintenance",
+      "deleteError": "Couldn’t delete maintenance"
+    }
   },
   "adminPage": {
-    "title": "Manage admins",
-    "subtitle": "Add admin accounts from the toolbar below. Update roles or delete from the actions column in each row.",
-    "total": "Total {{total}} admins",
-    "listTitle": "Administrator list",
-    "listHint": "Data from the server. Use pagination to view other pages.",
-    "loadingBody": "Loading administrator data…",
-    "pleaseWait": "Please wait a moment.",
-    "emptyMessage": "No administrators yet. Add one from the button above."
-  },
-  "adminTable": {
-    "cannotChangeOwnRole": "You can't change your own role.",
-    "colUsername": "Username",
-    "colEmail": "Email",
-    "colRole": "Role",
-    "colTwoFactor": "2FA",
-    "enabled": "Active",
-    "disabled": "Inactive",
-    "colActions": "Actions"
+    "eyebrow": "// Access control",
+    "title": "Admin users",
+    "subtitle": "Everyone who can sign in to this dashboard. Their role decides what they can see and change.",
+    "total_one": "{{formatted}} admin",
+    "total_other": "{{formatted}} admins",
+    "addBtn": "Add admin",
+    "manageRoles": "Manage roles",
+    "retry": "Try again",
+    "loadError": "Couldn’t load admin users. Check your connection and try again.",
+    "emptyTitle": "No admins yet",
+    "emptyBody": "Add an admin to give someone access to this dashboard.",
+    "you": "You",
+    "joined": "Joined {{date}}",
+    "twoFactorOn": "2FA on",
+    "twoFactorOff": "2FA off",
+    "currentRole": "Current",
+    "changeRole": "Change role",
+    "deleteBtn": "Delete {{name}}",
+    "selfLocked": "You can’t change or delete your own account here.",
+    "form": {
+      "eyebrow": "// New admin",
+      "title": "Add admin",
+      "description": "They sign in with this username or email and the password below.",
+      "fullNameLabel": "Full name",
+      "fullNamePlaceholder": "e.g. Budi Santoso",
+      "usernameLabel": "Username",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordHint": "At least 6 characters. Share it with them privately.",
+      "roleLabel": "Role",
+      "confirmLabel": "Confirm with your password",
+      "confirmHint": "Adding an admin hands out access, so enter your own password to approve it.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "cancel": "Cancel",
+      "create": "Add admin",
+      "creating": "Adding…",
+      "errors": {
+        "fullNameRequired": "Enter their full name.",
+        "usernameRequired": "Choose a username.",
+        "usernameFormat": "Use letters, numbers, dots, dashes or underscores only.",
+        "usernameTaken": "This username is already taken.",
+        "emailRequired": "Enter their email.",
+        "emailInvalid": "That doesn’t look like an email address.",
+        "emailTaken": "An admin with this email already exists.",
+        "passwordMin": "Use at least 6 characters.",
+        "confirmRequired": "Enter your password to approve.",
+        "confirmInvalid": "That’s not your password.",
+        "generic": "Couldn’t add the admin. Check the details and try again."
+      }
+    },
+    "roleDialog": {
+      "eyebrow": "// Change role",
+      "title": "Choose a role",
+      "description": "This changes what they can see and do in the dashboard.",
+      "cancel": "Cancel",
+      "confirm": "Save role",
+      "saving": "Saving…"
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Remove access",
+      "title": "Delete {{name}}?",
+      "description": "{{email}} will lose access to the dashboard immediately. Their past activity stays in the admin log.",
+      "confirm": "Delete admin",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "created": "{{name}} can now sign in",
+      "roleUpdated": "Role updated",
+      "roleError": "Couldn’t update the role",
+      "deleted": "Admin deleted",
+      "deleteError": "Couldn’t delete the admin"
+    }
   },
   "adminLogPage": {
+    "eyebrow": "// Audit trail",
     "title": "Admin logs",
-    "subtitle": "Administrator activity history from the admin-logs endpoint.",
-    "total": "Total {{total}} logs",
-    "listTitle": "Log list",
-    "listHint": "Shows recent activities. Use pagination to browse other pages.",
-    "loadingBody": "Loading admin logs…",
-    "pleaseWait": "Please wait a moment.",
-    "loadError": "Failed to load admin logs.",
-    "emptyMessage": "No admin activity has been recorded yet."
-  },
-  "adminLogTable": {
-    "colId": "ID",
-    "colCreatedAt": "Time",
-    "colAction": "Action",
-    "colModule": "Module",
-    "colDescription": "Description",
-    "colOldData": "Old data",
-    "colNewData": "New data",
-    "colIpAddress": "IP address",
-    "colUserAgent": "User agent"
+    "subtitle": "Every sign-in and change made from this dashboard, newest first. Open an entry to see exactly what changed.",
+    "total_one": "{{formatted}} entry",
+    "total_other": "{{formatted}} entries",
+    "entries_one": "{{count}} entry",
+    "entries_other": "{{count}} entries",
+    "retry": "Try again",
+    "loadError": "Couldn’t load the admin log. Check your connection and try again.",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Sign-ins and changes made by admins will show up here.",
+    "fallbackDescription": "{{action}} · {{module}}",
+    "changedFields_one": "{{count}} field changed",
+    "changedFields_other": "{{count}} fields changed",
+    "snapshotFields_one": "{{count}} field",
+    "snapshotFields_other": "{{count}} fields",
+    "actions": {
+      "CREATE": "Create",
+      "UPDATE": "Update",
+      "DELETE": "Delete",
+      "LOGIN": "Sign in",
+      "LOGOUT": "Sign out"
+    },
+    "modules": {
+      "ADMIN": "Admin",
+      "USER": "User",
+      "CATEGORY": "Category",
+      "PROVIDER": "Provider",
+      "GAME": "Game",
+      "PRODUCT": "Product",
+      "PRICE": "Price",
+      "PAYMENT_METHOD": "Payment method",
+      "ROLE": "Role"
+    }
   },
   "adminLogDetailPage": {
-    "title": "Admin log detail",
-    "subtitle": "Complete detail of administrator activity.",
-    "pageHint": "This page helps users understand who performed an action, when it happened, and what data changed.",
-    "backButton": "Back to log list",
-    "loading": "Loading admin log detail…",
-    "missingId": "Admin log ID is missing in the URL.",
-    "loadError": "Failed to load admin log detail.",
-    "readGuideTitle": "How to read this log",
-    "readGuideBody": "Old data contains values before the action, while new data contains values after the action. If one side is empty, the system did not provide that snapshot.",
-    "id": "Log ID",
-    "adminId": "Admin ID",
+    "backButton": "Back to admin logs",
+    "loadError": "Couldn’t load this log entry. It may have been removed.",
+    "eyebrow": "// Log entry",
+    "admin": "Admin",
     "createdAt": "Time",
     "ipAddress": "IP address",
-    "description": "Description",
-    "oldData": "Old data",
-    "oldDataHint": "Values before the action was executed.",
-    "newData": "New data",
-    "newDataHint": "Values after the action was successfully executed.",
-    "userAgent": "User agent"
+    "device": "Device",
+    "unknownDevice": "Unknown device",
+    "id": "Log ID",
+    "changesTitle": "Data changes",
+    "changesSummary_one": "{{count}} field changed by this action.",
+    "changesSummary_other": "{{count}} fields changed by this action.",
+    "snapshotAfter": "Data as it was saved by this action.",
+    "snapshotBefore": "Data as it was before this action removed it.",
+    "noSnapshot": "This action didn’t record any data.",
+    "noChanges": "No field values changed.",
+    "showUnchanged_one": "Show {{count}} unchanged field",
+    "showUnchanged_other": "Show {{count}} unchanged fields",
+    "hideUnchanged": "Hide unchanged fields",
+    "showRaw": "Raw JSON",
+    "showTable": "Table view",
+    "field": "Field",
+    "before": "Before",
+    "after": "After"
   },
   "dashboardPage": {
     "title": "Dashboard"
@@ -2020,14 +2115,13 @@
   },
   "referralPage": {
     "title": "Referral Codes",
-    "subtitle": "Manage discount referral codes for transaction promotions.",
-    "addBtn": "Add referral code",
+    "subtitle": "Codes your partners share with buyers. Every paid transaction that uses a code earns its owner a share of the margin.",
+    "addBtn": "New code",
     "editBtn": "Edit",
     "deleteBtn": "Delete",
     "searchPlaceholder": "Search by name or code...",
     "statusActive": "Active",
     "statusInactive": "Inactive",
-    "toastSuccess": "Referral codes loaded successfully",
     "toastError": "Failed to load referral codes",
     "emptyPage": "No referral codes registered",
     "table": {
@@ -2040,39 +2134,48 @@
       "totalData": "Total Data"
     },
     "form": {
-      "addTitle": "Add New Referral Code",
-      "editTitle": "Edit Referral Code",
+      "addTitle": "New referral code",
+      "editTitle": "Edit referral code",
       "nameLabel": "Name",
       "namePlaceholder": "e.g. Summer Promo",
       "codeLabel": "Referral Code",
       "codePlaceholder": "e.g. SUMMER50",
-      "percentLabel": "Commission Percent",
+      "percentLabel": "Commission",
       "percentPlaceholder": "e.g. 10",
-      "statusLabel": "Active Status",
+      "statusLabel": "Active",
       "cancel": "Cancel",
-      "save": "Save",
+      "save": "Save changes",
       "errors": {
         "nameRequired": "Name is required",
         "codeRequired": "Referral code is required",
         "percentMin": "Commission percent must be at least 0",
-        "percentMax": "Commission percent cannot exceed 100"
-      }
+        "percentMax": "Commission percent cannot exceed 100",
+        "percentRequired": "Enter a commission between 0 and 100"
+      },
+      "addEyebrow": "New code",
+      "editEyebrow": "Edit code",
+      "description": "The code buyers enter at checkout, and the share of the margin its owner earns.",
+      "percentHint": "Share of the margin on paid transactions. 10% of a Rp 5.000 margin earns Rp 500.",
+      "statusHint": "Inactive codes are rejected at checkout.",
+      "create": "Create code",
+      "saving": "Saving…"
     },
     "deleteConfirm": {
-      "title": "Delete Referral Code",
-      "description": "Are you sure you want to delete this referral code? This action cannot be undone.",
+      "title": "Delete “{{code}}”?",
+      "description": "Buyers won't be able to use this code any more. This can't be undone.",
       "cancel": "Cancel",
-      "confirm": "Delete"
+      "confirm": "Delete",
+      "eyebrow": "Delete code"
     },
     "detail": {
       "title": "Referral Code Details",
-      "subtitle": "Detailed information and list of transactions using this referral code.",
-      "backBtn": "Back",
+      "subtitle": "How this code performs, and every transaction that used it.",
+      "backBtn": "Referral codes",
       "cardTitle": "Referral Code Information",
       "name": "Name",
       "code": "Code",
       "percent": "Commission (%)",
-      "totalEarnings": "Total Earnings",
+      "totalEarnings": "Total commission",
       "status": "Status",
       "createdAt": "Created At",
       "updatedAt": "Last Updated",
@@ -2086,9 +2189,32 @@
         "method": "Payment Method",
         "channel": "Channel",
         "status": "Status",
-        "date": "Date"
+        "date": "Date",
+        "margin": "Margin",
+        "commission": "Commission"
+      },
+      "eyebrow": "Referral detail",
+      "metrics": {
+        "uses": "Total uses",
+        "paid": "Paid",
+        "volume": "Paid volume",
+        "conversion": "Conversion"
       }
-    }
+    },
+    "eyebrow": "Affiliate program",
+    "view": "Details",
+    "totalCodes_one": "{{count}} code",
+    "totalCodes_other": "{{count}} codes",
+    "retry": "Try again",
+    "emptyTitle": "No referral codes yet",
+    "emptyBody": "Create a code for a partner, then let them share it with their audience.",
+    "codeShort": "Code",
+    "commission": "Commission",
+    "copy": "Copy code",
+    "copied": "Code {{code}} copied",
+    "copyFailed": "Couldn't copy to the clipboard",
+    "createdOn": "Created {{date}}",
+    "toggleStatus": "Turn {{name}} on or off"
   },
   "referralToasts": {
     "createSuccess": "Referral code created successfully",

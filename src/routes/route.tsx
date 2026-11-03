@@ -23,7 +23,6 @@ import BlogPage from "@/pages/Blog";
 import CashflowPage from "@/pages/Cashflow";
 import VerifyOtpPage from "@/pages/VerifyOTP";
 import Setup2FAPage from "@/pages/SetupAuth";
-import RateLimitPage from "@/pages/RateLimit";
 import AdminManagementPage from "@/pages/Admin";
 import MaintenancePage from "@/pages/Maintenance";
 import AdminLogPage from '@/pages/AdminLog'
@@ -252,14 +251,6 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.security2faManage}>
             <Setup2FAPage />
-          </RoleGuard>
-        ),
-      },
-      {
-        path: 'rate-limit',
-        element: (
-          <RoleGuard allowedRoles={['dev']}>
-            <RateLimitPage />
           </RoleGuard>
         ),
       },

@@ -9,12 +9,10 @@ interface RoleGuardProps {
   children: React.ReactNode
   /** Passes when the admin holds any of these, like the backend's RequirePermission. */
   permission?: Permission | Permission[]
-  /** Role slugs, only for pages that have no permission in the backend catalog yet. */
-  allowedRoles?: string[]
 }
 
-export const RoleGuard = ({ children, permission, allowedRoles }: RoleGuardProps) => {
-  const { role, isAuthenticated, isMfaRequired, isLoading } = useAuthUser()
+export const RoleGuard = ({ children, permission }: RoleGuardProps) => {
+  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser()
   const { can } = usePermissions()
   const location = useLocation()
 
@@ -30,13 +28,12 @@ export const RoleGuard = ({ children, permission, allowedRoles }: RoleGuardProps
   }
 
   const codes = permission === undefined ? [] : Array.isArray(permission) ? permission : [permission]
-  const allowed =
-    (codes.length === 0 || can(...codes)) && (!allowedRoles || (!!role && allowedRoles.includes(role)))
+  const allowed = codes.length === 0 || can(...codes)
 
   if (!allowed) {
     // Landing on the dashboard without access to it (e.g. a content-only role): open the
     // first page the admin can use instead of a dead end.
-    const fallback = location.pathname === '/' ? firstAccessiblePath(visibleMenus(can, role)) : undefined
+    const fallback = location.pathname === '/' ? firstAccessiblePath(visibleMenus(can)) : undefined
     return <Navigate to={fallback ?? '/unauthorized'} replace />
   }
 

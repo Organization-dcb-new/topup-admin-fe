@@ -10,7 +10,6 @@ import {
   FolderTree,
   FormInput,
   Gamepad2,
-  Gauge,
   ImageIcon,
   KeyRound,
   LayoutDashboard,
@@ -35,8 +34,6 @@ export type SidebarMenu = {
   path?: string
   /** Needed to see the item (and open its route); groups show when any child is visible. */
   permission?: Permission
-  /** For pages with no permission in the backend catalog yet. */
-  devOnly?: boolean
   children?: SidebarMenu[]
 }
 
@@ -129,12 +126,6 @@ export const sidebarMenus: SidebarSection[] = [
             icon: KeyRound,
             path: '/2fa-setup',
             permission: PERM.security2faManage,
-          },
-          {
-            label: 'Pembatas laju',
-            icon: Gauge,
-            path: '/rate-limit',
-            devOnly: true,
           },
           {
             label: 'Pemeliharaan',

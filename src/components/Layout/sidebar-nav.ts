@@ -17,21 +17,20 @@ export function useSidebarCopy(): Translate {
 
 type Can = (...codes: Permission[]) => boolean
 
-function canSee(item: SidebarMenu, can: Can, role: string | null) {
-  if (item.devOnly) return role === 'dev'
+function canSee(item: SidebarMenu, can: Can) {
   return !item.permission || can(item.permission)
 }
 
 /** The menu trimmed to what the admin may open; groups with no visible child disappear. */
-export function visibleMenus(can: Can, role: string | null): SidebarSection[] {
+export function visibleMenus(can: Can): SidebarSection[] {
   return sidebarMenus
     .map((section) => ({
       ...section,
       menus: section.menus
-        .filter((menu) => canSee(menu, can, role))
+        .filter((menu) => canSee(menu, can))
         .map((menu) => ({
           ...menu,
-          children: menu.children?.filter((child) => canSee(child, can, role)),
+          children: menu.children?.filter((child) => canSee(child, can)),
         }))
         .filter((menu) => menu.path || menu.children?.length),
     }))

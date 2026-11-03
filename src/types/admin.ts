@@ -22,6 +22,17 @@ export interface AdminUser {
   created_at: string;
 }
 
+/** POST /admin/users; confirm_admin_password is the acting admin's own password. */
+export interface CreateAdminPayload {
+  username: string;
+  email: string;
+  password: string;
+  full_name: string;
+  role: string;
+  role_id?: string;
+  confirm_admin_password: string;
+}
+
 export interface AdminResponse {
   status: string;
   message: string;
