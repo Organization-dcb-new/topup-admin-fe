@@ -69,12 +69,12 @@ export default function TransactionPage() {
     <DashboardLayout>
       <div className='mx-auto max-w-6xl space-y-6'>
         <header className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
-          <div className='space-y-1'>
+          <div className='min-w-0 space-y-1'>
             <p className={hudEyebrowClass}>{t('transactionPage.eyebrow')}</p>
             <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('transactionPage.title')}</h1>
             <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('transactionPage.subtitle')}</p>
           </div>
-          <div className='flex flex-wrap items-center gap-2'>
+          <div className='flex flex-wrap items-center gap-2 lg:shrink-0 lg:flex-nowrap'>
             {dataUpdatedAt > 0 && (
               <span className='mr-1 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
                 {t('transactionPage.updatedAt', { time: format(dataUpdatedAt, 'HH:mm:ss') })}

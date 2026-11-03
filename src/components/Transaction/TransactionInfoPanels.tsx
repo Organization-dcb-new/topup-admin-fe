@@ -20,7 +20,8 @@ export function TransactionItemPanel({ detail, row, order }: PanelProps & { row?
   const sku = item?.product_sku || detail.sku
   const voucher = item?.voucher_code
   const orderTotal = detail.order?.total_amount
-  const margin = row?.margin
+  // Unpaid payments carry a zero margin, which is noise rather than a number.
+  const margin = row?.margin === 0 && detail.status !== 'PAID' ? undefined : row?.margin
 
   return (
     <DetailPanel

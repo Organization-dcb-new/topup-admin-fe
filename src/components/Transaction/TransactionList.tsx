@@ -100,9 +100,11 @@ function TransactionRow({ row, order }: { row: Payment; order: number }) {
 
         <div className='hidden text-right lg:block'>
           <p className='text-sm font-bold tabular-nums text-slate-900'>{formatCurrency(row.amount)}</p>
-          <p className={cn('text-xs tabular-nums', margin < 0 ? 'text-rose-600' : 'text-emerald-600')}>
-            {t('transactionPage.row.margin', { value: formatCurrency(margin) })}
-          </p>
+          {(row.status === 'PAID' || margin !== 0) && (
+            <p className={cn('text-xs tabular-nums', margin < 0 ? 'text-rose-600' : 'text-emerald-600')}>
+              {t('transactionPage.row.margin', { value: formatCurrency(margin) })}
+            </p>
+          )}
         </div>
 
         <div className='hidden text-xs tabular-nums lg:block'>

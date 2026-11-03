@@ -30,7 +30,7 @@ export function TransactionFilterBar({ value, onChange, onReset, advancedOpen, o
   return (
     <div className='bg-slate-200/80 p-px hud-clip'>
       <div className='space-y-3 bg-white p-4 hud-clip'>
-        <div className='grid gap-3 md:grid-cols-[minmax(0,1fr)_11rem] lg:grid-cols-[minmax(0,1fr)_11rem_15rem_auto]'>
+        <div className='grid gap-3 md:grid-cols-[minmax(0,1fr)_11rem] lg:grid-cols-[minmax(0,1fr)_10.5rem_17.5rem_auto]'>
           <div className='group relative'>
             <span className='pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-slate-400 group-focus-within:text-brand-purple'>
               <Search className='size-4' aria-hidden />
