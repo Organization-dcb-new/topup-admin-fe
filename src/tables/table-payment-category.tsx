@@ -2,9 +2,11 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
+import { Can } from '@/components/Auth/Can'
 import { DeletePaymentCategory } from '@/components/PaymentMethodCategory/Delete'
 import { AddPaymentMethodToPaymentCategoryButton } from '@/components/PaymentMethodCategory/Add'
 import { EditPaymentCategoryModal } from '@/components/PaymentMethodCategory/Edit'
+import { PERM } from '@/constants/permissions'
 
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
@@ -62,9 +64,13 @@ export const getPaymentMethodCategoriesColumns = (t: TFunction): ColumnDef<Payme
           role='group'
           aria-label={t('paymentMethodCategoryTable.rowActionsAria', { name: row.original.name })}
         >
-          <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
-          <EditPaymentCategoryModal category={row.original} />
-          <DeletePaymentCategory id={row.original.id} />
+          <Can permission={PERM.paymentCategoryUpdate}>
+            <AddPaymentMethodToPaymentCategoryButton categoryId={row.original.id} />
+            <EditPaymentCategoryModal category={row.original} />
+          </Can>
+          <Can permission={PERM.paymentCategoryDelete}>
+            <DeletePaymentCategory id={row.original.id} />
+          </Can>
         </div>
       </div>
     ),

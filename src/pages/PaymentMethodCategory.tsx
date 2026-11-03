@@ -1,7 +1,9 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { DataTable } from '@/components/Layout/table-data'
 import { CreatePaymentCategoryModal } from '@/components/PaymentMethodCategory/Create'
+import { PERM } from '@/constants/permissions'
 import { useGetPaymentMethodCategory } from '@/hooks/usePaymentMethodCategory'
 import { getPaymentMethodCategoriesColumns } from '@/tables/table-payment-category'
 import { AlertCircle, CheckCircle2, Layers, Loader2 } from 'lucide-react'
@@ -79,7 +81,9 @@ export default function PaymentMethodCategoryPage() {
                 {t('paymentMethodCategoryPage.listHint')}
               </p>
             </div>
-            <CreatePaymentCategoryModal />
+            <Can permission={PERM.paymentCategoryCreate}>
+              <CreatePaymentCategoryModal />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

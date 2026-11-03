@@ -1,3 +1,4 @@
+import { Can } from '@/components/Auth/Can'
 import CategoriesSearchInput from '@/components/Category/SearchCategory'
 import { CreateCategoryModal } from '@/components/Category/CreateCategoryModal'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
@@ -5,6 +6,7 @@ import ErrorComponent from '@/components/Layout/error'
 import TableSkeleton from '@/components/Layout/loading'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
+import { PERM } from '@/constants/permissions'
 import { useGetCategories } from '@/hooks/useCategory'
 import { useDebounce } from '@/hooks/useDebounce'
 import { getCategoryColumns } from '@/tables/table-category'
@@ -44,7 +46,9 @@ export default function CategoryPage() {
     <DashboardLayout>
       <div className='flex justify-between mb-4'>
         <CategoriesSearchInput value={search} onChange={setSearch} />
-        <CreateCategoryModal />
+        <Can permission={PERM.categoryCreate}>
+          <CreateCategoryModal />
+        </Can>
       </div>
       {isLoading && <TableSkeleton />}
       {isError && <ErrorComponent message={t('categoryPage.errorMessage')} />}

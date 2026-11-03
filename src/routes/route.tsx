@@ -30,11 +30,15 @@ import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { AuthLayout } from '@/components/Auth/AuthLayout'
+import { AppShell } from '@/components/Layout/app-shell'
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
 import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
 import ProductCallbackLogDetailPage from "@/pages/ProductCallbackLogDetail";
 import NotFoundPage from "@/pages/NotFound";
+import RolesPage from '@/pages/Roles'
+import RoleEditorPage from '@/pages/RoleEditor'
+import { PERM } from '@/constants/permissions'
 
 export const router = createBrowserRouter([
   {
@@ -53,11 +57,13 @@ export const router = createBrowserRouter([
   },
   {
     path: '/',
+    // Persistent dashboard chrome: the sidebar mounts once instead of once per page.
+    element: <AppShell />,
     children: [
       {
         index: true,
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.dashboardView}>
             <DashboardPage />
           </RoleGuard>
         ),
@@ -65,7 +71,7 @@ export const router = createBrowserRouter([
       {
         path: 'summary',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.summaryView}>
             <SpendingPages />
           </RoleGuard>
         ),
@@ -73,7 +79,7 @@ export const router = createBrowserRouter([
       {
         path: 'cashflow',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.cashflowView}>
             <CashflowPage />
           </RoleGuard>
         ),
@@ -81,7 +87,7 @@ export const router = createBrowserRouter([
       {
         path: 'blog',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.blogView}>
             <BlogPage />
           </RoleGuard>
         ),
@@ -89,7 +95,7 @@ export const router = createBrowserRouter([
       {
         path: 'shows',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.showView}>
             <ShowPage />
           </RoleGuard>
         ),
@@ -97,7 +103,7 @@ export const router = createBrowserRouter([
       {
         path: 'orders',
         element: (
-          <RoleGuard allowedRoles={["dev", "admin"]}>
+          <RoleGuard permission={PERM.orderView}>
             <OrderPages />
           </RoleGuard>
         ),
@@ -105,7 +111,7 @@ export const router = createBrowserRouter([
       {
         path: 'banners',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.bannerView}>
             <BannerPage />
           </RoleGuard>
         ),
@@ -113,7 +119,7 @@ export const router = createBrowserRouter([
       {
         path: 'transactions',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.transactionView}>
             <TransactionPage />
           </RoleGuard>
         ),
@@ -122,7 +128,7 @@ export const router = createBrowserRouter([
       {
         path: 'transactions/:paymentId',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.transactionView}>
             <PaymentDetailPage />
           </RoleGuard>
         ),
@@ -130,7 +136,7 @@ export const router = createBrowserRouter([
       {
         path: 'input',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.gameInputUpdate}>
             <InputPages />
           </RoleGuard>
         ),
@@ -138,7 +144,7 @@ export const router = createBrowserRouter([
       {
         path: 'games',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.gameView}>
             <GamePage />
           </RoleGuard>
         ),
@@ -146,7 +152,7 @@ export const router = createBrowserRouter([
       {
         path: 'games/:gameId',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.gameView}>
             <GameDetailPage />
           </RoleGuard>
         ),
@@ -154,7 +160,7 @@ export const router = createBrowserRouter([
       {
         path: 'category-product',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.categoryProductView}>
             <CategoryProduct />
           </RoleGuard>
         ),
@@ -162,7 +168,7 @@ export const router = createBrowserRouter([
       {
         path: 'categories',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.categoryView}>
             <CategoryPage />
           </RoleGuard>
         ),
@@ -170,7 +176,7 @@ export const router = createBrowserRouter([
       {
         path: 'products',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.productView}>
             <ProductPage />
           </RoleGuard>
         ),
@@ -178,7 +184,7 @@ export const router = createBrowserRouter([
       {
         path: 'products/callback-logs',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.productViewCallbackLog}>
             <ProductCallbackLogPage />
           </RoleGuard>
         ),
@@ -186,7 +192,7 @@ export const router = createBrowserRouter([
       {
         path: 'products/callback-logs/:id',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.productViewCallbackLog}>
             <ProductCallbackLogDetailPage />
           </RoleGuard>
         ),
@@ -194,7 +200,7 @@ export const router = createBrowserRouter([
       {
         path: 'anomaly',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin', 'noc']}>
+          <RoleGuard permission={PERM.productViewAnomaly}>
             <AnomalyProduct />
           </RoleGuard>
         ),
@@ -202,7 +208,7 @@ export const router = createBrowserRouter([
       {
         path: 'payment-methods',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.paymentMethodView}>
             <PaymentMethodPage />
           </RoleGuard>
         ),
@@ -211,7 +217,7 @@ export const router = createBrowserRouter([
         path: 'payment-methods-categories',
 
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.paymentCategoryView}>
             <PaymentMethodCategoryPages />
           </RoleGuard>
         ),
@@ -220,7 +226,7 @@ export const router = createBrowserRouter([
         path: 'provider',
 
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.providerView}>
             <ProviderPages />
           </RoleGuard>
         ),
@@ -228,7 +234,7 @@ export const router = createBrowserRouter([
       {
         path: 'referral-codes',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.referralView}>
             <ReferralPage />
           </RoleGuard>
         ),
@@ -236,7 +242,7 @@ export const router = createBrowserRouter([
       {
         path: 'referral-codes/:id',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.referralView}>
             <ReferralDetailPage />
           </RoleGuard>
         ),
@@ -244,7 +250,7 @@ export const router = createBrowserRouter([
       {
         path: '2fa-setup',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.security2faManage}>
             <Setup2FAPage />
           </RoleGuard>
         ),
@@ -260,7 +266,7 @@ export const router = createBrowserRouter([
       {
         path: 'maintenances',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.maintenanceView}>
             <MaintenancePage />
           </RoleGuard>
         ),
@@ -268,15 +274,39 @@ export const router = createBrowserRouter([
       {
         path: 'admin',
         element: (
-          <RoleGuard allowedRoles={['dev']}>
+          <RoleGuard permission={PERM.adminView}>
             <AdminManagementPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'roles',
+        element: (
+          <RoleGuard permission={PERM.roleView}>
+            <RolesPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'roles/new',
+        element: (
+          <RoleGuard permission={PERM.roleCreate}>
+            <RoleEditorPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'roles/:id',
+        element: (
+          <RoleGuard permission={PERM.roleView}>
+            <RoleEditorPage />
           </RoleGuard>
         ),
       },
       {
         path: 'admin-logs',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.adminLogView}>
             <AdminLogPage />
           </RoleGuard>
         ),
@@ -284,7 +314,7 @@ export const router = createBrowserRouter([
       {
         path: 'admin-logs/:id',
         element: (
-          <RoleGuard allowedRoles={['dev', 'admin']}>
+          <RoleGuard permission={PERM.adminLogView}>
             <AdminLogDetailPage />
           </RoleGuard>
         ),

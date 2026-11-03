@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { api } from '@/api/axios'
+import { useRoleOptions } from '@/hooks/useRoles'
 
 type CreateAdminFormValues = {
   username: string
@@ -30,6 +31,7 @@ type CreateAdminFormValues = {
   password: string
   full_name: string
   role: string
+  role_id?: string
   confirm_admin_password: string
 }
 
@@ -56,6 +58,7 @@ export const CreateAdminModal = () => {
   })
 
   const selectedRole = watch('role')
+  const roleOptions = useRoleOptions()
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: CreateAdminFormValues) => {
@@ -125,13 +128,22 @@ export const CreateAdminModal = () => {
 
             <div className='space-y-2'>
               <Label className='text-sm font-medium'>Peran</Label>
-              <Select onValueChange={(val) => setValue('role', val)} defaultValue={selectedRole}>
+              <Select
+                onValueChange={(val) => {
+                  setValue('role', val)
+                  setValue('role_id', roleOptions.find((option) => option.slug === val)?.id)
+                }}
+                defaultValue={selectedRole}
+              >
                 <SelectTrigger className='rounded-lg font-medium uppercase'>
                   <SelectValue placeholder='Pilih peran' />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='admin'>ADMIN</SelectItem>
-                  <SelectItem value='noc'>NOC</SelectItem>
+                  {roleOptions.map((option) => (
+                    <SelectItem key={option.slug} value={option.slug}>
+                      {option.name.toUpperCase()}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

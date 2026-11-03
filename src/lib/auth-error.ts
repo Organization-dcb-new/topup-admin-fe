@@ -17,6 +17,9 @@ const KNOWN_MESSAGES: Record<string, string> = {
   'Admin Not Found': 'authErrors.invalidCredentials',
   'Invalid Password': 'authErrors.invalidCredentials',
   'invalid or expired OTP code': 'authErrors.invalidOtp',
+  // 2FA activation and deactivation phrase a wrong code differently.
+  'invalid otp code': 'authErrors.invalidOtp',
+  'kode OTP salah atau kadaluwarsa': 'authErrors.invalidOtp',
   'invalid recovery code': 'authErrors.invalidRecoveryCode',
 }
 

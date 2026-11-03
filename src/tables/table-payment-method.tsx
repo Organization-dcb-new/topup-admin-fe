@@ -3,8 +3,10 @@ import type { TFunction } from 'i18next'
 import i18n from '@/i18n'
 import type { PaymentMethod } from '@/types/payment-method'
 import { Badge } from '@/components/ui/badge'
+import { Can } from '@/components/Auth/Can'
 import { DeletePaymentMethodModal } from '@/components/PaymentMethod/DeletePaymentMethodModal'
 import { EditPaymentMethodModal } from '@/components/PaymentMethod/EditPaymentMethodModal'
+import { PERM } from '@/constants/permissions'
 const FALLBACK_ICON = 'https://api.dicebear.com/9.x/lorelei/svg'
 
 export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[] => [
@@ -119,8 +121,12 @@ export const getPaymentMethodColumns = (t: TFunction): ColumnDef<PaymentMethod>[
     header: t('paymentMethodTable.colActions'),
     cell: ({ row }) => (
       <div className='flex flex-wrap items-center gap-1'>
-        <EditPaymentMethodModal paymentMethod={row.original} />
-        <DeletePaymentMethodModal id={row.original.id} />
+        <Can permission={PERM.paymentMethodUpdate}>
+          <EditPaymentMethodModal paymentMethod={row.original} />
+        </Can>
+        <Can permission={PERM.paymentMethodDelete}>
+          <DeletePaymentMethodModal id={row.original.id} />
+        </Can>
       </div>
     ),
   },

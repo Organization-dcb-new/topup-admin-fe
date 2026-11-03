@@ -1,7 +1,9 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import type { GameWithInputs } from '@/types/game-input'
+import { Can } from '@/components/Auth/Can'
 import EditGameInputModalForm from '@/components/Inputs/EditGameInputModal'
+import { PERM } from '@/constants/permissions'
 
 const FALLBACK_IMAGE = 'https://api.dicebear.com/9.x/lorelei/svg'
 
@@ -44,7 +46,9 @@ export const getInputColumns = (t: TFunction): ColumnDef<GameWithInputs>[] => [
           role='group'
           aria-label={t('inputTable.rowActionsAria', { name: row.original.game_name })}
         >
-          <EditGameInputModalForm inputs={row.original.inputs} />
+          <Can permission={PERM.gameInputUpdate}>
+            <EditGameInputModalForm inputs={row.original.inputs} />
+          </Can>
         </div>
       </div>
     ),

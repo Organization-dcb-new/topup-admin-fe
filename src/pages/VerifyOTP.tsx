@@ -2,7 +2,6 @@ import { useId, useRef, useState } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, KeySquare, LifeBuoy, Loader2, ShieldCheck } from 'lucide-react'
@@ -13,12 +12,12 @@ import {
   AuthPanelHeader,
   AuthSubmitButton,
   HandoffStatus,
+  OtpCodeInput,
   Reveal,
   SessionCheck,
 } from '@/components/Auth/AuthPanel'
 import { hudInputClass, hudInputIconClass, hudLabelClass } from '@/components/Auth/hud-styles'
 import { Input } from '@/components/ui/input'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { Label } from '@/components/ui/label'
 import { useCooldown } from '@/hooks/useCooldown'
 import {
@@ -41,12 +40,6 @@ const RECOVERY_CODE_LENGTH = 10
 function normalizeRecoveryCode(value: string) {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, RECOVERY_CODE_LENGTH)
 }
-
-const otpSlotClass =
-  'h-12 w-9 rounded-md border border-slate-200 bg-slate-50 font-display text-xl font-semibold text-slate-900 shadow-none transition-[border-color,background-color,box-shadow] duration-200 ease-hud ' +
-  'min-[380px]:w-10 sm:h-14 sm:w-12 ' +
-  'data-[active=true]:border-brand-purple data-[active=true]:bg-white data-[active=true]:ring-brand-purple/15 ' +
-  'aria-invalid:border-rose-400 data-[active=true]:aria-invalid:ring-rose-500/15'
 
 const VerifyOtpPage = () => {
   const { t } = useTranslation()
@@ -82,7 +75,7 @@ const VerifyOtpPage = () => {
     setShaking(true)
     if (authError.retryAfter) cooldown.start(authError.retryAfter)
     if (mode === 'otp') setCode('')
-    codeInputRef.current?.focus()
+    codeInputRef.current?.focus({ preventScroll: true })
   }
 
   const submit = (value: string) => {
@@ -226,32 +219,15 @@ const VerifyOtpPage = () => {
               <Label htmlFor={codeId} className='sr-only'>
                 {t('verifyOtpPage.otpLabel')}
               </Label>
-              <InputOTP
-                ref={codeInputRef}
+              <OtpCodeInput
                 id={codeId}
-                maxLength={OTP_LENGTH}
-                pattern={REGEXP_ONLY_DIGITS}
+                inputRef={codeInputRef}
                 value={code}
                 onChange={clearErrorAndSet}
                 onComplete={submit}
-                autoFocus
-                aria-invalid={!!error}
-                aria-describedby={hintId}
-                containerClassName='justify-center gap-2 sm:gap-3'
-              >
-                {[0, 3].map((start) => (
-                  <InputOTPGroup key={start} className='gap-1 min-[380px]:gap-1.5 sm:gap-2'>
-                    {[0, 1, 2].map((offset) => (
-                      <InputOTPSlot
-                        key={offset}
-                        index={start + offset}
-                        aria-invalid={!!error}
-                        className={otpSlotClass}
-                      />
-                    ))}
-                  </InputOTPGroup>
-                ))}
-              </InputOTP>
+                invalid={!!error}
+                describedBy={hintId}
+              />
               <p id={hintId} className='text-center text-xs text-slate-500'>
                 {t('verifyOtpPage.otpHint')}
               </p>

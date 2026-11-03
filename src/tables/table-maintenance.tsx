@@ -1,8 +1,10 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
+import { Can } from '@/components/Auth/Can'
 import { DeleteMaintenanceModal } from '@/components/Maintenance/DeleteMaintenanceModal'
 import { EditMaintenanceModal } from '@/components/Maintenance/EditMaintenanceModal'
 import { Badge } from '@/components/ui/badge'
+import { PERM } from '@/constants/permissions'
 import { formatMaintenanceInstant } from '@/helpers/maintenance-datetime'
 import type { Maintenance } from '@/types/maintenance'
 
@@ -92,8 +94,12 @@ export const getMaintenanceColumns = (t: TFunction): ColumnDef<Maintenance>[] =>
           role='group'
           aria-label={t('maintenanceTable.rowActionsAria', { name: row.original.name })}
         >
-          <EditMaintenanceModal maintenance={row.original} />
-          <DeleteMaintenanceModal id={row.original.id} name={row.original.name} />
+          <Can permission={PERM.maintenanceUpdate}>
+            <EditMaintenanceModal maintenance={row.original} />
+          </Can>
+          <Can permission={PERM.maintenanceDelete}>
+            <DeleteMaintenanceModal id={row.original.id} name={row.original.name} />
+          </Can>
         </div>
       </div>
     ),

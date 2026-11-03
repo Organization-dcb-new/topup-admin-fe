@@ -1,8 +1,10 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
 import ModalAddPaymentMethod from '@/components/PaymentMethod/CreatePaymentMethodModal'
+import { PERM } from '@/constants/permissions'
 import { useGetPaymentMethods } from '@/hooks/usePaymentMethod'
 import { getPaymentMethodColumns } from '@/tables/table-payment-method'
 import i18n from '@/i18n'
@@ -83,7 +85,9 @@ export default function PaymentMethodPage() {
                 {t('paymentMethodPage.listHint', { limit })}
               </p>
             </div>
-            <ModalAddPaymentMethod />
+            <Can permission={PERM.paymentMethodCreate}>
+              <ModalAddPaymentMethod />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

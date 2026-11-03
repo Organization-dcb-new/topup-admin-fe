@@ -1,6 +1,8 @@
+import { Can } from '@/components/Auth/Can'
 import { AddProductToCategoryProductButton } from '@/components/CategoryProduct/AddProduct'
 import { DeleteCategoryProductButton } from '@/components/CategoryProduct/DeleteCategoryProduct'
 import { UpdateCategoryProduct } from '@/components/CategoryProduct/UpdateCategoryProduct'
+import { PERM } from '@/constants/permissions'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
@@ -94,13 +96,19 @@ export const getCategoryProductColumns = (t: TFunction): ColumnDef<CategoryProdu
           role='group'
           aria-label={t('categoryProductTable.rowActionsAria', { name: row.original.name })}
         >
-          <AddProductToCategoryProductButton
-            id={row.original.id}
-            game_id={row.original.game_id}
-            existingProduct={row.original.product}
-          />
-          <DeleteCategoryProductButton id={row.original.id} />
-          <UpdateCategoryProduct category={row.original} />
+          <Can permission={PERM.categoryProductUpdate}>
+            <AddProductToCategoryProductButton
+              id={row.original.id}
+              game_id={row.original.game_id}
+              existingProduct={row.original.product}
+            />
+          </Can>
+          <Can permission={PERM.categoryProductDelete}>
+            <DeleteCategoryProductButton id={row.original.id} />
+          </Can>
+          <Can permission={PERM.categoryProductUpdate}>
+            <UpdateCategoryProduct category={row.original} />
+          </Can>
         </div>
       </div>
     ),

@@ -1,3 +1,4 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
@@ -11,6 +12,7 @@ import TransactionPaymentMethodFilter from '@/components/Transaction/Transaction
 import TransactionSearchInput from '@/components/Transaction/SearchTransaction'
 import TransactionStatusFilter from '@/components/Transaction/TransactionStatusFilter'
 import TransactionExportModal from '@/components/Transaction/TransactionExportModal'
+import { PERM } from '@/constants/permissions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetTransactions } from '@/hooks/useTransaction'
 import { getPaymentColumns } from '@/tables/table-transaction'
@@ -314,7 +316,9 @@ export default function TransactionPage() {
                 </select>
               </div>
 
-              <TransactionExportModal />
+              <Can permission={PERM.transactionExport}>
+                <TransactionExportModal />
+              </Can>
               <Button
                 type='button'
                 variant='outline'

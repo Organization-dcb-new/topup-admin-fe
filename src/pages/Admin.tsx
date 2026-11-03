@@ -8,6 +8,8 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAdminData } from '@/hooks/useAdmin'
 import { CreateAdminModal } from '@/components/Admin/Create'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 
 export default function AdminManagementPage() {
   const { t, i18n } = useTranslation('common')
@@ -49,7 +51,9 @@ export default function AdminManagementPage() {
                 {t('adminPage.listHint')}
               </p>
             </div>
-            <CreateAdminModal />
+            <Can permission={PERM.adminCreate}>
+              <CreateAdminModal />
+            </Can>
           </div>
           <div className='p-3 sm:p-4'>
             {isLoading ? (

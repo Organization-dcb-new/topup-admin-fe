@@ -14,7 +14,10 @@ export interface AdminUser {
   id: string;
   username: string;
   email: string;
-  role: 'dev' | 'admin' | 'noc';
+  /** Role slug: dev, admin, noc or a custom role. */
+  role: string;
+  role_id?: string | null;
+  role_name?: string;
   two_factor_enabled: boolean;
   created_at: string;
 }

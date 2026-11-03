@@ -251,6 +251,12 @@
   background-size: 14px 14px;
 }
 
+/* Thin, quiet scrollbar for the sidebar. */
+@utility scrollbar-sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(148 163 184 / 0.45) transparent;
+}
+
 /* Jersey pinstripes; colour comes from `text-*`. */
 @utility hud-stripes {
   background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 14px);

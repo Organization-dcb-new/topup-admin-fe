@@ -1,4 +1,5 @@
 import { AdminBriefSelect } from '@/components/Admin/AdminBriefSelect'
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
@@ -17,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { PERM } from '@/constants/permissions'
 import { useGetAdminBrief } from '@/hooks/useAdmin'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetGameNamesWithType, useGetGames, type GetGamesParams } from '@/hooks/useGame'
@@ -334,7 +336,9 @@ export default function GamePage() {
             </div>
           </div>
           <div className='flex items-center gap-3 sm:justify-end'>
-            <EditBulkAllPriceModal />
+            <Can permission={PERM.productUpdatePrice}>
+              <EditBulkAllPriceModal />
+            </Can>
           </div>
         </div>
 

@@ -2,9 +2,11 @@ import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import type { Game } from '@/types/game'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { Can } from '@/components/Auth/Can'
 import { ChangeImageModal } from '@/components/Games/UploadImageModal'
 import { GameTableActions } from '@/components/Games/TableAction'
 import ToggleGameStatus from '@/components/Games/ToggleGameStatus'
+import { PERM } from '@/constants/permissions'
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -24,7 +26,22 @@ export const getGameColumns = (t: TFunction): ColumnDef<Game>[] => [
 
       return (
         <div className='flex min-w-[4.5rem] items-center py-0.5'>
-          <ChangeImageModal game={row.original} image={image} />
+          <Can
+            permission={PERM.gameUpdate}
+            fallback={
+              <img
+                src={image}
+                alt=''
+                className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+                loading='lazy'
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.png'
+                }}
+              />
+            }
+          >
+            <ChangeImageModal game={row.original} image={image} />
+          </Can>
         </div>
       )
     },

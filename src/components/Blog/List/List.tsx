@@ -1,5 +1,6 @@
 'use client'
 
+import { Can } from '@/components/Auth/Can'
 import { DataTable } from '@/components/Layout/table-data'
 import { getBlogColumns } from '@/tables/table-blog'
 import { useGetBlogs } from '@/components/Blog/hooks/useBlog'
@@ -12,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { PERM } from '@/constants/permissions'
 import { format } from 'date-fns'
 import { enUS, id as idLocale } from 'date-fns/locale'
 import i18n from '@/i18n'
@@ -115,18 +117,20 @@ function ArticleCard({ blog, onEdit, t }: { blog: Blog; onEdit: (blog: Blog) => 
           </div>
         )}
 
-        <div className='flex items-center justify-end border-t border-slate-100 dark:border-zinc-900 pt-3 mt-1'>
-          <Button
-            type='button'
-            variant='outline'
-            size='sm'
-            onClick={() => onEdit(blog)}
-            className='h-8 gap-1.5 text-xs font-semibold border-slate-200 dark:border-zinc-800 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800'
-          >
-            <Edit className='h-3.5 w-3.5' />
-            Edit Article
-          </Button>
-        </div>
+        <Can permission={PERM.blogUpdate}>
+          <div className='flex items-center justify-end border-t border-slate-100 dark:border-zinc-900 pt-3 mt-1'>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              onClick={() => onEdit(blog)}
+              className='h-8 gap-1.5 text-xs font-semibold border-slate-200 dark:border-zinc-800 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800'
+            >
+              <Edit className='h-3.5 w-3.5' />
+              Edit Article
+            </Button>
+          </div>
+        </Can>
       </div>
     </div>
   )

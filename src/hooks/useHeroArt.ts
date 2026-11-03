@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import { api } from '@/api/axios'
+import { useMediaQuery } from '@/hooks/useMediaQuery'
 import type { Game } from '@/types/game'
 
 export interface HeroArt {
@@ -35,18 +36,6 @@ function captionFromPath(path: string) {
     .replace(/\.[^.]+$/, '')
     .replace(/[-_]+/g, ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
-function useMediaQuery(query: string) {
-  const subscribe = useCallback(
-    (onChange: () => void) => {
-      const mql = window.matchMedia(query)
-      mql.addEventListener('change', onChange)
-      return () => mql.removeEventListener('change', onChange)
-    },
-    [query]
-  )
-  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches)
 }
 
 function preload(art: HeroArt): Promise<HeroArt | null> {

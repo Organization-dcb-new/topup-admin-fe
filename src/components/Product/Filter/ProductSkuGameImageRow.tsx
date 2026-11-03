@@ -1,5 +1,7 @@
+import { Can } from '@/components/Auth/Can'
 import { ChangeImageByGame } from '@/components/Product/Filter/ChangeImage'
 import { ProductSkuGameFilter } from '@/components/Product/Filter/ProductSkuGameFilter'
+import { PERM } from '@/constants/permissions'
 
 type ProductSkuGameImageRowProps = {
   sku: string
@@ -24,9 +26,11 @@ export function ProductSkuGameImageRow({
           onGameNameChange={onGameNameChange}
         />
       </div>
-      <div className='flex shrink-0 justify-stretch sm:justify-start'>
-        <ChangeImageByGame />
-      </div>
+      <Can permission={PERM.productUpdate}>
+        <div className='flex shrink-0 justify-stretch sm:justify-start'>
+          <ChangeImageByGame />
+        </div>
+      </Can>
     </div>
   )
 }

@@ -1,6 +1,8 @@
+import { Can } from '@/components/Auth/Can'
 import { DeleteProviderModal } from '@/components/Provider/DeleteProviderModal'
 import { EditProviderModal } from '@/components/Provider/EditProviderModal'
 import { Badge } from '@/components/ui/badge'
+import { PERM } from '@/constants/permissions'
 import { cn } from '@/lib/utils'
 import type { Provider } from '@/types/provider'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -98,8 +100,12 @@ export const getProviderColumns = (t: TFunction): ColumnDef<Provider>[] => [
           role='group'
           aria-label={t('providerTable.rowActionsAria', { name: row.original.name })}
         >
-          <EditProviderModal provider={row.original} />
-          <DeleteProviderModal id={row.original.id} />
+          <Can permission={PERM.providerUpdate}>
+            <EditProviderModal provider={row.original} />
+          </Can>
+          <Can permission={PERM.providerDelete}>
+            <DeleteProviderModal id={row.original.id} />
+          </Can>
         </div>
       </div>
     ),

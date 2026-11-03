@@ -1,3 +1,4 @@
+import { Can } from '@/components/Auth/Can'
 import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
 import { ProductListCard } from '@/components/Product/ProductListCard'
 import {
@@ -11,6 +12,7 @@ import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
+import { PERM } from '@/constants/permissions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { type GetProductsParams, useGetProducts } from '@/hooks/useProduct'
 import { getProductColumns } from '@/tables/table-product'
@@ -153,7 +155,9 @@ export default function ProductPage() {
             </div>
           </div>
           <div className='flex flex-wrap items-center gap-3 sm:justify-end'>
-            <EditBulkAllPriceModal />
+            <Can permission={PERM.productUpdatePrice}>
+              <EditBulkAllPriceModal />
+            </Can>
             <div className='flex flex-col items-end gap-1 sm:text-right'>
               {isLoading && (
                 <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>

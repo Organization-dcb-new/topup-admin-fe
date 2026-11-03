@@ -1,8 +1,10 @@
+import { Can } from '@/components/Auth/Can'
 import { CreateCategoryProductModal } from '@/components/CategoryProduct/CreateCategoryProduct'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import Pagination from '@/components/Layout/Pagination'
 import { DataTable } from '@/components/Layout/table-data'
+import { PERM } from '@/constants/permissions'
 import { useGetCategoryProduct } from '@/hooks/useCategoryProduct'
 import type { CategoryProduct } from '@/hooks/useCategoryProduct'
 import { getCategoryProductColumns } from '@/tables/table-category-product'
@@ -99,7 +101,9 @@ export default function CategoryProduct() {
                 {t('categoryProductPage.listHint', { limit })}
               </p>
             </div>
-            <CreateCategoryProductModal />
+            <Can permission={PERM.categoryProductCreate}>
+              <CreateCategoryProductModal />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

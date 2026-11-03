@@ -1,3 +1,5 @@
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 import { useToggleGameStatus } from '@/hooks/useGame'
 import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
@@ -13,16 +15,18 @@ export default function ToggleGameStatus({ game }: ToggleGameStatusProps) {
 
   return (
     <div className='flex items-center gap-2'>
-      <Switch
-        checked={game.is_active}
-        onCheckedChange={(v) => toggleStatusMutation.mutate(v)}
-        disabled={toggleStatusMutation.isPending}
-        aria-label={
-          game.is_active
-            ? t('gameToggleLabels.deactivateAria', { name: game.name })
-            : t('gameToggleLabels.activateAria', { name: game.name })
-        }
-      />
+      <Can permission={PERM.gameUpdate}>
+        <Switch
+          checked={game.is_active}
+          onCheckedChange={(v) => toggleStatusMutation.mutate(v)}
+          disabled={toggleStatusMutation.isPending}
+          aria-label={
+            game.is_active
+              ? t('gameToggleLabels.deactivateAria', { name: game.name })
+              : t('gameToggleLabels.activateAria', { name: game.name })
+          }
+        />
+      </Can>
       <span className='text-sm font-medium text-foreground'>
         {game.is_active ? t('gameToggleLabels.active') : t('gameToggleLabels.inactive')}
       </span>

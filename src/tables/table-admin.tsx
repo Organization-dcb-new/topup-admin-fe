@@ -5,6 +5,8 @@ import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { UpdateAdminRole } from '@/components/Admin/Update'
 import { DeleteAdminButton } from '@/components/Admin/Delete'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 import { cn } from '@/lib/utils'
 
 const roleBadgeClass = (role: string | undefined) => {
@@ -55,7 +57,7 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
             variant='outline'
             className={cn('text-[10px] font-semibold uppercase tracking-wide', roleBadgeClass(role))}
           >
-            {role}
+            {row.original.role_name || role}
           </Badge>
         </div>
       )
@@ -82,8 +84,14 @@ export const getAdminColumns = (t: TFunction): ColumnDef<AdminUser>[] => [
     header: t('adminTable.colActions'),
     cell: ({ row }) => (
       <div className='flex flex-wrap items-center gap-2'>
-        <UpdateAdminRole id={row.original.id} currentRole={row.original.role} />
-        <DeleteAdminButton id={row.original.id} email={row.original.email} />
+        <UpdateAdminRole
+          id={row.original.id}
+          currentRole={row.original.role}
+          currentRoleName={row.original.role_name}
+        />
+        <Can permission={PERM.adminDelete}>
+          <DeleteAdminButton id={row.original.id} email={row.original.email} />
+        </Can>
       </div>
     ),
   },

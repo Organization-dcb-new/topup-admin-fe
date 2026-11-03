@@ -1,4 +1,7 @@
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 import { useToggleGameShow } from '@/hooks/useGame'
+import { usePermissions } from '@/hooks/usePermissions'
 import type { Game } from '@/types/game'
 import { Switch } from '../ui/switch'
 import EditGameModal from './EditGameModal'
@@ -8,6 +11,7 @@ import { useTranslation } from 'react-i18next'
 export function GameTableActions({ game }: { game: Game }) {
   const { t } = useTranslation('common')
   const toggleMutation = useToggleGameShow(game.id)
+  const { can } = usePermissions()
 
   return (
     <div className='flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-2'>
@@ -18,7 +22,7 @@ export function GameTableActions({ game }: { game: Game }) {
         <Switch
           checked={game.is_show}
           onCheckedChange={(v) => toggleMutation.mutate(v)}
-          disabled={toggleMutation.isPending}
+          disabled={toggleMutation.isPending || !can(PERM.gameUpdate)}
           aria-label={
             game.is_show
               ? t('gameShowcase.hideAria', { name: game.name })
@@ -28,9 +32,13 @@ export function GameTableActions({ game }: { game: Game }) {
       </div>
 
       <div className='flex flex-wrap items-center gap-1'>
-        <EditGameModal game={game} />
+        <Can permission={PERM.gameUpdate}>
+          <EditGameModal game={game} />
+        </Can>
         {/* <DeleteGameModal id={game.id} /> */}
-        <UpdateBulkProductPriceModal key={game.id} gameId={game.id} />
+        <Can permission={PERM.productUpdatePrice}>
+          <UpdateBulkProductPriceModal key={game.id} gameId={game.id} />
+        </Can>
       </div>
     </div>
   )

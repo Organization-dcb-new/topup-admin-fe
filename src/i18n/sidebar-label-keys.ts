@@ -30,4 +30,5 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   Pengguna: 'sidebar.menu.pengguna',
   'Log admin': 'sidebar.menu.logAdmin',
   'Log callback produk': 'sidebar.menu.productCallbackLog',
+  'Role & akses': 'sidebar.menu.roles',
 }

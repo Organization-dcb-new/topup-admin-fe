@@ -1,3 +1,4 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { DataTable } from '@/components/Layout/table-data'
@@ -13,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { PERM } from '@/constants/permissions'
 import {
   useCreateReferralCode,
   useDeleteReferralCode,
@@ -107,11 +109,13 @@ export default function ReferralPage() {
         header: t('referralPage.table.status'),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
-            <Switch
-              checked={row.original.is_active}
-              onCheckedChange={() => handleToggleStatus(row.original)}
-              aria-label={t('referralPage.form.statusLabel')}
-            />
+            <Can permission={PERM.referralUpdate}>
+              <Switch
+                checked={row.original.is_active}
+                onCheckedChange={() => handleToggleStatus(row.original)}
+                aria-label={t('referralPage.form.statusLabel')}
+              />
+            </Can>
             <span className='text-xs font-medium text-slate-500'>
               {row.original.is_active ? t('referralPage.statusActive') : t('referralPage.statusInactive')}
             </span>
@@ -123,26 +127,30 @@ export default function ReferralPage() {
         header: t('referralPage.table.actions'),
         cell: ({ row }) => (
           <div className='flex items-center gap-2'>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0 border-slate-200 hover:bg-slate-50'
-              onClick={() => setEditingReferral(row.original)}
-              title={t('referralPage.editBtn')}
-            >
-              <Edit className='h-4 w-4 text-slate-600' />
-            </Button>
-            <Button
-              type='button'
-              variant='outline'
-              size='sm'
-              className='h-8 w-8 p-0 border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-rose-600'
-              onClick={() => setDeletingId(row.original.id)}
-              title={t('referralPage.deleteBtn')}
-            >
-              <Trash2 className='h-4 w-4' />
-            </Button>
+            <Can permission={PERM.referralUpdate}>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                className='h-8 w-8 p-0 border-slate-200 hover:bg-slate-50'
+                onClick={() => setEditingReferral(row.original)}
+                title={t('referralPage.editBtn')}
+              >
+                <Edit className='h-4 w-4 text-slate-600' />
+              </Button>
+            </Can>
+            <Can permission={PERM.referralDelete}>
+              <Button
+                type='button'
+                variant='outline'
+                size='sm'
+                className='h-8 w-8 p-0 border-slate-200 hover:bg-rose-50 hover:border-rose-200 text-rose-600'
+                onClick={() => setDeletingId(row.original.id)}
+                title={t('referralPage.deleteBtn')}
+              >
+                <Trash2 className='h-4 w-4' />
+              </Button>
+            </Can>
           </div>
         ),
       },
@@ -201,14 +209,16 @@ export default function ReferralPage() {
               </p>
             </div>
             <div className='flex items-center gap-3'>
-              <Button
-                type='button'
-                onClick={() => setIsCreateOpen(true)}
-                className='flex items-center gap-1.5 rounded-lg text-sm font-semibold'
-              >
-                <Plus className='h-4 w-4' />
-                {t('referralPage.addBtn')}
-              </Button>
+              <Can permission={PERM.referralCreate}>
+                <Button
+                  type='button'
+                  onClick={() => setIsCreateOpen(true)}
+                  className='flex items-center gap-1.5 rounded-lg text-sm font-semibold'
+                >
+                  <Plus className='h-4 w-4' />
+                  {t('referralPage.addBtn')}
+                </Button>
+              </Can>
             </div>
           </div>
 
