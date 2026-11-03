@@ -1,85 +1,54 @@
 import { api } from '@/api/axios'
-import type { FormValuesEditGame } from '@/components/Games/EditGameModal'
-import type { FormValuesChangeImage } from '@/components/Games/UploadImageModal'
-import type { GameByIDResponse, GamesResponse } from '@/types/game'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import i18n from '@/i18n'
+import type {
+  GameByIDResponse,
+  GameCreateRequest,
+  GameImageRequest,
+  GamesResponse,
+  GameUpdateRequest,
+} from '@/types/game'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
 
 export interface GameNames {
   id: string
   name: string
 }
 
+/** Filters GET /games/pagination actually honours; anything else is ignored by the backend. */
 export type GetGamesParams = {
   search?: string
-  image?: 'all' | 'no_image'
-  /** Backend: filter `is_active` (true = aktif, false = nonaktif); omit = semua */
+  image?: 'all' | 'with_image' | 'no_image'
+  /** Omit for all games. */
   is_active?: boolean
-  /** Backend: filter per `game_id` */
   game_id?: string
-  is_show?: boolean
-  is_check_id?: boolean
-  updated_by?: string
-  updated_from?: string
-  updated_to?: string
-  sort?: 'name' | 'updated_at'
-  order?: 'asc' | 'desc'
+}
+
+export const gamesQueryKey = ['games'] as const
+
+function serverMessage(err: unknown) {
+  return (err as { response?: { data?: { message?: string } } })?.response?.data?.message
 }
 
 export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
-  const {
-    search = '',
-    image = 'all',
-    is_active,
-    game_id,
-    is_show,
-    is_check_id,
-    updated_by,
-    updated_from,
-    updated_to,
-    sort,
-    order,
-  } = params
-
+  const { search = '', image = 'all', is_active, game_id } = params
   return useQuery<GamesResponse>({
-    queryKey: [
-      'games',
-      page,
-      limit,
-      search,
-      image,
-      is_active ?? 'all',
-      game_id ?? '',
-      is_show ?? 'all',
-      is_check_id ?? 'all',
-      updated_by ?? '',
-      updated_from ?? '',
-      updated_to ?? '',
-      sort ?? '',
-      order ?? '',
-    ],
+    queryKey: [...gamesQueryKey, page, limit, search, image, is_active ?? 'all', game_id ?? ''],
     queryFn: async () => {
       const { data } = await api.get('/games/pagination', {
         params: {
           page,
           limit,
           image,
-          ...(search.trim() !== '' && { search: search.trim() }),
+          ...(search.trim() && { search: search.trim() }),
           ...(is_active !== undefined && { is_active }),
           ...(game_id && { game_id }),
-          ...(is_show !== undefined && { is_show }),
-          ...(is_check_id !== undefined && { is_check_id }),
-          ...(updated_by?.trim() && { updated_by: updated_by.trim() }),
-          ...(updated_from && { updated_from }),
-          ...(updated_to && { updated_to }),
-          ...(sort && order && { sort, order }),
         },
       })
-
       return data
     },
-
+    // Keep the current page on screen while a new filter loads.
+    placeholderData: keepPreviousData,
     staleTime: 5000,
   })
 }
@@ -96,83 +65,153 @@ export function useGetGameById(gameId: string) {
   })
 }
 
-export const useCreateGame = () => {
+/** Refreshes every view of a game after a change. */
+function useInvalidateGame() {
   const queryClient = useQueryClient()
+  return (gameId?: string) => {
+    void queryClient.invalidateQueries({ queryKey: gamesQueryKey })
+    void queryClient.invalidateQueries({ queryKey: ['game-names'] })
+    if (gameId) void queryClient.invalidateQueries({ queryKey: ['game', gameId] })
+  }
+}
+
+export function useCreateGame(onDone?: () => void) {
+  const invalidate = useInvalidateGame()
   return useMutation({
-    mutationFn: async (payload: Record<string, unknown>) => {
+    mutationFn: async (payload: GameCreateRequest) => {
       const res = await api.post('/games', payload)
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['games'] })
+      toast.success(i18n.t('gamePage.toasts.created'))
+      invalidate()
+      onDone?.()
     },
   })
 }
 
-export const useDeleteGame = (id: string) => {
-  const { t } = useTranslation('common')
+export function useUpdateGame(onDone?: () => void) {
+  const invalidate = useInvalidateGame()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      const res = await api.delete(`/games/${id}`)
-      return res.data
-    },
-    onSuccess: () => {
-      toast.success(t('gameToasts.deleteSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-    },
-    onError: () => toast.error(t('gameToasts.deleteError')),
-  })
-}
-
-export function useUpdateImageGame(onClose: () => void) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValuesChangeImage) => {
-      const payload = {
-        ...values,
-      }
-
-      const res = await api.patch(`/games/image`, payload)
-      return res.data
-    },
-    onSuccess: (_data, variables) => {
-      toast.success(t('gameToasts.imageUpdateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-      queryClient.invalidateQueries({ queryKey: ['game', variables.game_id] })
-      onClose()
-    },
-    onError: () => toast.error(t('gameToasts.imageUpdateError')),
-  })
-
-  return mutation
-}
-
-export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValuesEditGame) => {
-      const payload = {
-        ...values,
-      }
-
+    mutationFn: async ({ id, payload }: { id: string; payload: GameUpdateRequest }) => {
       const res = await api.put(`/games/${id}`, payload)
       return res.data
     },
-    onSuccess: () => {
-      toast.success(t('gameToasts.gameUpdateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-      queryClient.invalidateQueries({ queryKey: ['game', id] })
-      setOpen(false)
+    onSuccess: (_res, { id, payload }) => {
+      toast.success(i18n.t('gamePage.toasts.updated'))
+      invalidate(id)
+      // Shows list their games, so a visibility change shows up there too.
+      if (payload.is_show !== undefined) void queryClient.invalidateQueries({ queryKey: ['shows'] })
+      onDone?.()
     },
-    onError: () => toast.error(t('gameToasts.gameUpdateError')),
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.updateError')),
   })
+}
 
-  return mutation
+export function useToggleGameShow(id: string) {
+  const invalidate = useInvalidateGame()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (is_show: boolean) => api.put(`/games/${id}`, { is_show }),
+    onSuccess: (_res, isShow) => {
+      toast.success(i18n.t(isShow ? 'gamePage.toasts.shown' : 'gamePage.toasts.hidden'))
+      invalidate(id)
+      void queryClient.invalidateQueries({ queryKey: ['shows'] })
+    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.updateError')),
+  })
+}
+
+export function useToggleGameStatus(id: string) {
+  const invalidate = useInvalidateGame()
+  return useMutation({
+    mutationFn: (is_active: boolean) => api.patch(`/games/status/${id}`, { is_active }),
+    onSuccess: (_res, isActive) => {
+      toast.success(i18n.t(isActive ? 'gamePage.toasts.activated' : 'gamePage.toasts.deactivated'))
+      invalidate(id)
+    },
+    onError: () => toast.error(i18n.t('gamePage.toasts.statusError')),
+  })
+}
+
+export function useUpdateGameImage(onDone?: () => void) {
+  const invalidate = useInvalidateGame()
+  return useMutation({
+    mutationFn: async (payload: GameImageRequest) => {
+      const res = await api.patch('/games/image', payload)
+      return res.data
+    },
+    onSuccess: (_res, payload) => {
+      toast.success(i18n.t('gamePage.toasts.imagesSaved'))
+      invalidate(payload.game_id)
+      onDone?.()
+    },
+    onError: () => toast.error(i18n.t('gamePage.toasts.imagesError')),
+  })
+}
+
+export function useDeleteGame(onDone?: () => void) {
+  const invalidate = useInvalidateGame()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/games/${id}`),
+    onSuccess: () => {
+      toast.success(i18n.t('gamePage.toasts.deleted'))
+      invalidate()
+      onDone?.()
+    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.deleteError')),
+  })
+}
+
+/** Sets one markup percentage on every product of a game (PATCH /products/price/bulk). */
+export function useBulkUpdateGamePrice(gameId: string, onDone?: () => void) {
+  const invalidate = useInvalidateGame()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (additionalPercent: number) =>
+      api.patch('/products/price/bulk', { game_id: gameId, additional_percent: additionalPercent, type: 'percent' }),
+    onSuccess: () => {
+      toast.success(i18n.t('gamePage.toasts.priceSaved'))
+      invalidate(gameId)
+      void queryClient.invalidateQueries({ queryKey: ['products'] })
+      void queryClient.invalidateQueries({ queryKey: ['products-by-game', gameId] })
+      void queryClient.invalidateQueries({ queryKey: ['product-names', gameId] })
+      onDone?.()
+    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.priceError')),
+  })
+}
+
+/** Pulls this game's products from the provider (POST /games/:id/sync-products). */
+export function useSyncGameProducts(gameId: string, onDone?: () => void) {
+  const invalidate = useInvalidateGame()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => api.post(`/games/${gameId}/sync-products`),
+    onSuccess: () => {
+      toast.success(i18n.t('gamePage.toasts.productsSynced'))
+      invalidate(gameId)
+      void queryClient.invalidateQueries({ queryKey: ['products'] })
+      void queryClient.invalidateQueries({ queryKey: ['products-by-game', gameId] })
+      onDone?.()
+    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.syncError')),
+  })
+}
+
+/** Imports the provider's game catalogue (POST /games/init-provider). */
+export function useInitGamesFromProvider(onDone?: () => void) {
+  const invalidate = useInvalidateGame()
+  return useMutation({
+    mutationFn: () => api.post('/games/init-provider'),
+    onSuccess: () => {
+      toast.success(i18n.t('gamePage.toasts.gamesSynced'))
+      invalidate()
+      onDone?.()
+    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.syncError')),
+  })
 }
 
 export function useGetGameNames(enabled = true) {
@@ -193,54 +232,5 @@ export function useGetGameNamesWithType() {
       const res = await api.get('/games/names')
       return res.data.data
     },
-  })
-}
-
-export function useToggleGameShow(id: string) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (is_show: boolean) => api.put(`/games/${id}`, { is_show }),
-
-    onSuccess: () => {
-      toast.success(t('gameToasts.gameUpdateSuccess') || 'Game updated')
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-      queryClient.invalidateQueries({ queryKey: ['game', id] })
-      queryClient.invalidateQueries({ queryKey: ['shows'] })
-    },
-    onError: (err: any) => {
-      const errMsg = err?.response?.data?.message || err?.message || t('gameToasts.gameUpdateError') || 'Failed to update game'
-      toast.error(errMsg)
-    },
-  })
-}
-
-export function useToggleGameStatus(id: string) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (is_active: boolean) => api.patch(`/games/status/${id}`, { is_active }),
-    onSuccess: () => {
-      toast.success(t('gameToasts.statusToggleSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-      queryClient.invalidateQueries({ queryKey: ['game', id] })
-    },
-    onError: () => toast.error(t('gameToasts.statusToggleError')),
-  })
-}
-
-export function useBulkUpdateGameStatus() {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (is_active: boolean) => api.patch('/games/bulk-status', { is_active }),
-    onSuccess: () => {
-      toast.success(t('gameToasts.bulkStatusSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-    },
-    onError: () => toast.error(t('gameToasts.bulkStatusError')),
   })
 }

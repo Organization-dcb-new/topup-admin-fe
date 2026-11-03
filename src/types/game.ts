@@ -122,3 +122,54 @@ export interface GameInputFormProps {
   removeInput: (index: number) => void
   inputs: GameInputPayload[]
 }
+
+/** One checkout field sent with POST /games (the backend stores every field as required). */
+export type GameCreateInputRequest = {
+  key: string
+  label: string
+  input_type: string
+  sort_order: number
+  placeholder: string
+  required: boolean
+}
+
+/** POST /games; `category_id` and `provider_id` must be valid ids or the backend rejects it. */
+export type GameCreateRequest = {
+  category_id: string
+  provider_id: string
+  name: string
+  slug: string
+  code: string
+  thumbnail_url: string
+  banner_url: string
+  description: string
+  instruction: string
+  developer: string
+  publisher: string
+  inputs: GameCreateInputRequest[]
+}
+
+/**
+ * PUT /games/:id. The backend only writes fields that are non-empty (or non-zero), so a field
+ * can't be cleared, and sending `name` also regenerates the slug from it.
+ */
+export type GameUpdateRequest = Partial<{
+  category_id: string
+  name: string
+  code: string
+  description: string
+  instruction: string
+  developer: string
+  publisher: string
+  popularity_score: number
+  is_featured: boolean
+  is_show: boolean
+  is_active: boolean
+}>
+
+/** PATCH /games/image writes both images as sent, so the current one must be resent to keep it. */
+export type GameImageRequest = {
+  game_id: string
+  thumbnail_url: string
+  banner_url: string
+}

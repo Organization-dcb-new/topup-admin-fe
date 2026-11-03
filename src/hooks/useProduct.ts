@@ -1,50 +1,54 @@
 import { api } from '@/api/axios'
-import type { FormValuesProductImage } from '@/components/Product/Filter/ChangeImage'
-import type { FormValuesChangeImageProductV2 } from '@/components/Product/Filter/UploadImage'
-import type { Product, ProductResponse } from '@/types/product'
+import i18n from '@/i18n'
+import type {
+  ChangeProductImageByGamePayload,
+  Product,
+  ProductResponse,
+  UpdateProductPricePayload,
+} from '@/types/product'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
 
-/** Query list produk admin — selaraskan nama field dengan DTO backend bila perlu. */
+/** Filters of GET /products/admin; empty strings are left out of the request. */
 export type GetProductsParams = {
-  /** Pencarian nama produk (query `search`) */
-  search: string;
-  sku: string;
-  game_name: string;
-  /** `true` = aktif, `false` = nonaktif, `undefined` = semua */
-  is_active?: boolean;
-  /** Query `provider_status` — umumnya `available` / `empty` (BE: TrimSpace). */
-  provider_status?: string;
-  additional_fee_above?: string;
-  additional_fee_below?: string;
-  additional_percent_above?: string;
-  additional_percent_below?: string;
-  base_price_above?: string;
-  base_price_below?: string;
-  /** Harga dasar tepat (=) */
-  base_price?: string;
-  selling_price_above?: string;
-  selling_price_below?: string;
-  /** Harga jual tepat (=) */
-  selling_price?: string;
-  last_updated_by?: string;
-};
-
-function pickNonEmpty(params: Record<string, string | undefined>) {
-  return Object.fromEntries(
-    Object.entries(params).filter(([, v]) => v !== undefined && v !== ''),
-  )
+  /** Matches the product name or its game's name. */
+  search: string
+  /** Exact SKU. */
+  sku: string
+  /** Substring of the game name. */
+  game_name: string
+  /** `true` = active, `false` = inactive, `undefined` = both. */
+  is_active?: boolean
+  /** Provider stock status, usually `available` or `empty`. */
+  provider_status?: string
+  additional_fee_above?: string
+  additional_fee_below?: string
+  additional_percent_above?: string
+  additional_percent_below?: string
+  base_price_above?: string
+  base_price_below?: string
+  base_price?: string
+  selling_price_above?: string
+  selling_price_below?: string
+  selling_price?: string
+  /** Substring of `last_updated_by`, e.g. `admin`, `process` or `system`. */
+  last_updated_by?: string
 }
 
-export const useGetProducts = (
-  page: number,
-  limit: number,
-  filters: GetProductsParams,
-) => {
-  const providerStatus = filters.provider_status?.trim() ?? ''
+export const productsQueryKey = ['products'] as const
 
-  const numeric = pickNonEmpty({
+function pickNonEmpty(params: Record<string, string | boolean | undefined>) {
+  return Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''))
+}
+
+export const useGetProducts = (page: number, limit: number, filters: GetProductsParams) => {
+  const params = pickNonEmpty({
+    search: filters.search.trim(),
+    sku: filters.sku.trim(),
+    game_name: filters.game_name,
+    is_active: filters.is_active,
+    provider_status: filters.provider_status?.trim(),
+    last_updated_by: filters.last_updated_by,
     additional_fee_above: filters.additional_fee_above,
     additional_fee_below: filters.additional_fee_below,
     additional_percent_above: filters.additional_percent_above,
@@ -58,85 +62,48 @@ export const useGetProducts = (
   })
 
   return useQuery({
-    queryKey: [
-      'products',
-      page,
-      limit,
-      filters.search,
-      filters.sku,
-      filters.game_name,
-      filters.is_active,
-      providerStatus,
-      filters.last_updated_by,
-      numeric,
-    ],
+    queryKey: [...productsQueryKey, page, limit, params],
     queryFn: async (): Promise<ProductResponse> => {
-      const res = await api.get('/products/admin', {
-        params: {
-          page,
-          limit,
-          search: filters.search || undefined,
-          sku: filters.sku || undefined,
-          game_name: filters.game_name || undefined,
-          ...(filters.is_active !== undefined && {
-            is_active: filters.is_active,
-          }),
-          ...(providerStatus && { provider_status: providerStatus }),
-          last_updated_by: filters.last_updated_by || undefined,
-          ...numeric,
-        },
-      })
+      const res = await api.get('/products/admin', { params: { page, limit, ...params } })
       return res.data
     },
+    // Keep the current page on screen while a new filter loads.
+    placeholderData: keepPreviousData,
   })
 }
 
-export function useUpdateImageProduct(setOpen: (open: boolean) => void) {
-  const { t } = useTranslation('common')
-  const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValuesProductImage) => {
-      const payload = {
-        ...values,
-      }
-
-      const res = await api.patch(`/products/by-game`, payload)
-      return res.data
-    },
-    onSuccess: () => {
-      toast.success(t('productToasts.imageUpdateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      setOpen(false)
-    },
-    onError: () => toast.error(t('productToasts.imageUpdateError')),
-  })
-
-  return mutation
+/** Price and image changes show up on the product list, the per-game lists and the anomaly page. */
+function invalidateProductViews(queryClient: ReturnType<typeof useQueryClient>) {
+  void queryClient.invalidateQueries({ queryKey: productsQueryKey })
+  void queryClient.invalidateQueries({ queryKey: ['products-by-game'] })
+  void queryClient.invalidateQueries({ queryKey: ['product-anomaly'] })
 }
 
-export function useUpdateImageProductV2(onClose: () => void) {
-  const { t } = useTranslation('common')
+export function useUpdateProductPrice(onDone?: () => void) {
   const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValuesChangeImageProductV2) => {
-      const payload = {
-        ...values,
-      }
-
-      const res = await api.patch(`/products/by-game`, payload)
-      return res.data
-    },
+  return useMutation({
+    mutationFn: (payload: UpdateProductPricePayload) => api.patch('/products/price', payload),
     onSuccess: () => {
-      toast.success(t('productToasts.imageUpdateSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      onClose()
+      toast.success(i18n.t('productsPage.toasts.priceSaved'))
+      invalidateProductViews(queryClient)
+      onDone?.()
     },
-    onError: () => toast.error(t('productToasts.imageUpdateError')),
+    onError: () => toast.error(i18n.t('productsPage.toasts.priceError')),
   })
+}
 
-  return mutation
+/** Sets the image of every product of a game; the backend has no per-product image endpoint. */
+export function useChangeProductImageByGame(onDone?: () => void) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: ChangeProductImageByGamePayload) => api.patch('/products/by-game', payload),
+    onSuccess: () => {
+      toast.success(i18n.t('productsPage.toasts.imageSaved'))
+      invalidateProductViews(queryClient)
+      onDone?.()
+    },
+    onError: () => toast.error(i18n.t('productsPage.toasts.imageError')),
+  })
 }
 
 export function useGetProductNames(id: string) {
@@ -149,7 +116,7 @@ export function useGetProductNames(id: string) {
   })
 }
 
-/** Produk per game — dipakai saat payload game (list/detail) tidak menyertakan `product`. */
+/** Products of one game — for when a game payload (list/detail) doesn't include `product`. */
 export function useProductsByGame(gameId: string, enabled: boolean) {
   return useQuery({
     queryKey: ['products-by-game', gameId],
@@ -181,7 +148,6 @@ export function useGetProductAnomaly(page: number, limit: number) {
 }
 
 export function useBulkUpdateAllProductPrice(onSuccessCallback?: () => void) {
-  const { t } = useTranslation('common')
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -192,13 +158,11 @@ export function useBulkUpdateAllProductPrice(onSuccessCallback?: () => void) {
       return res.data
     },
     onSuccess: () => {
-      toast.success(t('gameToasts.bulkAllPriceSuccess'))
-      queryClient.invalidateQueries({ queryKey: ['products'] })
-      queryClient.invalidateQueries({ queryKey: ['games'] })
-      queryClient.invalidateQueries({ queryKey: ['products-by-game'] })
+      toast.success(i18n.t('productsPage.toasts.bulkAllSaved'))
+      invalidateProductViews(queryClient)
+      void queryClient.invalidateQueries({ queryKey: ['games'] })
       onSuccessCallback?.()
     },
-    onError: () => toast.error(t('gameToasts.bulkAllPriceError')),
+    onError: () => toast.error(i18n.t('productsPage.toasts.bulkAllError')),
   })
 }
-
