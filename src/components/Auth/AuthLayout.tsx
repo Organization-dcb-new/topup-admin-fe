@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Activity, Boxes, Crosshair, ShieldCheck } from 'lucide-react'
@@ -6,6 +6,8 @@ import { Activity, Boxes, Crosshair, ShieldCheck } from 'lucide-react'
 import brandMark from '@/assets/brand/pakargaming-mark.webp'
 import brandWordmark from '@/assets/brand/pakargaming-wordmark.webp'
 import { LanguageSwitch } from '@/components/Layout/language-switch'
+import { AnimatedHeight } from '@/components/ui/animated-height'
+import { HudCard } from './AuthPanel'
 import { useServerStatus } from '@/hooks/useHealth'
 import { useHeroArt, type HeroArt } from '@/hooks/useHeroArt'
 import { cn } from '@/lib/utils'
@@ -39,7 +41,7 @@ export function AuthLayout() {
           </header>
 
           <main className='flex flex-1 items-center justify-center py-8'>
-            <PanelFrame>
+            <HudCard className='max-w-[26rem] animate-in fade-in zoom-in-[0.97] slide-in-from-bottom-4 duration-700 ease-hud'>
               <AnimatedHeight>
                 <div
                   key={location.pathname}
@@ -48,7 +50,7 @@ export function AuthLayout() {
                   <Outlet />
                 </div>
               </AnimatedHeight>
-            </PanelFrame>
+            </HudCard>
           </main>
 
           <footer className='flex flex-col items-center gap-3 text-xs text-slate-500 animate-in fade-in duration-700 delay-300 fill-mode-both sm:flex-row sm:justify-between'>
@@ -58,58 +60,6 @@ export function AuthLayout() {
             <ServerStatus />
           </footer>
         </div>
-      </div>
-    </div>
-  )
-}
-
-/** White notched card with a hairline border, a brand-colour top bar and HUD corner brackets. */
-function PanelFrame({ children }: { children: ReactNode }) {
-  return (
-    <div className='relative w-full max-w-[26rem] animate-in fade-in zoom-in-[0.97] slide-in-from-bottom-4 duration-700 ease-hud'>
-      <span className='absolute -left-2 -top-2 size-6 border-l-[3px] border-t-[3px] border-brand-purple' aria-hidden />
-      <span className='absolute -bottom-2 -right-2 size-6 border-b-[3px] border-r-[3px] border-brand-cyan' aria-hidden />
-
-      {/* drop-shadow instead of box-shadow: clip-path would cut a box-shadow off. */}
-      <div className='drop-shadow-[0_24px_40px_rgba(74,20,140,0.13)]'>
-        <div className='bg-slate-200/80 p-px hud-clip'>
-          <div className='bg-white hud-clip'>
-            <div className='relative h-1 overflow-hidden bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden>
-              <span className='absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/80 to-transparent animate-hud-trace' />
-            </div>
-            <div className='px-5 py-7 sm:px-8 sm:py-9'>{children}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/**
- * Eases height changes (loader → form → OTP, errors appearing) instead of letting the panel jump.
- * The 4px bleed keeps input focus rings from being clipped by `overflow-hidden`.
- */
-function AnimatedHeight({ children }: { children: ReactNode }) {
-  const innerRef = useRef<HTMLDivElement>(null)
-  const [height, setHeight] = useState<number>()
-
-  useLayoutEffect(() => {
-    const el = innerRef.current
-    if (!el) return
-    const observer = new ResizeObserver(([entry]) => {
-      setHeight(entry.borderBoxSize?.[0]?.blockSize ?? el.offsetHeight)
-    })
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div
-      className='-m-1 overflow-hidden transition-[height] duration-500 ease-hud'
-      style={{ height }}
-    >
-      <div ref={innerRef} className='p-1'>
-        {children}
       </div>
     </div>
   )

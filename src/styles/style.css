@@ -251,10 +251,10 @@
   background-size: 14px 14px;
 }
 
-/* Thin translucent scrollbar for the purple sidebar. */
+/* Thin, quiet scrollbar for the sidebar. */
 @utility scrollbar-sidebar {
   scrollbar-width: thin;
-  scrollbar-color: rgb(255 255 255 / 0.25) transparent;
+  scrollbar-color: rgb(148 163 184 / 0.45) transparent;
 }
 
 /* Jersey pinstripes; colour comes from `text-*`. */

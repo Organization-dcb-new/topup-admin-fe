@@ -5,6 +5,7 @@ import { Tooltip } from 'radix-ui'
 import { ChevronDown, X } from 'lucide-react'
 
 import brandMark from '@/assets/brand/pakargaming-mark.webp'
+import brandWordmark from '@/assets/brand/pakargaming-wordmark.webp'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { SidebarMenu } from '@/constants/sidebar-menu'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
@@ -52,7 +53,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
       <aside
         inert={!isMdUp && !mobileOpen}
         className={cn(
-          'z-50 flex flex-col overflow-hidden bg-linear-to-b from-brand-purple to-brand-purple-deep text-white',
+          'z-50 flex flex-col overflow-hidden border-r border-slate-200 bg-white text-slate-700',
           'transition-[width,translate] duration-300 ease-hud',
           'max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:w-[min(16rem,calc(100vw-3rem))] max-md:shadow-2xl',
           mobileOpen ? 'max-md:translate-x-0' : 'max-md:-translate-x-full',
@@ -61,25 +62,37 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
         )}
       >
         {/* Same height as the navbar so the two read as one frame. */}
-        <div className='flex h-16 shrink-0 items-center px-3'>
+        <div className='flex h-16 shrink-0 items-center border-b border-slate-200 px-3'>
           <Link
             to='/'
             onClick={onCloseMobile}
-            className='flex min-w-0 items-center gap-3 rounded-lg py-1 pl-3 pr-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70'
+            aria-label='PakarGaming'
+            className='relative block h-10 w-40 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/30'
           >
-            <span className='grid size-8 shrink-0 place-items-center rounded-lg bg-white shadow-sm'>
-              <img src={brandMark} alt='' className='h-5 w-auto' />
-            </span>
-            <RowLabel rail={rail}>
-              <span className='font-display text-base font-bold tracking-wide'>PakarGaming</span>
-            </RowLabel>
+            <img
+              src={brandWordmark}
+              alt=''
+              className={cn(
+                'absolute left-3 top-1/2 h-9 w-auto -translate-y-1/2 transition-opacity duration-300 ease-hud',
+                rail && 'opacity-0'
+              )}
+            />
+            {/* Centred in the 80px rail: 40px centre minus the link's 12px offset and half the mark. */}
+            <img
+              src={brandMark}
+              alt=''
+              className={cn(
+                'absolute left-[17px] top-1/2 h-8 w-auto -translate-y-1/2 transition-opacity duration-300 ease-hud',
+                !rail && 'opacity-0'
+              )}
+            />
           </Link>
 
           <button
             type='button'
             onClick={onCloseMobile}
             aria-label={t('sidebar.closeMenu')}
-            className='ml-auto grid size-9 place-items-center rounded-lg text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 md:hidden'
+            className='ml-auto grid size-9 place-items-center rounded-lg text-slate-500 outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-brand-purple/30 md:hidden'
           >
             <X className='size-5' aria-hidden />
           </button>
@@ -88,7 +101,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
         <nav
           ref={navRef}
           aria-label={t('sidebar.navLabel')}
-          className='min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 pt-2 scrollbar-sidebar'
+          className='min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain px-3 pb-4 pt-4 scrollbar-sidebar'
         >
           {sections.map((section, index) => (
             <div key={section.title ?? index} className={cn(index > 0 && 'mt-6')}>
@@ -96,7 +109,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
                 <div className='relative mb-2 h-4'>
                   <p
                     className={cn(
-                      'absolute inset-x-[18px] top-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-white/50 transition-opacity duration-300',
+                      'absolute inset-x-[18px] top-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition-opacity duration-300',
                       rail && 'opacity-0'
                     )}
                   >
@@ -104,7 +117,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
                   </p>
                   <span
                     className={cn(
-                      'absolute left-[18px] top-1/2 h-px w-5 bg-white/25 transition-opacity duration-300',
+                      'absolute left-[18px] top-1/2 h-px w-5 bg-slate-200 transition-opacity duration-300',
                       !rail && 'opacity-0'
                     )}
                     aria-hidden
@@ -166,7 +179,7 @@ function NavLeaf({ item, active, rail, onNavigate, tr }: NavLeafProps) {
         <item.icon
           className={cn(
             sidebarIconClass,
-            active ? 'text-brand-purple' : 'text-white/70 group-hover/row:text-white'
+            active ? 'text-brand-purple' : 'text-slate-400 group-hover/row:text-slate-600'
           )}
           aria-hidden
         />
@@ -197,8 +210,6 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
   const items = menu.children ?? []
   const containsActive = items.some((child) => child.path === activePath)
   const expanded = open && !rail
-  // The group row stands in for the current page whenever its children are hidden.
-  const rowIsCurrent = containsActive && !expanded
 
   return (
     <Popover open={rail && flyoutOpen} onOpenChange={(next) => setFlyoutOpen(rail && next)}>
@@ -214,21 +225,14 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
             : { 'aria-expanded': open, 'aria-controls': panelId, 'aria-haspopup': undefined })}
           className={cn(
             sidebarRowClass,
-            rowIsCurrent
-              ? sidebarRowActiveClass
-              : containsActive
-                ? 'text-white hover:bg-white/10'
-                : sidebarRowIdleClass
+            sidebarRowIdleClass,
+            containsActive && 'font-semibold text-slate-900'
           )}
         >
           <menu.icon
             className={cn(
               sidebarIconClass,
-              rowIsCurrent
-                ? 'text-brand-purple'
-                : containsActive
-                  ? 'text-white'
-                  : 'text-white/70 group-hover/row:text-white'
+              containsActive ? 'text-brand-purple' : 'text-slate-400 group-hover/row:text-slate-600'
             )}
             aria-hidden
           />
@@ -238,7 +242,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
               'ml-auto size-4 shrink-0 transition-[rotate,opacity] duration-300 ease-hud',
               open && 'rotate-180',
               rail && 'opacity-0',
-              rowIsCurrent ? 'text-brand-purple/60' : 'text-white/50'
+              'text-slate-400'
             )}
             aria-hidden
           />
@@ -254,7 +258,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
         )}
       >
         <div className='overflow-hidden'>
-          <ul className='ml-7 mt-0.5 space-y-0.5 border-l border-white/15 py-0.5 pl-2'>
+          <ul className='ml-7 mt-0.5 space-y-0.5 border-l border-slate-200 py-0.5 pl-2'>
             {items.map((child) => {
               const active = child.path === activePath
               return (
@@ -264,10 +268,11 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
                     onClick={onNavigate}
                     aria-current={active && expanded ? 'page' : undefined}
                     className={cn(
-                      'flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[13px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
+                      'relative flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[13px] outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand-purple/30',
                       active
-                        ? 'bg-white/15 font-semibold text-white'
-                        : 'text-white/70 hover:bg-white/10 hover:text-white'
+                        ? // The bar sits on the guide line, marking where in the group you are.
+                          'bg-brand-purple/10 font-semibold text-brand-purple-deep before:absolute before:inset-y-1.5 before:-left-[9px] before:w-0.5 before:rounded-full before:bg-brand-purple'
+                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                     )}
                   >
                     <span className='truncate'>{tr(child.label)}</span>

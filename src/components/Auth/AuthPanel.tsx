@@ -1,4 +1,5 @@
-import { useEffect, useEffectEvent, type ReactNode } from 'react'
+import { useEffect, useEffectEvent, type ReactNode, type Ref } from 'react'
+import { REGEXP_ONLY_DIGITS } from 'input-otp'
 import { useTranslation } from 'react-i18next'
 import {
   AlertTriangle,
@@ -12,10 +13,40 @@ import {
 
 import brandMark from '@/assets/brand/pakargaming-mark.webp'
 import { Button } from '@/components/ui/button'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { cn } from '@/lib/utils'
+import { hudOtpSlotClass } from './hud-styles'
 
 /** How long the handoff screen plays before navigating away, per variant. */
 const HANDOFF_MS = { granted: 1000, mfa: 750 }
+
+interface HudCardProps {
+  className?: string
+  bodyClassName?: string
+  children: ReactNode
+}
+
+/** White notched card with a hairline border, a brand-colour top bar and HUD corner brackets. */
+export function HudCard({ className, bodyClassName, children }: HudCardProps) {
+  return (
+    <div className={cn('relative w-full', className)}>
+      <span className='absolute -left-2 -top-2 size-6 border-l-[3px] border-t-[3px] border-brand-purple' aria-hidden />
+      <span className='absolute -bottom-2 -right-2 size-6 border-b-[3px] border-r-[3px] border-brand-cyan' aria-hidden />
+
+      {/* drop-shadow instead of box-shadow: clip-path would cut a box-shadow off. */}
+      <div className='drop-shadow-[0_24px_40px_rgba(74,20,140,0.13)]'>
+        <div className='bg-slate-200/80 p-px hud-clip'>
+          <div className='bg-white hud-clip'>
+            <div className='relative h-1 overflow-hidden bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden>
+              <span className='absolute inset-y-0 left-0 w-1/3 bg-linear-to-r from-transparent via-white/80 to-transparent animate-hud-trace' />
+            </div>
+            <div className={cn('px-5 py-7 sm:px-8 sm:py-9', bodyClassName)}>{children}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 interface AuthPanelHeaderProps {
   eyebrow: string
@@ -98,6 +129,56 @@ export function AuthAlert({ children }: { children: ReactNode }) {
       <AlertTriangle className='mt-0.5 size-4 shrink-0 text-rose-500' aria-hidden />
       <p className='min-w-0'>{children}</p>
     </div>
+  )
+}
+
+interface OtpCodeInputProps {
+  id?: string
+  inputRef?: Ref<HTMLInputElement>
+  value: string
+  onChange: (value: string) => void
+  onComplete: (value: string) => void
+  invalid: boolean
+  describedBy?: string
+}
+
+/** Six digit slots in two groups of three, auto-submitting through `onComplete`. */
+export function OtpCodeInput({
+  id,
+  inputRef,
+  value,
+  onChange,
+  onComplete,
+  invalid,
+  describedBy,
+}: OtpCodeInputProps) {
+  return (
+    <InputOTP
+      ref={inputRef}
+      id={id}
+      maxLength={6}
+      pattern={REGEXP_ONLY_DIGITS}
+      value={value}
+      onChange={onChange}
+      onComplete={onComplete}
+      autoFocus
+      aria-invalid={invalid}
+      aria-describedby={describedBy}
+      containerClassName='justify-center gap-2 sm:gap-3'
+    >
+      {[0, 3].map((start) => (
+        <InputOTPGroup key={start} className='gap-1 min-[380px]:gap-1.5 sm:gap-2'>
+          {[0, 1, 2].map((offset) => (
+            <InputOTPSlot
+              key={offset}
+              index={start + offset}
+              aria-invalid={invalid}
+              className={hudOtpSlotClass}
+            />
+          ))}
+        </InputOTPGroup>
+      ))}
+    </InputOTP>
   )
 }
 
