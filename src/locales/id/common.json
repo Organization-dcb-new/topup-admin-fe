@@ -1875,9 +1875,14 @@
     "backButton": "Ke halaman yang diizinkan"
   },
   "notFoundPage": {
-    "title": "Halaman tidak ditemukan",
-    "subtitle": "Alamat yang Anda buka tidak ada atau sudah dipindahkan. Periksa URL atau kembali ke dasbor.",
-    "backButton": "Ke dasbor"
+    "eyebrow": "// Sinyal hilang · Error 404",
+    "title": "Halaman ini keluar dari peta",
+    "subtitle": "Alamatnya tidak ada atau sudah dipindah. Periksa URL-nya, atau pakai tombol di bawah untuk kembali.",
+    "requested": "Alamat",
+    "backButton": "Kembali ke dasbor",
+    "goBack": "Kembali",
+    "loginButton": "Ke halaman masuk",
+    "homeButton": "Ke halaman saya"
   },
   "loginPage": {
     "eyebrow": "Login aman",

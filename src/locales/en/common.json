@@ -1886,9 +1886,14 @@
     "backButton": "Go to an allowed page"
   },
   "notFoundPage": {
-    "title": "Page not found",
-    "subtitle": "The address you opened does not exist or has been moved. Check the URL or return to dashboard.",
-    "backButton": "Back to dashboard"
+    "eyebrow": "// Signal lost · Error 404",
+    "title": "This page went off the map",
+    "subtitle": "The address doesn’t exist or has been moved. Check the URL, or use the button below to get back on track.",
+    "requested": "Path",
+    "backButton": "Back to dashboard",
+    "goBack": "Go back",
+    "loginButton": "Go to sign in",
+    "homeButton": "Go to my pages"
   },
   "loginPage": {
     "eyebrow": "Secure login",

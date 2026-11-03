@@ -55,11 +55,11 @@ export default function DashboardPage() {
           <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>
             {name ? t('dashboard.greeting', { name }) : t('dashboard.title')}
           </h1>
-          <p className='flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-slate-500'>
+          <p className='flex items-start gap-2 text-sm text-slate-500'>
             {overview && !needsDate ? (
               <>
-                <CalendarRange className='size-4 text-slate-400' aria-hidden />
-                <span>{formatPeriod(overview.range, i18n.language)} WIB</span>
+                <CalendarRange className='mt-0.5 size-4 shrink-0 text-slate-400' aria-hidden />
+                <span className='min-w-0'>{formatPeriod(overview.range, i18n.language)} WIB</span>
               </>
             ) : (
               t('dashboard.subtitle')
