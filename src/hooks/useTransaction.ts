@@ -65,7 +65,20 @@ export const useTransactionDetail = (id: string | undefined) =>
     // Bad ids never reach the backend (it answers them with a 500 too).
     enabled: isTransactionId(id),
     retry: (count, err) => !isNotFoundError(err) && count < 2,
+    // Stay live while the customer can still pay or the provider is still delivering.
+    refetchInterval: (query) => (isInFlight(query.state.data) ? 10_000 : false),
+    refetchIntervalInBackground: false,
   })
+
+const OPEN_PAYMENT = ['PENDING', 'WAITING', 'PROCESSING']
+const OPEN_FULFILMENT = ['PENDING', 'PAID', 'PROCESSING']
+
+/** Payment still open, or paid and not yet delivered or failed. */
+export function isInFlight(detail: TransactionDetail | undefined) {
+  if (!detail) return false
+  if (OPEN_PAYMENT.includes(detail.status)) return true
+  return detail.status === 'PAID' && OPEN_FULFILMENT.includes(detail.order?.status ?? '')
+}
 
 function filenameFrom(disposition: string | undefined) {
   const match = disposition?.match(/filename="?([^"]+)"?/)
