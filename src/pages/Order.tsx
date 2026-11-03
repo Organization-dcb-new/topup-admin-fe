@@ -59,7 +59,7 @@ export default function OrderPages() {
           </div>
           {total !== undefined && (
             <span className='shrink-0 font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
-              {t('orderPage.total', { count: total, formatted: total.toLocaleString(locale) })}
+              {t('orderPage.itemCount', { count: total, formatted: total.toLocaleString(locale) })}
             </span>
           )}
         </header>

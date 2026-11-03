@@ -6,6 +6,7 @@ import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { useRetained } from '@/hooks/useRetained'
 import { formatCurrency } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import type { OrderItem } from '@/types/order-item'
 import { CopyValueButton, ProviderStatusChip, VoucherValue } from './OrderParts'
 import { orderItemTotal, providerState } from './order-utils'
@@ -37,7 +38,8 @@ function OrderDetail({ item, onClose }: { item: OrderItem; onClose: () => void }
   const state = providerState(item.status_provider)
 
   return (
-    <div className='space-y-5 p-6 sm:p-7'>
+    // min-w-0: DialogContent is a grid, and long IDs would otherwise widen it past a phone screen.
+    <div className='min-w-0 space-y-5 p-6 sm:p-7'>
       <div className='flex items-start gap-4'>
         <span className='grid size-12 shrink-0 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
           <Package className='size-5' aria-hidden />
@@ -63,10 +65,15 @@ function OrderDetail({ item, onClose }: { item: OrderItem; onClose: () => void }
         {t(`orderPage.detail.provider.${state}`, { code: item.status_provider })}
       </DialogDescription>
 
-      <div className='grid grid-cols-3 gap-3 rounded-lg border border-slate-200 p-4'>
+      <div className='grid grid-cols-2 gap-3 rounded-lg border border-slate-200 p-4 sm:grid-cols-3'>
         <Amount label={t('orderPage.unitPrice')} value={formatCurrency(item.unit_price)} />
         <Amount label={t('orderPage.quantity')} value={`× ${item.quantity}`} />
-        <Amount label={t('orderPage.total')} value={formatCurrency(orderItemTotal(item))} strong />
+        <Amount
+          label={t('orderPage.total')}
+          value={formatCurrency(orderItemTotal(item))}
+          strong
+          className='col-span-2 border-t border-slate-100 pt-3 sm:col-span-1 sm:border-0 sm:pt-0'
+        />
       </div>
 
       <dl className='divide-y divide-slate-100 rounded-lg border border-slate-200 text-sm'>
@@ -96,9 +103,9 @@ function OrderDetail({ item, onClose }: { item: OrderItem; onClose: () => void }
   )
 }
 
-function Amount({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function Amount({ label, value, strong, className }: { label: string; value: string; strong?: boolean; className?: string }) {
   return (
-    <div className='min-w-0'>
+    <div className={cn('min-w-0', className)}>
       <p className='font-display text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400'>{label}</p>
       <p className={strong ? 'truncate font-display text-lg font-bold text-slate-900' : 'truncate text-sm font-semibold tabular-nums text-slate-700'}>
         {value}

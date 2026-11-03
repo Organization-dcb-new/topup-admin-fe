@@ -26,6 +26,8 @@ export function useGetOrderItems(page: number, limit: number, sort: OrderSort) {
     queryFn: async () => (await fetchOrderItems(1, 1)).meta?.total_data ?? 0,
     enabled: newest,
     staleTime: 30_000,
+    // The /orders group allows 30 requests a minute; don't spend them on retries.
+    retry: 1,
   })
   const newestPages = total.data !== undefined ? Math.max(1, Math.ceil(total.data / limit)) : undefined
   const apiPage = newest ? (newestPages !== undefined ? Math.max(1, newestPages - page + 1) : undefined) : page
@@ -37,6 +39,7 @@ export function useGetOrderItems(page: number, limit: number, sort: OrderSort) {
     // Keep the current page on screen while the next one loads.
     placeholderData: keepPreviousData,
     select: newest ? newestFirst : undefined,
+    retry: 1,
   })
 
   return {
