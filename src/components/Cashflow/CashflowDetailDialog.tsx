@@ -113,8 +113,10 @@ function CashflowDetail({ item, onClose }: { item: CashflowItem; onClose: () => 
       )}
 
       <div className='flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between'>
+        {/* Read-only dialog: start on Close instead of the first copy button. */}
         <button
           type='button'
+          autoFocus
           onClick={onClose}
           className='inline-flex h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40'
         >

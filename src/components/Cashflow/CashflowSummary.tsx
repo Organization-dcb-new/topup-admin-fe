@@ -209,7 +209,7 @@ function Tile({ order, icon: Icon, iconClassName, label, value, hint, className 
             </span>
           </div>
           <p className='truncate font-display text-xl font-bold text-slate-900 sm:text-2xl'>{value}</p>
-          <p className='mt-auto truncate text-xs text-slate-500' title={hint}>{hint}</p>
+          <p className='mt-auto line-clamp-2 text-xs leading-snug text-slate-500'>{hint}</p>
         </div>
       </div>
     </li>

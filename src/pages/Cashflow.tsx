@@ -287,13 +287,13 @@ function CashflowRow({ item, onOpen }: { item: CashflowItem; onOpen: () => void 
           <span className='block truncate text-sm font-medium text-slate-900 transition-colors group-hover:text-brand-purple'>
             {direction === 'other' ? item.type : t(`cashflowPage.kind.${direction}`)}
           </span>
-          <span className='block truncate text-xs text-slate-500'>
-            {detail.filter(Boolean).join(' · ')}
-            <span className='sm:hidden'> · {time}</span>
-          </span>
+          <span className='block truncate text-xs text-slate-500'>{detail.filter(Boolean).join(' · ')}</span>
         </span>
         <time className='hidden text-right text-xs tabular-nums text-slate-500 sm:block'>{time}</time>
-        <SignedAmount direction={direction} amount={item.amount} className='text-right text-sm font-semibold' />
+        <span className='flex flex-col items-end'>
+          <SignedAmount direction={direction} amount={item.amount} className='text-right text-sm font-semibold' />
+          <span className='text-[11px] tabular-nums text-slate-400 sm:hidden'>{time}</span>
+        </span>
         <ChevronRight
           className='hidden size-4 text-slate-300 transition-transform duration-300 ease-hud group-hover:translate-x-0.5 group-hover:text-brand-purple sm:block'
           aria-hidden
