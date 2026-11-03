@@ -89,9 +89,11 @@ function TransactionRow({ row, order }: { row: Payment; order: number }) {
 
         <div className='col-span-2 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 lg:col-span-1 lg:flex-col lg:items-start lg:gap-1'>
           <ChannelChip channel={row.payment_channel} />
-          <span className='lg:hidden'>
-            <ProviderStatusChip status={row.status_provider} />
-          </span>
+          {row.status_provider && (
+            <span className='lg:hidden'>
+              <ProviderStatusChip status={row.status_provider} />
+            </span>
+          )}
           <span className='ml-auto text-xs tabular-nums text-slate-400 lg:hidden'>
             {formatBackendDateTime(row.created_at, 'dd MMM, HH:mm')}
           </span>
