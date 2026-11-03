@@ -9,6 +9,7 @@ import { useGetGameNames, type GameNames } from '@/hooks/useGame'
 import { useSetShowGames } from '@/hooks/useShow'
 import { cn } from '@/lib/utils'
 import type { Show } from '@/types/show'
+import { useRetained } from '@/hooks/useRetained'
 
 interface ShowGamesDialogProps {
   show: Show | null
@@ -18,6 +19,8 @@ interface ShowGamesDialogProps {
 }
 
 export function ShowGamesDialog({ show, shows, onOpenChange }: ShowGamesDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(show)
   const setGames = useSetShowGames(() => onOpenChange(false))
 
   return (
@@ -27,14 +30,14 @@ export function ShowGamesDialog({ show, shows, onOpenChange }: ShowGamesDialogPr
         className='flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 shrink-0 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {show && (
+        {shown && (
           <ShowGamesPicker
-            key={show.id}
-            show={show}
+            key={shown.id}
+            show={shown}
             shows={shows}
             pending={setGames.isPending}
             onCancel={() => onOpenChange(false)}
-            onSave={(gameIds) => setGames.mutate({ showId: show.id, gameIds })}
+            onSave={(gameIds) => setGames.mutate({ showId: shown.id, gameIds })}
           />
         )}
       </DialogContent>

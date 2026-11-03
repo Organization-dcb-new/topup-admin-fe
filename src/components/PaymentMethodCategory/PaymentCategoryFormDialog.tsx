@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useCreatePaymentCategory, useUpdatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
+import { useRetained } from '@/hooks/useRetained'
 import { toSlug } from '@/lib/slug'
 import { cn } from '@/lib/utils'
 import { paymentCategorySchema, type PaymentCategoryFormInput, type PaymentCategoryFormValues } from '@/schemas/payment'
@@ -25,6 +26,7 @@ interface PaymentCategoryFormDialogProps {
 }
 
 export function PaymentCategoryFormDialog({ open, onOpenChange, category, nextSortOrder = 1 }: PaymentCategoryFormDialogProps) {
+  const target = useRetained(open ? (category ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -32,7 +34,15 @@ export function PaymentCategoryFormDialog({ open, onOpenChange, category, nextSo
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {open && <PaymentCategoryForm category={category} nextSortOrder={nextSortOrder} onDone={() => onOpenChange(false)} />}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && (
+          <PaymentCategoryForm
+            key={target === 'new' ? 'new' : target.id}
+            category={target === 'new' ? undefined : target}
+            nextSortOrder={nextSortOrder}
+            onDone={() => onOpenChange(false)}
+          />
+        )}
       </DialogContent>
     </Dialog>
   )

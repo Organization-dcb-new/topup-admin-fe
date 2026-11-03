@@ -15,6 +15,7 @@ import { PERM } from '@/constants/permissions'
 import { useDeleteReferralCode, useGetReferralCodes } from '@/hooks/useReferral'
 import { parseBackendDate } from '@/lib/backend-datetime'
 import type { ReferralCode } from '@/types/referral'
+import { useRetained } from '@/hooks/useRetained'
 
 const PAGE_SIZE = 12
 
@@ -29,6 +30,8 @@ export default function ReferralPage() {
   // 'new' opens the form empty; a code opens it for editing.
   const [formTarget, setFormTarget] = useState<ReferralCode | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<ReferralCode | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
 
   const rows = data?.data ?? []
   const meta = data?.meta
@@ -110,7 +113,7 @@ export default function ReferralPage() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('referralPage.deleteConfirm.eyebrow')}
-        title={t('referralPage.deleteConfirm.title', { code: toDelete?.code ?? '' })}
+        title={t('referralPage.deleteConfirm.title', { code: deleting?.code ?? '' })}
         description={t('referralPage.deleteConfirm.description')}
         confirmLabel={t('referralPage.deleteConfirm.confirm')}
         cancelLabel={t('referralPage.deleteConfirm.cancel')}

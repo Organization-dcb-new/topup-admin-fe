@@ -5,6 +5,7 @@ import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { DangerDialog } from '@/components/Auth/DangerDialog'
 import { roleErrorKey, useDeleteRole } from '@/hooks/useRoles'
 import type { Role } from '@/types/role'
+import { useRetained } from '@/hooks/useRetained'
 
 interface DeleteRoleDialogProps {
   role: Pick<Role, 'id' | 'name'> | null
@@ -16,6 +17,8 @@ export function DeleteRoleDialog({ role, onOpenChange, onDeleted }: DeleteRoleDi
   const { t } = useTranslation()
   const deleteRole = useDeleteRole()
   const error = deleteRole.error ? roleErrorKey(deleteRole.error) : null
+  // Keep the name in the title while the dialog animates closed.
+  const shown = useRetained(role)
 
   return (
     <DangerDialog
@@ -25,7 +28,7 @@ export function DeleteRoleDialog({ role, onOpenChange, onDeleted }: DeleteRoleDi
         onOpenChange(open)
       }}
       eyebrow={t('rolesPage.deleteEyebrow')}
-      title={t('rolesPage.deleteTitle', { name: role?.name ?? '' })}
+      title={t('rolesPage.deleteTitle', { name: shown?.name ?? '' })}
       description={t('rolesPage.deleteDescription')}
       confirmLabel={t('rolesPage.delete')}
       cancelLabel={t('rolesPage.cancel')}

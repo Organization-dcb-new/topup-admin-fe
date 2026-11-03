@@ -29,6 +29,7 @@ import { useDeleteBanner, useGetBanners } from '@/hooks/useBanner'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import type { Banner } from '@/types/banner'
+import { useRetained } from '@/hooks/useRetained'
 
 const iconButtonClass =
   'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
@@ -41,6 +42,8 @@ export default function BannerPage() {
   // 'new' opens the form empty; a banner opens it for editing.
   const [formTarget, setFormTarget] = useState<Banner | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<Banner | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
   const [previewIndex, setPreviewIndex] = useState<number | null>(null)
 
   const openCreate = () => setFormTarget('new')
@@ -134,8 +137,8 @@ export default function BannerPage() {
         title={t('bannerPage.deleteConfirm.title')}
         description={
           <span className='block space-y-3'>
-            {toDelete && (
-              <img src={toDelete.image} alt='' className='block aspect-[16/7] w-full rounded-md object-cover ring-1 ring-slate-200' />
+            {deleting && (
+              <img src={deleting.image} alt='' className='block aspect-[16/7] w-full rounded-md object-cover ring-1 ring-slate-200' />
             )}
             <span className='block'>{t('bannerPage.deleteConfirm.description')}</span>
           </span>
@@ -313,12 +316,14 @@ interface BannerLightboxProps {
 /** Full-size preview that steps through the banners like the storefront carousel. */
 function BannerLightbox({ banners, index, onIndexChange }: BannerLightboxProps) {
   const { t } = useTranslation('common')
-  const banner = index !== null ? banners[index] : undefined
+  // Keep the last banner on screen while the lightbox animates closed.
+  const shownIndex = useRetained(index)
+  const banner = shownIndex !== null ? banners[shownIndex] : undefined
   const count = banners.length
   const step = (delta: number) => index !== null && onIndexChange((index + delta + count) % count)
 
   return (
-    <Dialog open={!!banner} onOpenChange={(open) => !open && onIndexChange(null)}>
+    <Dialog open={index !== null && !!banners[index]} onOpenChange={(open) => !open && onIndexChange(null)}>
       <DialogContent
         className='gap-0 overflow-hidden rounded-xl border-slate-800 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl'
         onKeyDown={(e) => {
@@ -328,7 +333,7 @@ function BannerLightbox({ banners, index, onIndexChange }: BannerLightboxProps) 
         }}
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {banner && index !== null && (
+        {banner && shownIndex !== null && (
           <>
             <div className='relative bg-black'>
               <BannerImage
@@ -346,7 +351,7 @@ function BannerLightbox({ banners, index, onIndexChange }: BannerLightboxProps) 
             <div className='flex flex-wrap items-center justify-between gap-3 px-5 py-3.5'>
               <div className='min-w-0'>
                 <DialogTitle className='font-display text-xs font-semibold uppercase tracking-[0.2em] text-white/90'>
-                  {t('bannerPage.lightbox.title', { index: index + 1, count })}
+                  {t('bannerPage.lightbox.title', { index: shownIndex + 1, count })}
                 </DialogTitle>
                 <DialogDescription className='truncate text-sm text-white/60'>
                   {banner.redirect_link || t('bannerPage.noLink')}
@@ -359,7 +364,7 @@ function BannerLightbox({ banners, index, onIndexChange }: BannerLightboxProps) 
                       key={b.id}
                       className={cn(
                         'h-1.5 rounded-full transition-all duration-300 ease-hud',
-                        i === index ? 'w-6 bg-linear-to-r from-brand-purple to-brand-cyan' : 'w-1.5 bg-white/25'
+                        i === shownIndex ? 'w-6 bg-linear-to-r from-brand-purple to-brand-cyan' : 'w-1.5 bg-white/25'
                       )}
                     />
                   ))}

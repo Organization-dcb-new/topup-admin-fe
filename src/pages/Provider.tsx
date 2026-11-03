@@ -25,6 +25,7 @@ import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Provider, ProviderStatus } from '@/types/provider'
+import { useRetained } from '@/hooks/useRetained'
 
 const STATUS_STYLE: Record<ProviderStatus, { chip: string; dot: string; bar: string }> = {
   ACTIVE: { chip: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500', bar: 'bg-linear-to-r from-brand-purple to-brand-cyan' },
@@ -42,6 +43,8 @@ export default function ProviderPages() {
   const providers = data?.data ?? []
   const [formTarget, setFormTarget] = useState<Provider | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<Provider | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
   const activeCount = providers.filter((p) => p.status === 'ACTIVE').length
   const nextPriority = providers.reduce((max, p) => Math.max(max, p.priority), 0) + 1
 
@@ -123,7 +126,7 @@ export default function ProviderPages() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('providerPage.deleteConfirm.eyebrow')}
-        title={t('providerPage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
+        title={t('providerPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
         description={t('providerPage.deleteConfirm.description')}
         confirmLabel={t('providerPage.deleteConfirm.confirm')}
         cancelLabel={t('providerPage.deleteConfirm.cancel')}

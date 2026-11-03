@@ -9,6 +9,7 @@ import { useSaveGameInputs } from '@/hooks/useGameInput'
 import { cn } from '@/lib/utils'
 import type { GameInput, GameWithInputs } from '@/types/game-input'
 import { InputPreview, InputTypeChip } from './GameInputParts'
+import { useRetained } from '@/hooks/useRetained'
 
 interface GameInputsDialogProps {
   game: GameWithInputs | null
@@ -16,6 +17,8 @@ interface GameInputsDialogProps {
 }
 
 export function GameInputsDialog({ game, onOpenChange }: GameInputsDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(game)
   const save = useSaveGameInputs(() => onOpenChange(false))
 
   return (
@@ -25,10 +28,10 @@ export function GameInputsDialog({ game, onOpenChange }: GameInputsDialogProps) 
         className='flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-2xl'
       >
         <div className='h-1 shrink-0 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {game && (
+        {shown && (
           <GameInputsForm
-            key={game.id}
-            game={game}
+            key={shown.id}
+            game={shown}
             pending={save.isPending}
             onCancel={() => onOpenChange(false)}
             onSave={(changes) => save.mutate(changes)}

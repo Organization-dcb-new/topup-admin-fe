@@ -10,6 +10,7 @@ import type { GameNames } from '@/hooks/useGame'
 import { useChangeProductImageByGame, useGetProducts, useProductsByGame } from '@/hooks/useProduct'
 import { cn } from '@/lib/utils'
 import { GamePicker } from './GamePicker'
+import { useRetained } from '@/hooks/useRetained'
 
 export interface GameImageTarget {
   /** Preselected game, e.g. when opened from a product row. */
@@ -25,6 +26,8 @@ interface GameImageDialogProps {
 }
 
 export function GameImageDialog({ target, onOpenChange, games, canPickGame }: GameImageDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(target)
   const change = useChangeProductImageByGame(() => onOpenChange(false))
 
   return (
@@ -34,10 +37,10 @@ export function GameImageDialog({ target, onOpenChange, games, canPickGame }: Ga
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {target && (
+        {shown && (
           <GameImageForm
-            key={target.game?.id ?? 'new'}
-            initialGame={target.game}
+            key={shown.game?.id ?? 'new'}
+            initialGame={shown.game}
             games={games}
             canPickGame={canPickGame}
             pending={change.isPending}

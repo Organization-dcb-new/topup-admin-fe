@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useCreateReferralCode, useUpdateReferralCode } from '@/hooks/useReferral'
+import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
 import { referralCodeSchema, type ReferralCodeFormValues } from '@/schemas/referral'
 import type { ReferralCode } from '@/types/referral'
@@ -24,6 +25,7 @@ interface ReferralFormDialogProps {
 }
 
 export function ReferralFormDialog({ open, onOpenChange, referral }: ReferralFormDialogProps) {
+  const target = useRetained(open ? (referral ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -31,8 +33,8 @@ export function ReferralFormDialog({ open, onOpenChange, referral }: ReferralFor
         className='gap-0 overflow-hidden rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so every open starts from fresh values without a reset effect. */}
-        {open && <ReferralForm referral={referral} onDone={() => onOpenChange(false)} />}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && <ReferralForm key={target === 'new' ? 'new' : target.id} referral={target === 'new' ? undefined : target} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )

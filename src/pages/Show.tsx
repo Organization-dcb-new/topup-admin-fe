@@ -16,6 +16,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { toUpdatePayload, useDeleteShow, useGetShows, useUpdateShow } from '@/hooks/useShow'
 import { cn } from '@/lib/utils'
 import type { Show } from '@/types/show'
+import { useRetained } from '@/hooks/useRetained'
 
 const iconButtonClass =
   'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
@@ -28,6 +29,8 @@ export default function ShowPage() {
   const [formTarget, setFormTarget] = useState<Show | 'new' | null>(null)
   const [gamesTarget, setGamesTarget] = useState<Show | null>(null)
   const [toDelete, setToDelete] = useState<Show | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
   const visibleCount = shows.filter((s) => s.is_show).length
 
   const openCreate = () => setFormTarget('new')
@@ -116,8 +119,8 @@ export default function ShowPage() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('showPage.deleteConfirm.eyebrow')}
-        title={t('showPage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
-        description={t('showPage.deleteConfirm.description', { count: toDelete?.games?.length ?? 0 })}
+        title={t('showPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
+        description={t('showPage.deleteConfirm.description', { count: deleting?.games?.length ?? 0 })}
         confirmLabel={t('showPage.deleteConfirm.confirm')}
         cancelLabel={t('showPage.deleteConfirm.cancel')}
         pending={deleteShow.isPending}

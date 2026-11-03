@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useCreateShow, useUpdateShow } from '@/hooks/useShow'
+import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
 import { showSchema, type ShowFormInput, type ShowFormValues } from '@/schemas/show'
 import type { Show } from '@/types/show'
@@ -26,6 +27,7 @@ interface ShowFormDialogProps {
 }
 
 export function ShowFormDialog({ open, onOpenChange, show }: ShowFormDialogProps) {
+  const target = useRetained(open ? (show ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -33,7 +35,8 @@ export function ShowFormDialog({ open, onOpenChange, show }: ShowFormDialogProps
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {open && <ShowForm show={show} onDone={() => onOpenChange(false)} />}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && <ShowForm key={target === 'new' ? 'new' : target.id} show={target === 'new' ? undefined : target} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )

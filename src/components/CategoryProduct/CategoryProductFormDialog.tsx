@@ -16,6 +16,7 @@ import { PERM } from '@/constants/permissions'
 import { isDuplicateSlugError, useCreateCategoryProduct, useRenameCategoryProduct } from '@/hooks/useCategoryProduct'
 import { useGetGameNames } from '@/hooks/useGame'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useRetained } from '@/hooks/useRetained'
 import { toSlug } from '@/lib/slug'
 import { cn } from '@/lib/utils'
 import {
@@ -36,6 +37,7 @@ interface CategoryProductFormDialogProps {
 }
 
 export function CategoryProductFormDialog({ open, onOpenChange, category }: CategoryProductFormDialogProps) {
+  const target = useRetained(open ? (category ?? 'new') : null)
   const done = () => onOpenChange(false)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,8 +49,8 @@ export function CategoryProductFormDialog({ open, onOpenChange, category }: Cate
         )}
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so every open starts from fresh values. */}
-        {open && (category ? <RenameForm category={category} onDone={done} /> : <CreateForm onDone={done} />)}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target === 'new' ? <CreateForm onDone={done} /> : target && <RenameForm key={target.id} category={target} onDone={done} />}
       </DialogContent>
     </Dialog>
   )

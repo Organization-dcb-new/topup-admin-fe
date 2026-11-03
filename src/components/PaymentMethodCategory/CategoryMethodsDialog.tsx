@@ -9,6 +9,7 @@ import { useAssignPaymentMethods } from '@/hooks/usePaymentMethodCategory'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
+import { useRetained } from '@/hooks/useRetained'
 
 interface CategoryMethodsDialogProps {
   category: PaymentMethodCategory | null
@@ -19,6 +20,8 @@ interface CategoryMethodsDialogProps {
 }
 
 export function CategoryMethodsDialog({ category, categories, methods, isLoading, onOpenChange }: CategoryMethodsDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(category)
   const assign = useAssignPaymentMethods(() => onOpenChange(false))
 
   return (
@@ -28,16 +31,16 @@ export function CategoryMethodsDialog({ category, categories, methods, isLoading
         className='flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 shrink-0 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {category && (
+        {shown && (
           <MethodsPicker
-            key={category.id}
-            category={category}
+            key={shown.id}
+            category={shown}
             categories={categories}
             methods={methods}
             isLoading={isLoading}
             pending={assign.isPending}
             onCancel={() => onOpenChange(false)}
-            onSave={(methodIds) => assign.mutate({ categoryId: category.id, methodIds })}
+            onSave={(methodIds) => assign.mutate({ categoryId: shown.id, methodIds })}
           />
         )}
       </DialogContent>

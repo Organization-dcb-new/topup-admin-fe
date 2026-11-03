@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils'
 import { productPriceSchema, type ProductPriceFormInput, type ProductPriceFormValues } from '@/schemas/product'
 import type { Product, ProductPriceType } from '@/types/product'
 import { markupOf, sellingPriceFor } from './product-pricing'
+import { useRetained } from '@/hooks/useRetained'
 
 const QUICK_VALUES: Record<ProductPriceType, number[]> = {
   fee: [500, 1000, 2000, 5000],
@@ -27,6 +28,8 @@ interface ProductPriceDialogProps {
 }
 
 export function ProductPriceDialog({ product, onOpenChange }: ProductPriceDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(product)
   const update = useUpdateProductPrice(() => onOpenChange(false))
 
   return (
@@ -37,15 +40,15 @@ export function ProductPriceDialog({ product, onOpenChange }: ProductPriceDialog
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         {/* Keyed per product, so the form always starts from that product's current markup. */}
-        {product && (
+        {shown && (
           <PriceForm
-            key={product.id}
-            product={product}
+            key={shown.id}
+            product={shown}
             pending={update.isPending}
             onCancel={() => onOpenChange(false)}
             onSave={(type, value) =>
               update.mutate({
-                id: product.id,
+                id: shown.id,
                 type,
                 additional_fee: type === 'fee' ? value : 0,
                 additional_percent: type === 'percent' ? value : 0,

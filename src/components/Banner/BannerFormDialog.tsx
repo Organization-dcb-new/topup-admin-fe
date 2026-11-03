@@ -11,6 +11,7 @@ import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCreateBanner, useUpdateBanner } from '@/hooks/useBanner'
+import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
 import { bannerSchema, type BannerFormValues } from '@/schemas/banner'
 import type { Banner } from '@/types/banner'
@@ -24,6 +25,7 @@ interface BannerFormDialogProps {
 }
 
 export function BannerFormDialog({ open, onOpenChange, banner }: BannerFormDialogProps) {
+  const target = useRetained(open ? (banner ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -31,8 +33,8 @@ export function BannerFormDialog({ open, onOpenChange, banner }: BannerFormDialo
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so a half-finished upload never leaks into the next one. */}
-        {open && <BannerForm banner={banner} onDone={() => onOpenChange(false)} />}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && <BannerForm key={target === 'new' ? 'new' : target.id} banner={target === 'new' ? undefined : target} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )

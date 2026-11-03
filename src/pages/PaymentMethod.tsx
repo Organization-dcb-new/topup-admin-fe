@@ -17,6 +17,7 @@ import { toPaymentMethodUpdate, useDeletePaymentMethod, useGetPaymentMethods, us
 import { useGetPaymentMethodCategory } from '@/hooks/usePaymentMethodCategory'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
+import { useRetained } from '@/hooks/useRetained'
 
 /** Payment methods are a short list; load them all and group on the client. */
 const LIST_LIMIT = 200
@@ -39,6 +40,8 @@ export default function PaymentMethodPage() {
   const deleteMethod = useDeletePaymentMethod()
   const [formTarget, setFormTarget] = useState<PaymentMethod | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<PaymentMethod | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
   const [search, setSearch] = useState('')
 
   const methods = useMemo(() => [...(data?.data ?? [])].sort((a, b) => a.sort_order - b.sort_order), [data])
@@ -193,7 +196,7 @@ export default function PaymentMethodPage() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('paymentMethodPage.deleteConfirm.eyebrow')}
-        title={t('paymentMethodPage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
+        title={t('paymentMethodPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
         description={t('paymentMethodPage.deleteConfirm.description')}
         confirmLabel={t('paymentMethodPage.deleteConfirm.confirm')}
         cancelLabel={t('paymentMethodPage.deleteConfirm.cancel')}

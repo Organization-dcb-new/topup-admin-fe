@@ -18,6 +18,7 @@ import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import type { AdminUser } from '@/types/admin'
+import { useRetained } from '@/hooks/useRetained'
 
 const PAGE_SIZE = 24
 
@@ -30,6 +31,8 @@ export default function AdminManagementPage() {
   const [createOpen, setCreateOpen] = useState(false)
   const [roleTarget, setRoleTarget] = useState<AdminUser | null>(null)
   const [toDelete, setToDelete] = useState<AdminUser | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
 
   const admins = data?.data ?? []
   const total = data?.meta?.total_data
@@ -118,8 +121,8 @@ export default function AdminManagementPage() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('adminPage.deleteConfirm.eyebrow')}
-        title={t('adminPage.deleteConfirm.title', { name: toDelete?.username ?? '' })}
-        description={t('adminPage.deleteConfirm.description', { email: toDelete?.email ?? '' })}
+        title={t('adminPage.deleteConfirm.title', { name: deleting?.username ?? '' })}
+        description={t('adminPage.deleteConfirm.description', { email: deleting?.email ?? '' })}
         confirmLabel={t('adminPage.deleteConfirm.confirm')}
         cancelLabel={t('adminPage.deleteConfirm.cancel')}
         pending={deleteAdmin.isPending}

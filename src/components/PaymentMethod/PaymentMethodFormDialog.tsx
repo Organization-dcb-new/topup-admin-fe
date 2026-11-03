@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { useCreatePaymentMethod, useUpdatePaymentMethod } from '@/hooks/usePaymentMethod'
+import { useRetained } from '@/hooks/useRetained'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { paymentMethodSchema, type PaymentMethodFormInput, type PaymentMethodFormValues } from '@/schemas/payment'
@@ -31,6 +32,7 @@ interface PaymentMethodFormDialogProps {
 }
 
 export function PaymentMethodFormDialog({ open, onOpenChange, method, suggestions, nextSortOrder = 1 }: PaymentMethodFormDialogProps) {
+  const target = useRetained(open ? (method ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -38,8 +40,15 @@ export function PaymentMethodFormDialog({ open, onOpenChange, method, suggestion
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-2xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {open && (
-          <PaymentMethodForm method={method} suggestions={suggestions} nextSortOrder={nextSortOrder} onDone={() => onOpenChange(false)} />
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && (
+          <PaymentMethodForm
+            key={target === 'new' ? 'new' : target.id}
+            method={target === 'new' ? undefined : target}
+            suggestions={suggestions}
+            nextSortOrder={nextSortOrder}
+            onDone={() => onOpenChange(false)}
+          />
         )}
       </DialogContent>
     </Dialog>

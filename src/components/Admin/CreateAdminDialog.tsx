@@ -30,8 +30,9 @@ export function CreateAdminDialog({ open, onOpenChange }: { open: boolean; onOpe
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so passwords never linger between openings. */}
-        {open && <CreateAdminForm onDone={() => onOpenChange(false)} />}
+        {/* Radix unmounts the content once closed, so passwords never linger between openings; rendering it
+            unconditionally keeps it visible while the dialog animates out. */}
+        <CreateAdminForm onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   )

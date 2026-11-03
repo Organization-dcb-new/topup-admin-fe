@@ -22,6 +22,7 @@ import {
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
+import { useRetained } from '@/hooks/useRetained'
 
 const iconButtonClass =
   'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
@@ -36,6 +37,8 @@ export default function PaymentMethodCategoryPages() {
   const [formTarget, setFormTarget] = useState<PaymentMethodCategory | 'new' | null>(null)
   const [methodsTarget, setMethodsTarget] = useState<PaymentMethodCategory | null>(null)
   const [toDelete, setToDelete] = useState<PaymentMethodCategory | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
 
   const categories = [...(data?.data ?? [])].sort((a, b) => a.sort_order - b.sort_order)
   const methods = methodsQuery.data?.data ?? []
@@ -134,8 +137,8 @@ export default function PaymentMethodCategoryPages() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('paymentCategoryPage.deleteConfirm.eyebrow')}
-        title={t('paymentCategoryPage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
-        description={t('paymentCategoryPage.deleteConfirm.description', { count: toDelete ? methodsOf(toDelete.id).length : 0 })}
+        title={t('paymentCategoryPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
+        description={t('paymentCategoryPage.deleteConfirm.description', { count: deleting ? methodsOf(deleting.id).length : 0 })}
         confirmLabel={t('paymentCategoryPage.deleteConfirm.confirm')}
         cancelLabel={t('paymentCategoryPage.deleteConfirm.cancel')}
         pending={deleteCategory.isPending}

@@ -16,6 +16,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { CategoryProduct as CategoryProductType } from '@/types/category-product'
+import { useRetained } from '@/hooks/useRetained'
 
 const PAGE_SIZE = 30
 /** Products listed on a card before it collapses into "+N more". */
@@ -40,6 +41,8 @@ export default function CategoryProduct() {
   const [formTarget, setFormTarget] = useState<CategoryProductType | 'new' | null>(null)
   const [productsTarget, setProductsTarget] = useState<CategoryProductType | null>(null)
   const [toDelete, setToDelete] = useState<CategoryProductType | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
 
   const categories = useMemo(() => data?.data ?? [], [data])
   const total = data?.meta?.total_data
@@ -172,8 +175,8 @@ export default function CategoryProduct() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('categoryProductPage.deleteConfirm.eyebrow')}
-        title={t('categoryProductPage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
-        description={t('categoryProductPage.deleteConfirm.description', { count: toDelete?.product?.length ?? 0 })}
+        title={t('categoryProductPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
+        description={t('categoryProductPage.deleteConfirm.description', { count: deleting?.product?.length ?? 0 })}
         confirmLabel={t('categoryProductPage.deleteConfirm.confirm')}
         cancelLabel={t('categoryProductPage.deleteConfirm.cancel')}
         pending={deleteCategory.isPending}

@@ -14,6 +14,7 @@ import { useDeleteBlog, useGetBlogs } from '@/hooks/useBlog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { cn } from '@/lib/utils'
 import type { Blog } from '@/types/blog'
+import { useRetained } from '@/hooks/useRetained'
 
 const PAGE_SIZE = 12
 
@@ -48,6 +49,8 @@ function BlogList({ onCreate, onEdit }: { onCreate: () => void; onEdit: (blog: B
   const { data, isLoading, isError, isFetching, isPlaceholderData, refetch } = useGetBlogs(page, PAGE_SIZE)
   const deleteBlog = useDeleteBlog()
   const [toDelete, setToDelete] = useState<Blog | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
   const blogs = data?.data ?? []
   const total = data?.meta?.total_data
 
@@ -123,7 +126,7 @@ function BlogList({ onCreate, onEdit }: { onCreate: () => void; onEdit: (blog: B
         open={!!toDelete}
         onOpenChange={(next) => !next && setToDelete(null)}
         eyebrow={t('blogPage.deleteConfirm.eyebrow')}
-        title={t('blogPage.deleteConfirm.title', { title: toDelete?.title ?? '' })}
+        title={t('blogPage.deleteConfirm.title', { title: deleting?.title ?? '' })}
         description={t('blogPage.deleteConfirm.description')}
         confirmLabel={t('blogPage.deleteConfirm.confirm')}
         cancelLabel={t('blogPage.deleteConfirm.cancel')}

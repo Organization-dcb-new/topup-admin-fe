@@ -9,6 +9,7 @@ import { useAvailableProductsByGame, useSetCategoryProducts } from '@/hooks/useC
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { CategoryProduct } from '@/types/category-product'
+import { useRetained } from '@/hooks/useRetained'
 
 interface CategoryProductsDialogProps {
   category: CategoryProduct | null
@@ -18,6 +19,8 @@ interface CategoryProductsDialogProps {
 }
 
 export function CategoryProductsDialog({ category, categories, onOpenChange }: CategoryProductsDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(category)
   const save = useSetCategoryProducts(() => onOpenChange(false))
 
   return (
@@ -27,14 +30,14 @@ export function CategoryProductsDialog({ category, categories, onOpenChange }: C
         className='flex max-h-[calc(100dvh-2rem)] flex-col gap-0 overflow-hidden rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 shrink-0 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {category && (
+        {shown && (
           <ProductsPicker
-            key={category.id}
-            category={category}
+            key={shown.id}
+            category={shown}
             categories={categories}
             pending={save.isPending}
             onCancel={() => onOpenChange(false)}
-            onSave={(productIds) => save.mutate({ categoryId: category.id, productIds })}
+            onSave={(productIds) => save.mutate({ categoryId: shown.id, productIds })}
           />
         )}
       </DialogContent>
