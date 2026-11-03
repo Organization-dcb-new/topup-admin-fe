@@ -79,13 +79,13 @@ export default function GamePage() {
   return (
     <DashboardLayout>
       <div className='mx-auto max-w-6xl space-y-6'>
-        <header className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
-          <div className='space-y-1'>
+        <header className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
+          <div className='min-w-0 space-y-1'>
             <p className={hudEyebrowClass}>{t('gamePage.eyebrow')}</p>
             <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('gamePage.title')}</h1>
             <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('gamePage.subtitle')}</p>
           </div>
-          <div className='flex flex-wrap items-center gap-2'>
+          <div className='flex flex-wrap items-center gap-2 xl:shrink-0 xl:flex-nowrap'>
             <Can permission={PERM.gameSync}>
               <button
                 type='button'
@@ -111,7 +111,14 @@ export default function GamePage() {
 
         {meta && (
           <ul className='grid grid-cols-3 gap-3 sm:gap-4'>
-            <StatTile order={0} icon={Gamepad2} label={filtered ? t('gamePage.stats.results') : t('gamePage.stats.total')} value={meta.total_data} locale={locale} />
+            <StatTile
+              order={0}
+              icon={Gamepad2}
+              label={filtered ? t('gamePage.stats.results') : t('gamePage.stats.total')}
+              hint={filtered ? t('gamePage.stats.resultsHint') : t('gamePage.stats.totalHint')}
+              value={meta.total_data}
+              locale={locale}
+            />
             <StatTile order={1} icon={Zap} label={t('gamePage.stats.active')} hint={t('gamePage.stats.allGames')} value={meta.game_active} locale={locale} tone='emerald' />
             <StatTile order={2} icon={Eye} label={t('gamePage.stats.shown')} hint={t('gamePage.stats.allGames')} value={meta.game_show} locale={locale} tone='cyan' />
           </ul>
@@ -297,12 +304,15 @@ function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice 
   const markup = formatMarkup(game.additional_percent, game.additional_fee)
   const thumb = <GameThumb src={game.thumbnail_url} className='size-full' />
 
+  const markupText = <span className={cn('font-medium tabular-nums', markup ? 'text-slate-700' : 'text-slate-400')}>{markup ?? t('gamePage.noMarkup')}</span>
+
+  // Phones: name on top, switches and actions on one line under it. Desktop: one line per game.
   return (
     <li
-      className='grid gap-x-5 gap-y-3 px-4 py-3.5 animate-in fade-in duration-300 fill-mode-both sm:px-5 lg:grid-cols-[minmax(0,1fr)_8rem_auto_auto] lg:items-center'
+      className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-4 py-3.5 animate-in fade-in duration-300 fill-mode-both sm:px-5 lg:grid-cols-[minmax(0,1fr)_8rem_auto_auto]'
       style={{ animationDelay: `${Math.min(order, 12) * 20}ms` }}
     >
-      <div className='flex min-w-0 items-center gap-3'>
+      <div className='col-span-2 flex min-w-0 items-center gap-3 lg:col-span-1'>
         {canUpdate ? (
           <button
             type='button'
@@ -334,17 +344,21 @@ function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice 
             <span className='font-mono'>{game.code}</span>
             <span> · /{game.slug}</span>
           </p>
+          <p className='text-xs lg:hidden'>
+            <span className='mr-1.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gamePage.markup')}</span>
+            {markupText}
+          </p>
         </div>
       </div>
 
-      <div className='text-xs'>
+      <div className='hidden text-xs lg:block'>
         <p className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gamePage.markup')}</p>
-        <p className={cn('font-medium tabular-nums', markup ? 'text-slate-700' : 'text-slate-400')}>{markup ?? t('gamePage.noMarkup')}</p>
+        <p>{markupText}</p>
       </div>
 
       <GameToggles game={game} />
 
-      <div className='flex items-center gap-0.5 justify-self-start lg:justify-self-end'>
+      <div className='flex items-center gap-0.5 justify-self-end'>
         <Can permission={PERM.gameUpdate}>
           <button
             type='button'
@@ -370,9 +384,10 @@ function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice 
         <Link
           to={`/games/${game.id}`}
           state={linkState}
-          className='group/open ml-1 inline-flex h-8 items-center gap-1 px-2.5 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple hud-clip-sm transition-colors hover:bg-brand-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40'
+          aria-label={t('gamePage.openAria', { name: game.name })}
+          className='group/open ml-1 inline-flex h-8 items-center gap-1 px-2 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple hud-clip-sm transition-colors hover:bg-brand-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40 sm:px-2.5'
         >
-          {t('gamePage.open')}
+          <span className='hidden sm:inline'>{t('gamePage.open')}</span>
           <ChevronRight className='size-3.5 transition-transform duration-300 ease-hud group-hover/open:translate-x-0.5' aria-hidden />
         </Link>
       </div>

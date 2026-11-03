@@ -34,7 +34,9 @@ export function GameDetailHero({ game, onEdit, onImages }: GameDetailHeroProps) 
               <GameThumb src={game.thumbnail_url} className='size-full' iconClassName='size-8' />
             </span>
             <div className='min-w-0 flex-1 space-y-1.5 sm:pt-4'>
-              <p className={hudEyebrowClass}>{game.category?.name || t('gameDetailPage.eyebrow')}</p>
+              <p className={hudEyebrowClass}>
+                {game.category?.name ? t('gameDetailPage.eyebrowCategory', { category: game.category.name }) : t('gameDetailPage.eyebrow')}
+              </p>
               <h1 className='font-display text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-3xl'>{game.name}</h1>
               <p className='truncate text-xs text-slate-500'>
                 <span className='font-mono'>{game.code}</span>

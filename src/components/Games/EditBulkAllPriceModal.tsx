@@ -96,7 +96,7 @@ function BulkAllForm({ onDone }: { onDone: () => void }) {
               step='any'
               autoFocus
               aria-invalid={!!errors.additional_percent}
-              className={cn(hudInputClass, 'pr-9 tabular-nums')}
+              className={cn(hudInputClass, 'pr-9 tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none')}
               {...register('additional_percent')}
             />
             <span className='pointer-events-none absolute inset-y-0 right-3 flex items-center font-display text-sm font-semibold text-slate-400'>%</span>

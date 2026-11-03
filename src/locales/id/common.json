@@ -559,9 +559,9 @@
     "confirmDelete": "Hapus"
   },
   "gamePage": {
-    "eyebrow": "Katalog",
+    "eyebrow": "// Katalog",
     "title": "Game",
-    "subtitle": "Semua game yang dijual toko. Aktifkan atau matikan game, pilih yang tampil di etalase, dan atur markup.",
+    "subtitle": "Semua game yang dijual toko. Aktifkan atau matikan game, pilih yang tampil di storefront, dan atur markup.",
     "syncBtn": "Sinkron dari provider",
     "addBtn": "Tambah game",
     "stats": {
@@ -569,7 +569,9 @@
       "results": "Hasil",
       "active": "Aktif",
       "shown": "Tampil",
-      "allGames": "dari semua game"
+      "allGames": "dari semua game",
+      "totalHint": "di katalog",
+      "resultsHint": "sesuai filter"
     },
     "searchPlaceholder": "Cari nama atau slug",
     "filters": {
@@ -600,7 +602,7 @@
     "priceBtn": "Atur markup {{name}}",
     "open": "Buka",
     "sync": {
-      "eyebrow": "Provider",
+      "eyebrow": "// Provider",
       "title": "Sinkronkan game dari provider?",
       "description": "Mengambil katalog game dari provider. Game baru ditambahkan, game yang sudah ada diperbarui. Proses ini bisa memakan waktu sekitar satu menit.",
       "confirm": "Sinkronkan game",
@@ -619,14 +621,14 @@
       "active": "Aktif",
       "activeAria": "Terima pesanan untuk {{name}}",
       "shown": "Tampil",
-      "shownAria": "Tampilkan {{name}} di etalase"
+      "shownAria": "Tampilkan {{name}} di storefront"
     },
     "toasts": {
       "created": "Game ditambahkan",
       "updated": "Game disimpan",
       "updateError": "Gagal menyimpan game",
-      "shown": "Game kini tampil di etalase",
-      "hidden": "Game kini disembunyikan dari etalase",
+      "shown": "Game kini tampil di storefront",
+      "hidden": "Game kini disembunyikan dari storefront",
       "activated": "Game diaktifkan",
       "deactivated": "Game dinonaktifkan",
       "statusError": "Gagal mengubah status game",
@@ -640,11 +642,12 @@
       "productsSynced": "Produk disinkronkan dari provider",
       "gamesSynced": "Game disinkronkan dari provider",
       "syncError": "Sinkronisasi gagal"
-    }
+    },
+    "openAria": "Buka {{name}}"
   },
   "gameDetailPage": {
     "back": "Semua game",
-    "eyebrow": "Game",
+    "eyebrow": "// Game",
     "loadError": "Gagal memuat game ini. Periksa koneksi lalu coba lagi.",
     "retry": "Coba lagi",
     "notFoundTitle": "Game tidak ditemukan",
@@ -668,7 +671,7 @@
       "updated": "Diperbarui"
     },
     "about": {
-      "title": "Teks etalase",
+      "title": "Teks storefront",
       "description": "Tampil untuk pembeli di halaman game.",
       "edit": "Ubah",
       "descriptionLabel": "Deskripsi",
@@ -679,10 +682,10 @@
       "showLess": "Ringkas"
     },
     "checkout": {
-      "title": "Kolom checkout",
+      "title": "Field checkout",
       "description": "Yang diisi pembeli sebelum membayar.",
       "edit": "Ubah label",
-      "empty": "Game ini tidak punya kolom checkout."
+      "empty": "Game ini tidak punya field checkout."
     },
     "products": {
       "title": "Produk",
@@ -724,7 +727,7 @@
       "belowBase": "{{amount}} di bawah dasar"
     },
     "sync": {
-      "eyebrow": "Provider",
+      "eyebrow": "// Provider",
       "title": "Sinkronkan produk {{name}}?",
       "description": "Mengambil produk dan harga dasar game ini dari provider. Produk baru ditambahkan, produk yang sudah ada diperbarui.",
       "confirm": "Sinkronkan produk",
@@ -733,16 +736,17 @@
     },
     "danger": {
       "title": "Hapus game ini",
-      "body": "Menghapus game beserta kolom checkout-nya. Untuk berhenti menjual tanpa kehilangan data, nonaktifkan saja.",
+      "body": "Menghapus game beserta field checkout-nya. Untuk berhenti menjual tanpa kehilangan data, nonaktifkan saja.",
       "button": "Hapus game"
     },
     "delete": {
-      "eyebrow": "Hapus game",
+      "eyebrow": "// Hapus game",
       "title": "Hapus {{name}}?",
-      "description": "Game dan kolom checkout-nya dihapus permanen. Game yang masih punya produk atau pesanan tidak bisa dihapus.",
+      "description": "Game dan field checkout-nya dihapus permanen. Game yang masih punya produk atau pesanan tidak bisa dihapus.",
       "confirm": "Hapus",
       "cancel": "Batal"
-    }
+    },
+    "eyebrowCategory": "// {{category}}"
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -799,9 +803,9 @@
     "bulkAllPriceError": "Gagal memperbarui harga produk semua game"
   },
   "gameImageModal": {
-    "eyebrow": "Gambar",
+    "eyebrow": "// Gambar",
     "title": "Gambar {{name}}",
-    "description": "Thumbnail tampil di daftar dan pencarian. Banner jadi kepala halaman game di etalase.",
+    "description": "Thumbnail tampil di daftar dan pencarian. Banner jadi kepala halaman game di storefront.",
     "thumbnailLabel": "Thumbnail",
     "thumbnailHint": "Persegi, minimal 256 × 256.",
     "thumbnailRequired": "Game wajib punya thumbnail.",
@@ -2243,17 +2247,17 @@
     }
   },
   "gameForm": {
-    "addEyebrow": "Game baru",
+    "addEyebrow": "// Game baru",
     "addTitle": "Tambah game",
-    "addDescription": "Hubungkan dengan kode game di provider, lalu isi yang tampil di etalase.",
-    "editEyebrow": "Ubah game",
+    "addDescription": "Hubungkan dengan kode game di provider, lalu isi yang tampil di storefront.",
+    "editEyebrow": "// Ubah game",
     "editTitle": "Ubah {{name}}",
     "editDescription": "Hanya kolom yang kamu ubah yang disimpan.",
-    "sectionSource": "Provider",
-    "sectionIdentity": "Nama",
+    "sectionSource": "Sumber",
+    "sectionIdentity": "Identitas",
     "sectionImages": "Gambar",
-    "sectionContent": "Teks etalase",
-    "sectionInputs": "Kolom checkout",
+    "sectionContent": "Teks storefront",
+    "sectionInputs": "Field checkout",
     "providerLabel": "Provider",
     "providerPlaceholder": "Pilih provider",
     "providerLoading": "Memuat provider…",
@@ -2267,7 +2271,7 @@
     "categoryError": "Gagal memuat kategori.",
     "nameLabel": "Nama game",
     "slugLabel": "Slug",
-    "slugWillChange": "Mengubah nama juga mengubah slug, dan ikut mengubah tautan etalase.",
+    "slugWillChange": "Mengubah nama juga mengubah slug, dan ikut mengubah tautan storefront.",
     "developerLabel": "Developer",
     "publisherLabel": "Publisher",
     "thumbnailLabel": "Thumbnail",
@@ -2279,10 +2283,10 @@
     "instructionPlaceholder": "Di mana pembeli menemukan user ID, dan apa yang harus diisi",
     "popularityLabel": "Popularitas",
     "featuredLabel": "Unggulan",
-    "featuredHint": "Tonjolkan game ini di etalase.",
-    "inputsEmpty": "Tidak ada kolom checkout. Pembeli tidak akan diminta mengisi apa pun.",
-    "inputsHint": "Semua kolom wajib diisi saat checkout. Key adalah nama yang dikirim ke provider.",
-    "inputNumber": "Kolom {{number}}",
+    "featuredHint": "Tonjolkan game ini di storefront.",
+    "inputsEmpty": "Tidak ada field checkout. Pembeli tidak akan diminta mengisi apa pun.",
+    "inputsHint": "Semua field wajib diisi saat checkout. Key adalah nama yang dikirim ke provider.",
+    "inputNumber": "Field {{number}}",
     "inputLabel": "Label",
     "inputLabelPlaceholder": "User ID",
     "inputKey": "Key",
@@ -2294,10 +2298,10 @@
     },
     "inputPlaceholder": "Placeholder",
     "inputPlaceholderPlaceholder": "mis. 12345678",
-    "addInput": "Tambah kolom",
+    "addInput": "Tambah field",
     "moveUp": "Naikkan",
     "moveDown": "Turunkan",
-    "removeInput": "Hapus kolom",
+    "removeInput": "Hapus field",
     "editNote": "Kolom teks yang sudah berisi tidak bisa dikosongkan.",
     "cancel": "Batal",
     "create": "Tambah game",
@@ -2315,7 +2319,7 @@
       "thumbnailRequired": "Unggah thumbnail.",
       "inputKeyRequired": "Isi key.",
       "inputKeyFormat": "Gunakan huruf kecil, angka, dan garis bawah.",
-      "inputKeyDuplicate": "Setiap kolom butuh key sendiri.",
+      "inputKeyDuplicate": "Setiap field butuh key sendiri.",
       "inputLabelRequired": "Isi label.",
       "popularityInvalid": "Isi bilangan bulat, 0 atau lebih.",
       "popularityZero": "Popularitas tidak bisa dikembalikan ke 0 di sini.",
@@ -2324,7 +2328,7 @@
     }
   },
   "gamePriceDialog": {
-    "gameEyebrow": "Markup",
+    "gameEyebrow": "// Atur markup",
     "gameTitle": "Markup {{name}}",
     "gameDescription": "Menetapkan satu persentase di atas harga dasar setiap produk game ini, maksimal {{max}}%.",
     "percentLabel": "Markup",
@@ -2337,7 +2341,7 @@
     "formula": "Harga baru = harga dasar + {{percent}}. Biaya tetap (Rp) tidak lagi dihitung.",
     "example": "Contoh:",
     "allTrigger": "Markup semua game",
-    "allEyebrow": "Semua produk",
+    "allEyebrow": "// Semua produk",
     "allTitle": "Satu markup untuk semua game",
     "allDescription": "Menetapkan satu persentase di atas harga dasar setiap produk di toko, maksimal {{max}}%.",
     "allWarning": "Ini mengganti markup setiap produk di semua game, termasuk biaya tetap. Tidak bisa dibatalkan.",

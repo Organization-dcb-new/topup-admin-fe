@@ -43,7 +43,9 @@ export function useGetGames(page: number, limit: number, params: GetGamesParams 
           page,
           limit,
           image,
-          ...(search.trim() && { search: search.trim() }),
+          // The backend pastes the search into its ORDER BY unescaped, so a quote breaks the query.
+          // `_` is LIKE's one-character wildcard: it still matches the quote in the name filter.
+          ...(search.trim() && { search: search.trim().replace(/'/g, '_') }),
           ...(is_active !== undefined && { is_active }),
           ...(game_id && { game_id }),
         },

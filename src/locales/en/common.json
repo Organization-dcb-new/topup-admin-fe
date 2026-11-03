@@ -561,7 +561,7 @@
     "confirmDelete": "Delete"
   },
   "gamePage": {
-    "eyebrow": "Catalog",
+    "eyebrow": "// Catalog",
     "title": "Games",
     "subtitle": "Every game the store sells. Switch games on or off, choose what the storefront lists, and set markups.",
     "syncBtn": "Sync from provider",
@@ -571,7 +571,9 @@
       "results": "Results",
       "active": "Active",
       "shown": "Shown",
-      "allGames": "across all games"
+      "allGames": "across all games",
+      "totalHint": "in the catalogue",
+      "resultsHint": "match the filters"
     },
     "searchPlaceholder": "Search name or slug",
     "filters": {
@@ -602,7 +604,7 @@
     "priceBtn": "Set markup for {{name}}",
     "open": "Open",
     "sync": {
-      "eyebrow": "Provider",
+      "eyebrow": "// Provider",
       "title": "Sync games from the provider?",
       "description": "Imports the provider's game catalogue. New games are added, existing ones are updated. This can take a minute.",
       "confirm": "Sync games",
@@ -642,11 +644,12 @@
       "productsSynced": "Products synced from the provider",
       "gamesSynced": "Games synced from the provider",
       "syncError": "Sync failed"
-    }
+    },
+    "openAria": "Open {{name}}"
   },
   "gameDetailPage": {
     "back": "All games",
-    "eyebrow": "Game",
+    "eyebrow": "// Game",
     "loadError": "Couldn't load this game. Check your connection and try again.",
     "retry": "Try again",
     "notFoundTitle": "Game not found",
@@ -726,7 +729,7 @@
       "belowBase": "{{amount}} below base"
     },
     "sync": {
-      "eyebrow": "Provider",
+      "eyebrow": "// Provider",
       "title": "Sync products for {{name}}?",
       "description": "Pulls this game's products and base prices from the provider. New products are added and existing ones updated.",
       "confirm": "Sync products",
@@ -739,12 +742,13 @@
       "button": "Delete game"
     },
     "delete": {
-      "eyebrow": "Delete game",
+      "eyebrow": "// Delete game",
       "title": "Delete {{name}}?",
       "description": "The game and its checkout fields are removed for good. Games that still have products or orders can't be deleted.",
       "confirm": "Delete",
       "cancel": "Cancel"
-    }
+    },
+    "eyebrowCategory": "// {{category}}"
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -801,7 +805,7 @@
     "bulkAllPriceError": "Failed to update product prices for all games"
   },
   "gameImageModal": {
-    "eyebrow": "Images",
+    "eyebrow": "// Images",
     "title": "Images of {{name}}",
     "description": "The thumbnail appears in lists and search. The banner heads the game's storefront page.",
     "thumbnailLabel": "Thumbnail",
@@ -2288,14 +2292,14 @@
     }
   },
   "gameForm": {
-    "addEyebrow": "New game",
+    "addEyebrow": "// New game",
     "addTitle": "Add a game",
     "addDescription": "Link it to the provider's game code, then fill in what the storefront shows.",
-    "editEyebrow": "Edit game",
+    "editEyebrow": "// Edit game",
     "editTitle": "Edit {{name}}",
     "editDescription": "Only the fields you change are saved.",
-    "sectionSource": "Provider",
-    "sectionIdentity": "Name",
+    "sectionSource": "Source",
+    "sectionIdentity": "Identity",
     "sectionImages": "Images",
     "sectionContent": "Storefront text",
     "sectionInputs": "Checkout fields",
@@ -2369,7 +2373,7 @@
     }
   },
   "gamePriceDialog": {
-    "gameEyebrow": "Markup",
+    "gameEyebrow": "// Set markup",
     "gameTitle": "Markup for {{name}}",
     "gameDescription": "Sets one percentage on top of the base price of every product of this game, up to {{max}}%.",
     "percentLabel": "Markup",
@@ -2382,7 +2386,7 @@
     "formula": "New price = base price + {{percent}}. Fixed rupiah fees no longer count.",
     "example": "Example:",
     "allTrigger": "Markup all games",
-    "allEyebrow": "Every product",
+    "allEyebrow": "// Every product",
     "allTitle": "One markup for every game",
     "allDescription": "Sets one percentage on top of the base price of every product in the store, up to {{max}}%.",
     "allWarning": "This replaces the markup of every product in every game, fixed fees included. There's no undo.",
