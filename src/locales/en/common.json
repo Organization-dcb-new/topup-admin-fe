@@ -865,23 +865,6 @@
   "gameSearchInput": {
     "placeholder": "Search game…"
   },
-  "productPage": {
-    "toastSuccess": "Products loaded",
-    "toastError": "Failed to load products",
-    "title": "Products",
-    "subtitle": "Search product name, filter status and provider status, amount, SKU, and game. Table shows {{limit}} items per page.",
-    "loadingShort": "Loading…",
-    "loadFailedShort": "Failed to load",
-    "totalProducts": "Total {{count}} products",
-    "tableLoadingTitle": "Loading products…",
-    "tableLoadingHint": "Please wait a moment.",
-    "loadErrorDetail": "Failed to load products. Check your connection or try reloading the page.",
-    "emptyPage": "No products match the current filters.",
-    "filtersTitle": "Filters",
-    "filtersOpenHint": "Product name, status, provider status, SKU, game, amount. Click to collapse.",
-    "filtersClosedHint": "Filters hidden — click to expand.",
-    "resetFilters": "Reset filters"
-  },
   "productFilters": {
     "nameLabel": "Product name",
     "namePlaceholder": "Search product name…",
@@ -990,60 +973,6 @@
     "colActions": "Actions",
     "colLastUpdatedBy": "Last updated by",
     "rowActionsAria": "Actions for product {{name}}"
-  },
-  "productImageModal": {
-    "openAria": "Change image for product {{name}}",
-    "title": "Change product image",
-    "description": "Product: {{name}}. Upload a new image; file is processed automatically after selection. Supports image or SVG.",
-    "required": "Image is required",
-    "label": "Image",
-    "dropHint": "Click or drop an image here",
-    "uploading": "Uploading {{percent}}%",
-    "cancel": "Cancel",
-    "save": "Save",
-    "saving": "Saving…"
-  },
-  "productGameImageModal": {
-    "title": "Change product image by game",
-    "description": "Choose a game then upload one image. All products for that game will use the new image after saving.",
-    "gameLabel": "Game",
-    "selectGame": "— Select game —",
-    "gameRequired": "Select a game first",
-    "imageLabel": "Product image",
-    "imageHint": "PNG, JPG, WebP, or SVG. File uploads automatically after selection.",
-    "uploadAria": "Upload image: click or drag file here",
-    "previewAlt": "Preview selected image",
-    "dropHint": "Click or drop image",
-    "maxHint": "Max file size follows server upload policy",
-    "uploading": "Uploading… {{percent}}%",
-    "cancel": "Cancel",
-    "save": "Save",
-    "saving": "Saving…"
-  },
-  "productPriceModal": {
-    "openAria": "Update price for {{name}}",
-    "title": "Update selling price",
-    "description": "Product: {{name}}. Choose fee amount or percent markup above base price. Preview below before saving.",
-    "typeLabel": "Adjustment type",
-    "typeFee": "Additional fee (IDR)",
-    "typePercent": "Percent markup",
-    "feeLabel": "Additional fee (IDR)",
-    "percentLabel": "Additional percent (%)",
-    "invalidFee": "Invalid fee value",
-    "invalidPercent": "Invalid percent value",
-    "feeMax": "Maximum additional fee is IDR 1,000,000",
-    "percentMax": "Maximum markup is 40%",
-    "basePrice": "Base price",
-    "sellingEstimate": "Estimated selling price",
-    "cancel": "Cancel",
-    "save": "Save",
-    "saving": "Saving…"
-  },
-  "productToasts": {
-    "imageUpdateSuccess": "Product image updated",
-    "imageUpdateError": "Failed to update product image",
-    "priceUpdateSuccess": "Price updated",
-    "priceUpdateError": "Failed to update price"
   },
   "categoryProductPage": {
     "eyebrow": "// Catalog",
@@ -2285,5 +2214,125 @@
   },
   "common": {
     "refresh": "Refresh"
+  },
+  "productsPage": {
+    "eyebrow": "// Catalog",
+    "title": "Products",
+    "subtitle": "Every top-up item on sale. The selling price is the provider's base price plus your markup — a fixed fee or a percentage.",
+    "total_one": "{{formatted}} product",
+    "total_other": "{{formatted}} products",
+    "retry": "Try again",
+    "loadError": "Couldn’t load products. Check your connection and try again.",
+    "emptyTitle": "No products yet",
+    "emptyBody": "Products appear here once a provider syncs them.",
+    "noMatchTitle": "No products match",
+    "noMatchBody": "Try a different search or fewer filters.",
+    "actions": {
+      "gameImage": "Image per game"
+    },
+    "filters": {
+      "searchPlaceholder": "Search product or game name",
+      "allGames": "All games",
+      "gameSearch": "Search games",
+      "noGames": "No games match.",
+      "status": "Status",
+      "statusAll": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "stock": "Provider stock",
+      "stockAll": "Any stock",
+      "available": "Available",
+      "empty": "Out of stock",
+      "more": "More filters",
+      "reset": "Reset filters",
+      "sku": "SKU (exact)",
+      "skuPlaceholder": "e.g. ML86",
+      "updatedBy": "Last changed by",
+      "updatedByAll": "Anyone",
+      "byAdmin": "Admin",
+      "byProcess": "Provider sync",
+      "bySystem": "System",
+      "basePrice": "Base price",
+      "sellingPrice": "Selling price",
+      "markupFee": "Fixed markup",
+      "markupPercent": "Percent markup",
+      "min": "Min",
+      "max": "Max"
+    },
+    "row": {
+      "available": "Available",
+      "empty": "Out of stock",
+      "stock_one": "{{count}} in stock",
+      "stock_other": "{{count}} in stock",
+      "active": "Active",
+      "inactive": "Inactive",
+      "noMarkup": "No markup",
+      "markupFee": "Fixed markup",
+      "markupPercent": "Percent markup",
+      "margin": "Margin {{amount}} ({{percent}})",
+      "loss": "Loss {{amount}} ({{percent}}) per order",
+      "editPrice": "Set markup for {{name}}",
+      "changeImage": "Change the image of {{game}} products"
+    },
+    "actor": {
+      "admin": "Admin {{id}}",
+      "process": "Provider sync",
+      "system": "System",
+      "processes": {
+        "lapakgaming_callback": "Lapak Gaming callback",
+        "webhook_lapakgaming": "Lapak Gaming webhook"
+      }
+    },
+    "price": {
+      "eyebrow": "// Set markup",
+      "markupLabel": "Markup",
+      "typeLabel": "Markup type",
+      "fee": "Fixed",
+      "percent": "Percent",
+      "base": "Base price",
+      "current": "Current price",
+      "newSelling": "New selling price",
+      "margin": "Margin",
+      "note": "The base price follows the provider's updates; this markup stays and is applied again whenever it changes.",
+      "cancel": "Cancel",
+      "save": "Save markup",
+      "saving": "Saving…",
+      "errors": {
+        "required": "Enter a markup.",
+        "negative": "Markup can’t be negative.",
+        "feeWhole": "Use whole rupiah, no decimals.",
+        "feeMax": "Fixed markup is capped at Rp1,000,000.",
+        "percentMax": "Percent markup is capped at 40%."
+      }
+    },
+    "gameImage": {
+      "eyebrow": "// Product image",
+      "title": "Image per game",
+      "description": "Product images are set per game: every product of the chosen game gets this image.",
+      "game": "Game",
+      "gamePlaceholder": "Choose a game",
+      "counting": "Counting products…",
+      "affects_one": "Replaces the image of {{count}} product.",
+      "affects_other": "Replaces the image of {{count}} products.",
+      "image": "New image",
+      "current": "Current",
+      "noCurrent": "No image yet",
+      "pickFirst": "Choose a game first",
+      "cancel": "Cancel",
+      "save": "Apply image",
+      "saving": "Saving…",
+      "errors": {
+        "game": "Choose a game.",
+        "image": "Upload an image."
+      }
+    },
+    "toasts": {
+      "priceSaved": "Markup saved",
+      "priceError": "Couldn’t save the markup",
+      "imageSaved": "Product images updated",
+      "imageError": "Couldn’t update the product images",
+      "bulkAllSaved": "Markup applied to all products",
+      "bulkAllError": "Couldn’t apply the markup to all products"
+    }
   }
 }

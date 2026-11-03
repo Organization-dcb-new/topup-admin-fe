@@ -26,9 +26,12 @@ export type GetGamesParams = {
 
 export const gamesQueryKey = ['games'] as const
 
-function serverMessage(err: unknown) {
+/** Backend error text, for the few messages the forms map onto a field. */
+export function gameServerMessage(err: unknown) {
   return (err as { response?: { data?: { message?: string } } })?.response?.data?.message
 }
+
+const serverMessage = gameServerMessage
 
 export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
   const { search = '', image = 'all', is_active, game_id } = params

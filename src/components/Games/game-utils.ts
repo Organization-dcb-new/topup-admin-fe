@@ -50,3 +50,8 @@ export function toInputKey(value: string) {
     .replace(/[^a-z0-9_]+/g, '_')
     .replace(/^_+/, '')
 }
+
+/** Shared `SelectTrigger` skin so selects line up with the HUD inputs in the game forms. */
+export const gameSelectTriggerClass =
+  'w-full rounded-md border-slate-200 bg-slate-50 text-slate-900 shadow-none data-[size=default]:h-12 ' +
+  'focus-visible:border-brand-purple focus-visible:ring-brand-purple/15 aria-invalid:border-rose-400'
