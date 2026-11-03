@@ -7,7 +7,7 @@ import { hudEyebrowClass, hudLabelClass, hudPrimaryButtonClass } from '@/compone
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import type { GameNames } from '@/hooks/useGame'
-import { useChangeProductImageByGame, useProductsByGame } from '@/hooks/useProduct'
+import { useChangeProductImageByGame, useGetProducts, useProductsByGame } from '@/hooks/useProduct'
 import { cn } from '@/lib/utils'
 import { GamePicker } from './GamePicker'
 
@@ -67,8 +67,11 @@ function GameImageForm({ initialGame, games, canPickGame, pending, onCancel, onS
   const [uploading, setUploading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const { data: products, isLoading } = useProductsByGame(gameId, !!gameId)
-  const currentImage = products?.find((p) => p.image)?.image
   const gameName = games.find((g) => g.id === gameId)?.name ?? initialGame?.name
+  // The by-game listing has no images; the admin list does, but only filters by game name (substring),
+  // so keep just this game's rows.
+  const { data: named } = useGetProducts(1, 20, { search: '', sku: '', game_name: gameName ?? '' }, !!gameId && !!gameName)
+  const currentImage = named?.data.find((p) => p.game_id === gameId && p.image)?.image
 
   const submit = () => {
     setSubmitted(true)

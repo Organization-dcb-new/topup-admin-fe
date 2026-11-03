@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils'
 import { gamePriceSchema, type GamePriceFormInput, type GamePriceFormValues } from '@/schemas/game'
 import type { Game } from '@/types/game'
 import { formatPercent, listingBasePrice, PRICE_MAX_PERCENT, sellingFromPercent } from './game-utils'
-import { useRetained } from './useRetained'
+import { useRetained } from '@/hooks/useRetained'
 
 type PriceGame = Pick<Game, 'id' | 'name' | 'additional_percent'>
 

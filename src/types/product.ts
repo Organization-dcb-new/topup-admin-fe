@@ -55,3 +55,12 @@ export interface ChangeProductImageByGamePayload {
   game_id: string
   image: string
 }
+
+/** One row of GET /products/game/:id: a slim listing, not a full product. */
+export interface ProductListing {
+  id: string
+  name: string
+  provider_status: string
+  /** The product's base (provider) price. */
+  price: number
+}

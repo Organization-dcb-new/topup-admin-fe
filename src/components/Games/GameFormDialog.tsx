@@ -30,7 +30,7 @@ import type { Game, GameUpdateRequest } from '@/types/game'
 import { CategorySelect } from './CategorySelect'
 import { GameInputsBuilder } from './GameInputsBuilder'
 import { gameSelectTriggerClass, toSlug } from './game-utils'
-import { useRetained } from './useRetained'
+import { useRetained } from '@/hooks/useRetained'
 
 interface GameFormDialogProps {
   open: boolean

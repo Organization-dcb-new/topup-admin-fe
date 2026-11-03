@@ -76,12 +76,9 @@ export const gameSelectTriggerClass =
   'w-full rounded-md border-slate-200 bg-slate-50 text-slate-900 shadow-none data-[size=default]:h-12 ' +
   'focus-visible:border-brand-purple focus-visible:ring-brand-purple/15 aria-invalid:border-rose-400'
 
-/**
- * GET /products/game/:id answers with only id, name, provider_status and `price` (the base price),
- * although useProductsByGame types the rows as Product.
- */
-export function listingBasePrice(product: Product) {
-  return product.base_price ?? (product as Product & { price?: number }).price ?? 0
+/** Base price from a full product or a /products/game listing (`ProductListing`), where it's called `price`. */
+export function listingBasePrice(product: { base_price?: number; price?: number }) {
+  return product.base_price ?? product.price ?? 0
 }
 
 /** The markup most of a game's products use; the detail endpoint has no game-level value. */

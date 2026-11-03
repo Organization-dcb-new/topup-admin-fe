@@ -551,15 +551,6 @@
       "deleteError": "Couldn’t delete the article"
     }
   },
-  "deleteBlogModal": {
-    "triggerAria": "Delete article",
-    "triggerLabel": "Delete",
-    "title": "Delete article?",
-    "description": "This cannot be undone. The article will be permanently removed from the server.",
-    "cancel": "Cancel",
-    "deleting": "Deleting…",
-    "confirmDelete": "Delete"
-  },
   "gamePage": {
     "eyebrow": "// Catalog",
     "title": "Games",
@@ -785,25 +776,6 @@
     "orderAsc": "Ascending",
     "orderDesc": "Descending"
   },
-  "gameToasts": {
-    "loadSuccess": "Game list loaded",
-    "loadError": "Failed to load game list",
-    "deleteSuccess": "Game deleted",
-    "deleteError": "Failed to delete game",
-    "imageUpdateSuccess": "Game image updated",
-    "imageUpdateError": "Failed to update game image",
-    "gameUpdateSuccess": "Game updated",
-    "gameUpdateError": "Failed to update game",
-    "statusToggleSuccess": "Game status updated",
-    "statusToggleError": "Failed to update game status",
-    "bulkStatusSuccess": "All games' status updated",
-    "bulkStatusError": "Failed to update all games' status",
-    "createGameSuccess": "Game added successfully",
-    "bulkPriceSuccess": "Product prices updated",
-    "bulkPriceError": "Failed to update prices",
-    "bulkAllPriceSuccess": "All game product prices updated",
-    "bulkAllPriceError": "Failed to update product prices for all games"
-  },
   "gameImageModal": {
     "eyebrow": "// Images",
     "title": "Images of {{name}}",
@@ -817,53 +789,6 @@
     "cancel": "Cancel",
     "save": "Save images",
     "saving": "Saving…"
-  },
-  "gameSearchInput": {
-    "placeholder": "Search game…"
-  },
-  "productFilters": {
-    "nameLabel": "Product name",
-    "namePlaceholder": "Search product name…",
-    "nameAria": "Search product name",
-    "statusLabel": "Status",
-    "statusPlaceholder": "Status",
-    "all": "All",
-    "active": "Active",
-    "inactive": "Inactive",
-    "providerStatusLabel": "Provider status",
-    "providerStatusPlaceholder": "Provider status",
-    "providerAvailable": "Available",
-    "providerEmpty": "Empty",
-    "skuLabel": "SKU",
-    "skuPlaceholder": "Filter SKU…",
-    "skuAria": "Filter SKU",
-    "gameLabel": "Game",
-    "gamePlaceholder": "Select game…",
-    "gameSearchPlaceholder": "Search games…",
-    "lastUpdatedByLabel": "Last updated by",
-    "lastUpdatedByPlaceholder": "Last updated by",
-    "system": "System",
-    "process": "Process",
-    "admin": "Admin",
-    "gameEmpty": "No games.",
-    "allGames": "All games",
-    "changeImageByGame": "Change image by game",
-    "nominalTitle": "Amount filters",
-    "nominalOpenHint": "Fee, percent, base and selling price — click to collapse.",
-    "nominalClosedHint": "Fee, percent, base and selling price. Click to expand.",
-    "nominalHelp": "Fill manually or use presets for each >= / <= row. Values are debounced before requests.",
-    "preset": "Preset",
-    "additionalFeeTitle": "Additional fee",
-    "additionalFeeDesc": "Lower bound (>=) and upper bound (<=), in IDR.",
-    "additionalPercentTitle": "Additional percent",
-    "additionalPercentDesc": "Lower bound (>=) and upper bound (<=). Decimals allowed.",
-    "basePriceTitle": "Base price",
-    "basePriceDesc": "Range (>= / <=) or exact value (=), in IDR.",
-    "sellingPriceTitle": "Selling price",
-    "sellingPriceDesc": "Range (>= / <=) or exact value (=), in IDR.",
-    "above": "Above (>=)",
-    "below": "Below (<=)",
-    "exact": "Exact (=)"
   },
   "productCallbackLogPage": {
     "eyebrow": "// Provider feed",
@@ -910,25 +835,6 @@
       "logId": "Log ID",
       "payload": "Raw payload"
     }
-  },
-  "productTable": {
-    "colImage": "Image",
-    "colName": "Name",
-    "colGame": "Game",
-    "colSku": "SKU",
-    "colAdditionalFee": "Additional fee",
-    "colPercent": "Percent",
-    "colBasePrice": "Base price",
-    "colSellingPrice": "Selling price",
-    "colStock": "Stock",
-    "stockUnlimited": "Unlimited",
-    "colStatus": "Status",
-    "providerStatus": "Provider status",
-    "providerAvailable": "Available",
-    "providerEmpty": "Empty",
-    "colActions": "Actions",
-    "colLastUpdatedBy": "Last updated by",
-    "rowActionsAria": "Actions for product {{name}}"
   },
   "categoryProductPage": {
     "eyebrow": "// Catalog",
@@ -1672,9 +1578,6 @@
     "field": "Field",
     "before": "Before",
     "after": "After"
-  },
-  "dashboardPage": {
-    "title": "Dashboard"
   },
   "dashboard": {
     "title": "Dashboard",

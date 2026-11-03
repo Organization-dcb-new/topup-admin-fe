@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { useUpdateGameImage } from '@/hooks/useGame'
 import type { Game } from '@/types/game'
-import { useRetained } from './useRetained'
+import { useRetained } from '@/hooks/useRetained'
 
 type ImageGame = Pick<Game, 'id' | 'name' | 'thumbnail_url' | 'banner_url'>
 

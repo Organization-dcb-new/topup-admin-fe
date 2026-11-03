@@ -549,15 +549,6 @@
       "deleteError": "Gagal menghapus artikel"
     }
   },
-  "deleteBlogModal": {
-    "triggerAria": "Hapus artikel",
-    "triggerLabel": "Hapus",
-    "title": "Hapus artikel?",
-    "description": "Tindakan ini tidak bisa dibatalkan. Artikel akan dihapus permanen dari server.",
-    "cancel": "Batal",
-    "deleting": "Menghapus…",
-    "confirmDelete": "Hapus"
-  },
   "gamePage": {
     "eyebrow": "// Katalog",
     "title": "Game",
@@ -783,25 +774,6 @@
     "orderAsc": "Naik",
     "orderDesc": "Turun"
   },
-  "gameToasts": {
-    "loadSuccess": "Berhasil memuat daftar game",
-    "loadError": "Gagal memuat daftar game",
-    "deleteSuccess": "Game berhasil dihapus",
-    "deleteError": "Gagal menghapus game",
-    "imageUpdateSuccess": "Gambar game berhasil diperbarui",
-    "imageUpdateError": "Gagal memperbarui gambar game",
-    "gameUpdateSuccess": "Game berhasil diperbarui",
-    "gameUpdateError": "Gagal memperbarui game",
-    "statusToggleSuccess": "Status game diperbarui",
-    "statusToggleError": "Gagal memperbarui status game",
-    "bulkStatusSuccess": "Status semua game berhasil diperbarui",
-    "bulkStatusError": "Gagal memperbarui status semua game",
-    "createGameSuccess": "Game berhasil ditambahkan",
-    "bulkPriceSuccess": "Harga produk berhasil diperbarui",
-    "bulkPriceError": "Gagal memperbarui harga",
-    "bulkAllPriceSuccess": "Harga seluruh produk game berhasil diperbarui",
-    "bulkAllPriceError": "Gagal memperbarui harga produk semua game"
-  },
   "gameImageModal": {
     "eyebrow": "// Gambar",
     "title": "Gambar {{name}}",
@@ -815,53 +787,6 @@
     "cancel": "Batal",
     "save": "Simpan gambar",
     "saving": "Menyimpan…"
-  },
-  "gameSearchInput": {
-    "placeholder": "Cari game…"
-  },
-  "productFilters": {
-    "nameLabel": "Nama produk",
-    "namePlaceholder": "Cari nama produk…",
-    "nameAria": "Cari nama produk",
-    "statusLabel": "Status",
-    "statusPlaceholder": "Status",
-    "all": "Semua",
-    "active": "Aktif",
-    "inactive": "Nonaktif",
-    "providerStatusLabel": "Status provider",
-    "providerStatusPlaceholder": "Status provider",
-    "providerAvailable": "Tersedia",
-    "providerEmpty": "Kosong",
-    "skuLabel": "SKU",
-    "skuPlaceholder": "Filter SKU…",
-    "skuAria": "Filter SKU",
-    "gameLabel": "Game",
-    "gamePlaceholder": "Pilih game…",
-    "gameSearchPlaceholder": "Cari game…",
-    "lastUpdatedByLabel": "Terakhir diperbarui",
-    "lastUpdatedByPlaceholder": "Terakhir diperbarui oleh",
-    "system": "System",
-    "process": "Process",
-    "admin": "Admin",
-    "gameEmpty": "Tidak ada game.",
-    "allGames": "Semua game",
-    "changeImageByGame": "Ubah gambar per game",
-    "nominalTitle": "Filter nominal",
-    "nominalOpenHint": "Biaya, persen, harga dasar & jual — klik untuk menutup.",
-    "nominalClosedHint": "Biaya tambahan, persen, harga dasar & jual. Klik untuk membuka.",
-    "nominalHelp": "Isi manual atau pakai preset di bawah setiap baris >= / <=. Nilai di-debounce sebelum dikirim ke server.",
-    "preset": "Preset",
-    "additionalFeeTitle": "Biaya tambahan",
-    "additionalFeeDesc": "Di atas (>=) dan di bawah (<=), dalam rupiah.",
-    "additionalPercentTitle": "Persen tambahan",
-    "additionalPercentDesc": "Di atas (>=) dan di bawah (<=). Boleh desimal.",
-    "basePriceTitle": "Harga dasar",
-    "basePriceDesc": "Rentang (>= / <=) atau nilai tepat (=), rupiah.",
-    "sellingPriceTitle": "Harga jual",
-    "sellingPriceDesc": "Rentang (>= / <=) atau nilai tepat (=), rupiah.",
-    "above": "Di atas (>=)",
-    "below": "Di bawah (<=)",
-    "exact": "Tepat (=)"
   },
   "productCallbackLogPage": {
     "eyebrow": "// Feed penyedia",
@@ -907,25 +832,6 @@
       "logId": "ID log",
       "payload": "Payload mentah"
     }
-  },
-  "productTable": {
-    "colImage": "Gambar",
-    "colName": "Nama",
-    "colGame": "Game",
-    "colSku": "SKU",
-    "colAdditionalFee": "Biaya tambahan",
-    "colPercent": "Persen",
-    "colBasePrice": "Harga dasar",
-    "colSellingPrice": "Harga jual",
-    "colStock": "Stok",
-    "stockUnlimited": "Tanpa batas",
-    "colStatus": "Status",
-    "providerStatus": "Status provider",
-    "providerAvailable": "Tersedia",
-    "providerEmpty": "Kosong",
-    "colActions": "Aksi",
-    "colLastUpdatedBy": "Diperbarui oleh",
-    "rowActionsAria": "Aksi untuk produk {{name}}"
   },
   "categoryProductPage": {
     "eyebrow": "// Katalog",
@@ -1637,9 +1543,6 @@
     "field": "Field",
     "before": "Sebelum",
     "after": "Sesudah"
-  },
-  "dashboardPage": {
-    "title": "Dasbor"
   },
   "dashboard": {
     "title": "Dasbor",

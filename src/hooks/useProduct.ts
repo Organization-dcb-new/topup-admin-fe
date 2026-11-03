@@ -2,7 +2,7 @@ import { api } from '@/api/axios'
 import i18n from '@/i18n'
 import type {
   ChangeProductImageByGamePayload,
-  Product,
+  ProductListing,
   ProductResponse,
   UpdateProductPricePayload,
 } from '@/types/product'
@@ -41,7 +41,7 @@ function pickNonEmpty(params: Record<string, string | boolean | undefined>) {
   return Object.fromEntries(Object.entries(params).filter(([, v]) => v !== undefined && v !== ''))
 }
 
-export const useGetProducts = (page: number, limit: number, filters: GetProductsParams) => {
+export const useGetProducts = (page: number, limit: number, filters: GetProductsParams, enabled = true) => {
   const params = pickNonEmpty({
     search: filters.search.trim(),
     sku: filters.sku.trim(),
@@ -69,6 +69,7 @@ export const useGetProducts = (page: number, limit: number, filters: GetProducts
     },
     // Keep the current page on screen while a new filter loads.
     placeholderData: keepPreviousData,
+    enabled,
   })
 }
 
@@ -120,7 +121,7 @@ export function useGetProductNames(id: string) {
 export function useProductsByGame(gameId: string, enabled: boolean) {
   return useQuery({
     queryKey: ['products-by-game', gameId],
-    queryFn: async (): Promise<Product[]> => {
+    queryFn: async (): Promise<ProductListing[]> => {
       const res = await api.get(`/products/game/${gameId}`)
       const raw = res.data?.data
       return Array.isArray(raw) ? raw : []
