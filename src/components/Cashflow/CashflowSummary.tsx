@@ -118,7 +118,11 @@ function NetHero({ stats, periodLabel }: { stats: CashflowPeriodSummary['stats']
                   {formatCurrency(net)}
                 </p>
                 {income > 0 && (
-                  <p className='text-xs text-slate-500'>{t('cashflowPage.summary.marginOf', { pct: pct(net / income) })}</p>
+                  <p className={cn('text-xs', loss ? 'text-rose-700' : 'text-slate-500')}>
+                    {loss
+                      ? t('cashflowPage.summary.lossOf', { pct: pct(-net / income) })
+                      : t('cashflowPage.summary.marginOf', { pct: pct(net / income) })}
+                  </p>
                 )}
               </div>
               <span

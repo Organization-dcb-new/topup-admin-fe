@@ -358,7 +358,8 @@
       "pgFee": "Gateway fees",
       "pgFeeHint": "Charged by the payment gateway",
       "entries": "Entries",
-      "entriesHint": "Money-in and provider-cost entries in this period"
+      "entriesHint": "Money-in and provider-cost entries in this period",
+      "lossOf": "Lost {{pct}} of the money that came in"
     },
     "detail": {
       "eyebrow": "// Cashflow entry",

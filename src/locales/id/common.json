@@ -356,7 +356,8 @@
       "pgFee": "Biaya gateway",
       "pgFeeHint": "Ditagih payment gateway",
       "entries": "Entri",
-      "entriesHint": "Entri uang masuk dan biaya penyedia di periode ini"
+      "entriesHint": "Entri uang masuk dan biaya penyedia di periode ini",
+      "lossOf": "Rugi {{pct}} dari uang masuk"
     },
     "detail": {
       "eyebrow": "// Entri arus kas",

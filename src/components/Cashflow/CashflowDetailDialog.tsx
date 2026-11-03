@@ -40,7 +40,8 @@ function CashflowDetail({ item, onClose }: { item: CashflowItem; onClose: () => 
   const note = parseNotes(item.notes)
 
   return (
-    <div className='space-y-6 p-6 sm:p-7'>
+    // min-w-0: DialogContent is a grid, and long IDs would otherwise widen its track past the screen.
+    <div className='min-w-0 space-y-6 p-6 sm:p-7'>
       <div className='flex items-start gap-4'>
         <DirectionTile direction={direction} size='lg' />
         <div className='min-w-0 space-y-1'>
