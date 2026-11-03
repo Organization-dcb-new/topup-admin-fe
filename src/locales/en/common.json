@@ -53,7 +53,6 @@
       "produk": "Products",
       "kategoriProduk": "Product categories",
       "produkAnomali": "Anomaly products",
-      "kategori": "Categories",
       "fieldInput": "Input fields",
       "pembayaran": "Payment",
       "metode": "Methods",
@@ -1461,24 +1460,6 @@
       "deleteError": "Couldn’t delete the show",
       "gamesError": "Couldn’t save the games"
     }
-  },
-  "categoryPage": {
-    "searchPlaceholder": "Search categories...",
-    "errorMessage": "Failed to load categories",
-    "emptyMessage": "No categories yet.",
-    "totalCount": "Total {{total}} categories"
-  },
-  "categoryTable": {
-    "colImage": "Image",
-    "colName": "Name",
-    "colSlug": "Slug",
-    "colDescription": "Description",
-    "colActions": "Actions",
-    "iconAltFallback": "Category icon"
-  },
-  "categoryToasts": {
-    "loadSuccess": "Categories loaded",
-    "loadError": "Failed to load categories"
   },
   "paymentMethodCategoryPage": {
     "title": "Payment method categories",

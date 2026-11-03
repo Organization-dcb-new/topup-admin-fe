@@ -53,7 +53,6 @@
       "produk": "Produk",
       "kategoriProduk": "Kategori produk",
       "produkAnomali": "Produk anomali",
-      "kategori": "Kategori",
       "fieldInput": "Field input",
       "pembayaran": "Pembayaran",
       "metode": "Metode",
@@ -1454,24 +1453,6 @@
       "deleteError": "Gagal menghapus acara",
       "gamesError": "Gagal menyimpan game"
     }
-  },
-  "categoryPage": {
-    "searchPlaceholder": "Cari kategori...",
-    "errorMessage": "Gagal memuat kategori",
-    "emptyMessage": "Belum ada kategori.",
-    "totalCount": "Total {{total}} kategori"
-  },
-  "categoryTable": {
-    "colImage": "Gambar",
-    "colName": "Nama",
-    "colSlug": "Slug",
-    "colDescription": "Deskripsi",
-    "colActions": "Aksi",
-    "iconAltFallback": "Ikon kategori"
-  },
-  "categoryToasts": {
-    "loadSuccess": "Berhasil memuat kategori",
-    "loadError": "Gagal memuat kategori"
   },
   "paymentMethodCategoryPage": {
     "title": "Kategori metode pembayaran",
