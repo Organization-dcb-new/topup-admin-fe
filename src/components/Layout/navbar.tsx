@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
 import { usePermissions } from '@/hooks/usePermissions'
-import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { HealthStatusMenu } from './health-status-menu'
 import { LanguageSwitch } from './language-switch'
@@ -53,9 +52,8 @@ function Breadcrumbs() {
   const { t } = useTranslation('common')
   const tr = useSidebarCopy()
   const { pathname } = useLocation()
-  const { role } = useAuthUser()
   const { can } = usePermissions()
-  const sections = useMemo(() => visibleMenus(can, role), [can, role])
+  const sections = useMemo(() => visibleMenus(can), [can])
   const activePath = findActivePath(sections, pathname)
   const trail = activePath ? findTrail(sections, activePath) : undefined
   if (!activePath || !trail) return <div className='min-w-0 flex-1' />

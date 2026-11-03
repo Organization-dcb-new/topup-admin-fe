@@ -62,7 +62,6 @@
       "referral": "Kode referral",
       "keamanan": "Keamanan",
       "twoFa": "2FA",
-      "pembatasLaju": "Pembatas laju",
       "pemeliharaan": "Pemeliharaan",
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
@@ -2018,14 +2017,13 @@
   },
   "referralPage": {
     "title": "Kode Referral",
-    "subtitle": "Kelola kode referral diskon untuk promosi transaksi.",
-    "addBtn": "Tambah kode referral",
+    "subtitle": "Kode yang dibagikan partner ke pembeli. Setiap transaksi lunas yang memakai kode memberi pemiliknya bagian dari margin.",
+    "addBtn": "Kode baru",
     "editBtn": "Ubah",
     "deleteBtn": "Hapus",
     "searchPlaceholder": "Cari berdasarkan nama atau kode...",
     "statusActive": "Aktif",
     "statusInactive": "Tidak Aktif",
-    "toastSuccess": "Kode referral berhasil dimuat",
     "toastError": "Gagal memuat kode referral",
     "emptyPage": "Belum ada kode referral terdaftar",
     "table": {
@@ -2038,39 +2036,48 @@
       "totalData": "Total Data"
     },
     "form": {
-      "addTitle": "Tambah Kode Referral Baru",
-      "editTitle": "Ubah Kode Referral",
+      "addTitle": "Kode referral baru",
+      "editTitle": "Ubah kode referral",
       "nameLabel": "Nama",
       "namePlaceholder": "contoh: Promo Musim Panas",
       "codeLabel": "Kode Referral",
       "codePlaceholder": "contoh: SUMMER50",
-      "percentLabel": "Persentase Komisi",
+      "percentLabel": "Komisi",
       "percentPlaceholder": "contoh: 10",
-      "statusLabel": "Status Aktif",
+      "statusLabel": "Aktif",
       "cancel": "Batal",
-      "save": "Simpan",
+      "save": "Simpan perubahan",
       "errors": {
         "nameRequired": "Nama wajib diisi",
         "codeRequired": "Kode referral wajib diisi",
         "percentMin": "Persentase komisi minimal 0",
-        "percentMax": "Persentase komisi maksimal 100"
-      }
+        "percentMax": "Persentase komisi maksimal 100",
+        "percentRequired": "Masukkan komisi antara 0 dan 100"
+      },
+      "addEyebrow": "Kode baru",
+      "editEyebrow": "Ubah kode",
+      "description": "Kode yang dimasukkan pembeli saat checkout, dan bagian margin yang didapat pemiliknya.",
+      "percentHint": "Bagian dari margin transaksi lunas. 10% dari margin Rp 5.000 menghasilkan Rp 500.",
+      "statusHint": "Kode nonaktif ditolak saat checkout.",
+      "create": "Buat kode",
+      "saving": "Menyimpan…"
     },
     "deleteConfirm": {
-      "title": "Hapus Kode Referral",
-      "description": "Apakah Anda yakin ingin menghapus kode referral ini? Tindakan ini tidak dapat dibatalkan.",
+      "title": "Hapus “{{code}}”?",
+      "description": "Pembeli tidak akan bisa memakai kode ini lagi. Tindakan ini tidak bisa dibatalkan.",
       "cancel": "Batal",
-      "confirm": "Hapus"
+      "confirm": "Hapus",
+      "eyebrow": "Hapus kode"
     },
     "detail": {
       "title": "Detail Kode Referral",
-      "subtitle": "Informasi rinci dan daftar transaksi yang menggunakan kode referral ini.",
-      "backBtn": "Kembali",
+      "subtitle": "Performa kode ini, beserta setiap transaksi yang memakainya.",
+      "backBtn": "Kode referral",
       "cardTitle": "Informasi Kode Referral",
       "name": "Nama",
       "code": "Kode",
       "percent": "Komisi (%)",
-      "totalEarnings": "Total Pendapatan",
+      "totalEarnings": "Total komisi",
       "status": "Status",
       "createdAt": "Tanggal Dibuat",
       "updatedAt": "Terakhir Diubah",
@@ -2084,9 +2091,35 @@
         "method": "Metode Pembayaran",
         "channel": "Saluran",
         "status": "Status",
-        "date": "Tanggal"
+        "date": "Tanggal",
+        "margin": "Margin",
+        "commission": "Komisi"
+      },
+      "eyebrow": "Detail referral",
+      "metrics": {
+        "uses": "Total pemakaian",
+        "paid": "Lunas",
+        "volume": "Volume lunas",
+        "conversion": "Konversi"
       }
-    }
+    },
+    "eyebrow": "Program afiliasi",
+    "view": "Detail",
+    "totalCodes_other": "{{count}} kode",
+    "retry": "Coba lagi",
+    "emptyTitle": "Belum ada kode referral",
+    "emptyBody": "Buat kode untuk partner, lalu biarkan mereka membagikannya ke audiens.",
+    "pagination": "Halaman",
+    "pageInfo": "Halaman {{page}} dari {{total}}",
+    "prev": "Halaman sebelumnya",
+    "next": "Halaman berikutnya",
+    "codeShort": "Kode",
+    "commission": "Komisi",
+    "copy": "Salin kode",
+    "copied": "Kode {{code}} disalin",
+    "copyFailed": "Gagal menyalin ke clipboard",
+    "createdOn": "Dibuat {{date}}",
+    "toggleStatus": "Aktifkan atau nonaktifkan {{name}}"
   },
   "referralToasts": {
     "createSuccess": "Kode referral berhasil dibuat",

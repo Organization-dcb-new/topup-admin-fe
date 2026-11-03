@@ -10,7 +10,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import type { SidebarMenu } from '@/constants/sidebar-menu'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { usePermissions } from '@/hooks/usePermissions'
-import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import type { SidebarProps } from '@/types/sidebar'
 import { RailTooltip, RowLabel } from './sidebar-parts'
@@ -24,7 +23,6 @@ import {
 
 export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) {
   const { pathname } = useLocation()
-  const { role } = useAuthUser()
   const { t } = useTranslation('common')
   const tr = useSidebarCopy()
   const isMdUp = useMediaQuery('(min-width: 768px)')
@@ -33,7 +31,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
   const navRef = useRef<HTMLElement>(null)
 
   const { can } = usePermissions()
-  const sections = useMemo(() => visibleMenus(can, role), [can, role])
+  const sections = useMemo(() => visibleMenus(can), [can])
   const activePath = findActivePath(sections, pathname)
 
   // Bring the current page into view, e.g. when landing straight on an item far down the list.

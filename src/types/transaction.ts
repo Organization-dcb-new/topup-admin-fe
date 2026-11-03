@@ -20,6 +20,8 @@ export interface Payment {
   va_number: string;
   app_name: string;
   margin: number;
+  /** Referral commission on this payment; only in a referral code's detail. */
+  earnings?: number;
   guide: PaymentGuide;
   created_at: string;
 }

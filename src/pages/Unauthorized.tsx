@@ -6,13 +6,11 @@ import { AuthPanelHeader, HudCard } from '@/components/Auth/AuthPanel'
 import { hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
 import { firstAccessiblePath, visibleMenus } from '@/components/Layout/sidebar-nav'
 import { usePermissions } from '@/hooks/usePermissions'
-import { useAuthUser } from '@/lib/auth'
 
 export default function UnauthorizedPage() {
   const { t } = useTranslation('common')
-  const { role } = useAuthUser()
   const { can } = usePermissions()
-  const home = firstAccessiblePath(visibleMenus(can, role))
+  const home = firstAccessiblePath(visibleMenus(can))
 
   return (
     <div className='mx-auto max-w-lg py-6 sm:py-12'>
