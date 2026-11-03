@@ -1764,7 +1764,7 @@
   },
   "dashboard": {
     "title": "Dasbor",
-    "subtitle": "Ringkasan transaksi operasional secara langsung (WIB).",
+    "subtitle": "Performa toko secara langsung, dalam WIB.",
     "rangeLabel": "Rentang waktu",
     "pickDateAria": "Pilih rentang tanggal",
     "pickDateRange": "Pilih rentang tanggal",
@@ -1791,7 +1791,10 @@
       "revenue": "Pendapatan",
       "margin": "Margin",
       "avgOrderValue": "Rata-rata nilai order",
-      "successRate": "Tingkat sukses"
+      "successRate": "Tingkat sukses",
+      "noPrev": "Belum ada data pembanding",
+      "perOrder": "Per order",
+      "previousValue": "Periode sebelumnya {{value}}"
     },
     "chart": {
       "title": "Tren transaksi",
@@ -1803,7 +1806,12 @@
         "count": "Jumlah transaksi",
         "revenue": "Pendapatan",
         "margin": "Margin"
-      }
+      },
+      "viewLabel": "Tampilan",
+      "viewChart": "Grafik",
+      "viewTable": "Tabel",
+      "ariaLabel": "{{metric}} dari waktu ke waktu",
+      "time": "Waktu"
     },
     "status": {
       "title": "Komposisi status",
@@ -1820,24 +1828,44 @@
       "REFUNDED": "Dikembalikan"
     },
     "pending": {
-      "title": "Order pending menua",
-      "hourShort": "j",
-      "minShort": "m",
-      "stuckSuffix": "pending > {{minutes}} mnt",
-      "oldest": "Tertua: {{duration}}",
-      "none": "Tidak ada order pending yang nyangkut."
+      "title": "Pending tertahan",
+      "oldest": "Yang paling lama sudah menunggu {{duration}}",
+      "none": "Tidak ada yang tertahan",
+      "hours": "{{count}} jam",
+      "minutes": "{{count}} menit",
+      "stuck": "order pending lebih dari {{minutes}} menit",
+      "review": "Cek transaksi",
+      "noneHint": "Tidak ada order yang pending lebih dari {{minutes}} menit."
     },
     "failed": {
       "title": "Alasan gagal",
-      "empty": "Tidak ada transaksi gagal."
+      "empty": "Tidak ada transaksi gagal di periode ini.",
+      "total": "{{formatted}} gagal",
+      "unknown": "Tanpa alasan"
     },
     "top": {
       "products": "Produk terlaris",
       "games": "Game terlaris",
       "paymentMethods": "Metode bayar terpopuler",
       "empty": "Belum ada data.",
-      "productMeta": "{{sku}} · {{qty}} terjual",
-      "ordersMeta": "{{count}} order"
+      "ordersMeta": "{{count}} order",
+      "soldMeta": "{{qty}} terjual"
+    },
+    "eyebrow": "// Pusat komando",
+    "greeting": "Halo, {{name}}",
+    "retry": "Coba lagi",
+    "updatedAt": "Diperbarui {{time}}",
+    "refresh": "Muat ulang sekarang",
+    "autoRefresh": {
+      "30000": "Tiap 30 dtk",
+      "60000": "Tiap 1 mnt",
+      "300000": "Tiap 5 mnt",
+      "label": "Muat ulang otomatis",
+      "off": "Auto refresh mati"
+    },
+    "health": {
+      "degradedTitle": "Sebagian layanan bermasalah",
+      "degradedBody": "Terdampak: {{services}}. Order bisa gagal sampai layanan pulih."
     }
   },
   "unauthorizedPage": {

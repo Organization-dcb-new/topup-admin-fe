@@ -1,65 +1,65 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
-import { formatNumber } from '@/lib/format'
-import { cn } from '@/lib/utils'
-import type { PendingAging } from '@/types/dashboard'
-import { CheckCircle2, Clock } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Hourglass } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
-interface PendingAgingCardProps {
-  pendingAging: PendingAging
-}
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
+import { formatNumber } from '@/lib/format'
+import type { PendingAging } from '@/types/dashboard'
+import { DashboardPanel } from './DashboardPanel'
 
-export function PendingAgingCard({ pendingAging }: PendingAgingCardProps) {
+export function PendingAgingCard({ pendingAging, order }: { pendingAging: PendingAging; order?: number }) {
   const { t } = useTranslation('common')
   const { count, oldest_minutes, threshold_minutes } = pendingAging
   const hasStuck = count > 0
 
-  const oldestHours = Math.floor(oldest_minutes / 60)
-  const oldestMins = oldest_minutes % 60
-  const oldestLabel =
-    oldestHours > 0 ? `${oldestHours}${t('dashboard.pending.hourShort')} ${oldestMins}${t('dashboard.pending.minShort')}` : `${oldestMins}${t('dashboard.pending.minShort')}`
+  const hours = Math.floor(oldest_minutes / 60)
+  const minutes = oldest_minutes % 60
+  const oldest = [
+    hours ? t('dashboard.pending.hours', { count: hours }) : null,
+    minutes || !hours ? t('dashboard.pending.minutes', { count: minutes }) : null,
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <Card className={dashCard}>
-      <CardHeader className={dashCardHeader}>
-        <CardTitle className='flex items-center gap-2 text-sm font-semibold text-gray-900'>
-          <Clock className='h-4 w-4 text-amber-500' aria-hidden />
-          {t('dashboard.pending.title')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className='p-4'>
-        {hasStuck ? (
-          <div className='space-y-2'>
-            <div className='flex items-baseline gap-2'>
-              <span
-                className={cn(
-                  'text-2xl font-semibold tabular-nums',
-                  count > 0 ? 'text-amber-600' : 'text-foreground',
-                )}
-              >
-                {formatNumber(count)}
-              </span>
-              <span className='text-sm text-muted-foreground'>
-                {t('dashboard.pending.stuckSuffix', { minutes: threshold_minutes })}
-              </span>
-            </div>
-            <p className='text-xs text-muted-foreground'>
-              {t('dashboard.pending.oldest', { duration: oldestLabel })}
+    <DashboardPanel
+      title={t('dashboard.pending.title')}
+      icon={Hourglass}
+      iconClassName={hasStuck ? 'bg-amber-50 text-amber-600' : 'bg-emerald-50 text-emerald-600'}
+      order={order}
+      tone={hasStuck ? 'warning' : 'default'}
+    >
+      {hasStuck ? (
+        <div className='flex h-full flex-col gap-4'>
+          <div>
+            <p className='font-display text-4xl font-bold text-amber-600'>{formatNumber(count)}</p>
+            <p className='mt-1 text-sm text-slate-600'>
+              {t('dashboard.pending.stuck', { count, minutes: threshold_minutes })}
             </p>
           </div>
-        ) : (
-          <div className='flex items-center gap-3 py-2'>
-            <CheckCircle2 className='h-6 w-6 shrink-0 text-emerald-600' aria-hidden />
-            <p className='text-sm text-muted-foreground'>{t('dashboard.pending.none')}</p>
+          <div className='rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800'>
+            {t('dashboard.pending.oldest', { duration: oldest })}
           </div>
-        )}
-      </CardContent>
-    </Card>
+          <Can permission={PERM.transactionView}>
+            <Link
+              to='/transactions'
+              className='group mt-auto inline-flex items-center gap-1.5 self-start font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple'
+            >
+              {t('dashboard.pending.review')}
+              <ArrowRight className='size-3.5 transition-transform duration-300 ease-hud group-hover:translate-x-0.5' aria-hidden />
+            </Link>
+          </Can>
+        </div>
+      ) : (
+        <div className='flex h-full flex-col items-center justify-center gap-2 py-4 text-center'>
+          <span className='grid size-11 place-items-center bg-emerald-50 text-emerald-600 hud-clip-sm'>
+            <CheckCircle2 className='size-5' aria-hidden />
+          </span>
+          <p className='text-sm font-medium text-slate-700'>{t('dashboard.pending.none')}</p>
+          <p className='text-xs text-slate-500'>{t('dashboard.pending.noneHint', { minutes: threshold_minutes })}</p>
+        </div>
+      )}
+    </DashboardPanel>
   )
 }

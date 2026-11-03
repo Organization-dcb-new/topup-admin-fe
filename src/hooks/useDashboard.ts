@@ -5,7 +5,7 @@ import type {
   DashboardRange,
   DashboardTimeseriesResponse,
 } from '@/types/dashboard'
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 /**
  * Base path endpoint dashboard (relatif terhadap axios `baseURL` = `/api`, yang
@@ -61,6 +61,8 @@ export const useDashboardOverview = (
       return res.data
     },
     enabled: isRangeReady(params),
+    // Keep the last result on screen while a new range loads, instead of flashing a skeleton.
+    placeholderData: keepPreviousData,
     // overview relatif berat — dokumen menyarankan refresh >= 30 detik
     staleTime: 30_000,
     refetchInterval: refetchInterval !== undefined ? refetchInterval : 60_000,
@@ -93,5 +95,6 @@ export const useDashboardTimeseries = (
       return res.data
     },
     enabled: isRangeReady(params),
+    placeholderData: keepPreviousData,
     staleTime: 30_000,
   })

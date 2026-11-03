@@ -1771,7 +1771,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Live operational transaction overview (WIB).",
+    "subtitle": "Live store performance, in WIB.",
     "rangeLabel": "Time range",
     "pickDateAria": "Pick a date range",
     "pickDateRange": "Pick a date range",
@@ -1798,7 +1798,10 @@
       "revenue": "Revenue",
       "margin": "Margin",
       "avgOrderValue": "Avg order value",
-      "successRate": "Success rate"
+      "successRate": "Success rate",
+      "noPrev": "No previous data",
+      "perOrder": "Per order",
+      "previousValue": "Previous period {{value}}"
     },
     "chart": {
       "title": "Transaction trend",
@@ -1810,7 +1813,12 @@
         "count": "Order count",
         "revenue": "Revenue",
         "margin": "Margin"
-      }
+      },
+      "viewLabel": "View",
+      "viewChart": "Chart",
+      "viewTable": "Table",
+      "ariaLabel": "{{metric}} over time",
+      "time": "Time"
     },
     "status": {
       "title": "Status breakdown",
@@ -1827,24 +1835,48 @@
       "REFUNDED": "Refunded"
     },
     "pending": {
-      "title": "Aging pending orders",
-      "hourShort": "h",
-      "minShort": "m",
-      "stuckSuffix": "pending > {{minutes}} min",
-      "oldest": "Oldest: {{duration}}",
-      "none": "No stuck pending orders."
+      "title": "Stuck pending",
+      "oldest": "Oldest has been waiting {{duration}}",
+      "none": "Nothing stuck",
+      "hours_one": "{{count}} hour",
+      "hours_other": "{{count}} hours",
+      "minutes_one": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "stuck_one": "order pending for more than {{minutes}} min",
+      "stuck_other": "orders pending for more than {{minutes}} min",
+      "review": "Review transactions",
+      "noneHint": "No order has been pending longer than {{minutes}} min."
     },
     "failed": {
       "title": "Failure reasons",
-      "empty": "No failed transactions."
+      "empty": "No failed transactions in this period.",
+      "total_one": "{{formatted}} failed",
+      "total_other": "{{formatted}} failed",
+      "unknown": "No reason given"
     },
     "top": {
       "products": "Top products",
       "games": "Top games",
       "paymentMethods": "Top payment methods",
       "empty": "No data yet.",
-      "productMeta": "{{sku}} · {{qty}} sold",
-      "ordersMeta": "{{count}} orders"
+      "ordersMeta": "{{count}} orders",
+      "soldMeta": "{{qty}} sold"
+    },
+    "eyebrow": "// Command center",
+    "greeting": "Welcome back, {{name}}",
+    "retry": "Try again",
+    "updatedAt": "Updated {{time}}",
+    "refresh": "Refresh now",
+    "autoRefresh": {
+      "30000": "Every 30s",
+      "60000": "Every 1 min",
+      "300000": "Every 5 min",
+      "label": "Auto refresh",
+      "off": "Auto refresh off"
+    },
+    "health": {
+      "degradedTitle": "Some services are down",
+      "degradedBody": "Affected: {{services}}. Orders may fail until they recover."
     }
   },
   "unauthorizedPage": {
