@@ -1,7 +1,6 @@
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { api } from '@/api/axios'
-import toast from 'react-hot-toast'
 
 export const AUTH_ME_QUERY_KEY = ['auth-me']
 
@@ -28,17 +27,6 @@ export const authStorage = {
       /* ignore */
     }
   },
-}
-
-export async function logout(): Promise<void> {
-  try {
-    await authStorage.clearToken()
-    toast.success('Berhasil logout')
-    window.location.href = '/login'
-  } catch (error) {
-    console.error(error)
-    toast.error('Gagal logout, coba lagi!')
-  }
 }
 
 export async function fetchAuthSession(): Promise<AuthSession> {

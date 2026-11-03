@@ -155,7 +155,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
 
         <p
           className={cn(
-            'shrink-0 whitespace-nowrap border-t border-slate-100 px-[30px] py-3 font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-300 transition-opacity duration-300',
+            'shrink-0 truncate border-t border-slate-100 px-6 py-3 font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300 transition-opacity duration-300',
             rail && 'opacity-0'
           )}
         >
@@ -296,6 +296,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
         align='start'
         sideOffset={14}
         className='z-[60] w-56 overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl'
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         <div className='p-1.5'>

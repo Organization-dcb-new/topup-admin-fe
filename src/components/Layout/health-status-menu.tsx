@@ -74,6 +74,7 @@ export function HealthStatusMenu() {
         align='end'
         sideOffset={8}
         className='z-[60] w-72 overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl'
+        onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         <div className='flex items-start justify-between gap-3 p-4'>
