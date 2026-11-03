@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react'
+import { useId, useRef, useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
@@ -342,7 +342,7 @@ function RenameForm({ category, onDone }: { category: CategoryProduct; onDone: (
   )
 }
 
-function LockedFact({ label, children }: { label: string; children: React.ReactNode }) {
+function LockedFact({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className='min-w-0'>
       <dt className='mb-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{label}</dt>
