@@ -16,7 +16,8 @@ import {
 import { formatCompactCurrency, formatCompactNumber, formatCurrency, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { DashboardGranularity, TimeseriesPoint } from '@/types/dashboard'
-import { DashboardPanel, Segmented } from './DashboardPanel'
+import { Segmented } from '@/components/ui/segmented'
+import { DashboardPanel } from './DashboardPanel'
 
 type Metric = 'count' | 'revenue' | 'margin'
 type View = 'chart' | 'table'

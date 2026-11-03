@@ -91,6 +91,9 @@
     "titleShort": "Unggah gambar",
     "formatsShort": "PNG/SVG · maks 10 MB"
   },
+  "dateRangeFilter": {
+    "clear": "Hapus tanggal"
+  },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
     "toastError": "Gagal memuat transaksi",
@@ -922,43 +925,49 @@
     "exact": "Tepat (=)"
   },
   "productCallbackLogPage": {
-    "title": "Log Callback Produk",
-    "subtitle": "Daftar log callback produk dari provider.",
-    "detailTitle": "Detail Log Callback — {{id}}",
-    "detailSubtitle": "Informasi lengkap mengenai log callback dari provider.",
-    "sectionGeneral": "Informasi Umum",
-    "sectionProduct": "Informasi Produk",
-    "sectionMeta": "Metadata Provider",
-    "sectionPayload": "Payload Asli (Provider)",
-    "searchLabel": "Cari Kode Produk",
-    "searchPlaceholder": "Contoh: ML-100...",
-    "minPriceLabel": "Harga Minimal",
-    "maxPriceLabel": "Harga Maksimal",
-    "sortLabel": "Urutkan Berdasarkan",
-    "orderLabel": "Arah Urutan",
-    "sortOptionCreatedAt": "Tanggal Dibuat",
-    "sortOptionPrice": "Harga",
-    "sortOptionProductCode": "Kode Produk",
-    "orderOptionDesc": "Terbaru / Terbesar",
-    "orderOptionAsc": "Terlama / Terkecil",
-    "toastSuccess": "Berhasil memuat log callback",
-    "toastError": "Gagal memuat log callback",
-    "totalLogs": "Total {{count}} log",
-    "emptyPage": "Tidak ada log callback produk.",
-    "filterPanelTitle": "Panel Filter",
-    "applyFilters": "Terapkan Filter"
-  },
-  "productCallbackLogTable": {
-    "colId": "ID",
-    "colProductCode": "Kode Produk",
-    "colProductName": "Nama Produk",
-    "colProviderCode": "Kode Provider",
-    "colPrice": "Harga",
-    "colStatus": "Status",
-    "colMetaLevel": "Meta Level",
-    "colMetaTimestamp": "Timestamp Meta",
-    "colCreatedAt": "Dibuat",
-    "colPreviousPrice": "Harga Sebelumnya"
+    "eyebrow": "// Feed penyedia",
+    "title": "Log callback produk",
+    "subtitle": "Update harga dan stok yang dikirim penyedia untuk tiap produk. Harga penyedia naik berarti margin menipis.",
+    "total": "{{formatted}} update",
+    "searchPlaceholder": "Cari kode produk",
+    "stockLabel": "Stok",
+    "stockAll": "Semua",
+    "stock": {
+      "available": "Tersedia",
+      "empty": "Kosong"
+    },
+    "datePlaceholder": "Semua tanggal",
+    "sortLabel": "Urutkan",
+    "sort": {
+      "newest": "Terbaru",
+      "oldest": "Terlama",
+      "priceHigh": "Harga tertinggi",
+      "priceLow": "Harga terendah",
+      "code": "Kode produk A–Z"
+    },
+    "priceFilter": "Harga",
+    "minPrice": "Min",
+    "maxPrice": "Maks",
+    "reset": "Reset filter",
+    "noChange": "Tetap",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat log callback. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada callback",
+    "emptyBody": "Update produk dari penyedia akan muncul di sini saat masuk.",
+    "noMatchTitle": "Tidak ada update yang cocok",
+    "noMatchBody": "Coba perluas rentang tanggal atau kurangi filter.",
+    "detail": {
+      "back": "Kembali ke log callback",
+      "eyebrow": "// Update produk",
+      "loadError": "Gagal memuat callback ini. Mungkin sudah dihapus.",
+      "previousPrice": "Harga sebelumnya",
+      "newPrice": "Harga baru",
+      "receivedAt": "Diterima",
+      "providerTime": "Waktu penyedia",
+      "level": "Level",
+      "logId": "ID log",
+      "payload": "Payload mentah"
+    }
   },
   "productTable": {
     "colImage": "Gambar",
@@ -1134,35 +1143,25 @@
     "retry": "Coba lagi"
   },
   "anomalyProductPage": {
-    "toastSuccess": "Berhasil memuat produk anomali",
-    "toastError": "Gagal memuat produk anomali",
+    "eyebrow": "// Pantau harga",
     "title": "Produk anomali",
-    "subtitle": "Daftar produk dengan ketidaksesuaian harga, biaya tambahan, atau stok yang perlu ditinjau. Gunakan paginasi untuk melihat halaman lain.",
-    "loadingShort": "Memuat…",
-    "loadFailedShort": "Gagal memuat",
-    "totalEntries": "Total {{count}} entri",
-    "listTitle": "Daftar produk anomali",
-    "listHint": "{{limit}} item per halaman. Periksa kolom harga dan stok untuk koreksi di modul produk.",
-    "tableLoadingTitle": "Memuat produk anomali…",
-    "tableLoadingHint": "Mohon tunggu sebentar.",
-    "loadErrorDetail": "Gagal memuat produk anomali. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Tidak ada produk anomali pada halaman ini."
-  },
-  "anomalyProductTable": {
-    "issueSellingBelowBase": "Harga jual di bawah harga dasar",
-    "issueNegativeFee": "Biaya tambahan minus",
-    "issueNegativePercent": "Persentase tambahan minus",
-    "colProductName": "Nama produk",
-    "colDetectedIssues": "Masalah terdeteksi",
-    "noIssuesFromCriteria": "Tidak dari kriteria ini",
-    "colGame": "Game",
-    "colSku": "SKU",
-    "colAdditionalFee": "Biaya tambahan",
-    "colAdditionalPercent": "Persentase tambahan",
-    "colBasePrice": "Harga dasar",
-    "colSellingPrice": "Harga jual",
-    "colStock": "Stok",
-    "stockUnlimited": "Tanpa batas"
+    "subtitle": "Produk yang dijual di bawah harga modal. Setiap order produk ini merugi sampai harganya diperbaiki.",
+    "banner": {
+      "title": "{{formatted}} produk dijual rugi",
+      "body": "Diurutkan dari kerugian per order terbesar di tiap halaman. Buka game-nya untuk memperbaiki harga."
+    },
+    "base": "Modal",
+    "selling": "Jual",
+    "fee": "Biaya tambahan",
+    "markup": "Markup",
+    "inactive": "Nonaktif",
+    "stock": "stok {{count}}",
+    "stockUnlimited": "Stok tak terbatas",
+    "fix": "Perbaiki harga",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat produk anomali. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Tidak ada produk yang dijual rugi",
+    "emptyBody": "Semua produk dihargai sama atau di atas harga modalnya."
   },
   "providerPage": {
     "eyebrow": "// Rantai pasokan",
@@ -1499,30 +1498,47 @@
     }
   },
   "inputPage": {
+    "eyebrow": "// Form checkout",
     "title": "Input game",
-    "subtitle": "Daftar field input per game (ID pelanggan, zona, dll.). Cari lewat kolom di bawah; ubah label atau placeholder lewat kolom aksi pada setiap baris.",
-    "loadingShort": "Memuat…",
-    "errorShort": "Gagal memuat",
-    "total": "Total {{total}} game",
-    "listTitle": "Daftar input",
-    "listHint": "Pencarian menunggu 500 ms setelah berhenti mengetik. {{limit}} baris per halaman.",
-    "loadingBody": "Memuat daftar input game…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "errorMessage": "Gagal memuat input game. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyMessage": "Tidak ada data yang cocok dengan pencarian atau halaman ini kosong.",
-    "searchPlaceholder": "Cari game..."
-  },
-  "inputTable": {
-    "colImage": "Gambar",
-    "imageAltName": "Gambar {{name}}",
-    "imageAltFallback": "Gambar game",
-    "colGameName": "Nama game",
-    "colActions": "Aksi",
-    "rowActionsAria": "Kelola input untuk {{name}}"
-  },
-  "inputToasts": {
-    "loadSuccess": "Berhasil memuat input game",
-    "loadError": "Gagal memuat input game"
+    "subtitle": "Field yang diisi pemain saat top-up, misalnya User ID atau Zone ID. Ubah label dan placeholder yang mereka lihat di storefront.",
+    "total": "{{formatted}} game",
+    "searchPlaceholder": "Cari game",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat input game. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada game",
+    "emptyBody": "Game beserta field checkout-nya akan muncul di sini.",
+    "noMatchTitle": "Tidak ada game yang cocok",
+    "noMatchBody": "Coba nama lain.",
+    "fieldCount": "{{count}} field",
+    "noFields": "Game ini belum punya field checkout.",
+    "storefrontPreview": "Pratinjau storefront",
+    "noPlaceholder": "Tanpa placeholder",
+    "required": "Wajib",
+    "optional": "Opsional",
+    "editBtn": "Ubah field {{name}}",
+    "types": {
+      "text": "Teks",
+      "tel": "Angka",
+      "dropdown": "Dropdown"
+    },
+    "dialog": {
+      "eyebrow": "// Field checkout",
+      "description": "Ubah label tiap field saat checkout. Key, tipe, dan opsi berasal dari pengaturan game.",
+      "labelLabel": "Label",
+      "placeholderLabel": "Placeholder",
+      "preview": "Pratinjau",
+      "edited": "Diubah",
+      "changed": "{{count}} field diubah",
+      "labelRequired": "Setiap field wajib punya label.",
+      "cancel": "Batal",
+      "save": "Simpan field",
+      "saving": "Menyimpan…"
+    },
+    "toasts": {
+      "saved": "Field disimpan",
+      "savedMany": "{{count}} field disimpan",
+      "saveError": "Gagal menyimpan field"
+    }
   },
   "maintenancePage": {
     "eyebrow": "// Kontrol sistem",

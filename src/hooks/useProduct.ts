@@ -2,7 +2,7 @@ import { api } from '@/api/axios'
 import type { FormValuesProductImage } from '@/components/Product/Filter/ChangeImage'
 import type { FormValuesChangeImageProductV2 } from '@/components/Product/Filter/UploadImage'
 import type { Product, ProductResponse } from '@/types/product'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -163,8 +163,9 @@ export function useProductsByGame(gameId: string, enabled: boolean) {
   })
 }
 
+/** Products sold below their base price (selling_price < base_price). */
 export function useGetProductAnomaly(page: number, limit: number) {
-  return useQuery({
+  return useQuery<ProductResponse>({
     queryKey: ['product-anomaly', page, limit],
     queryFn: async () => {
       const res = await api.get('/products/anomaly', {
@@ -175,6 +176,7 @@ export function useGetProductAnomaly(page: number, limit: number) {
       })
       return res.data
     },
+    placeholderData: keepPreviousData,
   })
 }
 

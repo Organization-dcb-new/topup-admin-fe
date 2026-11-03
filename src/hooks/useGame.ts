@@ -175,13 +175,14 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
   return mutation
 }
 
-export function useGetGameNames() {
+export function useGetGameNames(enabled = true) {
   return useQuery<GameNames[]>({
     queryKey: ['game-names'],
     queryFn: async () => {
       const res = await api.get('/games/names')
       return res.data.data
     },
+    enabled,
   })
 }
 

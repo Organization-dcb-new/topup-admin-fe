@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RANGE_OPTIONS } from '@/lib/dashboard'
 import { cn } from '@/lib/utils'
 import type { DashboardRange } from '@/types/dashboard'
-import { Segmented } from './DashboardPanel'
+import { Segmented } from '@/components/ui/segmented'
 
 const RANGE_LABEL_KEY: Record<DashboardRange, string> = {
   today: 'dashboard.range.today',
