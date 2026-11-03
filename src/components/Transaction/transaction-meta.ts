@@ -80,3 +80,40 @@ export function accountFields(meta: Record<string, unknown> | null | undefined) 
     .filter(([, v]) => v !== null && v !== undefined && v !== '')
     .map(([key, value]) => ({ key, value: typeof value === 'object' ? JSON.stringify(value) : String(value) }))
 }
+
+/** The customer can still pay: instructions (QR, VA, payment page) are worth showing. */
+export function isAwaitingPayment(status: string | undefined) {
+  return status === 'PENDING' || status === 'WAITING'
+}
+
+export type StepState = 'done' | 'current' | 'failed' | 'upcoming'
+
+export function paymentStep(status: string): StepState {
+  if (status === 'PAID' || status === 'REFUNDED') return 'done'
+  if (status === 'FAILED' || status === 'EXPIRED') return 'failed'
+  return 'current'
+}
+
+/** Fulfilment only starts once the payment is through. */
+export function fulfilmentStep(orderStatus: string, paymentStatus: string): StepState {
+  if (paymentStep(paymentStatus) !== 'done') return 'upcoming'
+  if (orderStatus === 'COMPLETED') return 'done'
+  if (orderStatus === 'FAILED' || orderStatus === 'EXPIRED' || orderStatus === 'REFUNDED') return 'failed'
+  return 'current'
+}
+
+/** The detail endpoint sends `yyyy-MM-dd HH:mm:ss` in WIB without an offset; pin it so other time zones read it right. */
+export function wibToIso(raw: string | undefined) {
+  if (!raw) return raw
+  return /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(raw) ? `${raw.replace(' ', 'T')}+07:00` : raw
+}
+
+/** `user_id` → `User ID`, `zoneId` → `Zone ID`. */
+export function humanizeKey(key: string) {
+  return key
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .split(/[_\-\s]+/)
+    .filter(Boolean)
+    .map((word) => (/^id$/i.test(word) ? 'ID' : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(' ')
+}

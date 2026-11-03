@@ -8,14 +8,33 @@ import { cn } from '@/lib/utils'
 import type { Payment, TransactionRowState } from '@/types/transaction'
 import { ChannelChip, CopyValueButton, PaymentStatusChip, ProviderStatusChip } from './TransactionParts'
 
+/** Desktop columns, shared by the header and every row. */
+const columns = 'lg:grid-cols-[7.5rem_minmax(0,1fr)_8.5rem_10.5rem_7rem_1rem]'
+
 /** Dense transaction rows; each opens the detail and hands it what only the list knows. */
-export function TransactionList({ rows }: { rows: Payment[] }) {
+export function TransactionList({ rows, busy }: { rows: Payment[]; busy?: boolean }) {
+  const { t } = useTranslation('common')
   return (
-    <ul className='divide-y divide-slate-100 bg-white hud-clip'>
-      {rows.map((row, index) => (
-        <TransactionRow key={row.id} row={row} order={index} />
-      ))}
-    </ul>
+    <div className='bg-white hud-clip'>
+      <div
+        className={cn(
+          'hidden gap-x-4 border-b border-slate-100 px-5 py-2.5 font-display text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-400 lg:grid',
+          columns
+        )}
+        aria-hidden
+      >
+        <span>{t('transactionPage.columns.status')}</span>
+        <span>{t('transactionPage.columns.transaction')}</span>
+        <span>{t('transactionPage.columns.channel')}</span>
+        <span className='text-right'>{t('transactionPage.columns.amount')}</span>
+        <span>{t('transactionPage.columns.time')}</span>
+      </div>
+      <ul className='divide-y divide-slate-100' aria-busy={busy}>
+        {rows.map((row, index) => (
+          <TransactionRow key={row.id} row={row} order={index} />
+        ))}
+      </ul>
+    </div>
   )
 }
 
@@ -25,20 +44,26 @@ function TransactionRow({ row, order }: { row: Payment; order: number }) {
     row: { id: row.id, margin: row.margin, status_provider: row.status_provider, app_name: row.app_name },
   }
   const margin = row.margin ?? 0
+  const number = row.payment_number || row.id
 
   return (
     <li
       className='group relative animate-in fade-in duration-300 fill-mode-both'
       style={{ animationDelay: `${Math.min(order, 14) * 18}ms` }}
     >
-      {/* Stretched link: the whole row opens the detail, while the copy buttons stay clickable on top. */}
+      {/* Stretched link: the whole row opens the detail, while the copy button stays clickable on top. */}
       <Link
         to={`/transactions/${row.id}`}
         state={state}
-        aria-label={t('transactionPage.openDetail', { number: row.payment_number || row.id })}
+        aria-label={t('transactionPage.openDetail', { number })}
         className='absolute inset-0 z-0 transition-colors hover:bg-brand-purple/[0.03] focus-visible:bg-brand-purple/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40'
       />
-      <div className='pointer-events-none relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5 lg:grid-cols-[7.5rem_minmax(0,1fr)_8.5rem_10.5rem_7rem_1rem]'>
+      <div
+        className={cn(
+          'pointer-events-none relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-5',
+          columns
+        )}
+      >
         <div className='hidden lg:block'>
           <PaymentStatusChip status={row.status} />
         </div>
@@ -48,11 +73,11 @@ function TransactionRow({ row, order }: { row: Payment; order: number }) {
             {row.app_name || t('transactionPage.row.unknownGame')}
           </p>
           <div className='flex min-w-0 items-center gap-0.5'>
-            <span className='truncate font-mono text-xs text-slate-500'>{row.payment_number || row.id}</span>
+            <span className='truncate font-mono text-xs text-slate-500'>{number}</span>
             <CopyValueButton
-              value={row.payment_number || row.id}
+              value={number}
               label={t('transactionPage.row.paymentNumber')}
-              className='pointer-events-auto relative z-10 size-6 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100'
+              className='pointer-events-auto relative z-10 size-6 transition-opacity lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100'
             />
           </div>
         </div>
@@ -70,7 +95,7 @@ function TransactionRow({ row, order }: { row: Payment; order: number }) {
           <span className='ml-auto text-xs tabular-nums text-slate-400 lg:hidden'>
             {formatBackendDateTime(row.created_at, 'dd MMM, HH:mm')}
           </span>
-          {row.va_number && <span className='hidden truncate font-mono text-[11px] text-slate-400 lg:block'>VA {row.va_number}</span>}
+          {row.va_number && <span className='hidden max-w-full truncate font-mono text-[11px] text-slate-400 lg:block'>VA {row.va_number}</span>}
         </div>
 
         <div className='hidden text-right lg:block'>

@@ -5,7 +5,7 @@ import { formatCurrency, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Payment, TransactionPaginationMeta } from '@/types/transaction'
 
-interface Stats {
+export interface TransactionStatsValue {
   volume: number
   paid: number
   margin: number
@@ -16,7 +16,7 @@ interface Stats {
 }
 
 /** Server totals for the current filters when the backend sends them; this page's rows otherwise. */
-export function computeStats(meta: TransactionPaginationMeta | undefined, rows: Payment[]): Stats {
+export function computeStats(meta: TransactionPaginationMeta | undefined, rows: Payment[]): TransactionStatsValue {
   if (meta && meta.total_volume !== undefined) {
     return {
       volume: meta.total_volume ?? 0,
@@ -36,7 +36,7 @@ export function computeStats(meta: TransactionPaginationMeta | undefined, rows: 
   }
 }
 
-export function TransactionStats({ stats, loading }: { stats: Stats; loading: boolean }) {
+export function TransactionStats({ stats, loading }: { stats: TransactionStatsValue; loading: boolean }) {
   const { t, i18n } = useTranslation('common')
   const locale = i18n.language.startsWith('id') ? 'id-ID' : 'en-US'
   const scope = stats.overall ? t('transactionPage.stats.scopeFiltered') : t('transactionPage.stats.scopePage')
