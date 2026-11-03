@@ -78,6 +78,18 @@
   "toast": {
     "dismiss": "Tutup"
   },
+  "imageDropzone": {
+    "title": "Klik atau tarik gambar ke sini",
+    "dropNow": "Lepaskan untuk mengunggah",
+    "formats": "JPG, PNG, WebP, atau SVG · maks 10 MB",
+    "replace": "Ganti gambar",
+    "uploading": "Mengunggah {{percent}}%",
+    "errors": {
+      "invalidType": "File tersebut bukan gambar.",
+      "tooLarge": "Ukuran gambar lebih dari 10 MB.",
+      "uploadFailed": "Gagal mengunggah. Coba lagi atau pilih gambar lain."
+    }
+  },
   "transactionPage": {
     "toastLoading": "Memuat transaksi…",
     "toastError": "Gagal memuat transaksi",
@@ -413,12 +425,7 @@
       "editTitle": "Ubah banner",
       "description": "Unggah gambar lebar dan tentukan ke mana banner mengarah saat diklik.",
       "imageLabel": "Gambar",
-      "uploadTitle": "Klik atau tarik gambar ke sini",
-      "dropNow": "Lepaskan untuk mengunggah",
-      "uploadHint": "JPG, PNG, WebP, atau SVG · maks 10 MB",
       "imageHint": "Gambar lebar paling pas; bingkai ini kira-kira menunjukkan potongan di carousel.",
-      "replaceImage": "Ganti gambar",
-      "uploading": "Mengunggah {{percent}}%",
       "linkLabel": "Tautan tujuan",
       "linkPlaceholder": "/games/mobile-legends atau https://…",
       "linkHint": "Opsional. Pakai /path untuk halaman toko atau URL lengkap untuk situs lain. Kosongkan jika banner tidak perlu bisa diklik.",
@@ -428,9 +435,6 @@
       "saving": "Menyimpan…",
       "errors": {
         "imageRequired": "Unggah gambar untuk banner ini.",
-        "invalidType": "File tersebut bukan gambar.",
-        "tooLarge": "Ukuran gambar lebih dari 10 MB.",
-        "uploadFailed": "Gagal mengunggah. Coba lagi atau pilih gambar lain.",
         "linkInvalid": "Gunakan path yang diawali / atau URL lengkap http(s)."
       }
     },

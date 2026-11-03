@@ -78,6 +78,18 @@
   "toast": {
     "dismiss": "Dismiss"
   },
+  "imageDropzone": {
+    "title": "Click or drop an image here",
+    "dropNow": "Drop to upload",
+    "formats": "JPG, PNG, WebP or SVG · up to 10 MB",
+    "replace": "Replace image",
+    "uploading": "Uploading {{percent}}%",
+    "errors": {
+      "invalidType": "That file isn’t an image.",
+      "tooLarge": "The image is larger than 10 MB.",
+      "uploadFailed": "Upload failed. Try again, or pick another image."
+    }
+  },
   "transactionPage": {
     "toastLoading": "Loading transactions…",
     "toastError": "Failed to load transactions",
@@ -414,12 +426,7 @@
       "editTitle": "Edit banner",
       "description": "Upload a wide image and choose where a click on it should go.",
       "imageLabel": "Image",
-      "uploadTitle": "Click or drop an image here",
-      "dropNow": "Drop to upload",
-      "uploadHint": "JPG, PNG, WebP or SVG · up to 10 MB",
       "imageHint": "Wide images work best; this frame shows roughly how the carousel crops it.",
-      "replaceImage": "Replace image",
-      "uploading": "Uploading {{percent}}%",
       "linkLabel": "Redirect link",
       "linkPlaceholder": "/games/mobile-legends or https://…",
       "linkHint": "Optional. Use a /path for a store page or a full URL for another site. Leave empty if the banner shouldn’t be clickable.",
@@ -429,9 +436,6 @@
       "saving": "Saving…",
       "errors": {
         "imageRequired": "Upload an image for this banner.",
-        "invalidType": "That file isn’t an image.",
-        "tooLarge": "The image is larger than 10 MB.",
-        "uploadFailed": "Upload failed. Try again, or pick another image.",
         "linkInvalid": "Use a path starting with / or a full http(s) URL."
       }
     },

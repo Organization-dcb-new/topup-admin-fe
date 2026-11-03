@@ -1,17 +1,16 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { ImagePlus, Link2, RefreshCw, UploadCloud } from 'lucide-react'
+import { ImagePlus, Link2 } from 'lucide-react'
 
 import { AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudInputIconClass, hudLabelClass } from '@/components/Auth/hud-styles'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { getImageFileValidationError } from '@/helpers/validate'
 import { useCreateBanner, useUpdateBanner } from '@/hooks/useBanner'
-import { uploadFile } from '@/hooks/useUpload'
 import { cn } from '@/lib/utils'
 import { bannerSchema, type BannerFormValues } from '@/schemas/banner'
 import type { Banner } from '@/types/banner'
@@ -39,8 +38,6 @@ export function BannerFormDialog({ open, onOpenChange, banner }: BannerFormDialo
   )
 }
 
-type UploadError = 'invalidType' | 'tooLarge' | 'uploadFailed'
-
 function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void }) {
   const { t } = useTranslation()
   const ids = useId()
@@ -48,13 +45,7 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
   const update = useUpdateBanner(onDone)
   const pending = create.isPending || update.isPending
 
-  const fileInput = useRef<HTMLInputElement>(null)
-  const objectUrl = useRef<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(banner?.image ?? null)
-  const [progress, setProgress] = useState(0)
   const [uploading, setUploading] = useState(false)
-  const [dragging, setDragging] = useState(false)
-  const [uploadError, setUploadError] = useState<UploadError | null>(null)
 
   const {
     register,
@@ -70,43 +61,10 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
   const kind = linkKind(link)
   const KindIcon = LINK_KIND_META[kind].icon
 
-  // Release the local preview when the form closes.
-  useEffect(() => () => {
-    if (objectUrl.current) URL.revokeObjectURL(objectUrl.current)
-  }, [])
-
-  const showLocalPreview = (file: File) => {
-    if (objectUrl.current) URL.revokeObjectURL(objectUrl.current)
-    objectUrl.current = URL.createObjectURL(file)
-    setPreview(objectUrl.current)
-  }
-
-  const handleFile = async (file: File) => {
-    const invalid = getImageFileValidationError(file)
-    if (invalid) return setUploadError(invalid)
-    setUploadError(null)
-    showLocalPreview(file)
-    setUploading(true)
-    setProgress(0)
-    try {
-      const res = await uploadFile(file, setProgress)
-      setValue('image', res.data.url, { shouldDirty: true, shouldValidate: isSubmitted })
-    } catch {
-      setUploadError('uploadFailed')
-      // Fall back to the image that is actually saved, if any.
-      setPreview(image || null)
-    } finally {
-      setUploading(false)
-      if (fileInput.current) fileInput.current.value = ''
-    }
-  }
-
   const onSubmit = (values: BannerFormValues) => {
     if (banner) update.mutate({ id: banner.id, payload: values })
     else create.mutate(values)
   }
-
-  const imageError = uploadError ? `bannerPage.form.errors.${uploadError}` : errors.image?.message
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className='space-y-6 p-6 sm:p-7'>
@@ -129,86 +87,15 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
 
       <div className='space-y-2'>
         <p id={`${ids}-image`} className={hudLabelClass}>{t('bannerPage.form.imageLabel')}</p>
-        <button
-          type='button'
-          aria-labelledby={`${ids}-image`}
-          aria-describedby={`${ids}-image-hint`}
-          disabled={uploading}
-          onClick={() => fileInput.current?.click()}
-          onDragOver={(e) => {
-            e.preventDefault()
-            setDragging(true)
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault()
-            setDragging(false)
-            const file = e.dataTransfer.files[0]
-            if (file) void handleFile(file)
-          }}
-          className={cn(
-            'group relative block aspect-[16/7] w-full overflow-hidden rounded-lg border-2 border-dashed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
-            dragging
-              ? 'border-brand-purple bg-brand-purple/[0.06]'
-              : imageError
-                ? 'border-rose-300 bg-rose-50/40'
-                : 'border-slate-300 bg-slate-50 hover:border-brand-purple/50',
-            preview && !dragging && 'border-solid border-slate-200'
-          )}
-        >
-          {preview ? (
-            <>
-              <img src={preview} alt='' className='size-full object-cover' />
-              {!uploading && (
-                <span className='absolute inset-0 grid place-items-center bg-slate-950/0 opacity-0 transition-all duration-300 group-hover:bg-slate-950/45 group-hover:opacity-100 group-focus-visible:bg-slate-950/45 group-focus-visible:opacity-100'>
-                  <span className='inline-flex items-center gap-2 bg-white px-3 py-1.5 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-800 hud-clip-sm'>
-                    <RefreshCw className='size-3.5' aria-hidden />
-                    {t('bannerPage.form.replaceImage')}
-                  </span>
-                </span>
-              )}
-            </>
-          ) : (
-            <span className='flex size-full flex-col items-center justify-center gap-2 px-4 text-center'>
-              <span className='grid size-11 place-items-center bg-white text-brand-purple shadow-sm ring-1 ring-slate-200 hud-clip-sm'>
-                <UploadCloud className='size-5' aria-hidden />
-              </span>
-              <span className='text-sm font-medium text-slate-800'>
-                {dragging ? t('bannerPage.form.dropNow') : t('bannerPage.form.uploadTitle')}
-              </span>
-              <span className='text-xs text-slate-500'>{t('bannerPage.form.uploadHint')}</span>
-            </span>
-          )}
-
-          {uploading && (
-            <span className='absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/85 backdrop-blur-[2px]'>
-              <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-700'>
-                {t('bannerPage.form.uploading', { percent: progress })}
-              </span>
-              <span className='h-1.5 w-48 max-w-[70%] overflow-hidden rounded-full bg-slate-200'>
-                <span
-                  className='block h-full rounded-full bg-linear-to-r from-brand-purple to-brand-cyan transition-[width] duration-300'
-                  style={{ width: `${progress}%` }}
-                />
-              </span>
-            </span>
-          )}
-        </button>
-        <input
-          ref={fileInput}
-          type='file'
-          accept='image/*'
-          className='hidden'
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            if (file) void handleFile(file)
-          }}
+        <ImageDropzone
+          value={image}
+          onChange={(url) => setValue('image', url, { shouldDirty: true, shouldValidate: isSubmitted })}
+          onUploadingChange={setUploading}
+          aspectClassName='aspect-[16/7]'
+          labelledBy={`${ids}-image`}
+          hint={t('bannerPage.form.imageHint')}
+          error={errors.image?.message && t(errors.image.message)}
         />
-        {imageError ? (
-          <FieldMessage tone='error'>{t(imageError)}</FieldMessage>
-        ) : (
-          <p id={`${ids}-image-hint`} className='text-xs text-slate-500'>{t('bannerPage.form.imageHint')}</p>
-        )}
       </div>
 
       <div className='space-y-2'>
