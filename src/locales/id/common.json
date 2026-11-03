@@ -95,198 +95,96 @@
     "clear": "Hapus tanggal"
   },
   "transactionPage": {
-    "toastLoading": "Memuat transaksi…",
-    "toastError": "Gagal memuat transaksi",
-    "toastSuccess": "Berhasil memuat transaksi",
+    "eyebrow": "// Pembayaran",
     "title": "Transaksi",
-    "subtitle": "Cari dan saring pembayaran; paginasi {{limit}} baris per halaman.",
-    "loadingShort": "Memuat…",
-    "loadFailedShort": "Gagal memuat",
-    "totalCount": "Total {{count}} transaksi",
-    "filtersRegionAria": "Filter transaksi",
-    "filterHeading": "Filter",
-    "filtersClickClose": "Klik untuk menutup",
-    "filtersClickOpen": "Klik untuk membuka",
-    "resetFiltersAria": "Reset semua filter",
-    "resetFilters": "Reset filter",
-    "searchLabel": "Pencarian",
-    "sectionTimeGameStatus": "Waktu, game, metode & status",
-    "dateTimeRange": "Rentang tanggal & waktu",
-    "game": "Game",
-    "paymentMethod": "Metode pembayaran",
-    "status": "Status",
-    "amountSection": "Nominal transaksi",
-    "listTitle": "Daftar transaksi",
-    "listHint": "Filter nominal mendukung batas bawah (≥), batas atas (≤), dan nilai tepat (=).",
-    "tableLoadingTitle": "Memuat transaksi…",
-    "tableLoadingHint": "Mohon tunggu sebentar.",
-    "loadErrorDetail": "Gagal memuat transaksi. Periksa koneksi atau coba muat ulang halaman.",
-    "emptyPage": "Tidak ada transaksi pada halaman ini.",
-    "exportCSV": "Export CSV",
-    "exportCSVTitle": "Export Transaksi ke CSV",
-    "exportCSVDesc": "Pilih rentang tanggal, status, dan metode pembayaran untuk menyaring transaksi yang ingin di export.",
-    "generateCSV": "Generate CSV",
-    "generating": "Memproses…",
-    "exportSuccess": "Berhasil mengekspor CSV",
-    "exportError": "Gagal mengekspor CSV"
+    "subtitle": "Setiap pembayaran pelanggan, saat itu juga. Buka salah satunya untuk melihat apa yang dibeli, siapa pembelinya, dan bagaimana dibayarnya.",
+    "updatedAt": "Diperbarui {{time}}",
+    "autoRefresh": "Muat ulang otomatis",
+    "autoRefreshOption": {
+      "off": "Auto refresh mati",
+      "s10": "Tiap 10 dtk",
+      "s30": "Tiap 30 dtk",
+      "m1": "Tiap 1 mnt"
+    },
+    "refresh": "Muat ulang sekarang",
+    "exportButton": "Ekspor CSV",
+    "loadError": "Gagal memuat transaksi. Periksa koneksi lalu coba lagi.",
+    "retry": "Coba lagi",
+    "listLabel": "Transaksi",
+    "range": "{{from}}–{{to}} dari {{total}}, terbaru dulu",
+    "emptyTitle": "Belum ada transaksi",
+    "emptyBody": "Pembayaran muncul di sini begitu pelanggan checkout.",
+    "noMatchTitle": "Tidak ada transaksi yang cocok",
+    "noMatchBody": "Coba perlebar rentang tanggal atau hapus beberapa filter.",
+    "openDetail": "Buka transaksi {{number}}",
+    "copy": "Salin {{label}}",
+    "copied": "{{label}} disalin",
+    "copyFailed": "Gagal menyalin ke clipboard",
+    "columns": {
+      "status": "Status",
+      "transaction": "Game & no. pembayaran",
+      "channel": "Kanal",
+      "amount": "Nominal",
+      "time": "Waktu"
+    },
+    "row": {
+      "unknownGame": "Game tidak diketahui",
+      "paymentNumber": "Nomor pembayaran",
+      "margin": "Margin {{value}}"
+    },
+    "stats": {
+      "volume": "Volume lunas",
+      "paid": "Transaksi lunas",
+      "margin": "Margin",
+      "successRate": "Tingkat sukses",
+      "scopeFiltered": "Total untuk semua transaksi yang cocok",
+      "scopePage": "Total untuk halaman ini saja"
+    },
+    "filters": {
+      "searchPlaceholder": "Cari no. pembayaran, kanal, atau ID",
+      "searchHint": "Mencocokkan sebagian nomor pembayaran, kanal, atau status. Tempel ID transaksi, pesanan, atau metode pembayaran yang lengkap untuk hasil yang persis.",
+      "status": "Status",
+      "allStatuses": "Semua status",
+      "anyDate": "Semua tanggal",
+      "more": "Filter lain",
+      "reset": "Reset filter",
+      "amountMin": "Nominal minimum",
+      "amountMax": "Nominal maksimum",
+      "amountExact": "Nominal tepat",
+      "amountMinShort": "Min",
+      "amountMaxShort": "Maks",
+      "amountExactShort": "Tepat",
+      "game": "Game",
+      "allGames": "Semua game",
+      "searchGames": "Cari game",
+      "paymentMethod": "Metode pembayaran",
+      "allPaymentMethods": "Semua metode pembayaran",
+      "searchPaymentMethods": "Cari metode pembayaran",
+      "noOptions": "Tidak ditemukan"
+    },
+    "export": {
+      "eyebrow": "// Ekspor",
+      "title": "Ekspor transaksi",
+      "description": "Unduh CSV berisi pembayaran yang cocok dengan filter ini. Isinya diawali dari filter yang sedang dipakai di daftar.",
+      "range": "Rentang tanggal",
+      "allDates": "Semua tanggal",
+      "allDatesHint": "Tanpa rentang tanggal, file akan berisi semua transaksi yang pernah ada dan bisa makan waktu.",
+      "unsupportedFilters": "Filter pencarian, game, dan nominal dari daftar tidak ikut diterapkan ke ekspor.",
+      "cancel": "Batal",
+      "submit": "Unduh CSV",
+      "pending": "Menyiapkan file…",
+      "success": "Ekspor berhasil diunduh",
+      "error": "Gagal mengekspor transaksi. Coba lagi."
+    }
   },
   "paymentStatus": {
     "PAID": "Lunas",
     "PENDING": "Menunggu",
-    "FAILED": "Gagal",
+    "WAITING": "Menunggu bayar",
     "PROCESSING": "Diproses",
-    "EXPIRED": "Kadaluarsa"
-  },
-  "paymentChannel": {
-    "gopay": "GoPay",
-    "va": "Virtual account",
-    "qris": "QRIS",
-    "shopeepay": "ShopeePay"
-  },
-  "transactionFilters": {
-    "search": {
-      "placeholder": "Cari transaksi",
-      "ariaLabel": "Cari transaksi"
-    },
-    "date": {
-      "pickAria": "Pilih rentang tanggal dan waktu transaksi",
-      "placeholderButton": "Rentang tanggal & waktu",
-      "startTime": "Jam mulai",
-      "endTime": "Jam selesai",
-      "clearAria": "Hapus filter tanggal"
-    },
-    "game": {
-      "listError": "Gagal memuat daftar game",
-      "allGames": "Semua game",
-      "loading": "Memuat game…",
-      "filterAria": "Filter berdasarkan game",
-      "commandSearch": "Cari nama game…",
-      "commandEmpty": "Tidak ada game yang cocok.",
-      "groupHeading": "Game",
-      "clearAria": "Hapus filter game"
-    },
-    "paymentMethod": {
-      "listError": "Gagal memuat metode bayar",
-      "allMethods": "Semua metode",
-      "loading": "Memuat…",
-      "filterAria": "Filter metode pembayaran",
-      "commandSearch": "Cari metode pembayaran…",
-      "commandEmpty": "Tidak ada metode yang cocok.",
-      "groupHeading": "Metode pembayaran",
-      "clearAria": "Hapus filter metode pembayaran"
-    },
-    "status": {
-      "filterAria": "Filter status pembayaran",
-      "placeholderAll": "Semua status",
-      "optionAll": "Semua status",
-      "clearAria": "Hapus filter status"
-    },
-    "amount": {
-      "min": {
-        "label": "Di atas",
-        "hint": "Transaksi dengan nominal lebih besar atau sama (≥).",
-        "placeholder": "Minimal manual",
-        "ariaInput": "Nominal minimum transaksi (manual)",
-        "ariaClear": "Hapus filter nominal minimum",
-        "presetTitle": "Nominal ≥ {{amount}}"
-      },
-      "max": {
-        "label": "Di bawah",
-        "hint": "Transaksi dengan nominal lebih kecil atau sama (≤).",
-        "placeholder": "Maksimal manual",
-        "ariaInput": "Nominal maksimum transaksi (manual)",
-        "ariaClear": "Hapus filter nominal maksimum",
-        "presetTitle": "Nominal ≤ {{amount}}"
-      },
-      "exact": {
-        "label": "Tepat",
-        "hint": "Hanya transaksi dengan nominal sama persis (=).",
-        "placeholder": "Nominal tepat manual",
-        "ariaInput": "Nominal tepat transaksi (manual)",
-        "ariaClear": "Hapus filter nominal tepat",
-        "presetTitle": "Nominal = {{amount}}"
-      }
-    }
-  },
-  "transactionTable": {
-    "copySuccess": "ID disalin",
-    "copyError": "Gagal menyalin ID",
-    "colTransactionId": "ID transaksi",
-    "colTransactionIdSub": "Detail · salin ID",
-    "openDetailTitle": "Buka detail transaksi — {{id}}",
-    "openDetailAria": "Buka detail transaksi {{id}}",
-    "copyIdTitle": "Salin ID transaksi",
-    "copyIdAria": "Salin ID transaksi",
-    "colPayNumber": "Nomor bayar",
-    "colApp": "Aplikasi",
-    "colOrderId": "ID pesanan",
-    "colAmount": "Nominal",
-    "colMargin": "Margin",
-    "colChannel": "Kanal",
-    "colVa": "Nomor VA",
-    "colStatus": "Status",
-    "colStatusProvider": "Status Provider",
-    "colCreated": "Dibuat"
-  },
-  "transactionDetail": {
-    "backAria": "Kembali",
-    "pageTitle": "Detail transaksi",
-    "subtitlePending": "Selesaikan pembayaran sebelum kedaluwarsa.",
-    "subtitleDefault": "Informasi pembayaran dan pesanan.",
-    "payInstructions": "Instruksi pembayaran",
-    "paymentReceived": "Pembayaran berhasil diterima.",
-    "paymentFailed": "Pembayaran gagal.",
-    "paymentExpired": "Pembayaran kedaluwarsa.",
-    "sectionPayment": "Pembayaran",
-    "sectionOrder": "Pesanan",
-    "labelTransactionNumber": "Nomor Transaksi",
-    "labelPayNumber": "Nomor bayar",
-    "labelOrderId": "ID pesanan",
-    "labelEmail": "Email",
-    "labelTid": "TID Provider",
-    "labelIpAddress": "IP Address",
-    "labelOrderNumber": "Nomor pesanan",
-    "labelSku": "SKU",
-    "labelProduct": "Produk",
-    "labelQuantity": "Jumlah",
-    "labelOrderStatus": "Status pesanan",
-    "labelMargin": "Margin",
-    "sectionMetadata": "Metadata",
-    "created": "Dibuat",
-    "wibSuffix": "(WIB)",
-    "voucherCode": "Kode voucher",
-    "paymentEmail": "Email pembayaran",
-    "resendVoucher": "Kirim ulang voucher",
-    "resendEmail": "Kirim ulang email",
-    "waitTime": "Tunggu {{time}}",
-    "dialogPaymentTitle": "Instruksi pembayaran",
-    "dialogPaymentDescription": "{{channel}} — selesaikan sebelum batas waktu.",
-    "loadingInstructions": "Memuat instruksi…",
-    "gopay": {
-      "qrAlt": "QR GoPay",
-      "scanHint": "Pindai QR dengan aplikasi GoPay",
-      "openButton": "Buka GoPay"
-    },
-    "shopeepay": {
-      "redirectHint": "Anda akan diarahkan ke aplikasi ShopeePay",
-      "openButton": "Buka ShopeePay",
-      "footnote": "Selesaikan pembayaran di aplikasi Shopee"
-    },
-    "qris": {
-      "scanHint": "Pindai QR dengan mobile banking atau dompet digital",
-      "qrAlt": "QRIS",
-      "waitingHint": "Menunggu konfirmasi pembayaran"
-    },
-    "va": {
-      "label": "Nomor virtual account",
-      "hint": "Selesaikan transfer sebelum batas waktu"
-    },
-    "copy": {
-      "ariaCopied": "Disalin",
-      "ariaCopy": "Salin ke papan klip",
-      "failed": "Tidak bisa menyalin. Coba lagi atau salin manual."
-    },
-    "itemCount": "{{count}} item"
+    "FAILED": "Gagal",
+    "EXPIRED": "Kedaluwarsa",
+    "REFUNDED": "Dikembalikan"
   },
   "summaryPage": {
     "title": "Ringkasan",
@@ -1971,18 +1869,99 @@
     "sessionExpired": "Sesi verifikasi Anda berakhir. Silakan login kembali."
   },
   "transactionDetailPage": {
-    "title": "Detail transaksi",
-    "backAria": "Kembali ke daftar transaksi",
-    "backButton": "Kembali ke daftar transaksi",
-    "missingIdSubtitle": "ID transaksi tidak ada di URL.",
-    "missingIdMessage": "ID transaksi tidak ditemukan di URL.",
-    "loadingSubtitle": "Memuat data pembayaran…",
-    "loadingTitle": "Memuat detail transaksi…",
-    "pleaseWait": "Mohon tunggu sebentar.",
-    "errorSubtitle": "Tidak dapat memuat data.",
-    "errorMessage": "Gagal memuat detail transaksi. Periksa koneksi atau coba muat ulang halaman.",
-    "notFoundSubtitle": "Data tidak ditemukan.",
-    "notFoundMessage": "Data transaksi tidak ditemukan."
+    "back": "Kembali ke transaksi",
+    "eyebrow": "// Transaksi",
+    "amount": "Nominal",
+    "live": "Live · diperbarui tiap 10 dtk",
+    "refresh": "Muat ulang",
+    "retry": "Coba lagi",
+    "loading": "Memuat transaksi",
+    "invalidTitle": "Bukan tautan transaksi",
+    "invalidBody": "Alamat ini tidak berisi ID transaksi yang valid. Buka transaksinya dari daftar.",
+    "notFoundTitle": "Transaksi tidak ditemukan",
+    "notFoundBody": "Mungkin sudah dihapus, atau tautannya mengarah ke environment lain.",
+    "errorTitle": "Gagal memuat transaksi ini",
+    "errorBody": "Periksa koneksi lalu coba lagi.",
+    "orderStatus": {
+      "PENDING": "Menunggu",
+      "PAID": "Dibayar",
+      "PROCESSING": "Diproses",
+      "COMPLETED": "Selesai",
+      "FAILED": "Gagal",
+      "EXPIRED": "Kedaluwarsa",
+      "REFUNDED": "Dikembalikan"
+    },
+    "timeline": {
+      "label": "Progres",
+      "created": "Dibuat",
+      "payment": "Pembayaran",
+      "fulfilment": "Pengiriman",
+      "paymentHint": {
+        "PAID": "Pelanggan sudah membayar.",
+        "PENDING": "Menunggu pelanggan membayar.",
+        "WAITING": "Menunggu pelanggan membayar.",
+        "PROCESSING": "Gateway sedang mengonfirmasi pembayaran.",
+        "FAILED": "Pembayaran tidak berhasil.",
+        "EXPIRED": "Pelanggan tidak membayar tepat waktu.",
+        "REFUNDED": "Dana sudah dikembalikan ke pelanggan."
+      },
+      "fulfilmentHint": {
+        "waiting": "Dimulai setelah pembayaran masuk.",
+        "skipped": "Tidak dimulai karena pembayaran gagal.",
+        "PENDING": "Dalam antrean, belum dikirim ke provider.",
+        "PAID": "Sudah dibayar, menunggu dikirim ke provider.",
+        "PROCESSING": "Provider sedang mengirim top-up.",
+        "COMPLETED": "Sudah masuk ke akun pelanggan.",
+        "FAILED": "Provider gagal mengirimkannya.",
+        "EXPIRED": "Pesanan kedaluwarsa sebelum dikirim.",
+        "REFUNDED": "Pesanan sudah dikembalikan dananya."
+      }
+    },
+    "item": {
+      "title": "Item",
+      "product": "Produk",
+      "sku": "SKU",
+      "quantity": "Jumlah",
+      "unitPrice": "Harga satuan",
+      "subtotal": "Subtotal",
+      "orderTotal": "Total pesanan",
+      "voucher": "Kode voucher",
+      "paid": "Dibayar",
+      "margin": "Margin",
+      "providerStatus": "Status provider",
+      "fromListHint": "Margin dan status provider hanya tersedia di daftar transaksi. Buka transaksi ini dari sana untuk melihatnya."
+    },
+    "customer": {
+      "title": "Pelanggan",
+      "email": "Email",
+      "ip": "Alamat IP",
+      "noAccount": "Tidak ada data akun game yang tersimpan di pesanan ini."
+    },
+    "payment": {
+      "title": "Pembayaran",
+      "status": "Status",
+      "channel": "Kanal",
+      "number": "No. pembayaran",
+      "vaNumber": "Nomor VA",
+      "link": "Halaman bayar",
+      "openLink": "Buka",
+      "openPage": "Buka halaman pembayaran",
+      "createdAt": "Dibuat",
+      "guide": "Panduan pembayaran",
+      "awaitingTitle": "Menunggu pembayaran",
+      "awaitingBody": "Pelanggan masih bisa membayar dengan detail di bawah.",
+      "noInstructions": "Gateway tidak mengirim kode QR, nomor VA, atau halaman pembayaran untuk transaksi ini.",
+      "qrAlt": "Kode QR pembayaran",
+      "qrHint": "Pindai untuk membayar"
+    },
+    "refs": {
+      "title": "Referensi",
+      "transactionId": "ID transaksi",
+      "orderNumber": "Nomor pesanan",
+      "orderId": "ID pesanan",
+      "providerRef": "Referensi provider (TID)",
+      "paymentMethodId": "ID metode pembayaran"
+    }
   },
   "referralPage": {
     "title": "Kode Referral",

@@ -95,198 +95,96 @@
     "clear": "Clear dates"
   },
   "transactionPage": {
-    "toastLoading": "Loading transactions…",
-    "toastError": "Failed to load transactions",
-    "toastSuccess": "Transactions loaded",
+    "eyebrow": "// Payments",
     "title": "Transactions",
-    "subtitle": "Search and filter payments; {{limit}} rows per page.",
-    "loadingShort": "Loading…",
-    "loadFailedShort": "Failed to load",
-    "totalCount": "Total {{count}} transactions",
-    "filtersRegionAria": "Transaction filters",
-    "filterHeading": "Filters",
-    "filtersClickClose": "Click to collapse",
-    "filtersClickOpen": "Click to expand",
-    "resetFiltersAria": "Reset all filters",
-    "resetFilters": "Reset filters",
-    "searchLabel": "Search",
-    "sectionTimeGameStatus": "Time, game, method & status",
-    "dateTimeRange": "Date & time range",
-    "game": "Game",
-    "paymentMethod": "Payment method",
-    "status": "Status",
-    "amountSection": "Transaction amounts",
-    "listTitle": "Transaction list",
-    "listHint": "Amount filters support a lower bound (≥), upper bound (≤), and exact value (=).",
-    "tableLoadingTitle": "Loading transactions…",
-    "tableLoadingHint": "Please wait a moment.",
-    "loadErrorDetail": "Failed to load transactions. Check your connection or try reloading the page.",
-    "emptyPage": "No transactions on this page.",
-    "exportCSV": "Export CSV",
-    "exportCSVTitle": "Export Transactions to CSV",
-    "exportCSVDesc": "Select a date range, status, and payment method to filter the transactions you want to export.",
-    "generateCSV": "Generate CSV",
-    "generating": "Generating…",
-    "exportSuccess": "CSV exported successfully",
-    "exportError": "Failed to export CSV"
+    "subtitle": "Every payment customers make, as it happens. Open one to see what was bought, who bought it and how it was paid.",
+    "updatedAt": "Updated {{time}}",
+    "autoRefresh": "Auto refresh",
+    "autoRefreshOption": {
+      "off": "Auto refresh off",
+      "s10": "Every 10s",
+      "s30": "Every 30s",
+      "m1": "Every 1 min"
+    },
+    "refresh": "Refresh now",
+    "exportButton": "Export CSV",
+    "loadError": "Couldn't load transactions. Check your connection and try again.",
+    "retry": "Try again",
+    "listLabel": "Transactions",
+    "range": "{{from}}–{{to}} of {{total}}, newest first",
+    "emptyTitle": "No transactions yet",
+    "emptyBody": "Payments show up here as soon as customers check out.",
+    "noMatchTitle": "No transactions match",
+    "noMatchBody": "Try a wider date range or clear some filters.",
+    "openDetail": "Open transaction {{number}}",
+    "copy": "Copy {{label}}",
+    "copied": "{{label}} copied",
+    "copyFailed": "Couldn't copy to the clipboard",
+    "columns": {
+      "status": "Status",
+      "transaction": "Game & payment no.",
+      "channel": "Channel",
+      "amount": "Amount",
+      "time": "Time"
+    },
+    "row": {
+      "unknownGame": "Unknown game",
+      "paymentNumber": "Payment number",
+      "margin": "Margin {{value}}"
+    },
+    "stats": {
+      "volume": "Paid volume",
+      "paid": "Paid transactions",
+      "margin": "Margin",
+      "successRate": "Success rate",
+      "scopeFiltered": "Totals for every matching transaction",
+      "scopePage": "Totals for this page only"
+    },
+    "filters": {
+      "searchPlaceholder": "Search payment no., channel or ID",
+      "searchHint": "Matches part of a payment number, channel or status. Paste a full transaction, order or payment-method ID to find it exactly.",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "anyDate": "Any date",
+      "more": "More filters",
+      "reset": "Reset filters",
+      "amountMin": "Minimum amount",
+      "amountMax": "Maximum amount",
+      "amountExact": "Exact amount",
+      "amountMinShort": "Min",
+      "amountMaxShort": "Max",
+      "amountExactShort": "Exact",
+      "game": "Game",
+      "allGames": "All games",
+      "searchGames": "Search games",
+      "paymentMethod": "Payment method",
+      "allPaymentMethods": "All payment methods",
+      "searchPaymentMethods": "Search payment methods",
+      "noOptions": "Nothing found"
+    },
+    "export": {
+      "eyebrow": "// Export",
+      "title": "Export transactions",
+      "description": "Download a CSV of the payments that match these filters. It starts from what the list is showing.",
+      "range": "Date range",
+      "allDates": "All dates",
+      "allDatesHint": "No date range picked: the file will include every transaction ever made and may take a while.",
+      "unsupportedFilters": "Search, game and amount filters from the list aren't applied to the export.",
+      "cancel": "Cancel",
+      "submit": "Download CSV",
+      "pending": "Preparing file…",
+      "success": "Export downloaded",
+      "error": "Couldn't export transactions. Try again."
+    }
   },
   "paymentStatus": {
     "PAID": "Paid",
     "PENDING": "Pending",
-    "FAILED": "Failed",
+    "WAITING": "Waiting",
     "PROCESSING": "Processing",
-    "EXPIRED": "Expired"
-  },
-  "paymentChannel": {
-    "gopay": "GoPay",
-    "va": "Virtual account",
-    "qris": "QRIS",
-    "shopeepay": "ShopeePay"
-  },
-  "transactionFilters": {
-    "search": {
-      "placeholder": "Search transactions",
-      "ariaLabel": "Search transactions"
-    },
-    "date": {
-      "pickAria": "Choose transaction date and time range",
-      "placeholderButton": "Date & time range",
-      "startTime": "Start time",
-      "endTime": "End time",
-      "clearAria": "Clear date filter"
-    },
-    "game": {
-      "listError": "Failed to load games",
-      "allGames": "All games",
-      "loading": "Loading games…",
-      "filterAria": "Filter by game",
-      "commandSearch": "Search game name…",
-      "commandEmpty": "No matching games.",
-      "groupHeading": "Game",
-      "clearAria": "Clear game filter"
-    },
-    "paymentMethod": {
-      "listError": "Failed to load payment methods",
-      "allMethods": "All methods",
-      "loading": "Loading…",
-      "filterAria": "Filter by payment method",
-      "commandSearch": "Search payment method…",
-      "commandEmpty": "No matching methods.",
-      "groupHeading": "Payment method",
-      "clearAria": "Clear payment method filter"
-    },
-    "status": {
-      "filterAria": "Filter payment status",
-      "placeholderAll": "All statuses",
-      "optionAll": "All statuses",
-      "clearAria": "Clear status filter"
-    },
-    "amount": {
-      "min": {
-        "label": "Greater than",
-        "hint": "Transactions with amount greater than or equal (≥).",
-        "placeholder": "Min (manual)",
-        "ariaInput": "Minimum amount (manual)",
-        "ariaClear": "Clear minimum amount filter",
-        "presetTitle": "Amount ≥ {{amount}}"
-      },
-      "max": {
-        "label": "Less than",
-        "hint": "Transactions with amount less than or equal (≤).",
-        "placeholder": "Max (manual)",
-        "ariaInput": "Maximum amount (manual)",
-        "ariaClear": "Clear maximum amount filter",
-        "presetTitle": "Amount ≤ {{amount}}"
-      },
-      "exact": {
-        "label": "Exact",
-        "hint": "Only transactions with exactly this amount (=).",
-        "placeholder": "Exact amount (manual)",
-        "ariaInput": "Exact amount (manual)",
-        "ariaClear": "Clear exact amount filter",
-        "presetTitle": "Amount = {{amount}}"
-      }
-    }
-  },
-  "transactionTable": {
-    "copySuccess": "ID copied",
-    "copyError": "Failed to copy ID",
-    "colTransactionId": "Transaction ID",
-    "colTransactionIdSub": "Detail · copy ID",
-    "openDetailTitle": "Open transaction detail — {{id}}",
-    "openDetailAria": "Open transaction detail {{id}}",
-    "copyIdTitle": "Copy transaction ID",
-    "copyIdAria": "Copy transaction ID",
-    "colPayNumber": "Pay number",
-    "colApp": "Application",
-    "colOrderId": "Order ID",
-    "colAmount": "Amount",
-    "colMargin": "Margin",
-    "colChannel": "Channel",
-    "colVa": "VA number",
-    "colStatus": "Status",
-    "colStatusProvider": "Provider Status",
-    "colCreated": "Created"
-  },
-  "transactionDetail": {
-    "backAria": "Back",
-    "pageTitle": "Transaction detail",
-    "subtitlePending": "Complete payment before it expires.",
-    "subtitleDefault": "Payment and order information.",
-    "payInstructions": "Payment instructions",
-    "paymentReceived": "Payment received successfully.",
-    "paymentFailed": "Payment failed.",
-    "paymentExpired": "Payment expired.",
-    "sectionPayment": "Payment",
-    "sectionOrder": "Order",
-    "labelTransactionNumber": "Transaction number",
-    "labelPayNumber": "Pay number",
-    "labelOrderId": "Order ID",
-    "labelEmail": "Email",
-    "labelTid": "Provider TID",
-    "labelIpAddress": "IP Address",
-    "labelOrderNumber": "Order number",
-    "labelSku": "SKU",
-    "labelProduct": "Product",
-    "labelQuantity": "Quantity",
-    "labelOrderStatus": "Order status",
-    "labelMargin": "Margin",
-    "sectionMetadata": "Metadata",
-    "created": "Created",
-    "wibSuffix": "(WIB)",
-    "voucherCode": "Voucher code",
-    "paymentEmail": "Payment email",
-    "resendVoucher": "Resend voucher",
-    "resendEmail": "Resend email",
-    "waitTime": "Wait {{time}}",
-    "dialogPaymentTitle": "Payment instructions",
-    "dialogPaymentDescription": "{{channel}} — complete before the deadline.",
-    "loadingInstructions": "Loading instructions…",
-    "gopay": {
-      "qrAlt": "GoPay QR",
-      "scanHint": "Scan the QR with the GoPay app",
-      "openButton": "Open GoPay"
-    },
-    "shopeepay": {
-      "redirectHint": "You will be redirected to the ShopeePay app",
-      "openButton": "Open ShopeePay",
-      "footnote": "Complete payment in the Shopee app"
-    },
-    "qris": {
-      "scanHint": "Scan the QR with mobile banking or an e-wallet",
-      "qrAlt": "QRIS",
-      "waitingHint": "Waiting for payment confirmation"
-    },
-    "va": {
-      "label": "Virtual account number",
-      "hint": "Complete the transfer before the deadline"
-    },
-    "copy": {
-      "ariaCopied": "Copied",
-      "ariaCopy": "Copy to clipboard",
-      "failed": "Could not copy. Try again or copy manually."
-    },
-    "itemCount": "{{count}} item"
+    "FAILED": "Failed",
+    "EXPIRED": "Expired",
+    "REFUNDED": "Refunded"
   },
   "summaryPage": {
     "title": "Summary",
@@ -2016,18 +1914,99 @@
     "sessionExpired": "Your verification session expired. Please sign in again."
   },
   "transactionDetailPage": {
-    "title": "Transaction detail",
-    "backAria": "Back to transaction list",
-    "backButton": "Back to transaction list",
-    "missingIdSubtitle": "Transaction ID is missing from URL.",
-    "missingIdMessage": "Transaction ID was not found in the URL.",
-    "loadingSubtitle": "Loading payment data…",
-    "loadingTitle": "Loading transaction detail…",
-    "pleaseWait": "Please wait a moment.",
-    "errorSubtitle": "Unable to load data.",
-    "errorMessage": "Failed to load transaction detail. Check your connection or try reloading this page.",
-    "notFoundSubtitle": "Data not found.",
-    "notFoundMessage": "Transaction data was not found."
+    "back": "Back to transactions",
+    "eyebrow": "// Transaction",
+    "amount": "Amount",
+    "live": "Live · updates every 10s",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "loading": "Loading transaction",
+    "invalidTitle": "Not a transaction link",
+    "invalidBody": "This address doesn't contain a valid transaction ID. Open the transaction from the list instead.",
+    "notFoundTitle": "Transaction not found",
+    "notFoundBody": "It may have been removed, or the link points to a different environment.",
+    "errorTitle": "Couldn't load this transaction",
+    "errorBody": "Check your connection and try again.",
+    "orderStatus": {
+      "PENDING": "Pending",
+      "PAID": "Paid",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed",
+      "EXPIRED": "Expired",
+      "REFUNDED": "Refunded"
+    },
+    "timeline": {
+      "label": "Progress",
+      "created": "Created",
+      "payment": "Payment",
+      "fulfilment": "Fulfilment",
+      "paymentHint": {
+        "PAID": "The customer has paid.",
+        "PENDING": "Waiting for the customer to pay.",
+        "WAITING": "Waiting for the customer to pay.",
+        "PROCESSING": "The gateway is confirming the payment.",
+        "FAILED": "The payment didn't go through.",
+        "EXPIRED": "The customer didn't pay in time.",
+        "REFUNDED": "The money went back to the customer."
+      },
+      "fulfilmentHint": {
+        "waiting": "Starts once the payment is in.",
+        "skipped": "Not started: the payment didn't go through.",
+        "PENDING": "Queued, not sent to the provider yet.",
+        "PAID": "Paid, waiting to be sent to the provider.",
+        "PROCESSING": "The provider is delivering the top-up.",
+        "COMPLETED": "Delivered to the customer's account.",
+        "FAILED": "The provider couldn't deliver it.",
+        "EXPIRED": "The order expired before delivery.",
+        "REFUNDED": "The order was refunded."
+      }
+    },
+    "item": {
+      "title": "Item",
+      "product": "Product",
+      "sku": "SKU",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price",
+      "subtotal": "Subtotal",
+      "orderTotal": "Order total",
+      "voucher": "Voucher code",
+      "paid": "Paid",
+      "margin": "Margin",
+      "providerStatus": "Provider status",
+      "fromListHint": "Margin and provider status only come with the transaction list. Open this transaction from there to see them."
+    },
+    "customer": {
+      "title": "Customer",
+      "email": "Email",
+      "ip": "IP address",
+      "noAccount": "No game account details were saved with this order."
+    },
+    "payment": {
+      "title": "Payment",
+      "status": "Status",
+      "channel": "Channel",
+      "number": "Payment no.",
+      "vaNumber": "VA number",
+      "link": "Payment page",
+      "openLink": "Open",
+      "openPage": "Open payment page",
+      "createdAt": "Created",
+      "guide": "Payment guide",
+      "awaitingTitle": "Waiting for payment",
+      "awaitingBody": "The customer can still pay with the details below.",
+      "noInstructions": "The gateway sent no QR code, VA number or payment page for this payment.",
+      "qrAlt": "Payment QR code",
+      "qrHint": "Scan to pay"
+    },
+    "refs": {
+      "title": "References",
+      "transactionId": "Transaction ID",
+      "orderNumber": "Order number",
+      "orderId": "Order ID",
+      "providerRef": "Provider reference (TID)",
+      "paymentMethodId": "Payment method ID"
+    }
   },
   "referralPage": {
     "title": "Referral Codes",
