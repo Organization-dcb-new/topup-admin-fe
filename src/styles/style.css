@@ -137,3 +137,182 @@
 .animate-progress-loading {
   animation: progress-loading 2s ease-in-out infinite;
 }
+
+/* ---------- Auth pages (PakarGaming esports theme) ---------- */
+
+@theme {
+  --font-display: 'Chakra Petch', ui-sans-serif, system-ui, sans-serif;
+  /* Sampled from the official PakarGaming logo. */
+  --color-brand-purple: #9c27b0;
+  --color-brand-purple-deep: #6a1b9a;
+  --color-brand-cyan: #00bcd4;
+  /* easeOutQuint: fast start, long soft landing — used for every auth transition. */
+  --ease-hud: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-hud-float: hud-float 6s ease-in-out infinite;
+  --animate-hud-glow: hud-glow 5s ease-in-out infinite;
+  --animate-hud-trace: hud-trace 5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  --animate-hud-shake: hud-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  --animate-hud-signal: hud-signal 1.6s ease-in-out infinite;
+
+  @keyframes hud-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(0.94);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.06);
+    }
+  }
+
+  @keyframes hud-trace {
+    0% {
+      transform: translateX(-100%);
+    }
+    60%,
+    100% {
+      transform: translateX(300%);
+    }
+  }
+
+  @keyframes hud-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-6px);
+    }
+    40% {
+      transform: translateX(5px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(2px);
+    }
+  }
+
+  @keyframes hud-signal {
+    0%,
+    100% {
+      opacity: 0.35;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes hud-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes hud-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes hud-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+}
+
+/* Notched top-right and bottom-left corners. Clips outer rings too, so use only on non-focusable or inset-ring elements. */
+@utility hud-clip {
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+}
+
+@utility hud-clip-sm {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
+
+/* Hero panel's right edge, cut on a diagonal like an esports jersey panel. */
+@utility hud-slant {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 72px) 100%, 0 100%);
+}
+
+/* Print-style halftone dots; colour comes from `text-*`. */
+@utility hud-halftone {
+  background-image: radial-gradient(currentColor 1.4px, transparent 1.8px);
+  background-size: 14px 14px;
+}
+
+/* Jersey pinstripes; colour comes from `text-*`. */
+@utility hud-stripes {
+  background-image: repeating-linear-gradient(-45deg, currentColor 0 3px, transparent 3px 14px);
+}
+
+/* Crossfade used when an auth page hands off to the dashboard (navigate with `viewTransition`). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * While the language switches, the main blocks get their own transition groups, so they glide to
+ * their reflowed positions instead of double-exposing under a single full-page crossfade.
+ */
+[data-switching-language] .vt-lang-switch {
+  view-transition-name: auth-lang-switch;
+}
+[data-switching-language] .vt-hero-copy {
+  view-transition-name: auth-hero-copy;
+}
+[data-switching-language] .vt-hero-chips {
+  view-transition-name: auth-hero-chips;
+}
+[data-switching-language] .vt-panel-header {
+  view-transition-name: auth-panel-header;
+}
+[data-switching-language] .vt-panel-form {
+  view-transition-name: auth-panel-form;
+}
+[data-switching-language] .vt-panel-note {
+  view-transition-name: auth-panel-note;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The language switch animates its own pill; showing only the live element avoids a ghost pill. */
+::view-transition-old(auth-lang-switch) {
+  display: none;
+}
+
+::view-transition-new(auth-lang-switch) {
+  animation: none;
+}
+
+/* One switch for every auth animation: loops stop, entrances and handoffs resolve instantly. */
+@media (prefers-reduced-motion: reduce) {
+  [data-auth-shell] *,
+  [data-auth-shell] *::before,
+  [data-auth-shell] *::after {
+    animation-delay: 0s !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+}

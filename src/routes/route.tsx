@@ -29,6 +29,7 @@ import MaintenancePage from "@/pages/Maintenance";
 import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { AuthLayout } from '@/components/Auth/AuthLayout'
 import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
 import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
@@ -37,12 +38,18 @@ import NotFoundPage from "@/pages/NotFound";
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    path: '/verify-otp',
-    element: <VerifyOtpPage />,
+    // Pathless layout: the auth shell stays mounted while moving between login and OTP.
+    element: <AuthLayout />,
+    children: [
+      {
+        path: '/login',
+        element: <LoginPage />,
+      },
+      {
+        path: '/verify-otp',
+        element: <VerifyOtpPage />,
+      },
+    ],
   },
   {
     path: '/',

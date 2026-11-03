@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
+/** Messages are i18n keys, translated where the error is rendered. */
 export const loginSchema = z.object({
-  email_or_username: z.string().min(3, 'Email atau username wajib diisi'),
-  password: z.string().min(6, 'Password minimal 6 karakter'),
+  email_or_username: z.string().trim().min(1, 'loginPage.validation.identifierRequired'),
+  password: z.string().min(1, 'loginPage.validation.passwordRequired'),
 })
 
 export type LoginFormValues = z.infer<typeof loginSchema>

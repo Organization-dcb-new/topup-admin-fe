@@ -3,8 +3,9 @@ export interface LoginRequest {
   password: string
 }
 
+/** The session itself is set as an httpOnly cookie, so the body carries no token. */
 export interface LoginResponse {
   message: string
   status: 'success' | 'error'
-  token: string
+  data: null
 }

@@ -1,12 +1,11 @@
-// src/hooks/use-login.ts
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { loginSchema, type LoginFormValues } from '@/schemas/login'
 import type { LoginRequest, LoginResponse } from '@/types/login'
 import { api } from '@/api/axios'
-import { authStorage } from '@/lib/auth'
+import { refreshAuthSession, type AuthSession } from '@/lib/auth'
 
 export function useLoginForm() {
   return useForm<LoginFormValues>({
@@ -20,14 +19,16 @@ export function useLoginForm() {
 
 export async function login(payload: LoginRequest): Promise<LoginResponse> {
   const { data } = await api.post<LoginResponse>('/admin/login', payload)
-
-  authStorage.setToken(data.token)
-
   return data
 }
 
+/** Logs in, then resolves with the fresh session so the caller knows whether 2FA is still pending. */
 export function useLogin() {
-  return useMutation<LoginResponse, Error, LoginFormValues>({
-    mutationFn: login,
+  const queryClient = useQueryClient()
+  return useMutation<AuthSession, Error, LoginFormValues>({
+    mutationFn: async (values) => {
+      await login(values)
+      return refreshAuthSession(queryClient)
+    },
   })
 }
