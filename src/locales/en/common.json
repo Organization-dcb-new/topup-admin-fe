@@ -66,7 +66,8 @@
       "pemeliharaan": "Maintenance",
       "pengguna": "Users",
       "logAdmin": "Admin logs",
-      "productCallbackLog": "Product callback logs"
+      "productCallbackLog": "Product callback logs",
+      "roles": "Roles & access"
     }
   },
   "transactionPage": {
@@ -1618,6 +1619,7 @@
     "emptyMessage": "No administrators yet. Add one from the button above."
   },
   "adminTable": {
+    "cannotChangeOwnRole": "You can't change your own role.",
     "colUsername": "Username",
     "colEmail": "Email",
     "colRole": "Role",
@@ -1751,9 +1753,10 @@
     }
   },
   "unauthorizedPage": {
-    "title": "403 - Block Access",
-    "subtitle": "User does not have access.",
-    "backButton": "Back to Dashboard"
+    "eyebrow": "403 · Access denied",
+    "title": "You don't have access to this page",
+    "subtitle": "Your role doesn't include the permission this page needs. Ask a developer to update your role if you need it.",
+    "backButton": "Go to an allowed page"
   },
   "notFoundPage": {
     "title": "Page not found",
@@ -1875,6 +1878,103 @@
     "fileGenerated": "Generated: {{date}}",
     "fileNote": "Each code can be used once. Keep this file somewhere safe."
   },
+  "rolesPage": {
+    "eyebrow": "Security",
+    "title": "Roles & access",
+    "subtitle": "Decide what each role can see and do. Changes apply to every admin with that role on their next request.",
+    "newRole": "New role",
+    "system": "System",
+    "noDescription": "No description.",
+    "permissions": "Permissions",
+    "adminCount_one": "{{count}} admin",
+    "adminCount_other": "{{count}} admins",
+    "edit": "Edit",
+    "view": "View",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "deleteRole": "Delete role {{name}}",
+    "deleteBlockedSystem": "Built-in roles can't be deleted.",
+    "deleteBlockedInUse_one": "Still assigned to {{count}} admin. Move them to another role first.",
+    "deleteBlockedInUse_other": "Still assigned to {{count}} admins. Move them to another role first.",
+    "deleteEyebrow": "Delete role",
+    "deleteTitle": "Delete “{{name}}”?",
+    "deleteDescription": "The role and its permissions are removed for good. This can't be undone.",
+    "deleted": "Role “{{name}}” deleted",
+    "backToRoles": "Roles & access",
+    "newEyebrow": "New role",
+    "editEyebrow": "Edit role",
+    "editorSubtitle": "Name the role and tick what it may do. Admins with this role get exactly these permissions.",
+    "systemNote": "Built-in role: its name is fixed, but you can still change its permissions.",
+    "readOnlyNote": "You can view this role but don't have permission to change it.",
+    "nameLabel": "Role name",
+    "namePlaceholder": "e.g. Content editor",
+    "systemNameLocked": "Built-in roles can't be renamed.",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this role for?",
+    "permissionsTitle": "Permissions",
+    "selectedCount": "{{count}} of {{total}} selected",
+    "searchPermissions": "Search permissions…",
+    "selectAll": "Select all",
+    "clearAll": "Clear",
+    "noMatch": "No permission matches your search.",
+    "toggleGroup": "Toggle all {{group}} permissions",
+    "save": "Save changes",
+    "create": "Create role",
+    "saving": "Saving…",
+    "saved": "Role saved",
+    "created": "Role “{{name}}” created",
+    "resources": {
+      "dashboard": "Dashboard",
+      "transaction": "Transactions",
+      "order": "Orders",
+      "customer": "Customers",
+      "cashflow": "Cashflow",
+      "summary": "Summary",
+      "game": "Games",
+      "product": "Products",
+      "category": "Categories",
+      "category_product": "Product categories",
+      "game_input": "Input fields",
+      "provider": "Providers",
+      "payment_method": "Payment methods",
+      "payment_category": "Payment categories",
+      "banner": "Banners",
+      "show": "Shows",
+      "blog": "Articles",
+      "maintenance": "Maintenance",
+      "referral": "Referral codes",
+      "admin": "Admin users",
+      "role": "Roles",
+      "admin_log": "Admin logs",
+      "upload": "Uploads",
+      "integration": "Integrations",
+      "security": "Security"
+    },
+    "actions": {
+      "view": "View",
+      "create": "Create",
+      "update": "Edit",
+      "delete": "Delete",
+      "export": "Export CSV",
+      "sync": "Sync from provider",
+      "update_price": "Change prices",
+      "view_anomaly": "View anomalies",
+      "view_callback_log": "View callback logs",
+      "view_balance": "View balance",
+      "2fa_manage": "Manage own 2FA"
+    },
+    "errors": {
+      "notFound": "This role no longer exists.",
+      "systemRole": "Built-in roles can't be renamed or deleted.",
+      "inUse": "This role is still assigned to admins. Move them to another role first.",
+      "nameTaken": "A role with this name already exists.",
+      "nameEmpty": "Give the role a name.",
+      "unknownPermission": "The permission list is out of date. Reload the page and try again.",
+      "lastRoleManager": "At least one role must keep the role-management permissions.",
+      "forbidden": "You don't have permission to do this.",
+      "generic": "Couldn't save the role. Please try again."
+    }
+  },
   "navbar": {
     "breadcrumb": "Breadcrumb",
     "detail": "Detail"
@@ -1892,6 +1992,7 @@
     }
   },
   "authErrors": {
+    "forbidden": "You don't have permission to do that. Ask a developer if you need access.",
     "invalidCredentials": "Incorrect email/username or password.",
     "invalidOtp": "That code is invalid or expired. Use the latest code from your app.",
     "invalidRecoveryCode": "That recovery code isn't valid or was already used.",

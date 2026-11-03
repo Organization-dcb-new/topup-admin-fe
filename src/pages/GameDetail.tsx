@@ -1,3 +1,4 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import type { GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
@@ -29,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { PERM } from '@/constants/permissions'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import i18n from '@/i18n'
@@ -419,51 +421,53 @@ function GameDetailView({ game }: { game: Game }) {
 
           {/* Inline Action Toggles */}
           <div className='flex flex-wrap items-center gap-3'>
-            <EditGameModal game={game}>
-              <Button
-                variant='outline'
-                size='sm'
-                className='h-10 rounded-xl gap-2 font-medium border-border/80 bg-background/90 hover:bg-muted transition-colors shadow-sm'
-              >
-                <Pencil className='h-4 w-4 text-primary' />
-                {t('editGameModal.title') || 'Edit Game'}
-              </Button>
-            </EditGameModal>
+            <Can permission={PERM.gameUpdate}>
+              <EditGameModal game={game}>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='h-10 rounded-xl gap-2 font-medium border-border/80 bg-background/90 hover:bg-muted transition-colors shadow-sm'
+                >
+                  <Pencil className='h-4 w-4 text-primary' />
+                  {t('editGameModal.title') || 'Edit Game'}
+                </Button>
+              </EditGameModal>
 
-            <ChangeImageModal game={game} image={game.thumbnail_url}>
-              <Button
-                variant='outline'
-                size='sm'
-                className='h-10 rounded-xl gap-2 font-medium border-border/80 bg-background/90 hover:bg-muted transition-colors shadow-sm'
-              >
-                <ImageIcon className='h-4 w-4 text-primary' />
-                {t('gameImageModal.changeImages') || 'Change Images'}
-              </Button>
-            </ChangeImageModal>
+              <ChangeImageModal game={game} image={game.thumbnail_url}>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='h-10 rounded-xl gap-2 font-medium border-border/80 bg-background/90 hover:bg-muted transition-colors shadow-sm'
+                >
+                  <ImageIcon className='h-4 w-4 text-primary' />
+                  {t('gameImageModal.changeImages') || 'Change Images'}
+                </Button>
+              </ChangeImageModal>
 
-            <div className='flex items-center gap-3 rounded-xl border border-border/80 bg-background/90 backdrop-blur-sm p-2 shadow-sm'>
-              <div className='flex items-center gap-2 px-1'>
-                <span className='text-xs font-semibold text-muted-foreground'>
-                  {t('gameToggleLabels.active')}
-                </span>
-                <Switch
-                  checked={game.is_active}
-                  onCheckedChange={(v) => toggleStatusMutation.mutate(v)}
-                  disabled={toggleStatusMutation.isPending}
-                />
+              <div className='flex items-center gap-3 rounded-xl border border-border/80 bg-background/90 backdrop-blur-sm p-2 shadow-sm'>
+                <div className='flex items-center gap-2 px-1'>
+                  <span className='text-xs font-semibold text-muted-foreground'>
+                    {t('gameToggleLabels.active')}
+                  </span>
+                  <Switch
+                    checked={game.is_active}
+                    onCheckedChange={(v) => toggleStatusMutation.mutate(v)}
+                    disabled={toggleStatusMutation.isPending}
+                  />
+                </div>
+                <div className='h-5 w-px bg-border' />
+                <div className='flex items-center gap-2 px-1'>
+                  <span className='text-xs font-semibold text-muted-foreground'>
+                    {t('gameShowcase.label')}
+                  </span>
+                  <Switch
+                    checked={game.is_show}
+                    onCheckedChange={(v) => toggleShowMutation.mutate(v)}
+                    disabled={toggleShowMutation.isPending}
+                  />
+                </div>
               </div>
-              <div className='h-5 w-px bg-border' />
-              <div className='flex items-center gap-2 px-1'>
-                <span className='text-xs font-semibold text-muted-foreground'>
-                  {t('gameShowcase.label')}
-                </span>
-                <Switch
-                  checked={game.is_show}
-                  onCheckedChange={(v) => toggleShowMutation.mutate(v)}
-                  disabled={toggleShowMutation.isPending}
-                />
-              </div>
-            </div>
+            </Can>
           </div>
         </div>
       </div>
@@ -663,7 +667,9 @@ function GameDetailView({ game }: { game: Game }) {
                             {row.placeholder || <span className='italic text-muted-foreground/40'>{t('gameDetailPage.emptyValue')}</span>}
                           </td>
                           <td className='px-4 py-3 text-right pr-5'>
-                            <EditGameInputModal input={row} />
+                            <Can permission={PERM.gameInputUpdate}>
+                              <EditGameInputModal input={row} />
+                            </Can>
                           </td>
                         </tr>
                       ))}

@@ -9,11 +9,12 @@ import brandWordmark from '@/assets/brand/pakargaming-wordmark.webp'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { SidebarMenu } from '@/constants/sidebar-menu'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import type { SidebarProps } from '@/types/sidebar'
 import { RailTooltip, RowLabel } from './sidebar-parts'
-import { findActivePath, menusForRole, useSidebarCopy, type Translate } from './sidebar-nav'
+import { findActivePath, useSidebarCopy, visibleMenus, type Translate } from './sidebar-nav'
 import {
   sidebarIconClass,
   sidebarRowActiveClass,
@@ -31,7 +32,8 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
   const navRef = useRef<HTMLElement>(null)
 
-  const sections = useMemo(() => menusForRole(role), [role])
+  const { can } = usePermissions()
+  const sections = useMemo(() => visibleMenus(can, role), [can, role])
   const activePath = findActivePath(sections, pathname)
 
   // Bring the current page into view, e.g. when landing straight on an item far down the list.

@@ -1,7 +1,9 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { PERM } from '@/constants/permissions'
 import { useGetReferralCodeById, useUpdateReferralCode } from '@/hooks/useReferral'
 import { formatBackendDateTime, parseBackendDate } from '@/lib/backend-datetime'
 import { ArrowLeft, Loader2, Percent, Calendar, RefreshCw, BarChart2, TrendingUp, CheckCircle, Clock, Coins } from 'lucide-react'
@@ -294,7 +296,9 @@ export default function ReferralDetailPage() {
                           {referral.is_active ? t('referralPage.statusActive') : t('referralPage.statusInactive')}
                         </span>
                       </div>
-                      <Switch checked={referral.is_active} onCheckedChange={handleToggleStatus} />
+                      <Can permission={PERM.referralUpdate}>
+                        <Switch checked={referral.is_active} onCheckedChange={handleToggleStatus} />
+                      </Can>
                     </div>
 
                     <div>

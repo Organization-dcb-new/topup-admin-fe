@@ -1,6 +1,8 @@
 import type { Banner } from '@/types/banner'
+import { Can } from '@/components/Auth/Can'
 import { DeleteBannerButton } from '@/components/Banner/DeleteBannerModal'
 import { UpdateBanner } from '@/components/Banner/EditBannerModal'
+import { PERM } from '@/constants/permissions'
 import { useTranslation } from 'react-i18next'
 
 export function BannerActionsHeader() {
@@ -21,14 +23,18 @@ export function BannerRowActions({ banner }: { banner: Banner }) {
         role='group'
         aria-label={t('bannerTable.rowActionsAria')}
       >
-        <UpdateBanner
-          banner={banner}
-          triggerClassName='border-0 bg-transparent shadow-none hover:bg-muted/70'
-        />
-        <DeleteBannerButton
-          id={banner.id}
-          triggerClassName='border-0 bg-transparent shadow-none hover:bg-destructive/10'
-        />
+        <Can permission={PERM.bannerUpdate}>
+          <UpdateBanner
+            banner={banner}
+            triggerClassName='border-0 bg-transparent shadow-none hover:bg-muted/70'
+          />
+        </Can>
+        <Can permission={PERM.bannerDelete}>
+          <DeleteBannerButton
+            id={banner.id}
+            triggerClassName='border-0 bg-transparent shadow-none hover:bg-destructive/10'
+          />
+        </Can>
       </div>
     </div>
   )

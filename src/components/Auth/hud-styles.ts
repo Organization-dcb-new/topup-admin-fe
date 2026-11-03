@@ -18,3 +18,12 @@ export const hudOtpSlotClass =
 /** Icon slot on the left edge of an input; takes the brand colour while the field is focused. */
 export const hudInputIconClass =
   'pointer-events-none absolute inset-y-0 left-0 flex w-11 items-center justify-center text-slate-400 transition-colors duration-300 group-focus-within:text-brand-purple'
+
+/** The login submit button's look, for links and plain buttons (pair with a cyan notch span). */
+export const hudPrimaryButtonClass =
+  'relative inline-flex h-11 items-center justify-center gap-2 overflow-hidden bg-linear-to-r from-brand-purple via-brand-purple-deep to-brand-purple bg-[length:200%_100%] bg-left px-5 ' +
+  'font-display text-xs font-bold uppercase tracking-[0.2em] text-white hud-clip-sm transition-[background-position,transform,opacity] duration-500 ease-hud ' +
+  'hover:bg-right active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 disabled:opacity-50'
+
+export const hudEyebrowClass =
+  'font-display text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-purple'

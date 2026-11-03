@@ -2,6 +2,8 @@ import type { Show } from '@/types/show'
 import { AddGamesToShowButton } from '@/components/Show/AddGameToShowModal'
 import { DeleteShowButton } from '@/components/Show/DeleteShowModal'
 import { UpdateShowModal } from '@/components/Show/EditShowModal'
+import { Can } from '@/components/Auth/Can'
+import { PERM } from '@/constants/permissions'
 import { useTranslation } from 'react-i18next'
 
 export function ShowActionsHeader() {
@@ -24,13 +26,17 @@ export function ShowRowActions({ show }: { show: Show }) {
         role='group'
         aria-label={t('showTable.rowActionsAria')}
       >
-        <AddGamesToShowButton
-          showId={show.id}
-          existingGames={show.games}
-          triggerClassName={toolbarBtn}
-        />
-        <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
-        <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
+        <Can permission={PERM.showUpdate}>
+          <AddGamesToShowButton
+            showId={show.id}
+            existingGames={show.games}
+            triggerClassName={toolbarBtn}
+          />
+          <UpdateShowModal show={show} triggerClassName={toolbarBtn} />
+        </Can>
+        <Can permission={PERM.showDelete}>
+          <DeleteShowButton id={show.id} triggerClassName={toolbarBtn} />
+        </Can>
       </div>
     </div>
   )

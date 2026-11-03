@@ -1,11 +1,13 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { TFunction } from "i18next";
 import type { Product } from "@/types/product";
+import { Can } from '@/components/Auth/Can'
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { DEFAULT_GAME_IMAGE } from "./table-game";
 import { ChangeImageModalProduct } from "@/components/Product/Filter/UploadImage";
 import UpdateProductPriceModal from "@/components/Product/Filter/UpdatePrice";
+import { PERM } from '@/constants/permissions'
 
 function formatRp(value: number | undefined | null) {
   const n = value ?? 0;
@@ -21,7 +23,22 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
 
       return (
         <div className="flex items-center">
-          <ChangeImageModalProduct product={row.original} image={image} />
+          <Can
+            permission={PERM.productUpdate}
+            fallback={
+              <img
+                src={image}
+                alt=''
+                className='h-10 w-10 rounded-md border border-border/80 bg-muted/20 object-contain ring-1 ring-gray-900/5'
+                loading='lazy'
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.png'
+                }}
+              />
+            }
+          >
+            <ChangeImageModalProduct product={row.original} image={image} />
+          </Can>
         </div>
       );
     },
@@ -175,11 +192,13 @@ export const getProductColumns = (t: TFunction): ColumnDef<Product>[] => [
             name: row.original.name,
           })}
         >
-          <UpdateProductPriceModal
-            basePrice={row.original.base_price}
-            productId={row.original.id}
-            productName={row.original.name}
-          />
+          <Can permission={PERM.productUpdatePrice}>
+            <UpdateProductPriceModal
+              basePrice={row.original.base_price}
+              productId={row.original.id}
+              productName={row.original.name}
+            />
+          </Can>
         </div>
       </div>
     ),

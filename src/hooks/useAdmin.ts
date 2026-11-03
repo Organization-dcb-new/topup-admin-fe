@@ -31,8 +31,9 @@ export const useAdminMutation = () => {
   const queryClient = useQueryClient()
 
   const updateRole = useMutation({
-    mutationFn: async ({ id, role }: { id: string; role: string }) => {
-      return api.patch(`/admin/users/${id}`, { role })
+    mutationFn: async ({ id, role, roleId }: { id: string; role: string; roleId?: string }) => {
+      // The route is PUT. role_id is the RBAC form; the slug keeps pre-RBAC backends working.
+      return api.put(`/admin/users/${id}`, { role, ...(roleId && { role_id: roleId }) })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] })

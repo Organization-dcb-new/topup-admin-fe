@@ -1,4 +1,7 @@
 import axios from 'axios'
+import toast from 'react-hot-toast'
+
+import i18n from '@/i18n'
 
 declare module 'axios' {
   interface AxiosRequestConfig {
@@ -26,6 +29,14 @@ api.interceptors.response.use(
     ) {
       const redirect = encodeURIComponent(window.location.pathname + window.location.search)
       window.location.href = `/login?redirect=${redirect}`
+    }
+    // RBAC refusal (not the MFA gate, which is also a 403). One shared toast id, so a page whose
+    // queries all fail says it once.
+    if (
+      error.response?.status === 403 &&
+      error.response.data?.message === 'access denied: insufficient permissions'
+    ) {
+      toast.error(i18n.t('authErrors.forbidden'), { id: 'forbidden' })
     }
     return Promise.reject(error)
   }

@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { api } from '@/api/axios'
+import { defaultPermissionsForRole } from '@/constants/permissions'
 
 export const AUTH_ME_QUERY_KEY = ['auth-me']
 
@@ -87,12 +89,21 @@ export function useAuthUser() {
 
   const isMfaRequired = data?.mfa_pending === true
   const isFullyAuthenticated = !!data?.user && !isMfaRequired
+  const role: string | null = data?.user?.role ?? null
+  const reported: unknown = data?.user?.permissions
+
+  // `/admin/me` lists effective permissions since RBAC; older backends only send the role slug.
+  const permissions = useMemo<ReadonlySet<string>>(
+    () => new Set(Array.isArray(reported) ? (reported as string[]) : defaultPermissionsForRole(role)),
+    [reported, role]
+  )
 
   return {
     isAuthenticated: isFullyAuthenticated,
     isMfaRequired,
-    role: data?.user?.role ?? null,
+    role,
     user: data?.user ?? null,
+    permissions,
     isLoading
   }
 }

@@ -1,7 +1,9 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from "@/components/Layout/dashboard-layout";
 import ErrorComponent from "@/components/Layout/error";
 import { DataTable } from "@/components/Layout/table-data";
 import { CreateShowModal } from "@/components/Show/CreateShowModal";
+import { PERM } from '@/constants/permissions'
 import { useGetShows } from "@/hooks/useShow";
 import { getShowColumns } from "@/tables/table-show";
 import {
@@ -77,7 +79,9 @@ export default function ShowPage() {
                 {t("showPage.listHint")}
               </p>
             </div>
-            <CreateShowModal />
+            <Can permission={PERM.showCreate}>
+              <CreateShowModal />
+            </Can>
           </div>
           <div className="p-3 sm:p-4">
             {isPending && (

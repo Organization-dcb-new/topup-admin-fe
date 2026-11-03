@@ -1,8 +1,10 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import type { TFunction } from 'i18next'
 import type { Category } from '@/types/category'
+import { Can } from '@/components/Auth/Can'
 import { DeleteCategoryButton } from '@/components/Category/DeleteCategoryModal'
 import { EditCategoryModal } from '@/components/Category/EditCategoryModal'
+import { PERM } from '@/constants/permissions'
 export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
   {
     accessorKey: 'icon_url',
@@ -38,8 +40,12 @@ export const getCategoryColumns = (t: TFunction): ColumnDef<Category>[] => [
     header: t('categoryTable.colActions'),
     cell: ({ row }) => (
       <div className='flex items-center gap-1'>
-        <EditCategoryModal category={row.original}   />
-        <DeleteCategoryButton id={row.original.id} />
+        <Can permission={PERM.categoryUpdate}>
+          <EditCategoryModal category={row.original}   />
+        </Can>
+        <Can permission={PERM.categoryDelete}>
+          <DeleteCategoryButton id={row.original.id} />
+        </Can>
       </div>
     ),
   },

@@ -66,7 +66,8 @@
       "pemeliharaan": "Pemeliharaan",
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
-      "productCallbackLog": "Log callback produk"
+      "productCallbackLog": "Log callback produk",
+      "roles": "Role & akses"
     }
   },
   "transactionPage": {
@@ -1618,6 +1619,7 @@
     "emptyMessage": "Belum ada administrator. Tambahkan lewat tombol di atas."
   },
   "adminTable": {
+    "cannotChangeOwnRole": "Role akun sendiri tidak bisa diubah.",
     "colUsername": "Nama pengguna",
     "colEmail": "Email",
     "colRole": "Peran",
@@ -1751,9 +1753,10 @@
     }
   },
   "unauthorizedPage": {
-    "title": "403 - Akses diblokir",
-    "subtitle": "Pengguna tidak memiliki akses.",
-    "backButton": "Kembali ke dasbor"
+    "eyebrow": "403 · Akses ditolak",
+    "title": "Anda tidak punya akses ke halaman ini",
+    "subtitle": "Role Anda tidak memiliki permission yang dibutuhkan halaman ini. Minta developer memperbarui role Anda jika diperlukan.",
+    "backButton": "Ke halaman yang diizinkan"
   },
   "notFoundPage": {
     "title": "Halaman tidak ditemukan",
@@ -1875,6 +1878,101 @@
     "fileGenerated": "Dibuat: {{date}}",
     "fileNote": "Setiap kode hanya bisa dipakai sekali. Simpan file ini di tempat aman."
   },
+  "rolesPage": {
+    "eyebrow": "Keamanan",
+    "title": "Role & akses",
+    "subtitle": "Atur apa yang boleh dilihat dan dilakukan setiap role. Perubahan berlaku untuk semua admin dengan role tersebut pada permintaan berikutnya.",
+    "newRole": "Role baru",
+    "system": "Sistem",
+    "noDescription": "Tanpa deskripsi.",
+    "permissions": "Permission",
+    "adminCount_other": "{{count}} admin",
+    "edit": "Ubah",
+    "view": "Lihat",
+    "delete": "Hapus",
+    "cancel": "Batal",
+    "deleteRole": "Hapus role {{name}}",
+    "deleteBlockedSystem": "Role bawaan tidak bisa dihapus.",
+    "deleteBlockedInUse_other": "Masih dipakai {{count}} admin. Pindahkan mereka ke role lain dulu.",
+    "deleteEyebrow": "Hapus role",
+    "deleteTitle": "Hapus “{{name}}”?",
+    "deleteDescription": "Role beserta permission-nya dihapus permanen dan tidak bisa dikembalikan.",
+    "deleted": "Role “{{name}}” dihapus",
+    "backToRoles": "Role & akses",
+    "newEyebrow": "Role baru",
+    "editEyebrow": "Ubah role",
+    "editorSubtitle": "Beri nama role lalu centang apa saja yang boleh dilakukan. Admin dengan role ini mendapat persis permission tersebut.",
+    "systemNote": "Role bawaan: namanya tetap, tapi permission-nya masih bisa diubah.",
+    "readOnlyNote": "Anda bisa melihat role ini, tapi tidak punya izin untuk mengubahnya.",
+    "nameLabel": "Nama role",
+    "namePlaceholder": "mis. Editor konten",
+    "systemNameLocked": "Role bawaan tidak bisa diganti namanya.",
+    "descriptionLabel": "Deskripsi",
+    "descriptionPlaceholder": "Untuk apa role ini?",
+    "permissionsTitle": "Permission",
+    "selectedCount": "{{count}} dari {{total}} dipilih",
+    "searchPermissions": "Cari permission…",
+    "selectAll": "Pilih semua",
+    "clearAll": "Kosongkan",
+    "noMatch": "Tidak ada permission yang cocok.",
+    "toggleGroup": "Pilih semua permission {{group}}",
+    "save": "Simpan perubahan",
+    "create": "Buat role",
+    "saving": "Menyimpan…",
+    "saved": "Role disimpan",
+    "created": "Role “{{name}}” dibuat",
+    "resources": {
+      "dashboard": "Dasbor",
+      "transaction": "Transaksi",
+      "order": "Pesanan",
+      "customer": "Pelanggan",
+      "cashflow": "Cashflow",
+      "summary": "Rekap",
+      "game": "Game",
+      "product": "Produk",
+      "category": "Kategori",
+      "category_product": "Kategori produk",
+      "game_input": "Field input",
+      "provider": "Penyedia",
+      "payment_method": "Metode pembayaran",
+      "payment_category": "Kategori pembayaran",
+      "banner": "Banner",
+      "show": "Acara",
+      "blog": "Artikel",
+      "maintenance": "Pemeliharaan",
+      "referral": "Kode referral",
+      "admin": "Pengguna admin",
+      "role": "Role",
+      "admin_log": "Log admin",
+      "upload": "Unggahan",
+      "integration": "Integrasi",
+      "security": "Keamanan"
+    },
+    "actions": {
+      "view": "Lihat",
+      "create": "Tambah",
+      "update": "Ubah",
+      "delete": "Hapus",
+      "export": "Ekspor CSV",
+      "sync": "Sinkron dari penyedia",
+      "update_price": "Ubah harga",
+      "view_anomaly": "Lihat anomali",
+      "view_callback_log": "Lihat log callback",
+      "view_balance": "Lihat saldo",
+      "2fa_manage": "Atur 2FA sendiri"
+    },
+    "errors": {
+      "notFound": "Role ini sudah tidak ada.",
+      "systemRole": "Role bawaan tidak bisa diganti nama atau dihapus.",
+      "inUse": "Role ini masih dipakai admin. Pindahkan mereka ke role lain dulu.",
+      "nameTaken": "Nama role ini sudah dipakai.",
+      "nameEmpty": "Beri nama role terlebih dahulu.",
+      "unknownPermission": "Daftar permission sudah usang. Muat ulang halaman lalu coba lagi.",
+      "lastRoleManager": "Minimal satu role harus tetap punya permission manajemen role.",
+      "forbidden": "Anda tidak punya izin untuk melakukan ini.",
+      "generic": "Gagal menyimpan role. Silakan coba lagi."
+    }
+  },
   "navbar": {
     "breadcrumb": "Breadcrumb",
     "detail": "Detail"
@@ -1892,6 +1990,7 @@
     }
   },
   "authErrors": {
+    "forbidden": "Anda tidak punya izin untuk melakukan itu. Hubungi developer jika butuh akses.",
     "invalidCredentials": "Email/nama pengguna atau kata sandi salah.",
     "invalidOtp": "Kode salah atau kedaluwarsa. Gunakan kode terbaru dari aplikasi Anda.",
     "invalidRecoveryCode": "Kode pemulihan tidak valid atau sudah pernah dipakai.",

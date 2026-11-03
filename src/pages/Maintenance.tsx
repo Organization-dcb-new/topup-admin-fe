@@ -1,7 +1,9 @@
+import { Can } from '@/components/Auth/Can'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import ErrorComponent from '@/components/Layout/error'
 import { DataTable } from '@/components/Layout/table-data'
 import { CreateMaintenanceModal } from '@/components/Maintenance/CreateMaintenanceModal'
+import { PERM } from '@/constants/permissions'
 import { useGetMaintenances } from '@/hooks/useMaintenance'
 import { getMaintenanceColumns } from '@/tables/table-maintenance'
 import { AlertCircle, CheckCircle2, Construction, Loader2 } from 'lucide-react'
@@ -73,7 +75,9 @@ export default function MaintenancePage() {
                 {t('maintenancePage.listHint')}
               </p>
             </div>
-            <CreateMaintenanceModal />
+            <Can permission={PERM.maintenanceCreate}>
+              <CreateMaintenanceModal />
+            </Can>
           </div>
 
           <div className='p-3 sm:p-4'>

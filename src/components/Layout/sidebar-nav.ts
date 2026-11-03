@@ -1,15 +1,12 @@
 import { useTranslation } from 'react-i18next'
 
+import type { Permission } from '@/constants/permissions'
 import { sidebarMenus, type SidebarMenu, type SidebarSection } from '@/constants/sidebar-menu'
 import { SIDEBAR_I18N_KEY_BY_TEXT } from '@/i18n/sidebar-label-keys'
 
-/** Menu labels NOC may see; mirrors the RoleGuards in routes/route.tsx. */
-const NOC_ALLOWED = ['Dasbor', 'Transaksi', 'Ikhtisar', 'Konten', 'Banner', 'Acara', 'Artikel', 'Inventaris', 'Game', 'Produk', 'Kategori produk', 'Produk anomali', 'Field input']
-const DEV_ONLY_LABELS = ['Pembatas laju', 'Pengguna']
-
 export type Translate = (original: string) => string
 
-/** Menu labels are fixed Indonesian strings (used for role checks); this maps them to i18n. */
+/** Menu labels are fixed Indonesian strings; this maps them to their i18n keys. */
 export function useSidebarCopy(): Translate {
   const { t } = useTranslation('common')
   return (original) => {
@@ -18,25 +15,35 @@ export function useSidebarCopy(): Translate {
   }
 }
 
-function canSee(role: string | null, label: string) {
-  if (role === 'dev') return true
-  if (role === 'noc' && !NOC_ALLOWED.includes(label)) return false
-  return !DEV_ONLY_LABELS.includes(label)
+type Can = (...codes: Permission[]) => boolean
+
+function canSee(item: SidebarMenu, can: Can, role: string | null) {
+  if (item.devOnly) return role === 'dev'
+  return !item.permission || can(item.permission)
 }
 
-export function menusForRole(role: string | null): SidebarSection[] {
+/** The menu trimmed to what the admin may open; groups with no visible child disappear. */
+export function visibleMenus(can: Can, role: string | null): SidebarSection[] {
   return sidebarMenus
     .map((section) => ({
       ...section,
       menus: section.menus
-        .filter((menu) => canSee(role, menu.label))
+        .filter((menu) => canSee(menu, can, role))
         .map((menu) => ({
           ...menu,
-          children: menu.children?.filter((child) => canSee(role, child.label)),
+          children: menu.children?.filter((child) => canSee(child, can, role)),
         }))
         .filter((menu) => menu.path || menu.children?.length),
     }))
     .filter((section) => section.menus.length > 0)
+}
+
+/** Where to send an admin whose role can't open the dashboard, e.g. a content-only role. */
+export function firstAccessiblePath(sections: SidebarSection[]) {
+  for (const menu of sections.flatMap((section) => section.menus)) {
+    const path = menu.path ?? menu.children?.[0]?.path
+    if (path) return path
+  }
 }
 
 function matchesPath(pathname: string, path: string) {

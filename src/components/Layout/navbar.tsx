@@ -3,11 +3,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 
+import { usePermissions } from '@/hooks/usePermissions'
 import { useAuthUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 import { HealthStatusMenu } from './health-status-menu'
 import { LanguageSwitch } from './language-switch'
-import { findActivePath, findTrail, menusForRole, useSidebarCopy } from './sidebar-nav'
+import { findActivePath, findTrail, useSidebarCopy, visibleMenus } from './sidebar-nav'
 import { UserMenu } from './user-menu'
 
 interface NavbarProps {
@@ -53,7 +54,8 @@ function Breadcrumbs() {
   const tr = useSidebarCopy()
   const { pathname } = useLocation()
   const { role } = useAuthUser()
-  const sections = useMemo(() => menusForRole(role), [role])
+  const { can } = usePermissions()
+  const sections = useMemo(() => visibleMenus(can, role), [can, role])
   const activePath = findActivePath(sections, pathname)
   const trail = activePath ? findTrail(sections, activePath) : undefined
   if (!activePath || !trail) return <div className='min-w-0 flex-1' />
