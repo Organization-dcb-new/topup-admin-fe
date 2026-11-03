@@ -206,7 +206,10 @@ interface CategoryCardProps {
 function CategoryCard({ category, order, onProducts, onRename, onDelete }: CategoryCardProps) {
   const { t } = useTranslation('common')
   const [iconFailed, setIconFailed] = useState(false)
-  const products = [...(category.product ?? [])].sort((a, b) => a.selling_price - b.selling_price)
+  // Active products first, cheapest first: the order players see them in.
+  const products = [...(category.product ?? [])].sort(
+    (a, b) => Number(b.is_active) - Number(a.is_active) || a.selling_price - b.selling_price
+  )
   const active = category.is_active !== false
   const hidden = products.length - PREVIEW_PRODUCTS
 

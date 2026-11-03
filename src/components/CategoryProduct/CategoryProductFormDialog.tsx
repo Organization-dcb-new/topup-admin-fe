@@ -312,7 +312,7 @@ function RenameForm({ category, onDone }: { category: CategoryProduct; onDone: (
         {errors.name?.message && <FieldMessage tone='error'>{t(errors.name.message)}</FieldMessage>}
       </div>
 
-      <dl className='grid gap-3 rounded-md bg-slate-50 p-4 text-sm sm:grid-cols-3'>
+      <dl className='grid gap-3 rounded-md bg-slate-50 p-4 text-sm sm:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)_auto]'>
         <LockedFact label={t('categoryProductPage.form.gameLabel')}>
           <span className='inline-flex min-w-0 items-center gap-1.5'>
             <Gamepad2 className='size-3.5 shrink-0 text-slate-400' aria-hidden />
@@ -320,12 +320,12 @@ function RenameForm({ category, onDone }: { category: CategoryProduct; onDone: (
           </span>
         </LockedFact>
         <LockedFact label={t('categoryProductPage.form.slugLabel')}>
-          <span className='block truncate font-mono text-xs'>{category.slug}</span>
+          <span className='block truncate font-mono text-xs' title={category.slug}>{category.slug}</span>
         </LockedFact>
         <LockedFact label={t('categoryProductPage.form.statusLabel')}>
           {category.is_active ? t('categoryProductPage.status.active') : t('categoryProductPage.status.inactive')}
         </LockedFact>
-        <p className='flex items-start gap-1.5 text-xs leading-relaxed text-slate-500 sm:col-span-3'>
+        <p className='flex items-start gap-1.5 text-xs leading-relaxed text-slate-500 sm:col-span-full'>
           <Lock className='mt-0.5 size-3 shrink-0' aria-hidden />
           {t('categoryProductPage.form.lockedHint')}
         </p>

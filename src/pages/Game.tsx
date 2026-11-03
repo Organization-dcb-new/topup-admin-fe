@@ -28,8 +28,6 @@ const PAGE_SIZE = 20
 
 const STATUSES = ['all', 'active', 'inactive'] as const
 const IMAGES = ['all', 'with_image', 'no_image'] as const
-type StatusFilter = (typeof STATUSES)[number]
-type ImageFilter = (typeof IMAGES)[number]
 
 function pick<T extends string>(value: string | null, allowed: readonly T[], fallback: T): T {
   return allowed.includes(value as T) ? (value as T) : fallback
