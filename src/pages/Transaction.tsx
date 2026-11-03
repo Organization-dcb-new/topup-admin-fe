@@ -1,467 +1,187 @@
+import { useState } from 'react'
+import { format } from 'date-fns'
+import { useTranslation } from 'react-i18next'
+import { FileDown, ReceiptText, RefreshCw, RotateCcw } from 'lucide-react'
+
+import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
+import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import ErrorComponent from '@/components/Layout/error'
-import Pagination from '@/components/Layout/Pagination'
-import { DataTable } from '@/components/Layout/table-data'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import TransactionAmountFilter from '@/components/Transaction/TransactionAmountFilter'
-import TransactionDateFilter from '@/components/Transaction/TransactionDateFilter'
-import TransactionGameFilter from '@/components/Transaction/TransactionGameFilter'
-import TransactionPaymentMethodFilter from '@/components/Transaction/TransactionPaymentMethodFilter'
-import TransactionSearchInput from '@/components/Transaction/SearchTransaction'
-import TransactionStatusFilter from '@/components/Transaction/TransactionStatusFilter'
-import TransactionExportModal from '@/components/Transaction/TransactionExportModal'
+import { HudPagination } from '@/components/Layout/hud-pagination'
+import { TransactionExportDialog } from '@/components/Transaction/TransactionExportDialog'
+import { TransactionFilterBar } from '@/components/Transaction/TransactionFilterBar'
+import { TransactionList } from '@/components/Transaction/TransactionList'
+import { TransactionStats } from '@/components/Transaction/TransactionStats'
+import { computeStats } from '@/components/Transaction/transaction-meta'
+import { EMPTY_FILTERS, hasAnyFilter, toListQuery, type TransactionFilterState } from '@/components/Transaction/transaction-filters'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PERM } from '@/constants/permissions'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetTransactions } from '@/hooks/useTransaction'
-import { getPaymentColumns } from '@/tables/table-transaction'
-import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
-import {
-  AlertCircle,
-  CheckCircle2,
-  ChevronDown,
-  Loader2,
-  Receipt,
-  RotateCcw,
-  SlidersHorizontal,
-} from 'lucide-react'
-import type { Payment } from '@/types/transaction'
-import type { DateRange } from 'react-day-picker'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import toast from 'react-hot-toast'
 
-const TX_LIST_TOAST_ID = 'transactions-list'
+const PAGE_SIZE = 20
+/** Auto-refresh choices; 0 turns it off. */
+const REFRESH_OPTIONS = [
+  { ms: 0, key: 'off' },
+  { ms: 10_000, key: 's10' },
+  { ms: 30_000, key: 's30' },
+  { ms: 60_000, key: 'm1' },
+] as const
 
 export default function TransactionPage() {
-  const { t } = useTranslation('common')
-  const [search, setSearch] = useState('')
+  const { t, i18n } = useTranslation('common')
+  const [filters, setFilters] = useState<TransactionFilterState>(EMPTY_FILTERS)
   const [page, setPage] = useState(1)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
-  const [gameId, setGameId] = useState('')
-  const [paymentMethodId, setPaymentMethodId] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'' | Payment['status']>('')
-  const [minAmountFilter, setMinAmountFilter] = useState('')
-  const [maxAmountFilter, setMaxAmountFilter] = useState('')
-  const [exactAmountFilter, setExactAmountFilter] = useState('')
-  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [refreshMs, setRefreshMs] = useState(10_000)
+  const [exportOpen, setExportOpen] = useState(false)
+  const [exportSession, setExportSession] = useState(0)
 
-  // Polling state (no drawer)
-  const [pollingInterval, setPollingInterval] = useState<number | false>(10_000)
+  // Typed values settle before they reach the backend.
+  const search = useDebounce(filters.search, 400)
+  const priceAbove = useDebounce(filters.priceAbove, 400)
+  const priceBelow = useDebounce(filters.priceBelow, 400)
+  const price = useDebounce(filters.price, 400)
+  const query = toListQuery({ ...filters, search, priceAbove, priceBelow, price }, page, PAGE_SIZE)
 
-  const limit = 20
-  const debouncedSearch = useDebounce(search, 500)
-  const debouncedMinAmount = useDebounce(minAmountFilter, 400)
-  const debouncedMaxAmount = useDebounce(maxAmountFilter, 400)
-  const debouncedExactAmount = useDebounce(exactAmountFilter, 400)
+  const { data, isLoading, isError, isFetching, isPlaceholderData, refetch, dataUpdatedAt } = useGetTransactions(query, refreshMs || false)
+  const rows = data?.data ?? []
+  const total = data?.meta?.total_data ?? 0
+  const filtered = hasAnyFilter(filters)
+  const locale = i18n.resolvedLanguage
 
-  const datetimePattern = 'yyyy-MM-dd HH:mm:ss'
-
-  const { startDate, endDate } = useMemo(() => {
-    const from = dateRange?.from
-    const to = dateRange?.to
-    const start = from ? format(from, datetimePattern) : ''
-    const end = to ? format(to, datetimePattern) : ''
-    return { startDate: start, endDate: end }
-  }, [dateRange])
-
-  useEffect(() => {
+  // Any filter change starts from the first page again.
+  const change = (patch: Partial<TransactionFilterState>) => {
+    setFilters((current) => ({ ...current, ...patch }))
     setPage(1)
-  }, [
-    debouncedSearch,
-    startDate,
-    endDate,
-    gameId,
-    paymentMethodId,
-    statusFilter,
-    debouncedMinAmount,
-    debouncedMaxAmount,
-    debouncedExactAmount,
-  ])
-
-  const { data, isLoading, isError, isSuccess, isFetchedAfterMount, isPending } = useGetTransactions(
-    page,
-    limit,
-    search,
-    startDate,
-    endDate,
-    gameId || undefined,
-    paymentMethodId || undefined,
-    statusFilter || undefined,
-    debouncedMinAmount || undefined,
-    debouncedMaxAmount || undefined,
-    debouncedExactAmount || undefined,
-    pollingInterval
-  )
-
-  useEffect(() => {
-    if (isPending) {
-      toast.loading(t('transactionPage.toastLoading'), { id: TX_LIST_TOAST_ID })
-      return
-    }
-
-    if (!isFetchedAfterMount) return
-
-    if (isError) {
-      toast.error(t('transactionPage.toastError'), { id: TX_LIST_TOAST_ID })
-      return
-    }
-
-    if (isSuccess) {
-      toast.success(t('transactionPage.toastSuccess'), { id: TX_LIST_TOAST_ID })
-    }
-  }, [isPending, isFetchedAfterMount, isSuccess, isError, t])
-
-  useEffect(() => {
-    return () => {
-      toast.dismiss(TX_LIST_TOAST_ID)
-    }
-  }, [])
-
-  const rows = useMemo(() => data?.data ?? [], [data?.data])
-
-  // Stats calculation
-  const stats = useMemo(() => {
-    if (data?.meta && data.meta.total_volume !== undefined) {
-      return {
-        totalVolume: data.meta.total_volume ?? 0,
-        paidCount: data.meta.total_paid_count ?? 0,
-        totalMargin: data.meta.total_margin ?? 0,
-        successRate: Math.round(data.meta.success_rate ?? 0),
-        isOverall: true,
-      }
-    }
-
-    let totalVolume = 0
-    let paidCount = 0
-    let totalMargin = 0
-    const totalCount = rows.length
-
-    rows.forEach((row) => {
-      if (row.status === 'PAID') {
-        totalVolume += row.amount
-        paidCount++
-        totalMargin += row.margin
-      }
-    })
-
-    const successRate = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0
-
-    return { totalVolume, paidCount, totalMargin, successRate, isOverall: false }
-  }, [data, rows])
-
-  const hasActiveFilters = useMemo(
-    () =>
-      search.trim() !== '' ||
-      dateRange?.from != null ||
-      gameId !== '' ||
-      paymentMethodId !== '' ||
-      statusFilter !== '' ||
-      minAmountFilter !== '' ||
-      maxAmountFilter !== '' ||
-      exactAmountFilter !== '',
-    [
-      search,
-      dateRange,
-      gameId,
-      paymentMethodId,
-      statusFilter,
-      minAmountFilter,
-      maxAmountFilter,
-      exactAmountFilter,
-    ],
-  )
-
-  const resetFilters = useCallback(() => {
-    setSearch('')
-    setDateRange(undefined)
-    setGameId('')
-    setPaymentMethodId('')
-    setStatusFilter('')
-    setMinAmountFilter('')
-    setMaxAmountFilter('')
-    setExactAmountFilter('')
+  }
+  const reset = () => {
+    setFilters(EMPTY_FILTERS)
     setPage(1)
-  }, [])
-
-  const paymentColumns = useMemo(() => getPaymentColumns(t), [t])
+  }
+  const openExport = () => {
+    setExportSession((n) => n + 1)
+    setExportOpen(true)
+  }
 
   return (
     <DashboardLayout>
-      <div className='w-full space-y-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <Receipt className='h-5 w-5' aria-hidden />
-            </div>
-            <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900 dark:text-white'>
-                {t('transactionPage.title')}
-              </h1>
-              <p className='text-sm text-muted-foreground'>
-                {t('transactionPage.subtitle', { limit })}
-              </p>
-            </div>
+      <div className='mx-auto max-w-6xl space-y-6'>
+        <header className='flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between'>
+          <div className='min-w-0 space-y-1'>
+            <p className={hudEyebrowClass}>{t('transactionPage.eyebrow')}</p>
+            <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('transactionPage.title')}</h1>
+            <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('transactionPage.subtitle')}</p>
           </div>
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
-            {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
-                {t('transactionPage.loadingShort')}
-              </p>
+          <div className='flex flex-wrap items-center gap-2 lg:shrink-0 lg:flex-nowrap'>
+            {dataUpdatedAt > 0 && (
+              <span className='mr-1 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
+                {t('transactionPage.updatedAt', { time: format(dataUpdatedAt, 'HH:mm:ss') })}
+              </span>
             )}
-            {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
-                {t('transactionPage.loadFailedShort')}
-              </p>
-            )}
-            {isSuccess && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground dark:text-slate-350'>
-                  {t('transactionPage.totalCount', {
-                    count: (data?.meta?.total_data ?? 0).toLocaleString('id-ID'),
-                  })}
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Stats Overview */}
-        <div className='grid grid-cols-2 gap-4 md:grid-cols-4'>
-          {/* Card 1: Total Volume */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
-              {stats.isOverall ? 'Total Volume' : 'Total Volume (Page)'}
-            </p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalVolume)}</p>
-          </div>
-          {/* Card 2: Total Paid */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Total Paid Count</p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.paidCount} <span className='text-xs font-normal text-slate-400'>txs</span></p>
-          </div>
-          {/* Card 3: Estimated Margin */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>
-              {stats.isOverall ? 'Est. Margin' : 'Est. Margin (Page)'}
-            </p>
-            <p className='mt-1 text-lg font-extrabold text-emerald-600 dark:text-emerald-450 tabular-nums'>{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(stats.totalMargin)}</p>
-          </div>
-          {/* Card 4: Success Rate */}
-          <div className='rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-2xs hover:shadow-xs transition-shadow duration-200'>
-            <p className='text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500'>Success Rate</p>
-            <p className='mt-1 text-lg font-extrabold text-slate-900 dark:text-white tabular-nums'>{stats.successRate}%</p>
-          </div>
-        </div>
-
-        <section
-          className='overflow-hidden rounded-xl border border-gray-200/90 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'
-          aria-label={t('transactionPage.filtersRegionAria')}
-        >
-          <div
-            className={cn(
-              'flex flex-col gap-2 bg-muted/25 dark:bg-zinc-900/10 p-2 sm:flex-row sm:items-center sm:gap-3 sm:p-2 sm:pl-3 sm:pr-4',
-              filtersOpen && 'border-b border-gray-100 dark:border-zinc-900',
-            )}
-          >
+            <Select value={String(refreshMs)} onValueChange={(v) => setRefreshMs(Number(v))}>
+              <SelectTrigger aria-label={t('transactionPage.autoRefresh')} className='h-9 w-auto min-w-36 bg-white text-sm'>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {REFRESH_OPTIONS.map((option) => (
+                  <SelectItem key={option.ms} value={String(option.ms)}>
+                    {t(`transactionPage.autoRefreshOption.${option.key}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <button
               type='button'
-              id='tx-filters-toggle'
-              className='flex min-h-10 min-w-0 flex-1 items-center justify-between gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-muted/50 dark:hover:bg-zinc-900/50 sm:px-4 cursor-pointer'
-              aria-expanded={filtersOpen}
-              aria-controls='tx-filters-panel'
-              onClick={() => setFiltersOpen((o) => !o)}
+              onClick={() => void refetch()}
+              disabled={isFetching}
+              aria-label={t('transactionPage.refresh')}
+              title={t('transactionPage.refresh')}
+              className='grid size-9 place-items-center rounded-md border border-slate-200 bg-white text-slate-600 transition-colors hover:text-brand-purple disabled:opacity-60'
             >
-              <span className='flex min-w-0 items-center gap-2'>
-                <SlidersHorizontal className='h-4 w-4 shrink-0 text-muted-foreground' aria-hidden />
-                <span className='text-sm font-semibold text-gray-900 dark:text-white'>
-                  {t('transactionPage.filterHeading')}
-                </span>
-                <span className='hidden text-xs text-muted-foreground sm:inline'>
-                  {filtersOpen
-                    ? t('transactionPage.filtersClickClose')
-                    : t('transactionPage.filtersClickOpen')}
-                </span>
-              </span>
-              <ChevronDown
-                className={cn(
-                  'h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200',
-                  filtersOpen && 'rotate-180',
-                )}
-                aria-hidden
-              />
+              <RefreshCw className={cn('size-4', isFetching && 'animate-spin')} aria-hidden />
             </button>
-            <div className='flex gap-2 sm:self-center items-center'>
-              {/* Auto Refresh dropdown selector */}
-              <div className='flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80 text-xs font-semibold text-slate-600 dark:text-slate-400'>
-                <span>Auto Refresh:</span>
-                <select
-                  value={pollingInterval === false ? 'off' : pollingInterval}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    if (val === 'off') setPollingInterval(false)
-                    else setPollingInterval(Number(val))
-                  }}
-                  className='bg-transparent border-none focus:outline-hidden font-bold text-primary cursor-pointer'
-                >
-                  <option value='off'>Off</option>
-                  <option value='10000'>10s</option>
-                  <option value='30000'>30s</option>
-                  <option value='60000'>1m</option>
-                </select>
-              </div>
-
-              <Can permission={PERM.transactionExport}>
-                <TransactionExportModal />
-              </Can>
-              <Button
+            <Can permission={PERM.transactionExport}>
+              <button
                 type='button'
-                variant='outline'
-                size='sm'
-                className='h-9 shrink-0 shadow-xs border-slate-200 dark:border-zinc-850 hover:bg-slate-50 dark:hover:bg-zinc-900 rounded-lg'
-                disabled={!hasActiveFilters}
-                onClick={resetFilters}
-                aria-label={t('transactionPage.resetFiltersAria')}
+                onClick={openExport}
+                className='inline-flex h-9 items-center gap-2 bg-brand-purple px-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-white transition-opacity hud-clip-sm hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 focus-visible:ring-offset-2'
               >
-                <RotateCcw className='mr-2 h-3.5 w-3.5' aria-hidden />
-                {t('transactionPage.resetFilters')}
-              </Button>
+                <FileDown className='size-4' aria-hidden />
+                {t('transactionPage.exportButton')}
+              </button>
+            </Can>
+          </div>
+        </header>
+
+        <TransactionFilterBar value={filters} onChange={change} onReset={reset} advancedOpen={advancedOpen} onAdvancedOpenChange={setAdvancedOpen} />
+
+        {(isLoading || data) && <TransactionStats stats={computeStats(data?.meta, rows)} loading={isLoading} />}
+
+        {isError && (
+          <div className='space-y-3'>
+            <AuthAlert>{t('transactionPage.loadError')}</AuthAlert>
+            <button
+              type='button'
+              onClick={() => void refetch()}
+              className='inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:text-brand-purple'
+            >
+              <RefreshCw className='size-4' aria-hidden />
+              {t('transactionPage.retry')}
+            </button>
+          </div>
+        )}
+
+        {isLoading ? (
+          <div className='h-[28rem] animate-pulse bg-slate-200/60 hud-clip' aria-hidden />
+        ) : rows.length > 0 ? (
+          <section className='space-y-2' aria-label={t('transactionPage.listLabel')}>
+            <p className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
+              {t('transactionPage.range', {
+                from: ((page - 1) * PAGE_SIZE + 1).toLocaleString(locale),
+                to: Math.min(page * PAGE_SIZE, total).toLocaleString(locale),
+                total: total.toLocaleString(locale),
+              })}
+            </p>
+            <div className={cn('bg-slate-200/80 p-px transition-opacity duration-300 hud-clip', isPlaceholderData && 'opacity-60')}>
+              <TransactionList rows={rows} busy={isFetching} />
             </div>
-          </div>
-          <div
-            id='tx-filters-panel'
-            role='region'
-            aria-labelledby='tx-filters-toggle'
-            hidden={!filtersOpen}
-            className='min-w-0'
-          >
-            <div className='min-w-0 px-4 py-5 sm:px-6 sm:py-6'>
-              <div className='flex flex-col gap-8'>
-                <div className='space-y-2'>
-                  <Label
-                    htmlFor='tx-filter-search'
-                    className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'
-                  >
-                    {t('transactionPage.searchLabel')}
-                  </Label>
-                  <TransactionSearchInput
-                    id='tx-filter-search'
-                    value={search}
-                    onChange={setSearch}
-                  />
-                </div>
-
-                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
-
-                <div className='space-y-4'>
-                  <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                    {t('transactionPage.sectionTimeGameStatus')}
-                  </p>
-                  <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-x-6 lg:gap-y-5'>
-                    <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.dateTimeRange')}
-                      </Label>
-                      <TransactionDateFilter date={dateRange} onChange={setDateRange} />
-                    </div>
-                    <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.game')}
-                      </Label>
-                      <TransactionGameFilter value={gameId} onChange={setGameId} />
-                    </div>
-                    <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.paymentMethod')}
-                      </Label>
-                      <TransactionPaymentMethodFilter
-                        value={paymentMethodId}
-                        onChange={setPaymentMethodId}
-                      />
-                    </div>
-                    <div className='space-y-2'>
-                      <Label className='text-xs font-medium text-muted-foreground'>
-                        {t('transactionPage.status')}
-                      </Label>
-                      <TransactionStatusFilter value={statusFilter} onChange={setStatusFilter} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className='h-px bg-border/70 dark:bg-zinc-900' aria-hidden />
-
-                <div className='space-y-4'>
-                  <p className='text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
-                    {t('transactionPage.amountSection')}
-                  </p>
-                  <TransactionAmountFilter
-                    minValue={minAmountFilter}
-                    maxValue={maxAmountFilter}
-                    exactValue={exactAmountFilter}
-                    onMinChange={setMinAmountFilter}
-                    onMaxChange={setMaxAmountFilter}
-                    onExactChange={setExactAmountFilter}
-                  />
-                </div>
-              </div>
+          </section>
+        ) : (
+          !isError && (
+            <div className='grid place-items-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center'>
+              <span className='mb-4 grid size-14 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
+                <ReceiptText className='size-6' aria-hidden />
+              </span>
+              <h2 className='font-display text-xl font-bold text-slate-900'>
+                {filtered ? t('transactionPage.noMatchTitle') : t('transactionPage.emptyTitle')}
+              </h2>
+              <p className='mt-1 max-w-sm text-sm text-slate-500'>{filtered ? t('transactionPage.noMatchBody') : t('transactionPage.emptyBody')}</p>
+              {filtered && (
+                <button
+                  type='button'
+                  onClick={reset}
+                  className='mt-5 inline-flex h-9 items-center gap-2 rounded-md px-3 text-sm font-medium text-brand-purple transition-colors hover:bg-brand-purple/10'
+                >
+                  <RotateCcw className='size-4' aria-hidden />
+                  {t('transactionPage.filters.reset')}
+                </button>
+              )}
             </div>
-          </div>
-        </section>
+          )
+        )}
 
-        <div className='overflow-hidden rounded-xl bg-white dark:bg-zinc-955 shadow-sm ring-1 ring-gray-200 dark:ring-zinc-800'>
-          <div className='border-b border-gray-100 dark:border-zinc-900 px-4 py-3 sm:px-5'>
-            <div className='min-w-0 space-y-0.5'>
-              <h2 className='text-sm font-semibold text-gray-900 dark:text-white'>{t('transactionPage.listTitle')}</h2>
-              <p className='text-xs text-muted-foreground'>{t('transactionPage.listHint')}</p>
-            </div>
-          </div>
-
-          <div className='min-w-0 p-3 sm:p-4'>
-            {isLoading && (
-              <div
-                className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12'
-                role='status'
-                aria-live='polite'
-                aria-busy='true'
-              >
-                <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-foreground'>
-                    {t('transactionPage.tableLoadingTitle')}
-                  </p>
-                  <p className='mt-1 text-xs text-muted-foreground'>
-                    {t('transactionPage.tableLoadingHint')}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {isError && (
-              <ErrorComponent message={t('transactionPage.loadErrorDetail')} />
-            )}
-
-            {isSuccess && (
-              <>
-                <div className='max-h-[min(70vh,40rem)] min-w-0 w-full overflow-auto overscroll-contain'>
-                  <DataTable
-                    columns={paymentColumns}
-                    data={rows}
-                    emptyMessage={t('transactionPage.emptyPage')}
-                  />
-                </div>
-                <div className='mt-4'>
-                  <Pagination page={page} totalPage={data?.meta?.total_page} onChange={setPage} />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <HudPagination page={page} totalPages={data?.meta?.total_page ?? 1} onChange={setPage} />
       </div>
+
+      <TransactionExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        session={exportSession}
+        defaults={{ range: filters.range, status: filters.status, paymentMethodId: filters.paymentMethodId }}
+        hasUnsupportedFilters={!!(filters.search.trim() || filters.gameId || filters.priceAbove || filters.priceBelow || filters.price)}
+      />
     </DashboardLayout>
   )
 }

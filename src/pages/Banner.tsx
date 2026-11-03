@@ -1,310 +1,397 @@
-import { CreateBannerModal } from "@/components/Banner/CreateBannerModal";
-import { DashboardLayout } from "@/components/Layout/dashboard-layout";
-import ErrorComponent from "@/components/Layout/error";
-import { DataTable } from "@/components/Layout/table-data";
-import { useGetBanners } from "@/hooks/useBanner";
-import { getBannerColumns } from "@/tables/table-banner";
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import toast from 'react-hot-toast'
 import {
-  AlertCircle,
-  CheckCircle2,
-  ImageIcon,
-  Loader2,
-  LayoutGrid,
-  List,
-  ZoomIn,
-  ExternalLink,
-  Link2,
-  Copy,
   Check,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { cn } from "@/lib/utils";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { BannerRowActions } from "@/components/Banner/BannerRowActions";
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  ExternalLink,
+  ImageOff,
+  Images,
+  Maximize2,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Trash2,
+} from 'lucide-react'
+
+import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
+import { DangerDialog } from '@/components/Auth/DangerDialog'
+import { hudEyebrowClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
+import { BannerFormDialog } from '@/components/Banner/BannerFormDialog'
+import { LINK_KIND_META, linkKind } from '@/components/Banner/banner-link'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { PERM } from '@/constants/permissions'
+import { useDeleteBanner, useGetBanners } from '@/hooks/useBanner'
+import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
+import { cn } from '@/lib/utils'
+import type { Banner } from '@/types/banner'
+import { useRetained } from '@/hooks/useRetained'
 
-function BannerCard({ banner }: { banner: any }) {
-  const [copied, setCopied] = useState(false);
-  const isExternal =
-    banner.redirect_link?.startsWith("http://") ||
-    banner.redirect_link?.startsWith("https://");
-
-  const handleCopy = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!banner.redirect_link) return;
-    await navigator.clipboard.writeText(banner.redirect_link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const src = banner.image || "https://api.dicebear.com/9.x/lorelei/svg";
-
-  return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-zinc-700">
-      <Dialog>
-        <DialogTrigger asChild>
-          <div className="relative cursor-zoom-in aspect-video w-full overflow-hidden bg-slate-50 dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800">
-            <img
-              src={src}
-              alt="Banner preview"
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-103"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.png";
-              }}
-            />
-            <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-xs border border-white/30 text-white">
-                <ZoomIn className="h-5 w-5" />
-              </div>
-            </div>
-          </div>
-        </DialogTrigger>
-        <DialogContent className="max-w-3xl p-1 bg-transparent border-none shadow-none focus:outline-hidden">
-          <div className="relative overflow-hidden rounded-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-2">
-            <img
-              src={src}
-              alt="Banner full size"
-              className="w-full h-auto max-h-[80vh] object-contain rounded-lg shadow-2xl"
-              onError={(e) => {
-                e.currentTarget.src = "/placeholder.png";
-              }}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <div className="flex flex-col gap-2.5 p-4">
-        {banner.redirect_link ? (
-          <div className="flex items-center justify-between gap-2 w-full">
-            <a
-              href={banner.redirect_link}
-              target={isExternal ? "_blank" : undefined}
-              rel={isExternal ? "noopener noreferrer" : undefined}
-              className={cn(
-                "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold border transition-all duration-200 max-w-[80%] truncate",
-                isExternal
-                  ? "bg-blue-50/50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-900/40 hover:bg-blue-50 dark:hover:bg-blue-950/40"
-                  : "bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/40 hover:bg-indigo-50 dark:hover:bg-indigo-950/40",
-              )}
-              title={banner.redirect_link}
-            >
-              {isExternal ? (
-                <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-              ) : (
-                <Link2 className="h-3.5 w-3.5 shrink-0" />
-              )}
-              <span className="truncate">{banner.redirect_link}</span>
-            </a>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-7 w-7 rounded-lg hover:bg-slate-100 dark:hover:bg-zinc-800"
-              onClick={handleCopy}
-              title="Copy Link"
-            >
-              {copied ? (
-                <Check className="h-3.5 w-3.5 text-emerald-500" />
-              ) : (
-                <Copy className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-              )}
-            </Button>
-          </div>
-        ) : (
-          <span className="text-xs text-slate-400 italic py-1">
-            No redirect link
-          </span>
-        )}
-
-        <div className="flex items-center justify-end border-t border-slate-100 dark:border-zinc-900 pt-2.5 mt-1.5">
-          <BannerRowActions banner={banner} />
-        </div>
-      </div>
-    </div>
-  );
-}
+const iconButtonClass =
+  'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
 
 export default function BannerPage() {
-  const { t } = useTranslation("common");
-  const { data, isPending, isError, isSuccess } = useGetBanners();
-  const rows = data?.data ?? [];
-  const bannerColumns = useMemo(() => getBannerColumns(t), [t]);
-  const [viewMode, setViewMode] = useState<"table" | "grid">("grid");
+  const { t } = useTranslation('common')
+  const { data, isLoading, isError, isFetching, refetch } = useGetBanners()
+  const deleteBanner = useDeleteBanner()
+  const banners = data?.data ?? []
+  // 'new' opens the form empty; a banner opens it for editing.
+  const [formTarget, setFormTarget] = useState<Banner | 'new' | null>(null)
+  const [toDelete, setToDelete] = useState<Banner | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null)
+
+  const openCreate = () => setFormTarget('new')
 
   return (
     <DashboardLayout>
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <ImageIcon className="h-5 w-5" aria-hidden />
-            </div>
-            <div className="min-w-0 space-y-1">
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                {t("bannerPage.title")}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {t("bannerPage.subtitle")}
-              </p>
-            </div>
+      <div className='mx-auto max-w-6xl space-y-6'>
+        <header className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+          <div className='space-y-1'>
+            <p className={hudEyebrowClass}>{t('bannerPage.eyebrow')}</p>
+            <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('bannerPage.title')}</h1>
+            <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('bannerPage.subtitle')}</p>
           </div>
-          <div className="flex flex-col items-end gap-1 sm:text-right">
-            {isPending && (
-              <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <Loader2
-                  className="h-4 w-4 shrink-0 animate-spin text-primary"
-                  aria-hidden
-                />
-                {t("bannerPage.loadingShort")}
-              </p>
+          <div className='flex shrink-0 items-center gap-3'>
+            {data && (
+              <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
+                {t('bannerPage.total', { count: banners.length })}
+              </span>
             )}
-            {isError && (
-              <p className="flex items-center gap-2 text-sm font-medium text-destructive">
-                <AlertCircle className="h-4 w-4 shrink-0" aria-hidden />
-                {t("bannerPage.loadFailedShort")}
-              </p>
-            )}
-            {isSuccess && (
-              <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <CheckCircle2
-                  className="h-4 w-4 shrink-0 text-emerald-600"
-                  aria-hidden
-                />
-                <span className="tabular-nums text-foreground dark:text-slate-300">
-                  {t("bannerPage.totalBanners", { count: rows.length })}
-                </span>
-              </p>
-            )}
+            <Can permission={PERM.bannerCreate}>
+              <button type='button' onClick={openCreate} className={hudPrimaryButtonClass}>
+                <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
+                <Plus className='size-4' aria-hidden />
+                {t('bannerPage.addBtn')}
+              </button>
+            </Can>
           </div>
-        </div>
+        </header>
 
-        <div
-          className={cn(
-            "overflow-hidden transition-all duration-200",
-            viewMode === "table"
-              ? "rounded-xl bg-white dark:bg-zinc-950 shadow-xs ring-1 ring-gray-200 dark:ring-zinc-800"
-              : "rounded-none bg-transparent shadow-none ring-0",
-          )}
-        >
-          <div
-            className={cn(
-              "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 py-3 sm:px-5",
-              viewMode === "table"
-                ? "border-b border-slate-100 dark:border-zinc-900"
-                : "mb-5! px-0! py-0!",
+        {isError && (
+          <div className='space-y-3'>
+            <AuthAlert>{t('bannerPage.loadError')}</AuthAlert>
+            <button
+              type='button'
+              onClick={() => void refetch()}
+              className='inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:text-brand-purple'
+            >
+              <RefreshCw className='size-4' aria-hidden />
+              {t('bannerPage.retry')}
+            </button>
+          </div>
+        )}
+
+        {!isError && !isLoading && banners.length === 0 ? (
+          <div className='grid place-items-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center animate-in fade-in duration-500'>
+            <span className='mb-4 grid size-14 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
+              <Images className='size-6' aria-hidden />
+            </span>
+            <h2 className='font-display text-xl font-bold text-slate-900'>{t('bannerPage.emptyTitle')}</h2>
+            <p className='mt-1 max-w-sm text-sm text-slate-500'>{t('bannerPage.emptyBody')}</p>
+            <Can permission={PERM.bannerCreate}>
+              <button type='button' onClick={openCreate} className={`${hudPrimaryButtonClass} mt-6`}>
+                <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
+                <Plus className='size-4' aria-hidden />
+                {t('bannerPage.addBtn')}
+              </button>
+            </Can>
+          </div>
+        ) : (
+          <ul className='grid gap-5 md:grid-cols-2 xl:grid-cols-3' aria-busy={isFetching}>
+            {isLoading &&
+              Array.from({ length: 6 }, (_, i) => (
+                <li key={i} className='h-64 animate-pulse bg-slate-200/60 hud-clip' aria-hidden />
+              ))}
+            {banners.map((banner, index) => (
+              <BannerCard
+                key={banner.id}
+                banner={banner}
+                order={index}
+                onPreview={() => setPreviewIndex(index)}
+                onEdit={() => setFormTarget(banner)}
+                onDelete={() => setToDelete(banner)}
+              />
+            ))}
+          </ul>
+        )}
+      </div>
+
+      <BannerLightbox banners={banners} index={previewIndex} onIndexChange={setPreviewIndex} />
+
+      <BannerFormDialog
+        open={formTarget !== null}
+        onOpenChange={(open) => !open && setFormTarget(null)}
+        banner={formTarget === 'new' ? undefined : (formTarget ?? undefined)}
+      />
+
+      <DangerDialog
+        open={!!toDelete}
+        onOpenChange={(open) => !open && setToDelete(null)}
+        eyebrow={t('bannerPage.deleteConfirm.eyebrow')}
+        title={t('bannerPage.deleteConfirm.title')}
+        description={
+          <span className='block space-y-3'>
+            {deleting && (
+              <img src={deleting.image} alt='' className='block aspect-[16/7] w-full rounded-md object-cover ring-1 ring-slate-200' />
             )}
+            <span className='block'>{t('bannerPage.deleteConfirm.description')}</span>
+          </span>
+        }
+        confirmLabel={t('bannerPage.deleteConfirm.confirm')}
+        cancelLabel={t('bannerPage.deleteConfirm.cancel')}
+        pending={deleteBanner.isPending}
+        onConfirm={() => {
+          if (!toDelete) return
+          deleteBanner.mutate(toDelete.id, { onSuccess: () => setToDelete(null) })
+        }}
+      />
+    </DashboardLayout>
+  )
+}
+
+function BannerImage({ src, className }: { src: string; className?: string }) {
+  const { t } = useTranslation('common')
+  // Keyed on src, so a replaced image gets a fresh chance to load.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+
+  if (!src || failedSrc === src) {
+    return (
+      <span className={cn('flex flex-col items-center justify-center gap-1.5 bg-slate-100 text-slate-400', className)}>
+        <ImageOff className='size-6' aria-hidden />
+        <span className='text-xs'>{t('bannerPage.imageBroken')}</span>
+      </span>
+    )
+  }
+  return <img src={src} alt='' loading='lazy' onError={() => setFailedSrc(src)} className={className} />
+}
+
+interface BannerCardProps {
+  banner: Banner
+  order: number
+  onPreview: () => void
+  onEdit: () => void
+  onDelete: () => void
+}
+
+function BannerCard({ banner, order, onPreview, onEdit, onDelete }: BannerCardProps) {
+  const { t } = useTranslation('common')
+  const kind = linkKind(banner.redirect_link)
+
+  return (
+    <li
+      className='min-w-0 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both'
+      style={{ animationDelay: `${order * 50}ms` }}
+    >
+      <div className='h-full bg-slate-200/80 p-px transition-colors duration-300 hud-clip hover:bg-brand-purple/40'>
+        <article className='flex h-full flex-col bg-white hud-clip'>
+          <button
+            type='button'
+            onClick={onPreview}
+            aria-label={t('bannerPage.preview', { index: order + 1 })}
+            className='group relative block aspect-[16/7] w-full overflow-hidden bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/60'
           >
-            <div className="min-w-0 space-y-0.5">
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-                {t("bannerPage.listTitle")}
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                {t("bannerPage.listHint")}
-              </p>
-            </div>
-
-            <div className="flex items-center justify-between sm:justify-end gap-3">
-              <div className="flex items-center p-0.5 rounded-lg bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800/80">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("table")}
-                  className={cn(
-                    "h-7 w-7 rounded-md transition-all duration-200 cursor-pointer",
-                    viewMode === "table"
-                      ? "bg-white dark:bg-zinc-800 text-foreground dark:text-white shadow-xs"
-                      : "text-slate-400 dark:text-slate-500",
-                  )}
-                  title="Table View"
+            <BannerImage
+              src={banner.image}
+              className='size-full object-cover transition-transform duration-700 ease-hud group-hover:scale-[1.04]'
+            />
+            <span className='absolute left-3 top-3 bg-slate-950/70 px-2 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-white backdrop-blur-sm hud-clip-sm'>
+              #{order + 1}
+            </span>
+            <span className='absolute inset-0 grid place-items-center bg-slate-950/0 opacity-0 transition-all duration-300 group-hover:bg-slate-950/35 group-hover:opacity-100 group-focus-visible:bg-slate-950/35 group-focus-visible:opacity-100'>
+              <span className='grid size-10 place-items-center bg-white/95 text-slate-800 hud-clip-sm'>
+                <Maximize2 className='size-4' aria-hidden />
+              </span>
+            </span>
+          </button>
+          <div className='flex flex-1 items-center gap-2 p-4'>
+            <LinkSummary link={banner.redirect_link} kind={kind} />
+            <div className='flex shrink-0 items-center gap-0.5'>
+              {kind !== 'none' && <CopyLinkButton link={banner.redirect_link} />}
+              <Can permission={PERM.bannerUpdate}>
+                <button
+                  type='button'
+                  onClick={onEdit}
+                  aria-label={t('bannerPage.editBtn', { index: order + 1 })}
+                  title={t('bannerPage.editBtn', { index: order + 1 })}
+                  className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40`}
                 >
-                  <List className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "h-7 w-7 rounded-md transition-all duration-200 cursor-pointer",
-                    viewMode === "grid"
-                      ? "bg-white dark:bg-zinc-800 text-foreground dark:text-white shadow-xs"
-                      : "text-slate-400 dark:text-slate-500",
-                  )}
-                  title="Grid Gallery"
+                  <Pencil className='size-4' aria-hidden />
+                </button>
+              </Can>
+              <Can permission={PERM.bannerDelete}>
+                <button
+                  type='button'
+                  onClick={onDelete}
+                  aria-label={t('bannerPage.deleteBtn', { index: order + 1 })}
+                  title={t('bannerPage.deleteBtn', { index: order + 1 })}
+                  className={`${iconButtonClass} hover:bg-rose-50 hover:text-rose-600 focus-visible:ring-rose-500/30`}
                 >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-              </div>
-              <Can permission={PERM.bannerCreate}>
-                <CreateBannerModal />
+                  <Trash2 className='size-4' aria-hidden />
+                </button>
               </Can>
             </div>
           </div>
+        </article>
+      </div>
+    </li>
+  )
+}
 
-          <div
-            className={cn(viewMode === "table" ? "p-4 sm:p-5" : "py-2 px-0")}
+function LinkSummary({ link, kind }: { link: string; kind: ReturnType<typeof linkKind> }) {
+  const { t } = useTranslation('common')
+  const meta = LINK_KIND_META[kind]
+  const Icon = meta.icon
+
+  return (
+    <div className='flex min-w-0 flex-1 items-center gap-2.5'>
+      <span className={cn('grid size-8 shrink-0 place-items-center hud-clip-sm', meta.chip)} aria-hidden>
+        <Icon className='size-3.5' />
+      </span>
+      <div className='min-w-0'>
+        <p className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
+          {t(`bannerPage.linkKind.${kind}`)}
+        </p>
+        {kind === 'external' ? (
+          <a
+            href={link}
+            target='_blank'
+            rel='noopener noreferrer'
+            title={link}
+            className='group/link flex min-w-0 items-center gap-1 text-sm font-medium text-slate-700 transition-colors hover:text-brand-purple'
           >
-            {isPending && (
-              <div
-                className="flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12"
-                role="status"
-                aria-live="polite"
-                aria-busy="true"
-              >
-                <Loader2
-                  className="h-11 w-11 animate-spin text-primary"
-                  aria-hidden
-                />
-                <div className="text-center">
-                  <p className="text-sm font-medium text-foreground">
-                    {t("bannerPage.tableLoadingTitle")}
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t("bannerPage.tableLoadingHint")}
-                  </p>
-                </div>
+            <span className='truncate'>{link.replace(/^https?:\/\//i, '')}</span>
+            <ExternalLink className='size-3 shrink-0 opacity-0 transition-opacity group-hover/link:opacity-100' aria-hidden />
+          </a>
+        ) : (
+          <p className={cn('truncate text-sm', kind === 'none' ? 'text-slate-400' : 'font-mono font-medium text-slate-700')} title={link || undefined}>
+            {kind === 'none' ? t('bannerPage.noLink') : link}
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function CopyLinkButton({ link }: { link: string }) {
+  const { t } = useTranslation('common')
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    try {
+      await copyTextToClipboard(link)
+    } catch {
+      toast.error(t('bannerPage.copyFailed'))
+      return
+    }
+    setCopied(true)
+    toast.success(t('bannerPage.copied'))
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <button
+      type='button'
+      onClick={copy}
+      aria-label={t('bannerPage.copyLink')}
+      title={t('bannerPage.copyLink')}
+      className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40`}
+    >
+      {copied ? <Check className='size-4 text-emerald-600' aria-hidden /> : <Copy className='size-4' aria-hidden />}
+    </button>
+  )
+}
+
+interface BannerLightboxProps {
+  banners: Banner[]
+  index: number | null
+  onIndexChange: (index: number | null) => void
+}
+
+/** Full-size preview that steps through the banners like the storefront carousel. */
+function BannerLightbox({ banners, index, onIndexChange }: BannerLightboxProps) {
+  const { t } = useTranslation('common')
+  // Keep the last banner on screen while the lightbox animates closed.
+  const shownIndex = useRetained(index)
+  const banner = shownIndex !== null ? banners[shownIndex] : undefined
+  const count = banners.length
+  const step = (delta: number) => index !== null && onIndexChange((index + delta + count) % count)
+
+  return (
+    <Dialog open={index !== null && !!banners[index]} onOpenChange={(open) => !open && onIndexChange(null)}>
+      <DialogContent
+        className='gap-0 overflow-hidden rounded-xl border-slate-800 bg-slate-950 p-0 text-white shadow-2xl sm:max-w-4xl'
+        onKeyDown={(e) => {
+          if (count < 2) return
+          if (e.key === 'ArrowRight') step(1)
+          if (e.key === 'ArrowLeft') step(-1)
+        }}
+      >
+        <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
+        {banner && shownIndex !== null && (
+          <>
+            <div className='relative bg-black'>
+              <BannerImage
+                key={banner.id}
+                src={banner.image}
+                className='mx-auto block max-h-[70vh] w-full object-contain animate-in fade-in duration-300'
+              />
+              {count > 1 && (
+                <>
+                  <LightboxArrow side='left' label={t('bannerPage.lightbox.prev')} onClick={() => step(-1)} />
+                  <LightboxArrow side='right' label={t('bannerPage.lightbox.next')} onClick={() => step(1)} />
+                </>
+              )}
+            </div>
+            <div className='flex flex-wrap items-center justify-between gap-3 px-5 py-3.5'>
+              <div className='min-w-0'>
+                <DialogTitle className='font-display text-xs font-semibold uppercase tracking-[0.2em] text-white/90'>
+                  {t('bannerPage.lightbox.title', { index: shownIndex + 1, count })}
+                </DialogTitle>
+                <DialogDescription className='truncate text-sm text-white/60'>
+                  {banner.redirect_link || t('bannerPage.noLink')}
+                </DialogDescription>
               </div>
-            )}
-
-            {isError && (
-              <ErrorComponent message={t("bannerPage.loadErrorDetail")} />
-            )}
-
-            {isSuccess &&
-              (viewMode === "table" ? (
-                <DataTable
-                  columns={bannerColumns}
-                  data={rows}
-                  emptyMessage={t("bannerPage.emptyPage")}
-                />
-              ) : rows.length > 0 ? (
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {rows.map((banner) => (
-                    <BannerCard key={banner.id} banner={banner} />
+              {count > 1 && (
+                <div className='flex items-center gap-1.5' aria-hidden>
+                  {banners.map((b, i) => (
+                    <span
+                      key={b.id}
+                      className={cn(
+                        'h-1.5 rounded-full transition-all duration-300 ease-hud',
+                        i === shownIndex ? 'w-6 bg-linear-to-r from-brand-purple to-brand-cyan' : 'w-1.5 bg-white/25'
+                      )}
+                    />
                   ))}
                 </div>
-              ) : (
-                <div
-                  className="flex min-h-[14rem] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-900/10 px-6 py-12 text-center"
-                  role="status"
-                >
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-zinc-900 text-slate-400 dark:text-slate-500">
-                    <ImageIcon className="h-6 w-6" aria-hidden />
-                  </span>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium text-foreground dark:text-white">
-                      {t("bannerPage.emptyPage")}
-                    </p>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-    </DashboardLayout>
-  );
+              )}
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function LightboxArrow({ side, label, onClick }: { side: 'left' | 'right'; label: string; onClick: () => void }) {
+  const Icon = side === 'left' ? ChevronLeft : ChevronRight
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={cn(
+        'absolute top-1/2 grid size-10 -translate-y-1/2 place-items-center bg-white/90 text-slate-800 shadow-lg hud-clip-sm transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan',
+        side === 'left' ? 'left-3' : 'right-3'
+      )}
+    >
+      <Icon className='size-5' aria-hidden />
+    </button>
+  )
 }

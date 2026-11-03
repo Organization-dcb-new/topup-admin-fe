@@ -35,3 +35,32 @@ export interface ProductResponse {
   status: string
   meta: PaginationMeta
 }
+
+/** Markup on top of the provider's base price: a fixed rupiah amount or a percentage. */
+export type ProductPriceType = 'fee' | 'percent'
+
+/**
+ * PATCH /products/price. The backend keeps only the field matching `type` (the other is reset
+ * to 0) and recomputes `selling_price` from the current base price.
+ */
+export interface UpdateProductPricePayload {
+  id: string
+  type: ProductPriceType
+  additional_fee: number
+  additional_percent: number
+}
+
+/** PATCH /products/by-game: sets the image of every product of one game; there is no per-product variant. */
+export interface ChangeProductImageByGamePayload {
+  game_id: string
+  image: string
+}
+
+/** One row of GET /products/game/:id: a slim listing, not a full product. */
+export interface ProductListing {
+  id: string
+  name: string
+  provider_status: string
+  /** The product's base (provider) price. */
+  price: number
+}

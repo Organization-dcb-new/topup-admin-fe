@@ -1,714 +1,396 @@
-import { AdminBriefSelect } from '@/components/Admin/AdminBriefSelect'
-import { Can } from '@/components/Auth/Can'
-import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import ErrorComponent from '@/components/Layout/error'
-import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
-import { GameActiveFilter, type GameActiveFilterValue } from '@/components/Games/GameActiveFilter'
-import { GamePickerSelect } from '@/components/Games/GamePickerSelect'
-import Pagination from '@/components/Layout/Pagination'
-import { DataTable } from '@/components/Layout/table-data'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { PERM } from '@/constants/permissions'
-import { useGetAdminBrief } from '@/hooks/useAdmin'
-import { useDebounce } from '@/hooks/useDebounce'
-import { useGetGameNamesWithType, useGetGames, type GetGamesParams } from '@/hooks/useGame'
-import { getGameColumns } from '@/tables/table-game'
-import i18n from '@/i18n'
-import { Gamepad2, Inbox, Loader2, RefreshCw, RotateCcw, Search, SearchX } from 'lucide-react'
-import { useEffect, useMemo, useState, useRef } from 'react'
-import toast from 'react-hot-toast'
+import { useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { ChevronRight, Eye, Gamepad2, Pencil, Percent, Plus, RefreshCw, RotateCcw, Search, SearchX, Zap, type LucideIcon } from 'lucide-react'
 
-function datetimeLocalToIso(value: string): string | undefined {
-  if (!value.trim()) return undefined
-  const ms = new Date(value).getTime()
-  if (Number.isNaN(ms)) return undefined
-  return new Date(ms).toISOString()
+import { AuthAlert } from '@/components/Auth/AuthPanel'
+import { Can } from '@/components/Auth/Can'
+import { hudEyebrowClass, hudInputClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
+import { ConfirmActionDialog } from '@/components/Games/ConfirmActionDialog'
+import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
+import { GameFormDialog } from '@/components/Games/GameFormDialog'
+import { GameImageDialog } from '@/components/Games/GameImageDialog'
+import { GameStatusChips, GameThumb, GameToggles } from '@/components/Games/GameParts'
+import { GamePriceDialog } from '@/components/Games/GamePriceDialog'
+import { formatMarkup } from '@/components/Games/game-utils'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { HudPagination } from '@/components/Layout/hud-pagination'
+import { Input } from '@/components/ui/input'
+import { Segmented } from '@/components/ui/segmented'
+import { PERM } from '@/constants/permissions'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useGetGames, useInitGamesFromProvider } from '@/hooks/useGame'
+import { usePermissions } from '@/hooks/usePermissions'
+import { cn } from '@/lib/utils'
+import type { Game } from '@/types/game'
+
+const PAGE_SIZE = 20
+
+const STATUSES = ['all', 'active', 'inactive'] as const
+const IMAGES = ['all', 'with_image', 'no_image'] as const
+
+function pick<T extends string>(value: string | null, allowed: readonly T[], fallback: T): T {
+  return allowed.includes(value as T) ? (value as T) : fallback
 }
 
-type TriBool = 'all' | 'yes' | 'no'
-
-function triToOptionalBool(v: TriBool): boolean | undefined {
-  if (v === 'all') return undefined
-  return v === 'yes'
-}
+const iconButtonClass =
+  'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
 
 export default function GamePage() {
-  const { t } = useTranslation('common')
+  const { t, i18n } = useTranslation('common')
+  const { can } = usePermissions()
+  // Filters live in the URL, so coming back from a game's detail page keeps them.
+  const [params, setParams] = useSearchParams()
+  const q = params.get('q') ?? ''
+  const status = pick(params.get('status'), STATUSES, 'all')
+  const image = pick(params.get('image'), IMAGES, 'all')
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const debouncedQ = useDebounce(q.trim(), 350)
 
-  const [page, setPage] = useState(() => {
-    const saved = sessionStorage.getItem('game_page_list_page')
-    return saved ? parseInt(saved, 10) : 1
+  const update = (patch: Record<string, string | null>) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        for (const [key, value] of Object.entries(patch)) {
+          if (!value || value === 'all' || (key === 'page' && value === '1')) next.delete(key)
+          else next.set(key, value)
+        }
+        return next
+      },
+      { replace: true }
+    )
+
+  const { data, isLoading, isError, isFetching, isPlaceholderData, refetch } = useGetGames(page, PAGE_SIZE, {
+    search: debouncedQ,
+    image,
+    ...(status !== 'all' && { is_active: status === 'active' }),
   })
-  const [activeFilter, setActiveFilter] = useState<GameActiveFilterValue>(() => {
-    return (sessionStorage.getItem('game_page_list_activeFilter') as GameActiveFilterValue) || 'all'
-  })
-  const [gameId, setGameId] = useState(() => {
-    return sessionStorage.getItem('game_page_list_gameId') || ''
-  })
-  const [searchInput, setSearchInput] = useState(() => {
-    return sessionStorage.getItem('game_page_list_searchInput') || ''
-  })
-  const debouncedSearch = useDebounce(searchInput, 500)
-  const [imageFilter, setImageFilter] = useState<'all' | 'no_image'>(() => {
-    return (sessionStorage.getItem('game_page_list_imageFilter') as 'all' | 'no_image') || 'all'
-  })
-  const [showFilter, setShowFilter] = useState<TriBool>(() => {
-    return (sessionStorage.getItem('game_page_list_showFilter') as TriBool) || 'all'
-  })
-  const [checkIdFilter, setCheckIdFilter] = useState<TriBool>(() => {
-    return (sessionStorage.getItem('game_page_list_checkIdFilter') as TriBool) || 'all'
-  })
-  const [updatedByUserId, setUpdatedByUserId] = useState(() => {
-    return sessionStorage.getItem('game_page_list_updatedByUserId') || ''
-  })
-  const [updatedFromLocal, setUpdatedFromLocal] = useState(() => {
-    return sessionStorage.getItem('game_page_list_updatedFromLocal') || ''
-  })
-  const [updatedToLocal, setUpdatedToLocal] = useState(() => {
-    return sessionStorage.getItem('game_page_list_updatedToLocal') || ''
-  })
-  const [sortField, setSortField] = useState<'' | 'name' | 'updated_at'>(() => {
-    return (sessionStorage.getItem('game_page_list_sortField') as '' | 'name' | 'updated_at') || ''
-  })
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => {
-    return (sessionStorage.getItem('game_page_list_sortOrder') as 'asc' | 'desc') || 'asc'
-  })
+  const games = data?.data ?? []
+  const meta = data?.meta
+  const filtered = !!(q || status !== 'all' || image !== 'all')
+  const locale = i18n.resolvedLanguage
 
-  // Sync to sessionStorage
-  useEffect(() => {
-    sessionStorage.setItem('game_page_list_page', page.toString())
-    sessionStorage.setItem('game_page_list_activeFilter', activeFilter)
-    sessionStorage.setItem('game_page_list_gameId', gameId)
-    sessionStorage.setItem('game_page_list_searchInput', searchInput)
-    sessionStorage.setItem('game_page_list_imageFilter', imageFilter)
-    sessionStorage.setItem('game_page_list_showFilter', showFilter)
-    sessionStorage.setItem('game_page_list_checkIdFilter', checkIdFilter)
-    sessionStorage.setItem('game_page_list_updatedByUserId', updatedByUserId)
-    sessionStorage.setItem('game_page_list_updatedFromLocal', updatedFromLocal)
-    sessionStorage.setItem('game_page_list_updatedToLocal', updatedToLocal)
-    sessionStorage.setItem('game_page_list_sortField', sortField)
-    sessionStorage.setItem('game_page_list_sortOrder', sortOrder)
-  }, [
-    page,
-    activeFilter,
-    gameId,
-    searchInput,
-    imageFilter,
-    showFilter,
-    checkIdFilter,
-    updatedByUserId,
-    updatedFromLocal,
-    updatedToLocal,
-    sortField,
-    sortOrder,
-  ])
-
-  const limit = 20
-
-  const listParams = useMemo((): GetGamesParams => {
-    const is_active =
-      activeFilter === 'active' ? true : activeFilter === 'inactive' ? false : undefined
-    const is_show = triToOptionalBool(showFilter)
-    const is_check_id = triToOptionalBool(checkIdFilter)
-    const updated_by = updatedByUserId.trim() ? updatedByUserId.trim() : undefined
-    const updated_from = datetimeLocalToIso(updatedFromLocal)
-    const updated_to = datetimeLocalToIso(updatedToLocal)
-
-    return {
-      search: debouncedSearch.trim(),
-      image: imageFilter,
-      ...(is_active !== undefined && { is_active }),
-      ...(gameId && { game_id: gameId }),
-      ...(is_show !== undefined && { is_show }),
-      ...(is_check_id !== undefined && { is_check_id }),
-      ...(updated_by && { updated_by }),
-      ...(updated_from && { updated_from }),
-      ...(updated_to && { updated_to }),
-      ...(sortField && { sort: sortField, order: sortOrder }),
-    }
-  }, [
-    activeFilter,
-    gameId,
-    debouncedSearch,
-    imageFilter,
-    showFilter,
-    checkIdFilter,
-    updatedByUserId,
-    updatedFromLocal,
-    updatedToLocal,
-    sortField,
-    sortOrder,
-  ])
-
-  const initialFilters = useRef({
-    activeFilter,
-    gameId,
-    debouncedSearch,
-    imageFilter,
-    showFilter,
-    checkIdFilter,
-    updatedByUserId,
-    updatedFromLocal,
-    updatedToLocal,
-    sortField,
-    sortOrder,
-  })
-
-  useEffect(() => {
-    const filters = initialFilters.current
-    const hasChanged =
-      activeFilter !== filters.activeFilter ||
-      gameId !== filters.gameId ||
-      debouncedSearch !== filters.debouncedSearch ||
-      imageFilter !== filters.imageFilter ||
-      showFilter !== filters.showFilter ||
-      checkIdFilter !== filters.checkIdFilter ||
-      updatedByUserId !== filters.updatedByUserId ||
-      updatedFromLocal !== filters.updatedFromLocal ||
-      updatedToLocal !== filters.updatedToLocal ||
-      sortField !== filters.sortField ||
-      sortOrder !== filters.sortOrder
-
-    if (hasChanged) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkron pagination dengan filter
-      setPage(1)
-      initialFilters.current = {
-        activeFilter,
-        gameId,
-        debouncedSearch,
-        imageFilter,
-        showFilter,
-        checkIdFilter,
-        updatedByUserId,
-        updatedFromLocal,
-        updatedToLocal,
-        sortField,
-        sortOrder,
-      }
-    }
-  }, [
-    activeFilter,
-    gameId,
-    debouncedSearch,
-    imageFilter,
-    showFilter,
-    checkIdFilter,
-    updatedByUserId,
-    updatedFromLocal,
-    updatedToLocal,
-    sortField,
-    sortOrder,
-  ])
-
-  const {
-    data,
-    isLoading,
-    isError,
-    isSuccess,
-    isFetchedAfterMount,
-    refetch,
-    isFetching,
-  } = useGetGames(page, limit, listParams)
-
-  const { data: gameNameOptions } = useGetGameNamesWithType()
-  const { data: adminBriefList } = useGetAdminBrief()
-
-  const selectedUpdatedByName = updatedByUserId.trim()
-    ? (adminBriefList?.find((a) => a.id === updatedByUserId.trim())?.name ?? updatedByUserId.trim())
-    : undefined
-
-  useEffect(() => {
-    if (isSuccess && isFetchedAfterMount) {
-      toast.success(t('gameToasts.loadSuccess'))
-    }
-    if (isError && isFetchedAfterMount) {
-      toast.error(t('gameToasts.loadError'))
-    }
-  }, [isSuccess, isError, isFetchedAfterMount, t])
-
-  const rows = data?.data ?? []
-
-  const columns = useMemo(() => getGameColumns(t), [t])
-
-  const totalRaw = data?.meta?.total_data ?? 0
-  const totalFormatted = totalRaw.toLocaleString(
-    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
-  )
-
-  const totalActiveRaw = data?.meta?.game_active ?? 0
-  const totalActiveFormatted = totalActiveRaw.toLocaleString(
-    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
-  )
-
-  const totalShowRaw = data?.meta?.game_show ?? 0
-  const totalShowFormatted = totalShowRaw.toLocaleString(
-    i18n.language.startsWith('id') ? 'id-ID' : 'en-US',
-  )
-
-  const totalPage = data?.meta?.total_page ?? 1
-  const rangeFrom = totalRaw === 0 ? 0 : (page - 1) * limit + 1
-  const rangeTo = Math.min(page * limit, totalRaw)
-
-  const selectedGameName = gameId ? gameNameOptions?.find((g) => g.id === gameId)?.name : undefined
-
-  const statusLabel =
-    activeFilter === 'all'
-      ? t('gameFilters.all')
-      : activeFilter === 'active'
-        ? t('gameFilters.active')
-        : t('gameFilters.inactive')
-
-  const hasActiveFilters =
-    activeFilter !== 'all' ||
-    Boolean(gameId) ||
-    debouncedSearch.trim() !== '' ||
-    imageFilter !== 'all' ||
-    showFilter !== 'all' ||
-    checkIdFilter !== 'all' ||
-    Boolean(updatedByUserId.trim()) ||
-    Boolean(datetimeLocalToIso(updatedFromLocal)) ||
-    Boolean(datetimeLocalToIso(updatedToLocal)) ||
-    sortField !== ''
-
-  const isFilteredEmpty = isSuccess && rows.length === 0 && hasActiveFilters
-  const isDatabaseEmpty = isSuccess && rows.length === 0 && !hasActiveFilters
-
-  const clearFilters = () => {
-    setActiveFilter('all')
-    setGameId('')
-    setSearchInput('')
-    setImageFilter('all')
-    setShowFilter('all')
-    setCheckIdFilter('all')
-    setUpdatedByUserId('')
-    setUpdatedFromLocal('')
-    setUpdatedToLocal('')
-    setSortField('')
-    setSortOrder('asc')
-  }
-
-  const showLabelSummary =
-    showFilter === 'all'
-      ? t('gameFilters.all')
-      : showFilter === 'yes'
-        ? t('gameDetailPage.showYes')
-        : t('gameDetailPage.showNo')
-
-  const checkIdLabelSummary =
-    checkIdFilter === 'all'
-      ? t('gameFilters.all')
-      : checkIdFilter === 'yes'
-        ? t('gameDetailPage.checkIdYes')
-        : t('gameDetailPage.checkIdNo')
-
-  const sortOrderSummary =
-    sortOrder === 'asc' ? t('gameFilters.orderAsc') : t('gameFilters.orderDesc')
-
-  const sortFieldSummary =
-    sortField === 'name'
-      ? t('gameFilters.sortName')
-      : sortField === 'updated_at'
-        ? t('gameFilters.sortUpdatedAt')
-        : ''
+  const [formTarget, setFormTarget] = useState<Game | 'new' | null>(null)
+  const [imageTarget, setImageTarget] = useState<Game | null>(null)
+  const [priceTarget, setPriceTarget] = useState<Game | null>(null)
+  const [syncOpen, setSyncOpen] = useState(false)
+  const sync = useInitGamesFromProvider(() => setSyncOpen(false))
 
   return (
     <DashboardLayout>
-      <div className='mx-auto max-w-7xl space-y-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <Gamepad2 className='h-5 w-5' aria-hidden />
-            </div>
-            <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-foreground'>{t('gamePage.title')}</h1>
-              <p className='text-sm text-muted-foreground'>{t('gamePage.subtitle')}</p>
-            </div>
+      <div className='mx-auto max-w-6xl space-y-6'>
+        <header className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
+          <div className='min-w-0 space-y-1'>
+            <p className={hudEyebrowClass}>{t('gamePage.eyebrow')}</p>
+            <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('gamePage.title')}</h1>
+            <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('gamePage.subtitle')}</p>
           </div>
-          <div className='flex items-center gap-3 sm:justify-end'>
+          <div className='flex flex-wrap items-center gap-2 xl:shrink-0 xl:flex-nowrap'>
+            <Can permission={PERM.gameSync}>
+              <button
+                type='button'
+                onClick={() => setSyncOpen(true)}
+                className='inline-flex h-11 items-center gap-2 bg-white px-4 font-display text-xs font-bold uppercase tracking-[0.15em] text-slate-600 ring-1 ring-inset ring-slate-200 hud-clip-sm transition-colors hover:text-brand-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40'
+              >
+                <RefreshCw className='size-4' aria-hidden />
+                {t('gamePage.syncBtn')}
+              </button>
+            </Can>
             <Can permission={PERM.productUpdatePrice}>
               <EditBulkAllPriceModal />
             </Can>
+            <Can permission={PERM.gameCreate}>
+              <button type='button' onClick={() => setFormTarget('new')} className={hudPrimaryButtonClass}>
+                <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
+                <Plus className='size-4' aria-hidden />
+                {t('gamePage.addBtn')}
+              </button>
+            </Can>
+          </div>
+        </header>
+
+        {meta && (
+          <ul className='grid grid-cols-3 gap-3 sm:gap-4'>
+            <StatTile
+              order={0}
+              icon={Gamepad2}
+              label={filtered ? t('gamePage.stats.results') : t('gamePage.stats.total')}
+              hint={filtered ? t('gamePage.stats.resultsHint') : t('gamePage.stats.totalHint')}
+              value={meta.total_data}
+              locale={locale}
+            />
+            <StatTile order={1} icon={Zap} label={t('gamePage.stats.active')} hint={t('gamePage.stats.allGames')} value={meta.game_active} locale={locale} tone='emerald' />
+            <StatTile order={2} icon={Eye} label={t('gamePage.stats.shown')} hint={t('gamePage.stats.allGames')} value={meta.game_show} locale={locale} tone='cyan' />
+          </ul>
+        )}
+
+        <div className='bg-slate-200/80 p-px hud-clip'>
+          <div className='flex flex-col gap-3 bg-white p-4 hud-clip lg:flex-row lg:items-center'>
+            <div className='group relative min-w-0 flex-1'>
+              <span className='pointer-events-none absolute inset-y-0 left-0 flex w-10 items-center justify-center text-slate-400 group-focus-within:text-brand-purple'>
+                <Search className='size-4' aria-hidden />
+              </span>
+              <Input
+                value={q}
+                onChange={(e) => update({ q: e.target.value, page: null })}
+                placeholder={t('gamePage.searchPlaceholder')}
+                aria-label={t('gamePage.searchPlaceholder')}
+                className={cn(hudInputClass, 'h-10 bg-white pl-10 text-sm')}
+              />
+            </div>
+            <Segmented
+              size='md'
+              value={status}
+              onChange={(v) => update({ status: v, page: null })}
+              label={t('gamePage.filters.status')}
+              options={STATUSES.map((s) => ({ value: s, label: t(`gamePage.filters.statusOptions.${s}`) }))}
+            />
+            <Segmented
+              size='md'
+              value={image}
+              onChange={(v) => update({ image: v, page: null })}
+              label={t('gamePage.filters.image')}
+              options={IMAGES.map((s) => ({ value: s, label: t(`gamePage.filters.imageOptions.${s}`) }))}
+            />
+            {filtered && (
+              <button
+                type='button'
+                onClick={() => update({ q: null, status: null, image: null, page: null })}
+                className='inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md px-3 text-xs font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600'
+              >
+                <RotateCcw className='size-3.5' aria-hidden />
+                {t('gamePage.filters.reset')}
+              </button>
+            )}
           </div>
         </div>
 
-        <div className='overflow-hidden rounded-xl border border-border/80 bg-card text-card-foreground shadow-sm ring-1 ring-gray-900/5 dark:ring-white/10'>
-          <div className='space-y-4 border-b border-border/80 px-4 py-4 sm:px-5'>
-            <div className='min-w-0 space-y-1'>
-              <h2 className='text-sm font-semibold text-foreground'>{t('gamePage.listTitle')}</h2>
-              <p className='text-xs text-muted-foreground'>{t('gamePage.listHint', { limit })}</p>
-            </div>
-
-            <div className='overflow-hidden rounded-xl border border-border/70 bg-muted/20 shadow-inner ring-1 ring-black/[0.03] dark:ring-white/[0.04]'>
-              <div className='flex flex-col gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
-                <span className='text-xs font-medium text-muted-foreground'>{t('gamePage.filtersHeading')}</span>
-                {hasActiveFilters ? (
-                  <Button
-                    type='button'
-                    variant='outline'
-                    size='sm'
-                    className='h-8 w-full shrink-0 gap-1.5 rounded-lg px-3 text-xs font-medium sm:w-auto'
-                    onClick={clearFilters}
-                    aria-label={t('gamePage.resetFiltersAria')}
-                  >
-                    <RotateCcw className='h-3.5 w-3.5' aria-hidden />
-                    {t('gamePage.resetFilters')}
-                  </Button>
-                ) : (
-                  <span className='hidden text-[11px] text-muted-foreground/80 sm:inline'>
-                    {t('gamePage.filtersToolbarHint')}
-                  </span>
-                )}
-              </div>
-
-              <div className='space-y-5 p-4 sm:p-5'>
-                <div className='grid gap-4 lg:grid-cols-12 lg:items-end'>
-                  <div className='min-w-0 lg:col-span-5'>
-                    <Label htmlFor='game-list-search' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.searchLabel')}
-                    </Label>
-                    <div className='relative mt-1.5'>
-                      <Search
-                        className='pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground'
-                        aria-hidden
-                      />
-                      <Input
-                        id='game-list-search'
-                        type='search'
-                        value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)}
-                        placeholder={t('gameFilters.searchPlaceholder')}
-                        className='h-9 bg-background pl-9 shadow-sm'
-                        autoComplete='off'
-                      />
-                    </div>
-                  </div>
-                  <div className='min-w-0 lg:col-span-3'>
-                    <Label htmlFor='game-list-image' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.imageLabel')}
-                    </Label>
-                    <Select
-                      value={imageFilter}
-                      onValueChange={(v) => setImageFilter(v as 'all' | 'no_image')}
-                    >
-                      <SelectTrigger id='game-list-image' className='mt-1.5 w-full min-w-0 bg-background shadow-sm' size='sm'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent position='popper' align='start'>
-                        <SelectItem value='all'>{t('gameFilters.imageAll')}</SelectItem>
-                        <SelectItem value='no_image'>{t('gameFilters.imageNoImage')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className='min-w-0 lg:col-span-4'>
-                    <div className='flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-3'>
-                      <div className='min-w-0 flex-1 space-y-1.5'>
-                        <Label htmlFor='game-list-sort' className='text-xs text-muted-foreground'>
-                          {t('gameFilters.sortLabel')}
-                        </Label>
-                        <Select
-                          value={sortField === '' ? 'default' : sortField}
-                          onValueChange={(v) => {
-                            if (v === 'default') {
-                              setSortField('')
-                              return
-                            }
-                            const field = v as 'name' | 'updated_at'
-                            setSortField(field)
-                            setSortOrder(field === 'name' ? 'asc' : 'desc')
-                          }}
-                        >
-                          <SelectTrigger id='game-list-sort' className='w-full min-w-0 bg-background shadow-sm' size='sm'>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent position='popper' align='start'>
-                            <SelectItem value='default'>{t('gameFilters.sortDefault')}</SelectItem>
-                            <SelectItem value='name'>{t('gameFilters.sortName')}</SelectItem>
-                            <SelectItem value='updated_at'>{t('gameFilters.sortUpdatedAt')}</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {sortField ? (
-                        <div className='min-w-0 flex-1 space-y-1.5 sm:max-w-[11rem]'>
-                          <Label htmlFor='game-list-order' className='text-xs text-muted-foreground'>
-                            {t('gameFilters.orderLabel')}
-                          </Label>
-                          <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as 'asc' | 'desc')}>
-                            <SelectTrigger id='game-list-order' className='w-full min-w-0 bg-background shadow-sm' size='sm'>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent position='popper' align='start'>
-                              <SelectItem value='asc'>{t('gameFilters.orderAsc')}</SelectItem>
-                              <SelectItem value='desc'>{t('gameFilters.orderDesc')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-
-                <div className='h-px w-full bg-border/70' aria-hidden />
-
-                <div className='grid gap-4 md:grid-cols-2'>
-                  <GamePickerSelect value={gameId} onChange={setGameId} />
-                  <GameActiveFilter value={activeFilter} onChange={setActiveFilter} />
-                </div>
-
-                <div className='h-px w-full bg-border/70' aria-hidden />
-
-                <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-6 xl:items-end'>
-                  <div className='min-w-0 space-y-1.5 xl:col-span-1'>
-                    <Label htmlFor='game-list-show' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.showLabel')}
-                    </Label>
-                    <Select value={showFilter} onValueChange={(v) => setShowFilter(v as TriBool)}>
-                      <SelectTrigger id='game-list-show' className='w-full min-w-0 bg-background shadow-sm' size='sm'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent position='popper' align='start'>
-                        <SelectItem value='all'>{t('gameFilters.all')}</SelectItem>
-                        <SelectItem value='yes'>{t('gameDetailPage.yes')}</SelectItem>
-                        <SelectItem value='no'>{t('gameDetailPage.no')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className='min-w-0 space-y-1.5 xl:col-span-1'>
-                    <Label htmlFor='game-list-check-id' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.checkIdLabel')}
-                    </Label>
-                    <Select value={checkIdFilter} onValueChange={(v) => setCheckIdFilter(v as TriBool)}>
-                      <SelectTrigger id='game-list-check-id' className='w-full min-w-0 bg-background shadow-sm' size='sm'>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent position='popper' align='start'>
-                        <SelectItem value='all'>{t('gameFilters.all')}</SelectItem>
-                        <SelectItem value='yes'>{t('gameDetailPage.yes')}</SelectItem>
-                        <SelectItem value='no'>{t('gameDetailPage.no')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className='min-w-0 sm:col-span-2 xl:col-span-2'>
-                    <AdminBriefSelect value={updatedByUserId} onChange={setUpdatedByUserId} />
-                  </div>
-                  <div className='min-w-0 space-y-1.5 xl:col-span-1'>
-                    <Label htmlFor='game-list-updated-from' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.updatedFromLabel')}
-                    </Label>
-                    <Input
-                      id='game-list-updated-from'
-                      type='datetime-local'
-                      value={updatedFromLocal}
-                      onChange={(e) => setUpdatedFromLocal(e.target.value)}
-                      className='h-9 bg-background shadow-sm'
-                    />
-                  </div>
-                  <div className='min-w-0 space-y-1.5 xl:col-span-1'>
-                    <Label htmlFor='game-list-updated-to' className='text-xs text-muted-foreground'>
-                      {t('gameFilters.updatedToLabel')}
-                    </Label>
-                    <Input
-                      id='game-list-updated-to'
-                      type='datetime-local'
-                      value={updatedToLocal}
-                      onChange={(e) => setUpdatedToLocal(e.target.value)}
-                      className='h-9 bg-background shadow-sm'
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {isSuccess && (
-              <div
-                className='flex flex-col gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-3 sm:gap-y-1'
-                role='status'
-                aria-label={t('gamePage.filtersSummaryAria')}
-              >
-                <span className='text-[11px] font-semibold uppercase tracking-wide text-muted-foreground'>
-                  {t('gamePage.filtersHeading')}
-                </span>
-                <div className='flex flex-wrap items-center gap-2'>
-                  <Badge variant='secondary' className='font-normal'>
-                    {t('gamePage.filterStatusChip', { status: statusLabel })}
-                  </Badge>
-                  {gameId ? (
-                    <Badge variant='outline' className='max-w-[min(100%,16rem)] truncate font-normal' title={selectedGameName}>
-                      {selectedGameName ?? gameId}
-                    </Badge>
-                  ) : (
-                    <span className='text-xs text-muted-foreground'>{t('gamePage.filterGameAll')}</span>
-                  )}
-                  {debouncedSearch.trim() ? (
-                    <Badge variant='outline' className='max-w-[min(100%,20rem)] truncate font-normal' title={debouncedSearch.trim()}>
-                      {t('gamePage.filterSearchChip', { q: debouncedSearch.trim() })}
-                    </Badge>
-                  ) : null}
-                  {imageFilter !== 'all' ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterImageChip', {
-                        label:
-                          imageFilter === 'no_image'
-                            ? t('gameFilters.imageNoImage')
-                            : t('gameFilters.imageAll'),
-                      })}
-                    </Badge>
-                  ) : null}
-                  {showFilter !== 'all' ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterShowChip', { value: showLabelSummary })}
-                    </Badge>
-                  ) : null}
-                  {checkIdFilter !== 'all' ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterCheckIdChip', { value: checkIdLabelSummary })}
-                    </Badge>
-                  ) : null}
-                  {updatedByUserId.trim() ? (
-                    <Badge
-                      variant='outline'
-                      className='max-w-[min(100%,16rem)] truncate font-normal'
-                      title={selectedUpdatedByName}
-                    >
-                      {t('gamePage.filterUpdatedByChip', { name: selectedUpdatedByName })}
-                    </Badge>
-                  ) : null}
-                  {datetimeLocalToIso(updatedFromLocal) ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterUpdatedFromChip', { value: updatedFromLocal })}
-                    </Badge>
-                  ) : null}
-                  {datetimeLocalToIso(updatedToLocal) ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterUpdatedToChip', { value: updatedToLocal })}
-                    </Badge>
-                  ) : null}
-                  {sortField ? (
-                    <Badge variant='outline' className='font-normal'>
-                      {t('gamePage.filterSortChip', { field: sortFieldSummary, order: sortOrderSummary })}
-                    </Badge>
-                  ) : null}
-                </div>
-                <div className='flex items-center gap-3 sm:ml-auto'>
-                  <span className='tabular-nums text-xs text-muted-foreground'>
-                    {t('gamePage.totalGames', { count: totalFormatted })}
-                  </span>
-                  <span className='h-3 w-px bg-border' aria-hidden='true' />
-                  <span className='tabular-nums text-xs text-muted-foreground'>
-                    {t('gamePage.totalGamesActive', { count: totalActiveFormatted })}
-                  </span>
-                  <span className='h-3 w-px bg-border' aria-hidden='true' />
-                  <span className='tabular-nums text-xs text-muted-foreground'>
-                    {t('gamePage.totalGamesShow', { count: totalShowFormatted })}
-                  </span>
-                </div>
-              </div>
-            )}
+        {isError && (
+          <div className='space-y-3'>
+            <AuthAlert>{t('gamePage.loadError')}</AuthAlert>
+            <button
+              type='button'
+              onClick={() => void refetch()}
+              className='inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:text-brand-purple'
+            >
+              <RefreshCw className='size-4' aria-hidden />
+              {t('gamePage.retry')}
+            </button>
           </div>
+        )}
 
-          <div className='p-3 sm:p-4'>
-            {isLoading && (
-              <div
-                className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/20 py-12'
-                role='status'
-                aria-live='polite'
-                aria-busy='true'
-              >
-                <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-                <div className='text-center'>
-                  <p className='text-sm font-medium text-foreground'>{t('gamePage.tableLoadingTitle')}</p>
-                  <p className='mt-1 text-xs text-muted-foreground'>{t('gamePage.tableLoadingHint')}</p>
+        {isLoading ? (
+          <div className='space-y-px overflow-hidden bg-slate-200/60 p-px hud-clip' aria-hidden>
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className='flex items-center gap-4 bg-white px-5 py-4'>
+                <div className='size-12 animate-pulse rounded-md bg-slate-200/70' />
+                <div className='flex-1 space-y-2'>
+                  <div className='h-3.5 w-1/3 animate-pulse rounded bg-slate-200/70' />
+                  <div className='h-3 w-1/4 animate-pulse rounded bg-slate-100' />
                 </div>
               </div>
-            )}
-
-            {isError && (
-              <div className='space-y-4 rounded-lg border border-destructive/25 bg-destructive/5 px-4 py-6 sm:px-6'>
-                <ErrorComponent message={t('gamePage.loadErrorDetail')} />
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  className='rounded-lg'
-                  onClick={() => void refetch()}
-                  disabled={isFetching}
-                >
-                  <RefreshCw
-                    className={`mr-2 h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
-                    aria-hidden
+            ))}
+          </div>
+        ) : !isError && games.length === 0 ? (
+          <div className='grid place-items-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center animate-in fade-in duration-500'>
+            <span className='mb-4 grid size-14 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
+              {filtered ? <SearchX className='size-6' aria-hidden /> : <Gamepad2 className='size-6' aria-hidden />}
+            </span>
+            <h2 className='font-display text-xl font-bold text-slate-900'>{filtered ? t('gamePage.noMatchTitle') : t('gamePage.emptyTitle')}</h2>
+            <p className='mt-1 max-w-sm text-sm text-slate-500'>{filtered ? t('gamePage.noMatchBody') : t('gamePage.emptyBody')}</p>
+          </div>
+        ) : (
+          games.length > 0 && (
+            <div className={cn('bg-slate-200/80 p-px transition-opacity duration-300 hud-clip', isPlaceholderData && 'opacity-60')}>
+              <ul className='divide-y divide-slate-100 bg-white hud-clip' aria-busy={isFetching}>
+                {games.map((game, index) => (
+                  <GameRow
+                    key={game.id}
+                    game={game}
+                    order={index}
+                    listSearch={params.toString()}
+                    canUpdate={can(PERM.gameUpdate)}
+                    onImage={() => setImageTarget(game)}
+                    onEdit={() => setFormTarget(game)}
+                    onPrice={() => setPriceTarget(game)}
                   />
-                  {t('gamePage.retryList')}
-                </Button>
-              </div>
-            )}
+                ))}
+              </ul>
+            </div>
+          )
+        )}
 
-            {isSuccess && rows.length > 0 && (
-              <>
-                <DataTable columns={columns} data={rows} stickyHeader />
-                <div className='mt-4 space-y-3'>
-                  {(totalRaw > 0 || totalPage > 1) && (
-                    <p className='text-center text-xs text-muted-foreground sm:text-sm'>
-                      <span className='tabular-nums'>
-                        {t('gamePage.showingRange', {
-                          from: rangeFrom.toLocaleString(i18n.language.startsWith('id') ? 'id-ID' : 'en-US'),
-                          to: rangeTo.toLocaleString(i18n.language.startsWith('id') ? 'id-ID' : 'en-US'),
-                          total: totalFormatted,
-                        })}
-                      </span>
-                      {totalPage > 1 && (
-                        <>
-                          <span className='mx-1.5 text-border'>·</span>
-                          <span className='tabular-nums'>
-                            {t('gamePage.pageOf', { page, totalPage })}
-                          </span>
-                        </>
-                      )}
-                    </p>
-                  )}
-                  <Pagination page={page} totalPage={totalPage} onChange={setPage} />
-                </div>
-              </>
-            )}
+        <HudPagination page={page} totalPages={meta?.total_page ?? 1} onChange={(p) => update({ page: String(p) })} />
+      </div>
 
-            {isFilteredEmpty && (
-              <div className='flex min-h-[14rem] flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-border/80 bg-muted/15 px-4 py-12 text-center'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-muted/60 text-muted-foreground'>
-                  <SearchX className='h-6 w-6' aria-hidden />
-                </div>
-                <div className='max-w-sm space-y-1'>
-                  <p className='text-sm font-medium text-foreground'>{t('gamePage.emptyFilteredTitle')}</p>
-                  <p className='text-xs text-muted-foreground'>{t('gamePage.emptyFilteredHint')}</p>
-                </div>
-                <Button type='button' variant='secondary' size='sm' className='rounded-lg' onClick={clearFilters}>
-                  {t('gamePage.resetFilters')}
-                </Button>
-              </div>
-            )}
+      <GameFormDialog
+        open={formTarget !== null}
+        onOpenChange={(open) => !open && setFormTarget(null)}
+        game={formTarget === 'new' ? undefined : (formTarget ?? undefined)}
+      />
+      <GameImageDialog game={imageTarget} onOpenChange={(open) => !open && setImageTarget(null)} />
+      <GamePriceDialog game={priceTarget} onOpenChange={(open) => !open && setPriceTarget(null)} />
+      <ConfirmActionDialog
+        open={syncOpen}
+        onOpenChange={setSyncOpen}
+        eyebrow={t('gamePage.sync.eyebrow')}
+        title={t('gamePage.sync.title')}
+        description={t('gamePage.sync.description')}
+        confirmLabel={t('gamePage.sync.confirm')}
+        cancelLabel={t('gamePage.sync.cancel')}
+        pendingLabel={t('gamePage.sync.pending')}
+        pending={sync.isPending}
+        onConfirm={() => sync.mutate()}
+      />
+    </DashboardLayout>
+  )
+}
 
-            {isDatabaseEmpty && (
-              <div className='flex min-h-[14rem] flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border/80 bg-muted/15 px-4 py-12 text-center'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-muted/60 text-muted-foreground'>
-                  <Inbox className='h-6 w-6' aria-hidden />
-                </div>
-                <div className='max-w-sm space-y-1'>
-                  <p className='text-sm font-medium text-foreground'>{t('gamePage.emptyDatabaseTitle')}</p>
-                  <p className='text-xs text-muted-foreground'>{t('gamePage.emptyDatabaseHint')}</p>
-                </div>
-              </div>
-            )}
+interface StatTileProps {
+  order: number
+  icon: LucideIcon
+  label: string
+  hint?: string
+  value: number
+  locale?: string
+  tone?: 'emerald' | 'cyan'
+}
+
+function StatTile({ order, icon: Icon, label, hint, value, locale, tone }: StatTileProps) {
+  return (
+    <li className='min-w-0 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both' style={{ animationDelay: `${order * 60}ms` }}>
+      <div className='h-full bg-slate-200/80 p-px hud-clip-sm'>
+        <div className='flex h-full items-center justify-between gap-3 bg-white p-3 hud-clip-sm sm:p-4'>
+          <div className='min-w-0'>
+            <p className='truncate font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400 sm:tracking-[0.2em]'>{label}</p>
+            <p
+              className={cn(
+                'mt-1 font-display text-2xl font-bold',
+                tone === 'emerald' ? 'text-emerald-600' : tone === 'cyan' ? 'text-cyan-600' : 'text-slate-900'
+              )}
+            >
+              {value.toLocaleString(locale)}
+            </p>
+            {hint && <p className='hidden truncate text-[11px] text-slate-400 sm:block'>{hint}</p>}
           </div>
+          <span
+            className={cn(
+              'hidden size-10 shrink-0 place-items-center hud-clip-sm sm:grid',
+              tone === 'emerald' ? 'bg-emerald-50 text-emerald-600' : tone === 'cyan' ? 'bg-cyan-50 text-cyan-600' : 'bg-brand-purple/10 text-brand-purple'
+            )}
+          >
+            <Icon className='size-5' aria-hidden />
+          </span>
         </div>
       </div>
-    </DashboardLayout>
+    </li>
+  )
+}
+
+interface GameRowProps {
+  game: Game
+  order: number
+  /** The list's query string, so the detail page's back link returns to the same view. */
+  listSearch: string
+  canUpdate: boolean
+  onImage: () => void
+  onEdit: () => void
+  onPrice: () => void
+}
+
+function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice }: GameRowProps) {
+  const { t } = useTranslation('common')
+  const linkState = { search: listSearch }
+  const markup = formatMarkup(game.additional_percent, game.additional_fee)
+  const thumb = <GameThumb src={game.thumbnail_url} className='size-full' />
+
+  const markupText = <span className={cn('font-medium tabular-nums', markup ? 'text-slate-700' : 'text-slate-400')}>{markup ?? t('gamePage.noMarkup')}</span>
+
+  // Phones: name on top, switches and actions on one line under it. Desktop: one line per game.
+  return (
+    <li
+      className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-5 gap-y-3 px-4 py-3.5 animate-in fade-in duration-300 fill-mode-both sm:px-5 lg:grid-cols-[minmax(0,1fr)_8rem_auto_auto]'
+      style={{ animationDelay: `${Math.min(order, 12) * 20}ms` }}
+    >
+      <div className='col-span-2 flex min-w-0 items-center gap-3 lg:col-span-1'>
+        {canUpdate ? (
+          <button
+            type='button'
+            onClick={onImage}
+            aria-label={t('gamePage.changeImages', { name: game.name })}
+            title={t('gamePage.changeImages', { name: game.name })}
+            className='group relative size-12 shrink-0 overflow-hidden rounded-md ring-1 ring-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/50'
+          >
+            {thumb}
+            <span className='absolute inset-0 grid place-items-center bg-slate-950/0 text-white opacity-0 transition-all duration-300 group-hover:bg-slate-950/45 group-hover:opacity-100 group-focus-visible:bg-slate-950/45 group-focus-visible:opacity-100'>
+              <Pencil className='size-4' aria-hidden />
+            </span>
+          </button>
+        ) : (
+          <span className='size-12 shrink-0 overflow-hidden rounded-md ring-1 ring-slate-200'>{thumb}</span>
+        )}
+        <div className='min-w-0 space-y-1'>
+          <div className='flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1'>
+            <Link
+              to={`/games/${game.id}`}
+              state={linkState}
+              className={cn('truncate font-semibold transition-colors hover:text-brand-purple', game.is_active ? 'text-slate-900' : 'text-slate-500')}
+            >
+              {game.name}
+            </Link>
+            <GameStatusChips game={game} flagsOnly={canUpdate} />
+          </div>
+          <p className='truncate text-xs text-slate-500'>
+            <span className='font-mono'>{game.code}</span>
+            <span> · /{game.slug}</span>
+          </p>
+          <p className='text-xs lg:hidden'>
+            <span className='mr-1.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gamePage.markup')}</span>
+            {markupText}
+          </p>
+        </div>
+      </div>
+
+      <div className='hidden text-xs lg:block'>
+        <p className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gamePage.markup')}</p>
+        <p>{markupText}</p>
+      </div>
+
+      <GameToggles game={game} />
+
+      <div className='flex items-center gap-0.5 justify-self-end'>
+        <Can permission={PERM.gameUpdate}>
+          <button
+            type='button'
+            onClick={onEdit}
+            aria-label={t('gamePage.editBtn', { name: game.name })}
+            title={t('gamePage.editBtn', { name: game.name })}
+            className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40`}
+          >
+            <Pencil className='size-4' aria-hidden />
+          </button>
+        </Can>
+        <Can permission={PERM.productUpdatePrice}>
+          <button
+            type='button'
+            onClick={onPrice}
+            aria-label={t('gamePage.priceBtn', { name: game.name })}
+            title={t('gamePage.priceBtn', { name: game.name })}
+            className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40`}
+          >
+            <Percent className='size-4' aria-hidden />
+          </button>
+        </Can>
+        <Link
+          to={`/games/${game.id}`}
+          state={linkState}
+          aria-label={t('gamePage.openAria', { name: game.name })}
+          className='group/open ml-1 inline-flex h-8 items-center gap-1 px-2 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple hud-clip-sm transition-colors hover:bg-brand-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40 sm:px-2.5'
+        >
+          <span className='hidden sm:inline'>{t('gamePage.open')}</span>
+          <ChevronRight className='size-3.5 transition-transform duration-300 ease-hud group-hover/open:translate-x-0.5' aria-hidden />
+        </Link>
+      </div>
+    </li>
   )
 }

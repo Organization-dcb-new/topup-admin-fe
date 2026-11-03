@@ -9,6 +9,7 @@ import { useRoleOptions } from '@/hooks/useRoles'
 import { cn } from '@/lib/utils'
 import type { AdminUser } from '@/types/admin'
 import { AdminAvatar, RolePicker } from './AdminParts'
+import { useRetained } from '@/hooks/useRetained'
 
 interface ChangeRoleDialogProps {
   admin: AdminUser | null
@@ -16,6 +17,8 @@ interface ChangeRoleDialogProps {
 }
 
 export function ChangeRoleDialog({ admin, onOpenChange }: ChangeRoleDialogProps) {
+  // Keep showing the last target while the dialog animates closed.
+  const shown = useRetained(admin)
   const { updateRole } = useAdminMutation()
   const pending = updateRole.isPending
 
@@ -27,14 +30,14 @@ export function ChangeRoleDialog({ admin, onOpenChange }: ChangeRoleDialogProps)
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         {/* Keyed per admin, so the picker starts from that admin's current role. */}
-        {admin && (
+        {shown && (
           <ChangeRoleForm
-            key={admin.id}
-            admin={admin}
+            key={shown.id}
+            admin={shown}
             pending={pending}
             onCancel={() => onOpenChange(false)}
             onSubmit={(role, roleId) =>
-              updateRole.mutate({ id: admin.id, role, roleId }, { onSuccess: () => onOpenChange(false) })
+              updateRole.mutate({ id: shown.id, role, roleId }, { onSuccess: () => onOpenChange(false) })
             }
           />
         )}
@@ -108,7 +111,7 @@ function ChangeRoleForm({ admin, pending, onCancel, onSubmit }: ChangeRoleFormPr
         <button
           type='submit'
           disabled={unchanged || pending}
-          className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none disabled:opacity-50 sm:w-52')}
+          className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none disabled:opacity-50 sm:min-w-52')}
         >
           <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
           {pending && <Loader2 className='size-4 animate-spin' aria-hidden />}

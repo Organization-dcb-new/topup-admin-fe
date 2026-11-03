@@ -1,27 +1,19 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { ORDER_STATUSES, STATUS_META } from '@/lib/dashboard'
-import { dashCard, dashCardHeader } from '@/components/Dashboard/styles'
-import { formatNumber, formatRatioPercent } from '@/lib/format'
-import type { OrderStatus, StatusBreakdown as StatusBreakdownMap } from '@/types/dashboard'
+import { PieChart } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+
+import { ORDER_STATUSES, STATUS_META } from '@/lib/dashboard'
+import { formatNumber, formatRatioPercent } from '@/lib/format'
+import type { StatusBreakdown as StatusBreakdownMap } from '@/types/dashboard'
+import { DashboardPanel } from './DashboardPanel'
 
 interface StatusBreakdownProps {
   statusBreakdown: Partial<StatusBreakdownMap>
   successRate: number
   totalOrders: number
+  order?: number
 }
 
-export function StatusBreakdown({
-  statusBreakdown,
-  successRate,
-  totalOrders,
-}: StatusBreakdownProps) {
+export function StatusBreakdown({ statusBreakdown, successRate, totalOrders, order }: StatusBreakdownProps) {
   const { t } = useTranslation('common')
 
   const rows = ORDER_STATUSES.map((status) => ({
@@ -29,76 +21,57 @@ export function StatusBreakdown({
     count: statusBreakdown[status] ?? 0,
     color: STATUS_META[status].color,
   }))
-  const chartData = rows.filter((r) => r.count > 0)
+  const total = rows.reduce((sum, r) => sum + r.count, 0)
+  const segments = rows.filter((r) => r.count > 0)
 
   return (
-    <Card className={dashCard}>
-      <CardHeader className={dashCardHeader}>
-        <CardTitle className='text-sm font-semibold text-gray-900'>
-          {t('dashboard.status.title')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className='grid grid-cols-1 gap-4 p-4 sm:grid-cols-[minmax(0,8rem)_1fr] sm:items-center'>
-        <div className='relative mx-auto h-32 w-32'>
-          {chartData.length > 0 ? (
-            <ResponsiveContainer width='100%' height='100%'>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  dataKey='count'
-                  nameKey='status'
-                  innerRadius={40}
-                  outerRadius={56}
-                  paddingAngle={2}
-                  stroke='none'
-                >
-                  {chartData.map((r) => (
-                    <Cell key={r.status} fill={r.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className='flex h-full items-center justify-center rounded-full border border-dashed border-border/70' />
-          )}
-          <div className='pointer-events-none absolute inset-0 flex flex-col items-center justify-center'>
-            <span className='text-base font-semibold tabular-nums text-foreground'>
-              {formatNumber(totalOrders)}
-            </span>
-            <span className='text-[0.65rem] uppercase tracking-wide text-muted-foreground'>
-              {t('dashboard.status.orders')}
-            </span>
-          </div>
+    <DashboardPanel title={t('dashboard.status.title')} icon={PieChart} order={order}>
+      <div className='flex items-end justify-between gap-4'>
+        <div>
+          <p className='font-display text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400'>
+            {t('dashboard.status.successRate')}
+          </p>
+          <p className='font-display text-3xl font-bold text-emerald-600'>{formatRatioPercent(successRate)}</p>
         </div>
+        <p className='text-right text-xs text-slate-500'>
+          <span className='block font-display text-lg font-bold text-slate-900'>{formatNumber(totalOrders)}</span>
+          {t('dashboard.status.orders')}
+        </p>
+      </div>
 
-        <div className='space-y-1.5'>
-          <div className='mb-2 flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-1.5'>
-            <span className='text-xs font-medium text-emerald-700'>
-              {t('dashboard.status.successRate')}
-            </span>
-            <span className='text-sm font-semibold tabular-nums text-emerald-700'>
-              {formatRatioPercent(successRate)}
-            </span>
-          </div>
-          {rows.map((r) => (
-            <div key={r.status} className='flex items-center justify-between gap-2 text-sm'>
-              <span className='flex min-w-0 items-center gap-2'>
-                <span
-                  className='h-2.5 w-2.5 shrink-0 rounded-full'
-                  style={{ backgroundColor: r.color }}
-                  aria-hidden
-                />
-                <span className='truncate text-muted-foreground'>
-                  {t(`dashboard.orderStatus.${r.status as OrderStatus}`)}
-                </span>
+      {/* Part-to-whole: one bar, 2px surface gaps between segments, labelled in the legend below. */}
+      <div className='mt-4 flex h-3 gap-0.5 overflow-hidden rounded-full bg-slate-100' role='presentation'>
+        {segments.map((r) => (
+          <div
+            key={r.status}
+            className='h-full transition-[flex-grow] duration-700 ease-hud first:rounded-l-full last:rounded-r-full'
+            style={{ flexGrow: r.count, flexBasis: 0, backgroundColor: r.color }}
+            title={`${t(`dashboard.orderStatus.${r.status}`)}: ${formatNumber(r.count)}`}
+          />
+        ))}
+      </div>
+
+      <ul className='mt-4 space-y-1'>
+        {rows.map((r) => (
+          <li
+            key={r.status}
+            className='flex items-center justify-between gap-3 rounded px-1.5 py-1 text-sm transition-colors hover:bg-slate-50'
+          >
+            <span className='flex min-w-0 items-center gap-2'>
+              <span className='size-2.5 shrink-0 rounded-sm' style={{ backgroundColor: r.color }} aria-hidden />
+              <span className={r.count ? 'truncate text-slate-700' : 'truncate text-slate-400'}>
+                {t(`dashboard.orderStatus.${r.status}`)}
               </span>
-              <span className='tabular-nums font-medium text-foreground'>
-                {formatNumber(r.count)}
+            </span>
+            <span className='flex shrink-0 items-baseline gap-2 tabular-nums'>
+              <span className={r.count ? 'font-semibold text-slate-900' : 'text-slate-300'}>{formatNumber(r.count)}</span>
+              <span className='w-12 text-right text-xs text-slate-400'>
+                {total > 0 ? formatRatioPercent(r.count / total) : '—'}
               </span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </DashboardPanel>
   )
 }

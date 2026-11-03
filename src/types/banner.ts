@@ -1,8 +1,9 @@
-// types/banner.ts
 export type Banner = {
-  id: string // UUID dari backend
-  image: string // URL banner
-  redirect_link: string // Link redirect saat banner diklik
+  id: string
+  /** Public URL of the uploaded image. */
+  image: string
+  /** Where a click on the banner goes; empty means it isn't clickable. */
+  redirect_link: string
 }
 
 export interface BannerResponse {
@@ -10,15 +11,7 @@ export interface BannerResponse {
   message: string
 }
 
-export type FormValuesBanner = {
-  image: string
-  
-  redirect_link: string
-}
-
 export type BannerPayload = {
   image: string
   redirect_link: string
 }
-
-

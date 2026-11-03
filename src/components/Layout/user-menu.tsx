@@ -211,7 +211,7 @@ function LogoutDialog({ open, onOpenChange, name, email, roleLabel }: LogoutDial
                 type='button'
                 onClick={signOut}
                 disabled={leaving}
-                className='inline-flex h-12 w-full items-center justify-center gap-2 bg-rose-600 font-display text-sm font-bold uppercase tracking-[0.2em] text-white hud-clip-sm transition-[background-color,transform,opacity] duration-300 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 active:scale-[0.985] disabled:opacity-70 sm:w-52'
+                className='inline-flex h-12 w-full items-center justify-center gap-2 bg-rose-600 font-display text-sm font-bold uppercase tracking-[0.2em] text-white hud-clip-sm transition-[background-color,transform,opacity] duration-300 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 active:scale-[0.985] disabled:opacity-70 sm:w-auto sm:min-w-52 sm:px-6'
               >
                 {leaving ? (
                   <Loader2 className='size-4 animate-spin' aria-hidden />

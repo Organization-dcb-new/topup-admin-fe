@@ -36,6 +36,7 @@ import { useDeleteMaintenance, useGetMaintenances } from '@/hooks/useMaintenance
 import { useNow } from '@/hooks/useNow'
 import { cn } from '@/lib/utils'
 import type { Maintenance } from '@/types/maintenance'
+import { useRetained } from '@/hooks/useRetained'
 
 const iconButtonClass =
   'grid size-8 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
@@ -48,6 +49,8 @@ export default function MaintenancePage() {
   // 'new' opens the form empty; an entry opens it for editing.
   const [formTarget, setFormTarget] = useState<Maintenance | 'new' | null>(null)
   const [toDelete, setToDelete] = useState<Maintenance | null>(null)
+  // The confirm dialog keeps naming its target while it animates closed.
+  const deleting = useRetained(toDelete)
 
   const entries = useMemo(
     () =>
@@ -139,7 +142,7 @@ export default function MaintenancePage() {
         open={!!toDelete}
         onOpenChange={(open) => !open && setToDelete(null)}
         eyebrow={t('maintenancePage.deleteConfirm.eyebrow')}
-        title={t('maintenancePage.deleteConfirm.title', { name: toDelete?.name ?? '' })}
+        title={t('maintenancePage.deleteConfirm.title', { name: deleting?.name ?? '' })}
         description={t('maintenancePage.deleteConfirm.description')}
         confirmLabel={t('maintenancePage.deleteConfirm.confirm')}
         cancelLabel={t('maintenancePage.deleteConfirm.cancel')}

@@ -31,11 +31,15 @@ export function defaultGranularity(range: DashboardRange): DashboardGranularity 
   return GRANULARITY_BY_RANGE[range][0]
 }
 
-/** Warna konsisten per status order (dipakai chart & badge). */
+/**
+ * Warna konsisten per status order (dipakai chart & legenda). Urutan ORDER_STATUSES
+ * sudah divalidasi CVD untuk pasangan bersebelahan; EXPIRED sengaja abu-abu (netral)
+ * dan setiap segmen selalu disertai label teks.
+ */
 export const STATUS_META: Record<OrderStatus, { color: string }> = {
   COMPLETED: { color: '#059669' }, // emerald-600
-  PAID: { color: '#10b981' }, // emerald-500
-  PROCESSING: { color: '#0ea5e9' }, // sky-500
+  PAID: { color: '#0ea5e9' }, // sky-500
+  PROCESSING: { color: '#6366f1' }, // indigo-500
   PENDING: { color: '#f59e0b' }, // amber-500
   FAILED: { color: '#ef4444' }, // red-500
   EXPIRED: { color: '#94a3b8' }, // slate-400

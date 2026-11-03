@@ -17,6 +17,7 @@ import {
   nowAsDatetimeLocal,
 } from '@/helpers/maintenance-datetime'
 import { useCreateMaintenance, useUpdateMaintenance } from '@/hooks/useMaintenance'
+import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
 import { maintenanceSchema, type MaintenanceFormValues } from '@/schemas/maintenance'
 import type { Maintenance } from '@/types/maintenance'
@@ -32,6 +33,7 @@ interface MaintenanceFormDialogProps {
 }
 
 export function MaintenanceFormDialog({ open, onOpenChange, maintenance }: MaintenanceFormDialogProps) {
+  const target = useRetained(open ? (maintenance ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -39,8 +41,8 @@ export function MaintenanceFormDialog({ open, onOpenChange, maintenance }: Maint
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-lg'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
-        {/* Mounted per opening, so every open starts from fresh values without a reset effect. */}
-        {open && <MaintenanceForm maintenance={maintenance} onDone={() => onOpenChange(false)} />}
+        {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
+        {target && <MaintenanceForm key={target === 'new' ? 'new' : target.id} maintenance={target === 'new' ? undefined : target} onDone={() => onOpenChange(false)} />}
       </DialogContent>
     </Dialog>
   )
@@ -225,7 +227,7 @@ function MaintenanceForm({ maintenance, onDone }: { maintenance?: Maintenance; o
         >
           {t('maintenancePage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton pending={pending} pendingLabel={t('maintenancePage.form.saving')} cooldown={0}>
             {maintenance ? t('maintenancePage.form.save') : t('maintenancePage.form.create')}
           </AuthSubmitButton>

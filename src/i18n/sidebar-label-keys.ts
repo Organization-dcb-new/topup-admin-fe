@@ -16,7 +16,6 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   Produk: 'sidebar.menu.produk',
   'Kategori produk': 'sidebar.menu.kategoriProduk',
   'Produk anomali': 'sidebar.menu.produkAnomali',
-  Kategori: 'sidebar.menu.kategori',
   'Field input': 'sidebar.menu.fieldInput',
   Pembayaran: 'sidebar.menu.pembayaran',
   Metode: 'sidebar.menu.metode',

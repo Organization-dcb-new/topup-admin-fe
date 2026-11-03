@@ -12,7 +12,6 @@ export const pageTitleMap: Record<string, string> = {
   '/blog': 'Article',
 
   '/category-product': 'Categories Product',
-  '/categories': 'Categories',
   '/banners': 'Banners',
   '/shows': 'Shows',
   '/orders': 'Orders',

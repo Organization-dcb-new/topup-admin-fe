@@ -1,500 +1,304 @@
-import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import ErrorComponent from '@/components/Layout/error'
-import Pagination from '@/components/Layout/Pagination'
-import { DataTable } from '@/components/Layout/table-data'
-import { useGetCashflows } from '@/hooks/useCashflow'
-import { getCashflowColumns } from '@/tables/table-cashflow'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { AlertCircle, Banknote, CheckCircle2, Loader2, FilterX, CalendarIcon, Copy, ChevronRight } from 'lucide-react'
-import type { DateRange } from 'react-day-picker'
+import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { format } from 'date-fns'
-import { useMemo, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { cn } from '@/lib/utils'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
-import toast from 'react-hot-toast'
 import { enUS, id as idLocale } from 'date-fns/locale'
-import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { ChevronRight, RefreshCw, RotateCcw, Wallet } from 'lucide-react'
+import type { DateRange } from 'react-day-picker'
+
+import { AuthAlert } from '@/components/Auth/AuthPanel'
+import { hudEyebrowClass } from '@/components/Auth/hud-styles'
+import { CashflowDetailDialog } from '@/components/Cashflow/CashflowDetailDialog'
+import { DirectionTile, SignedAmount } from '@/components/Cashflow/CashflowParts'
+import { CashflowSummary } from '@/components/Cashflow/CashflowSummary'
+import {
+  DIRECTION_TYPE,
+  RANGE_KEYS,
+  directionOf,
+  fromDay,
+  parseNotes,
+  rangeDays,
+  toDay,
+  type RangeKey,
+} from '@/components/Cashflow/cashflow-meta'
+import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { HudPagination } from '@/components/Layout/hud-pagination'
+import { DateRangeFilter } from '@/components/ui/date-range-filter'
+import { Segmented } from '@/components/ui/segmented'
+import { useCashflowSummary, useGetCashflows } from '@/hooks/useCashflow'
+import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { formatPaymentChannel } from '@/lib/dashboard'
+import { cn } from '@/lib/utils'
 import type { CashflowItem } from '@/types/cashflow'
 
-const PAGE_LIMIT = 10
+const PAGE_SIZE = 20
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(value)
+type FlowFilter = 'all' | 'in' | 'out'
+const FLOWS: FlowFilter[] = ['all', 'in', 'out']
+
+interface DayGroup {
+  key: string
+  label: string
+  items: CashflowItem[]
+}
+
+/** Rows arrive newest first, so consecutive entries of the same day form one group. */
+function groupByDay(items: CashflowItem[]): DayGroup[] {
+  const groups: DayGroup[] = []
+  for (const item of items) {
+    const key = formatBackendDateTime(item.created_at, 'yyyy-MM-dd')
+    const last = groups.at(-1)
+    if (last?.key === key) last.items.push(item)
+    else groups.push({ key, label: formatBackendDateTime(item.created_at, 'EEEE, dd MMMM yyyy'), items: [item] })
+  }
+  return groups
 }
 
 export default function CashflowPage() {
-  const { t } = useTranslation('common')
-  const [page, setPage] = useState(1)
-  const [cashflowType, setCashflowType] = useState<string>('all')
-  const [date, setDate] = useState<DateRange | undefined>(() => {
-    const today = new Date()
-    return { from: today, to: today }
-  })
+  const { t, i18n } = useTranslation('common')
+  const [params, setParams] = useSearchParams()
+  const [selected, setSelected] = useState<CashflowItem | null>(null)
 
-  const queryType = cashflowType === 'all' ? '' : cashflowType
-  const startDateStr = date?.from ? format(date.from, 'yyyy-MM-dd') : ''
-  const endDateStr = date?.to ? format(date.to, 'yyyy-MM-dd') : ''
+  // Filters live in the URL, so coming back from a transaction keeps the same view.
+  const rawRange = params.get('range') as RangeKey | null
+  const range: RangeKey = rawRange && RANGE_KEYS.includes(rawRange) ? rawRange : 'today'
+  const rawFlow = params.get('flow') as FlowFilter | null
+  const flow: FlowFilter = rawFlow && FLOWS.includes(rawFlow) ? rawFlow : 'all'
+  const page = Math.max(1, Number(params.get('page')) || 1)
+  const customFrom = fromDay(params.get('from'))
+  const custom: DateRange | undefined = customFrom ? { from: customFrom, to: fromDay(params.get('to')) } : undefined
+  const { start, end } = rangeDays(range, range === 'custom' ? custom : undefined)
 
-  const { data, isLoading, isSuccess, isError } = useGetCashflows(
-    page,
-    PAGE_LIMIT,
-    queryType,
-    startDateStr,
-    endDateStr,
-  )
-
-  const handleReset = () => {
-    setPage(1)
-    setCashflowType('all')
-    const today = new Date()
-    setDate({ from: today, to: today })
-  }
-
-  const [selectedCashflow, setSelectedCashflow] = useState<CashflowItem | null>(null)
-  const [isDetailOpen, setIsDetailOpen] = useState(false)
-
-  const handleOpenDetail = (item: CashflowItem) => {
-    setSelectedCashflow(item)
-    setIsDetailOpen(true)
-  }
-
-  const tableRows = data?.data ?? []
-  const columns = useMemo(() => getCashflowColumns(t, handleOpenDetail), [t])
-
-  const isToday = (d?: Date) => {
-    if (!d) return false
-    const today = new Date()
-    return (
-      d.getDate() === today.getDate() &&
-      d.getMonth() === today.getMonth() &&
-      d.getFullYear() === today.getFullYear()
+  const update = (next: Record<string, string | null>, keepPage = false) =>
+    setParams(
+      (prev) => {
+        const out = new URLSearchParams(prev)
+        for (const [key, value] of Object.entries(next)) {
+          if (value === null) out.delete(key)
+          else out.set(key, value)
+        }
+        if (!keepPage) out.delete('page')
+        return out
+      },
+      { replace: true }
     )
-  }
 
-  const isDefaultDate = date?.from && date?.to && isToday(date.from) && isToday(date.to)
-  const showReset = cashflowType !== 'all' || !isDefaultDate
+  const list = useGetCashflows({
+    page,
+    limit: PAGE_SIZE,
+    type: flow === 'all' ? undefined : DIRECTION_TYPE[flow],
+    startDate: start,
+    endDate: end,
+  })
+  const summary = useCashflowSummary(start, end)
+
+  const items = list.data?.data ?? []
+  const groups = groupByDay(items)
+  const total = list.data?.meta?.total
+  const filtered = range !== 'today' || flow !== 'all'
+
+  const dateLocale = i18n.language.startsWith('id') ? idLocale : enUS
+  const fmtDay = (day: string) => format(fromDay(day) ?? new Date(), 'dd MMM yyyy', { locale: dateLocale })
+  const periodLabel = !start || !end ? t('cashflowPage.allTime') : start === end ? fmtDay(start) : `${fmtDay(start)} – ${fmtDay(end)}`
+
+  const retry = () => {
+    void list.refetch()
+    void summary.refetch()
+  }
 
   return (
     <DashboardLayout>
-      <div className='mx-auto min-w-0 max-w-7xl space-y-6'>
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex gap-3'>
-            <div className='flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-              <Banknote className='h-5 w-5' aria-hidden />
-            </div>
-            <div className='min-w-0 space-y-1'>
-              <h1 className='text-2xl font-semibold tracking-tight text-gray-900'>
-                {t('cashflowPage.title')}
-              </h1>
-              <p className='text-sm text-muted-foreground'>
-                {t('cashflowPage.subtitle', { limit: PAGE_LIMIT })}
-              </p>
-            </div>
+      <div className='mx-auto max-w-6xl space-y-6'>
+        <header className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+          <div className='space-y-1'>
+            <p className={hudEyebrowClass}>{t('cashflowPage.eyebrow')}</p>
+            <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('cashflowPage.title')}</h1>
+            <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('cashflowPage.subtitle')}</p>
           </div>
-          <div className='flex flex-col items-end gap-1 sm:text-right'>
-            {isLoading && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <Loader2 className='h-4 w-4 shrink-0 animate-spin text-primary' aria-hidden />
-                {t('cashflowPage.loadingShort')}
-              </p>
-            )}
-            {isError && (
-              <p className='flex items-center gap-2 text-sm font-medium text-destructive'>
-                <AlertCircle className='h-4 w-4 shrink-0' aria-hidden />
-                {t('cashflowPage.loadFailedShort')}
-              </p>
-            )}
-            {isSuccess && data && (
-              <p className='flex items-center gap-2 text-sm font-medium text-muted-foreground'>
-                <CheckCircle2 className='h-4 w-4 shrink-0 text-emerald-600' aria-hidden />
-                <span className='tabular-nums text-foreground'>
-                  {t('cashflowPage.totalRows', {
-                    count: (data.meta.total ?? 0).toLocaleString('id-ID'),
-                  })}
-                </span>
-              </p>
-            )}
-          </div>
-        </div>
+          {total !== undefined && (
+            <span className='shrink-0 font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
+              {t('cashflowPage.total', { count: total, formatted: total.toLocaleString(i18n.resolvedLanguage) })}
+            </span>
+          )}
+        </header>
 
-        {/* Stats Cards */}
-        {isSuccess && data?.stats && (() => {
-          const netProfit = data.stats.net_profit
-          const isPositiveProfit = netProfit >= 0
-          return (
-            <Card className='w-full overflow-hidden rounded-xl border shadow-sm ring-1 ring-gray-900/5 border-l-4 border-l-primary bg-white'>
-              <CardHeader className='border-b border-gray-100 pb-4'>
-                <CardTitle className='text-lg font-semibold tracking-tight text-gray-900'>
-                  {t('cashflowPage.statsTitle')}
-                </CardTitle>
-                <CardDescription className='text-xs'>
-                  {t('cashflowPage.statsDescription')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className='space-y-6 pt-6'>
-                {/* Row 1: Key Financials */}
-                <div className='grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-8'>
-                  <div className='space-y-2'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.totalRevenue')}
-                    </p>
-                    <p className='text-2xl font-bold tabular-nums text-emerald-600'>
-                      {formatCurrency(data.stats.total_revenue)}
-                    </p>
-                  </div>
-
-                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.totalOutflow')}
-                    </p>
-                    <p className='text-2xl font-bold tabular-nums text-amber-600'>
-                      {formatCurrency(data.stats.total_outflow)}
-                    </p>
-                  </div>
-
-                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.netProfit')}
-                    </p>
-                    <p
-                      className={cn(
-                        'text-2xl font-extrabold tabular-nums',
-                        isPositiveProfit ? 'text-emerald-600' : 'text-destructive',
-                      )}
-                    >
-                      {formatCurrency(netProfit)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Divider */}
-                <div className='border-t border-gray-100' />
-
-                {/* Row 2: Breakdown & Margins */}
-                <div className='grid grid-cols-1 gap-6 sm:grid-cols-3 md:gap-8'>
-                  <div className='space-y-2'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.totalOutProvider')}
-                    </p>
-                    <p className='text-2xl font-semibold tabular-nums text-gray-900'>
-                      {formatCurrency(data.stats.total_out_provider)}
-                    </p>
-                  </div>
-
-                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.totalOutPG')}
-                    </p>
-                    <p className='text-2xl font-semibold tabular-nums text-gray-900'>
-                      {formatCurrency(data.stats.total_out_pg)}
-                    </p>
-                  </div>
-
-                  <div className='space-y-2 md:border-l md:border-border/85 md:pl-8'>
-                    <p className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                      {t('cashflowPage.selisihPg')}
-                    </p>
-                    <p className='text-2xl font-bold tabular-nums text-primary'>
-                      {formatCurrency(data.stats.selisih_pg)}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })()}
-
-        {/* Filter Toolbar */}
-        <div className='flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm'>
-          {/* Date Picker Filter */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant='outline'
-                aria-label={t('cashflowFilter.pickDateAria')}
-                className={`w-65 justify-start text-left font-normal ${!date && 'text-muted-foreground'}`}
-              >
-                <CalendarIcon className='mr-2 h-4 w-4' />
-                {date?.from ? (
-                  date.to && format(date.from, 'yyyy-MM-dd') !== format(date.to, 'yyyy-MM-dd') ? (
-                    <>
-                      {format(date.from, 'LLL dd, y')} - {format(date.to, 'LLL dd, y')}
-                    </>
-                  ) : (
-                    format(date.from, 'LLL dd, y')
-                  )
-                ) : (
-                  <span>{t('cashflowFilter.pickDateRange')}</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='w-auto p-0' align='start'>
-              <Calendar
-                initialFocus
-                mode='range'
-                selected={date}
-                onSelect={(d) => {
-                  setDate(d)
-                  setPage(1)
-                }}
-                numberOfMonths={2}
+        {/* One filter row above everything it scopes. */}
+        <div className='bg-slate-200/80 p-px hud-clip'>
+          <div className='flex flex-col gap-3 bg-white p-4 hud-clip lg:flex-row lg:flex-wrap lg:items-center'>
+            <Segmented
+              size='md'
+              value={range}
+              onChange={(next) => update({ range: next === 'today' ? null : next, from: null, to: null })}
+              label={t('cashflowPage.range.label')}
+              options={RANGE_KEYS.map((key) => ({ value: key, label: t(`cashflowPage.range.${key}`) }))}
+            />
+            {range === 'custom' && (
+              <DateRangeFilter
+                className='w-full animate-in fade-in slide-in-from-left-1 duration-300 sm:w-72'
+                value={custom}
+                onChange={(next) =>
+                  update({ from: next?.from ? toDay(next.from) : null, to: next?.to ? toDay(next.to) : null })
+                }
+                placeholder={t('cashflowPage.datePlaceholder')}
               />
-            </PopoverContent>
-          </Popover>
-
-          {/* Type Filter */}
-          <Select
-            value={cashflowType}
-            onValueChange={(val) => {
-              setCashflowType(val)
-              setPage(1)
-            }}
-          >
-            <SelectTrigger className='w-48'>
-              <SelectValue placeholder={t('cashflowFilter.all')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>{t('cashflowFilter.all')}</SelectItem>
-              <SelectItem value='PROVIDER'>{t('cashflowFilter.provider')}</SelectItem>
-              <SelectItem value='PAYMENT_GATEWAY'>{t('cashflowFilter.pg')}</SelectItem>
-              <SelectItem value='REVENUE'>{t('cashflowFilter.revenue')}</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Button
-            variant='ghost'
-            onClick={handleReset}
-            className='text-muted-foreground'
-            disabled={!showReset}
-          >
-            <FilterX className='mr-2 h-4 w-4' />
-            {t('cashflowFilter.reset')}
-          </Button>
+            )}
+            <Segmented
+              size='md'
+              value={flow}
+              onChange={(next) => update({ flow: next === 'all' ? null : next })}
+              label={t('cashflowPage.flow.label')}
+              options={FLOWS.map((key) => ({ value: key, label: t(`cashflowPage.flow.${key}`) }))}
+            />
+            {filtered && (
+              <button
+                type='button'
+                onClick={() => update({ range: null, flow: null, from: null, to: null })}
+                className='inline-flex h-9 items-center gap-1.5 self-start rounded-md px-2.5 text-xs font-medium text-slate-500 transition-colors hover:bg-rose-50 hover:text-rose-600 lg:ml-auto lg:self-auto'
+              >
+                <RotateCcw className='size-3.5' aria-hidden />
+                {t('cashflowPage.reset')}
+              </button>
+            )}
+          </div>
         </div>
 
-        {isLoading && (
-          <div
-            className='flex min-h-[16rem] flex-col items-center justify-center gap-4 rounded-xl border border-dashed border-border/80 bg-muted/20 py-12 shadow-sm ring-1 ring-gray-900/5'
-            role='status'
-            aria-live='polite'
-            aria-busy='true'
-          >
-            <Loader2 className='h-11 w-11 animate-spin text-primary' aria-hidden />
-            <div className='text-center'>
-              <p className='text-sm font-medium text-foreground'>{t('cashflowPage.tableLoadingTitle')}</p>
-              <p className='mt-1 text-xs text-muted-foreground'>{t('cashflowPage.tableLoadingHint')}</p>
-            </div>
+        {(list.isError || summary.isError) && (
+          <div className='space-y-3'>
+            <AuthAlert>{t('cashflowPage.loadError')}</AuthAlert>
+            <button
+              type='button'
+              onClick={retry}
+              className='inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:text-brand-purple'
+            >
+              <RefreshCw className='size-4' aria-hidden />
+              {t('cashflowPage.retry')}
+            </button>
           </div>
         )}
 
-        {isError && <ErrorComponent message={t('cashflowPage.loadErrorDetail')} />}
-
-        {isSuccess && data && (
-          <div className='overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-900/5'>
-            <div className='min-w-0 p-3 sm:p-4'>
-              <div className='max-h-[min(70vh,40rem)] min-w-0 w-full overflow-auto overscroll-contain'>
-                <DataTable
-                  columns={columns}
-                  data={tableRows}
-                  emptyMessage={t('cashflowPage.emptyPage')}
-                />
-              </div>
-              <div className='mt-4'>
-                <Pagination
-                  page={page}
-                  totalPage={data.meta.last_page}
-                  onChange={setPage}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <CashflowDetailDialog
-          open={isDetailOpen}
-          onOpenChange={setIsDetailOpen}
-          item={selectedCashflow}
+        <CashflowSummary
+          summary={summary.data}
+          isLoading={summary.isLoading}
+          stale={summary.isPlaceholderData}
+          periodLabel={periodLabel}
         />
+
+        <section className='space-y-3' aria-label={t('cashflowPage.listLabel')}>
+          {flow !== 'all' && (
+            <p className='text-xs text-slate-500'>{t('cashflowPage.flowNote')}</p>
+          )}
+
+          {list.isLoading ? (
+            <div className='space-px overflow-hidden bg-slate-200/60 p-px hud-clip' aria-hidden>
+              {Array.from({ length: 6 }, (_, i) => (
+                <div key={i} className='flex items-center gap-4 bg-white px-5 py-4'>
+                  <div className='size-9 animate-pulse bg-slate-200/70 hud-clip-sm' />
+                  <div className='flex-1 space-y-2'>
+                    <div className='h-3.5 w-1/3 animate-pulse rounded bg-slate-200/70' />
+                    <div className='h-3 w-1/2 animate-pulse rounded bg-slate-100' />
+                  </div>
+                  <div className='h-4 w-24 animate-pulse rounded bg-slate-200/70' />
+                </div>
+              ))}
+            </div>
+          ) : !list.isError && items.length === 0 ? (
+            <div className='grid place-items-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center animate-in fade-in duration-500'>
+              <span className='mb-4 grid size-14 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
+                <Wallet className='size-6' aria-hidden />
+              </span>
+              <h2 className='font-display text-xl font-bold text-slate-900'>{t('cashflowPage.emptyTitle')}</h2>
+              <p className='mt-1 max-w-sm text-sm text-slate-500'>{t('cashflowPage.emptyBody', { period: periodLabel })}</p>
+              {range === 'today' && (
+                <button
+                  type='button'
+                  onClick={() => update({ range: '7d' })}
+                  className='mt-5 inline-flex h-9 items-center gap-1.5 px-3 font-display text-[11px] font-semibold uppercase tracking-[0.15em] text-brand-purple ring-1 ring-inset ring-brand-purple/30 hud-clip-sm transition-colors hover:bg-brand-purple/10'
+                >
+                  {t('cashflowPage.tryWeek')}
+                </button>
+              )}
+            </div>
+          ) : (
+            groups.length > 0 && (
+              <div className={cn('space-y-5 transition-opacity duration-300', list.isPlaceholderData && 'opacity-60')} aria-busy={list.isFetching}>
+                {groups.map((group, groupIndex) => (
+                  <section
+                    key={group.key}
+                    aria-labelledby={`cashflow-day-${group.key}`}
+                    className='animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both'
+                    style={{ animationDelay: `${groupIndex * 50}ms` }}
+                  >
+                    <h2 id={`cashflow-day-${group.key}`} className='mb-2 flex items-center gap-3'>
+                      <span className='font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500'>{group.label}</span>
+                      <span className='h-px flex-1 bg-slate-200' aria-hidden />
+                      <span className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
+                        {t('cashflowPage.entries', { count: group.items.length })}
+                      </span>
+                    </h2>
+                    <div className='bg-slate-200/80 p-px hud-clip'>
+                      <ul className='divide-y divide-slate-100 bg-white hud-clip'>
+                        {group.items.map((item) => (
+                          <CashflowRow key={item.id} item={item} onOpen={() => setSelected(item)} />
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )
+          )}
+
+          <HudPagination
+            page={page}
+            totalPages={list.data?.meta?.last_page ?? 1}
+            onChange={(next) => update({ page: next > 1 ? String(next) : null }, true)}
+          />
+        </section>
       </div>
+
+      <CashflowDetailDialog item={selected} onOpenChange={(open) => !open && setSelected(null)} />
     </DashboardLayout>
   )
 }
 
-interface CashflowDetailDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  item: CashflowItem | null
-}
+function CashflowRow({ item, onOpen }: { item: CashflowItem; onOpen: () => void }) {
+  const { t } = useTranslation('common')
+  const direction = directionOf(item.type)
+  const note = parseNotes(item.notes)
+  const time = formatBackendDateTime(item.created_at, 'HH:mm:ss')
+  const order = t('cashflowPage.order', { id: item.order_id.slice(0, 8) })
 
-function CashflowDetailDialog({ open, onOpenChange, item }: CashflowDetailDialogProps) {
-  const { t, i18n } = useTranslation('common')
-  if (!item) return null
-
-  const dateLocale = () => {
-    return i18n.language.startsWith('id') ? idLocale : enUS
-  }
-
-  const typeColorClass =
-    item.type === 'PROVIDER'
-      ? 'bg-blue-50 text-blue-700 border-blue-200/60 dark:bg-blue-950/20 dark:text-blue-400 dark:border-blue-900/40 hover:bg-blue-50'
-      : item.type === 'PAYMENT_GATEWAY'
-        ? 'bg-amber-50 text-amber-700 border-amber-200/60 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/40 hover:bg-amber-50'
-        : 'bg-emerald-50 text-emerald-700 border-emerald-200/60 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/40 hover:bg-emerald-50'
-
-  const typeLabel =
-    item.type === 'PROVIDER'
-      ? t('cashflowFilter.provider')
-      : item.type === 'PAYMENT_GATEWAY'
-        ? t('cashflowFilter.pg')
-        : t('cashflowFilter.revenue')
-
-  const copyId = async (value: string) => {
-    try {
-      await copyTextToClipboard(value)
-      toast.success(t('cashflowTable.copySuccess'))
-    } catch {
-      toast.error(t('cashflowTable.copyError'))
-    }
-  }
-
-  const dateObj = new Date(item.created_at)
-  const formattedDate = format(dateObj, 'dd MMM yyyy, HH:mm:ss', { locale: dateLocale() })
+  const detail =
+    direction === 'in'
+      ? [note.method && t('cashflowPage.via', { method: formatPaymentChannel(note.method) }), order]
+      : direction === 'out'
+        ? [note.provider, note.sku, order]
+        : [item.notes || item.type, order]
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='rounded-2xl sm:max-w-lg border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-6'>
-        <DialogHeader className='border-b border-gray-100 dark:border-zinc-900 pb-4'>
-          <DialogTitle className='text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2'>
-            <Banknote className='h-5 w-5 text-primary' />
-            {t('cashflowDetailDialog.title', { defaultValue: 'Detail Arus Kas' })}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className='space-y-4 py-4 text-sm'>
-          {/* Amount and Type */}
-          <div className='flex items-center justify-between rounded-xl bg-slate-50 dark:bg-zinc-900/50 p-4 border border-slate-100 dark:border-zinc-800/80'>
-            <div>
-              <p className='text-xs text-muted-foreground font-medium uppercase tracking-wider mb-1'>
-                {t('cashflowTable.colAmount')}
-              </p>
-              <p className='text-2xl font-bold tabular-nums text-slate-900 dark:text-white'>
-                {formatCurrency(item.amount)}
-              </p>
-            </div>
-            <span className={cn('px-2.5 py-1 rounded-full text-xs font-semibold border shrink-0', typeColorClass)}>
-              {typeLabel}
-            </span>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4 border-b border-gray-100 dark:border-zinc-900 pb-4'>
-            <div>
-              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colDate')}</p>
-              <p className='font-medium text-slate-900 dark:text-white'>{formattedDate}</p>
-            </div>
-            <div>
-              <p className='text-xs text-muted-foreground font-medium mb-1'>ID</p>
-              <p className='font-mono text-xs text-slate-900 dark:text-white truncate' title={item.id}>
-                {item.id}
-              </p>
-            </div>
-          </div>
-
-          <div className='grid grid-cols-2 gap-4 border-b border-gray-100 dark:border-zinc-900 pb-4'>
-            <div>
-              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colOrderId')}</p>
-              <div className='flex items-center gap-1 font-mono text-xs'>
-                <span className='truncate max-w-[10rem] text-slate-900 dark:text-white' title={item.order_id}>
-                  {item.order_id}
-                </span>
-                <Button
-                  type='button'
-                  variant='ghost'
-                  size='icon'
-                  className='h-6 w-6 text-muted-foreground hover:text-foreground shrink-0'
-                  onClick={() => void copyId(item.order_id)}
-                  title={t('cashflowTable.colOrderId')}
-                >
-                  <Copy className='h-3 w-3' aria-hidden />
-                </Button>
-              </div>
-            </div>
-            <div>
-              <p className='text-xs text-muted-foreground font-medium mb-1'>{t('cashflowTable.colPaymentId')}</p>
-              {item.payment_id ? (
-                <div className='flex items-center gap-1 font-mono text-xs'>
-                  <Link
-                    to={`/transactions/${item.payment_id}`}
-                    className='group inline-flex items-center gap-0.5 text-primary hover:underline truncate max-w-[10rem]'
-                    onClick={() => onOpenChange(false)}
-                  >
-                    <span className='truncate' title={item.payment_id}>
-                      {item.payment_id}
-                    </span>
-                    <ChevronRight className='h-3.5 w-3.5 opacity-60 group-hover:translate-x-0.5' />
-                  </Link>
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='icon'
-                    className='h-6 w-6 text-muted-foreground hover:text-foreground shrink-0'
-                    onClick={() => void copyId(item.payment_id!)}
-                    title={t('cashflowTable.colPaymentId')}
-                  >
-                    <Copy className='h-3 w-3' aria-hidden />
-                  </Button>
-                </div>
-              ) : (
-                <span className='text-muted-foreground'>—</span>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <p className='text-xs text-muted-foreground font-medium mb-1.5'>{t('cashflowTable.colNotes')}</p>
-            <div className='rounded-lg bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800/80 p-3 text-sm text-slate-700 dark:text-slate-350 whitespace-pre-wrap break-words leading-relaxed max-h-48 overflow-y-auto'>
-              {item.notes || '—'}
-            </div>
-          </div>
-        </div>
-
-        <div className='flex justify-end gap-3 border-t border-gray-100 dark:border-zinc-900 pt-4 mt-2'>
-          <Button
-            type='button'
-            variant='outline'
-            onClick={() => onOpenChange(false)}
-            className='px-4'
-          >
-            {t('cashflowDetailDialog.btnClose', { defaultValue: 'Tutup' })}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+    <li>
+      <button
+        type='button'
+        onClick={onOpen}
+        className='group grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-4 py-3 text-left transition-colors hover:bg-brand-purple/[0.03] focus-visible:bg-brand-purple/[0.04] focus-visible:outline-none sm:grid-cols-[auto_minmax(0,1fr)_5.5rem_auto_1rem] sm:gap-x-4 sm:px-5'
+      >
+        <DirectionTile direction={direction} />
+        <span className='min-w-0'>
+          <span className='block truncate text-sm font-medium text-slate-900 transition-colors group-hover:text-brand-purple'>
+            {direction === 'other' ? item.type : t(`cashflowPage.kind.${direction}`)}
+          </span>
+          <span className='block truncate text-xs text-slate-500'>{detail.filter(Boolean).join(' · ')}</span>
+        </span>
+        <time className='hidden text-right text-xs tabular-nums text-slate-500 sm:block'>{time}</time>
+        <span className='flex flex-col items-end'>
+          <SignedAmount direction={direction} amount={item.amount} className='text-right text-sm font-semibold' />
+          <span className='text-[11px] tabular-nums text-slate-400 sm:hidden'>{time}</span>
+        </span>
+        <ChevronRight
+          className='hidden size-4 text-slate-300 transition-transform duration-300 ease-hud group-hover:translate-x-0.5 group-hover:text-brand-purple sm:block'
+          aria-hidden
+        />
+      </button>
+    </li>
   )
 }
