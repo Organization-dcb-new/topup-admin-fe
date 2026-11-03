@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ChevronLeft, ChevronRight, Pencil, Plus, RefreshCw, Ticket, Trash2 } from 'lucide-react'
+import { ArrowRight, Pencil, Plus, RefreshCw, Ticket, Trash2 } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
 import { DangerDialog } from '@/components/Auth/DangerDialog'
 import { hudEyebrowClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { HudPagination } from '@/components/Layout/hud-pagination'
 import { ReferralFormDialog } from '@/components/Referral/ReferralFormDialog'
 import { CopyCodeButton, ReferralStatusToggle, ReferralTicket } from '@/components/Referral/ReferralParts'
 import { PERM } from '@/constants/permissions'
@@ -96,21 +97,7 @@ export default function ReferralPage() {
           </ul>
         )}
 
-        {totalPages > 1 && (
-          <nav className='flex items-center justify-between border-t border-slate-200 pt-4' aria-label={t('referralPage.pagination')}>
-            <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
-              {t('referralPage.pageInfo', { page, total: totalPages })}
-            </span>
-            <div className='flex gap-2'>
-              <PageButton disabled={page <= 1} onClick={() => setPage((p) => p - 1)} label={t('referralPage.prev')}>
-                <ChevronLeft className='size-4' aria-hidden />
-              </PageButton>
-              <PageButton disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)} label={t('referralPage.next')}>
-                <ChevronRight className='size-4' aria-hidden />
-              </PageButton>
-            </div>
-          </nav>
-        )}
+        <HudPagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
 
       <ReferralFormDialog
@@ -249,30 +236,5 @@ function EmptyState({ onCreate }: { onCreate: () => void }) {
         </button>
       </Can>
     </div>
-  )
-}
-
-function PageButton({
-  disabled,
-  onClick,
-  label,
-  children,
-}: {
-  disabled: boolean
-  onClick: () => void
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <button
-      type='button'
-      disabled={disabled}
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      className='grid size-9 place-items-center bg-white text-slate-600 ring-1 ring-inset ring-slate-200 hud-clip-sm transition-colors hover:text-brand-purple disabled:opacity-40 disabled:hover:text-slate-600'
-    >
-      {children}
-    </button>
   )
 }

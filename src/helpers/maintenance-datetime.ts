@@ -62,19 +62,31 @@ export function datetimeLocalToIso(local: string): string | undefined {
 
 export function formatMaintenanceInstant(
   iso: string | null | undefined,
-  options?: { timeZone?: string },
+  options?: { timeZone?: string; locale?: string; dateStyle?: 'short' | 'medium' },
 ): string {
   if (!iso) return '—'
   try {
     const timeZone = options?.timeZone ?? MAINTENANCE_DISPLAY_TZ
-    return new Date(iso).toLocaleString('id-ID', {
-      dateStyle: 'short',
+    return new Date(iso).toLocaleString(options?.locale ?? 'id-ID', {
+      dateStyle: options?.dateStyle ?? 'short',
       timeStyle: 'short',
       timeZone,
     })
   } catch {
     return iso
   }
+}
+
+/** Nilai `datetime-local` untuk saat ini, dalam jam dinding WIB. */
+export function nowAsDatetimeLocal(): string {
+  return isoToDatetimeLocal(new Date().toISOString())
+}
+
+/** Geser nilai `datetime-local` (WIB) sebanyak `minutes`; kosong jika input tidak valid. */
+export function addMinutesToDatetimeLocal(local: string, minutes: number): string {
+  const ms = datetimeLocalMsWib(local)
+  if (Number.isNaN(ms)) return ''
+  return isoToDatetimeLocal(new Date(ms + minutes * 60_000).toISOString())
 }
 
 function datetimeLocalMsWib(local: string): number {

@@ -37,6 +37,7 @@ export interface RoleOption {
   /** Missing for the built-in fallback, where only the slug is known. */
   id?: string
   name: string
+  description?: string
 }
 
 const FALLBACK_ROLE_OPTIONS: RoleOption[] = [
@@ -54,7 +55,7 @@ export function useRoleOptions(): RoleOption[] {
   return useMemo(() => {
     const options = data
       ?.filter((role) => role.slug !== 'dev')
-      .map((role) => ({ slug: role.slug, id: role.id, name: role.name }))
+      .map((role) => ({ slug: role.slug, id: role.id, name: role.name, description: role.description }))
     return options?.length ? options : FALLBACK_ROLE_OPTIONS
   }, [data])
 }

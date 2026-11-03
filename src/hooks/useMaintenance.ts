@@ -1,4 +1,5 @@
 import { api } from '@/api/axios'
+import i18n from '@/i18n'
 import type {
   CreateMaintenancePayload,
   MaintenanceListResponse,
@@ -19,7 +20,7 @@ export function useGetMaintenances() {
   })
 }
 
-export function useCreateMaintenance(onSuccessClose: () => void) {
+export function useCreateMaintenance(onSuccessClose?: () => void) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -28,42 +29,42 @@ export function useCreateMaintenance(onSuccessClose: () => void) {
       return res.data
     },
     onSuccess: () => {
-      toast.success('Jadwal pemeliharaan dibuat')
-      queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
-      onSuccessClose()
+      toast.success(i18n.t('maintenancePage.toasts.created'))
+      void queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
+      onSuccessClose?.()
     },
-    onError: () => toast.error('Gagal membuat pemeliharaan'),
+    onError: () => toast.error(i18n.t('maintenancePage.toasts.createError')),
   })
 }
 
-export function useUpdateMaintenance(id: string, onSuccessClose?: () => void) {
+export function useUpdateMaintenance(onSuccessClose?: () => void) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (payload: UpdateMaintenancePayload) => {
+    mutationFn: async ({ id, payload }: { id: string; payload: UpdateMaintenancePayload }) => {
       const res = await api.patch(`/maintenances/${id}`, payload)
       return res.data
     },
     onSuccess: () => {
-      toast.success('Pemeliharaan diperbarui')
-      queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
+      toast.success(i18n.t('maintenancePage.toasts.updated'))
+      void queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
       onSuccessClose?.()
     },
-    onError: () => toast.error('Gagal memperbarui pemeliharaan'),
+    onError: () => toast.error(i18n.t('maintenancePage.toasts.updateError')),
   })
 }
 
-export function useDeleteMaintenance(id: string) {
+export function useDeleteMaintenance() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       await api.delete(`/maintenances/${id}`)
     },
     onSuccess: () => {
-      toast.success('Pemeliharaan dihapus')
-      queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
+      toast.success(i18n.t('maintenancePage.toasts.deleted'))
+      void queryClient.invalidateQueries({ queryKey: maintenancesQueryKey })
     },
-    onError: () => toast.error('Gagal menghapus pemeliharaan'),
+    onError: () => toast.error(i18n.t('maintenancePage.toasts.deleteError')),
   })
 }
