@@ -4,7 +4,7 @@ import { CreditCard, ExternalLink, Hourglass } from 'lucide-react'
 
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import type { TransactionDetail } from '@/types/transaction'
-import { DetailField, DetailPanel } from './detail-parts'
+import { DetailField, DetailPanel, EmptyValue } from './detail-parts'
 import { ChannelChip, CopyValueButton, PaymentStatusChip } from './TransactionParts'
 import { isAwaitingPayment, wibToIso } from './transaction-meta'
 
@@ -24,7 +24,7 @@ export function TransactionPaymentPanel({ detail, order }: { detail: Transaction
           <ChannelChip channel={detail.payment_channel} />
         </DetailField>
         <DetailField label={t('transactionDetailPage.payment.number')} copy={detail.payment_number || undefined} mono>
-          {detail.payment_number || '—'}
+          {detail.payment_number || <EmptyValue />}
         </DetailField>
         {detail.va_number && (
           <DetailField label={t('transactionDetailPage.payment.vaNumber')} copy={detail.va_number} mono>

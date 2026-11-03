@@ -38,6 +38,8 @@ export const useGetTransactions = (filters: TransactionListFilters, refetchInter
     },
     // Keep the current page on screen while a new filter or page loads.
     placeholderData: keepPreviousData,
+    // Auto refresh retries anyway; one retry keeps a failure from hiding behind a skeleton for seconds.
+    retry: 1,
     refetchInterval,
     refetchIntervalInBackground: false,
   })

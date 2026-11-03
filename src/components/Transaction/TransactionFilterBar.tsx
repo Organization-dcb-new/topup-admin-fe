@@ -69,10 +69,10 @@ export function TransactionFilterBar({ value, onChange, onReset, advancedOpen, o
             aria-expanded={advancedOpen}
             aria-controls='transaction-more-filters'
             className={cn(
-              'inline-flex h-10 items-center justify-center gap-2 px-3 font-display text-[11px] font-semibold uppercase tracking-[0.12em] ring-1 ring-inset hud-clip-sm transition-colors md:col-span-2 lg:col-span-1',
+              'inline-flex h-10 items-center justify-center gap-2 rounded-md border px-3 font-display text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 md:col-span-2 lg:col-span-1',
               advancedOpen || extra
-                ? 'bg-brand-purple/10 text-brand-purple ring-brand-purple/30'
-                : 'bg-white text-slate-600 ring-slate-200 hover:text-brand-purple'
+                ? 'border-brand-purple/40 bg-brand-purple/10 text-brand-purple'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-brand-purple'
             )}
           >
             <SlidersHorizontal className='size-3.5' aria-hidden />

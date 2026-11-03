@@ -4,7 +4,7 @@ import { Fingerprint, Package, UserRound } from 'lucide-react'
 import { formatCurrency, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { TransactionDetail, TransactionRowState } from '@/types/transaction'
-import { DetailField, DetailPanel } from './detail-parts'
+import { DetailField, DetailPanel, EmptyValue } from './detail-parts'
 import { ProviderStatusChip } from './TransactionParts'
 import { accountFields, humanizeKey } from './transaction-meta'
 
@@ -31,9 +31,9 @@ export function TransactionItemPanel({ detail, row, order }: PanelProps & { row?
       footer={row ? undefined : t('transactionDetailPage.item.fromListHint')}
     >
       <dl>
-        <DetailField label={t('transactionDetailPage.item.product')}>{item?.product_name || '—'}</DetailField>
+        <DetailField label={t('transactionDetailPage.item.product')}>{item?.product_name || <EmptyValue />}</DetailField>
         <DetailField label={t('transactionDetailPage.item.sku')} copy={sku || undefined} mono>
-          {sku || '—'}
+          {sku || <EmptyValue />}
         </DetailField>
         <DetailField label={t('transactionDetailPage.item.quantity')}>{formatNumber(item?.quantity ?? 0)}</DetailField>
         <DetailField label={t('transactionDetailPage.item.unitPrice')}>{formatCurrency(item?.unit_price ?? 0)}</DetailField>
@@ -51,7 +51,7 @@ export function TransactionItemPanel({ detail, row, order }: PanelProps & { row?
         </DetailField>
         <DetailField label={t('transactionDetailPage.item.margin')}>
           {margin === undefined ? (
-            '—'
+            <EmptyValue />
           ) : (
             <span className={cn('font-semibold tabular-nums', margin < 0 ? 'text-rose-600' : 'text-emerald-600')}>{formatCurrency(margin)}</span>
           )}
@@ -80,7 +80,7 @@ export function TransactionCustomerPanel({ detail, order }: PanelProps) {
     >
       <dl>
         <DetailField label={t('transactionDetailPage.customer.email')} copy={email || undefined}>
-          {email || '—'}
+          {email || <EmptyValue />}
         </DetailField>
         {fields.map((field) => (
           <DetailField key={field.key} label={humanizeKey(field.key)} copy={field.value} mono>
@@ -88,7 +88,7 @@ export function TransactionCustomerPanel({ detail, order }: PanelProps) {
           </DetailField>
         ))}
         <DetailField label={t('transactionDetailPage.customer.ip')} copy={ip || undefined} mono>
-          {ip || '—'}
+          {ip || <EmptyValue />}
         </DetailField>
       </dl>
     </DetailPanel>
@@ -111,7 +111,7 @@ export function TransactionReferencePanel({ detail, order }: PanelProps) {
       <dl>
         {refs.map((ref) => (
           <DetailField key={ref.key} label={t(`transactionDetailPage.refs.${ref.key}`)} copy={ref.value || undefined} mono stacked>
-            {ref.value || '—'}
+            {ref.value || <EmptyValue />}
           </DetailField>
         ))}
       </dl>

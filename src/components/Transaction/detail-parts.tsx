@@ -43,6 +43,11 @@ interface DetailFieldProps {
   children: ReactNode
 }
 
+/** Placeholder for a value the backend didn't send. */
+export function EmptyValue() {
+  return <span className='text-slate-400'>—</span>
+}
+
 /** One label/value row inside a `<dl>`. */
 export function DetailField({ label, copy, mono, stacked, emphasis, children }: DetailFieldProps) {
   const value = (
