@@ -3,38 +3,7 @@ import { CheckCircle2, Percent, TrendingUp, Wallet, type LucideIcon } from 'luci
 
 import { formatCurrency, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { Payment, TransactionPaginationMeta } from '@/types/transaction'
-
-export interface TransactionStatsValue {
-  volume: number
-  paid: number
-  margin: number
-  /** 0–100. */
-  successRate: number
-  /** True when the numbers cover every matching transaction, not just this page. */
-  overall: boolean
-}
-
-/** Server totals for the current filters when the backend sends them; this page's rows otherwise. */
-export function computeStats(meta: TransactionPaginationMeta | undefined, rows: Payment[]): TransactionStatsValue {
-  if (meta && meta.total_volume !== undefined) {
-    return {
-      volume: meta.total_volume ?? 0,
-      paid: meta.total_paid_count ?? 0,
-      margin: meta.total_margin ?? 0,
-      successRate: meta.success_rate ?? 0,
-      overall: true,
-    }
-  }
-  const paid = rows.filter((r) => r.status === 'PAID')
-  return {
-    volume: paid.reduce((sum, r) => sum + (r.amount ?? 0), 0),
-    paid: paid.length,
-    margin: paid.reduce((sum, r) => sum + (r.margin ?? 0), 0),
-    successRate: rows.length ? (paid.length / rows.length) * 100 : 0,
-    overall: false,
-  }
-}
+import type { TransactionStatsValue } from './transaction-meta'
 
 export function TransactionStats({ stats, loading }: { stats: TransactionStatsValue; loading: boolean }) {
   const { t, i18n } = useTranslation('common')

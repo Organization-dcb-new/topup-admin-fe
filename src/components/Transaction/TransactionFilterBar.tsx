@@ -93,9 +93,24 @@ export function TransactionFilterBar({ value, onChange, onReset, advancedOpen, o
               <PaymentMethodField value={value.paymentMethodId} onChange={(paymentMethodId) => onChange({ paymentMethodId })} />
             )}
             <div className='grid grid-cols-3 gap-2 sm:col-span-2 lg:col-span-1'>
-              <AmountInput value={value.priceAbove} onChange={(priceAbove) => onChange({ priceAbove })} label={t('transactionPage.filters.amountMin')} />
-              <AmountInput value={value.priceBelow} onChange={(priceBelow) => onChange({ priceBelow })} label={t('transactionPage.filters.amountMax')} />
-              <AmountInput value={value.price} onChange={(price) => onChange({ price })} label={t('transactionPage.filters.amountExact')} />
+              <AmountInput
+                value={value.priceAbove}
+                onChange={(priceAbove) => onChange({ priceAbove })}
+                label={t('transactionPage.filters.amountMin')}
+                placeholder={t('transactionPage.filters.amountMinShort')}
+              />
+              <AmountInput
+                value={value.priceBelow}
+                onChange={(priceBelow) => onChange({ priceBelow })}
+                label={t('transactionPage.filters.amountMax')}
+                placeholder={t('transactionPage.filters.amountMaxShort')}
+              />
+              <AmountInput
+                value={value.price}
+                onChange={(price) => onChange({ price })}
+                label={t('transactionPage.filters.amountExact')}
+                placeholder={t('transactionPage.filters.amountExactShort')}
+              />
             </div>
           </div>
         )}
@@ -117,7 +132,15 @@ export function TransactionFilterBar({ value, onChange, onReset, advancedOpen, o
   )
 }
 
-function AmountInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
+interface AmountInputProps {
+  value: string
+  onChange: (value: string) => void
+  /** Read out to screen readers and shown as a tooltip. */
+  label: string
+  placeholder: string
+}
+
+function AmountInput({ value, onChange, label, placeholder }: AmountInputProps) {
   return (
     <label className='relative block min-w-0'>
       <span className='sr-only'>{label}</span>
@@ -128,7 +151,8 @@ function AmountInput({ value, onChange, label }: { value: string; onChange: (v: 
         min={0}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={label}
+        placeholder={placeholder}
+        title={label}
         className='h-10 rounded-md border-slate-200 bg-white pl-8 text-sm tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
       />
     </label>
