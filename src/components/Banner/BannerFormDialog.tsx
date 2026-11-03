@@ -226,8 +226,10 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
             {t(`bannerPage.linkKind.${kind}`)}
           </span>
         </div>
-        <div className='relative'>
-          <Link2 className={hudInputIconClass} aria-hidden />
+        <div className='group relative'>
+          <span className={hudInputIconClass} aria-hidden>
+            <Link2 className='size-[18px]' />
+          </span>
           <Input
             id={`${ids}-link`}
             inputMode='url'
