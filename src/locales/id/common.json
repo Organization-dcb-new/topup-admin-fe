@@ -1152,7 +1152,7 @@
     },
     "base": "Modal",
     "selling": "Jual",
-    "fee": "Biaya tambahan",
+    "fee": "Biaya",
     "markup": "Markup",
     "inactive": "Nonaktif",
     "stock": "stok {{count}}",

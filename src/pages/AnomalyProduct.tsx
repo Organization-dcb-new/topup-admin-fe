@@ -128,7 +128,7 @@ function AnomalyRow({ product, gameName, maxLoss, order, canOpenGame }: AnomalyR
 
   return (
     <li
-      className='grid gap-x-5 gap-y-3 px-4 py-4 animate-in fade-in duration-300 fill-mode-both sm:px-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,15rem)_minmax(0,13rem)_auto] lg:items-center'
+      className='grid gap-x-5 gap-y-3 px-4 py-4 animate-in fade-in duration-300 fill-mode-both sm:px-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,19rem)_minmax(0,11rem)_auto] lg:items-center'
       style={{ animationDelay: `${Math.min(order, 12) * 25}ms` }}
     >
       <div className='flex min-w-0 items-center gap-3'>
@@ -147,20 +147,18 @@ function AnomalyRow({ product, gameName, maxLoss, order, canOpenGame }: AnomalyR
           <p className='truncate text-xs text-slate-500'>
             <span className='font-mono'>{product.sku}</span>
             {gameName && <span> · {gameName}</span>}
-            <span className='inline-flex items-center gap-0.5'>
-              {' · '}
-              {product.is_unlimited_stock ? (
-                <InfinityIcon className='inline size-3' aria-label={t('anomalyProductPage.stockUnlimited')} />
-              ) : (
-                t('anomalyProductPage.stock', { count: product.stock_quantity })
-              )}
-            </span>
+            <span> · </span>
+            {product.is_unlimited_stock ? (
+              <InfinityIcon className='inline size-3 align-[-2px]' aria-label={t('anomalyProductPage.stockUnlimited')} />
+            ) : (
+              <span>{t('anomalyProductPage.stock', { count: product.stock_quantity })}</span>
+            )}
           </p>
         </div>
       </div>
 
       <div className='min-w-0 space-y-1.5'>
-        <div className='flex flex-wrap items-baseline gap-x-2 text-xs tabular-nums'>
+        <div className='flex items-baseline gap-x-1.5 whitespace-nowrap text-xs tabular-nums'>
           <span className='text-slate-500'>{t('anomalyProductPage.base')}</span>
           <span className='font-medium text-slate-700'>{formatCurrency(product.base_price)}</span>
           <ArrowRight className='size-3 self-center text-slate-300' aria-hidden />

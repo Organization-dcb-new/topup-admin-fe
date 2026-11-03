@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { format } from 'date-fns'
+import { enUS, id as idLocale } from 'date-fns/locale'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ArrowRight, RadioTower } from 'lucide-react'
 
@@ -78,9 +80,7 @@ export default function ProductCallbackLogDetailPage() {
                     {formatBackendDateTime(log.created_at, 'dd MMM yyyy, HH:mm:ss')}
                   </Meta>
                   <Meta label={t('productCallbackLogPage.detail.providerTime')}>
-                    {providerTime
-                      ? providerTime.toLocaleString(i18n.resolvedLanguage, { dateStyle: 'medium', timeStyle: 'medium', timeZone: 'Asia/Jakarta' })
-                      : '—'}
+                    {providerTime ? format(providerTime, 'dd MMM yyyy, HH:mm:ss', { locale: i18n.language.startsWith('id') ? idLocale : enUS }) : '—'}
                   </Meta>
                   <Meta label={t('productCallbackLogPage.detail.level')}>
                     <span className='capitalize'>{log.meta_level || '—'}</span>

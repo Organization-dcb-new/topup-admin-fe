@@ -1156,7 +1156,7 @@
     },
     "base": "Base",
     "selling": "Selling",
-    "fee": "Extra fee",
+    "fee": "Fee",
     "markup": "Markup",
     "inactive": "Inactive",
     "stock_one": "{{count}} in stock",
