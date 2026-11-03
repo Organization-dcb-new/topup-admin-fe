@@ -232,7 +232,7 @@ function ShowCard({ show, order, onEdit, onGames, onDelete }: ShowCardProps) {
                 <div className='flex min-w-0 items-center gap-3'>
                   {games.length > 0 ? (
                     <div className='flex shrink-0 -space-x-2'>
-                      {games.slice(0, 5).map((g) => (
+                      {games.slice(0, 3).map((g) => (
                         <span
                           key={g.id}
                           className='grid size-8 place-items-center overflow-hidden rounded-full bg-slate-100 ring-2 ring-white'
@@ -245,9 +245,9 @@ function ShowCard({ show, order, onEdit, onGames, onDelete }: ShowCardProps) {
                           )}
                         </span>
                       ))}
-                      {games.length > 5 && (
+                      {games.length > 3 && (
                         <span className='grid size-8 place-items-center rounded-full bg-slate-900 text-[10px] font-semibold text-white ring-2 ring-white'>
-                          +{games.length - 5}
+                          +{games.length - 3}
                         </span>
                       )}
                     </div>

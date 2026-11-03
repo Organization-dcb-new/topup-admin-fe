@@ -117,7 +117,7 @@ function ShowForm({ show, onDone }: { show?: Show; onDone: () => void }) {
               onChange={(e) => {
                 void nameField.onChange(e)
                 if (!aliasTouched.current) {
-                  setValue('alias', toAlias(e.target.value), { shouldValidate: isSubmitted })
+                  setValue('alias', toAlias(e.target.value).replace(/-+$/, ''), { shouldValidate: isSubmitted })
                 }
               }}
             />
@@ -208,7 +208,7 @@ function ShowForm({ show, onDone }: { show?: Show; onDone: () => void }) {
         >
           {t('showPage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton pending={pending} pendingLabel={t('showPage.form.saving')} cooldown={0} disabled={uploading}>
             {show ? t('showPage.form.save') : t('showPage.form.create')}
           </AuthSubmitButton>

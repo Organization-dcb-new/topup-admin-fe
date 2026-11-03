@@ -145,7 +145,7 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
         >
           {t('bannerPage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton
             pending={pending}
             pendingLabel={t('bannerPage.form.saving')}

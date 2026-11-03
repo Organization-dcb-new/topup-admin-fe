@@ -1,4 +1,4 @@
-import type { GameName } from '@/components/Blog/types/blog'
+import type { GameNames as GameName } from '@/hooks/useGame'
 import { Button } from '@/components/ui/button'
 import {
   Command,

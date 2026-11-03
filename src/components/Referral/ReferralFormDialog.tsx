@@ -179,7 +179,7 @@ function ReferralForm({ referral, onDone }: { referral?: ReferralCode; onDone: (
         >
           {t('referralPage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton pending={pending} pendingLabel={t('referralPage.form.saving')} cooldown={0}>
             {referral ? t('referralPage.form.save') : t('referralPage.form.create')}
           </AuthSubmitButton>

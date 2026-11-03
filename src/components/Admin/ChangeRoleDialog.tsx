@@ -108,7 +108,7 @@ function ChangeRoleForm({ admin, pending, onCancel, onSubmit }: ChangeRoleFormPr
         <button
           type='submit'
           disabled={unchanged || pending}
-          className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none disabled:opacity-50 sm:w-52')}
+          className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none disabled:opacity-50 sm:min-w-52')}
         >
           <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
           {pending && <Loader2 className='size-4 animate-spin' aria-hidden />}

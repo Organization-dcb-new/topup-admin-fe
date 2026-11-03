@@ -456,78 +456,96 @@
     }
   },
   "blogPage": {
-    "title": "Blog",
-    "subtitle": "Manage articles: view the list, create a new post, or edit published content. Use the buttons in the workspace below to switch modes.",
-    "listHeading": "Blog list",
-    "createHeading": "New article",
-    "editHeading": "Edit article",
-    "addArticle": "Add article",
-    "backToList": "Back to list"
-  },
-  "blogTable": {
-    "colThumbnail": "Image",
-    "colTitle": "Title",
-    "colCategory": "Category",
-    "colTags": "Tags",
-    "noTags": "No tags",
-    "colStatus": "Status",
-    "statusPublished": "Published",
-    "statusDraft": "Draft"
-  },
-  "blogList": {
-    "loadingTitle": "Loading articles…",
-    "loadingHint": "Please wait a moment.",
-    "loadError": "Failed to load articles. Check your connection or try again later.",
+    "eyebrow": "// Storefront",
+    "title": "Articles",
+    "subtitle": "News, guides and promos for the storefront blog. Drafts stay private until you publish them.",
+    "total_one": "{{count}} article",
+    "total_other": "{{count}} articles",
+    "addBtn": "Write article",
+    "retry": "Try again",
+    "loadError": "Couldn’t load articles. Check your connection and try again.",
     "emptyTitle": "No articles yet",
-    "emptyHint": "Add your first article with the Add article button above.",
-    "emptyPageRow": "No articles on this page."
-  },
-  "blogManage": {
-    "excerptLabel": "Summary (excerpt)",
-    "excerptPlaceholder": "Short summary for the article list and SEO…",
-    "statusLabel": "Status",
-    "publishedChangesHint": "Changes to published articles appear on the public site immediately."
-  },
-  "blogField": {
-    "titlePlaceholder": "Article title…",
-    "titleAria": "Article title",
-    "editorPlaceholder": "Write content here (Markdown supported)…"
-  },
-  "blogThumbnail": {
-    "label": "Thumbnail image",
-    "ratioBadge": "16:9",
-    "previewAlt": "Thumbnail preview",
-    "uploading": "Uploading…",
-    "uploadHint": "Click or choose an image file",
-    "uploadAria": "Upload thumbnail",
-    "sizeHint": "Recommended 1280×720 px (16:9)"
-  },
-  "blogCategory": {
-    "gameCategoryTitle": "Game category",
-    "selectPlaceholder": "Choose a game category",
-    "searchPlaceholder": "Search games…",
-    "searchAria": "Search categories",
-    "noResults": "No results",
-    "tagsTitle": "Tags / keywords",
-    "tagsInputPlaceholder": "Type a tag, Enter or comma",
-    "tagsInputAria": "Add tag",
-    "removeTagAria": "Remove tag {{tag}}",
-    "quickAddTitle": "Quick add from games",
-    "quickSearchPlaceholder": "Search…",
-    "quickSearchAria": "Search tag suggestions",
-    "noMatchingCategories": "No matching categories"
-  },
-  "blogPublish": {
-    "sectionTitle": "Publication status",
-    "radiogroupAria": "Publication status",
-    "publishedLabel": "Published",
-    "publishedDesc": "Visible on the public site",
-    "draftLabel": "Draft",
-    "draftDesc": "Admin panel only",
-    "processing": "Processing…",
-    "saveChanges": "Save changes",
-    "publish": "Publish",
-    "saveDraft": "Save draft"
+    "emptyBody": "Write a guide, patch recap or promo to bring players to the store.",
+    "editBtn": "Edit {{title}}",
+    "deleteBtn": "Delete {{title}}",
+    "status": {
+      "draft": "Draft",
+      "published": "Published"
+    },
+    "editor": {
+      "back": "Back to articles",
+      "newEyebrow": "// New article",
+      "editEyebrow": "// Edit article",
+      "newTitle": "Write article",
+      "editTitle": "Edit article",
+      "unsaved": "Unsaved changes",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. 5 MLBB heroes to master this season",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write in Markdown. Paste or drop images into the editor to upload them.",
+      "excerptLabel": "Excerpt",
+      "excerptPlaceholder": "One or two sentences shown on cards and in search results.",
+      "excerptHint": "Shown on article cards and in search results.",
+      "statusLabel": "Status",
+      "statusHint": {
+        "draft": "Only admins can see drafts.",
+        "published": "Visible on the storefront blog as soon as it’s saved."
+      },
+      "publishedAt": "Published {{date}}",
+      "thumbnailLabel": "Thumbnail",
+      "thumbnailHint": "16:9 works best; it heads the article and its card.",
+      "categoryLabel": "Game",
+      "categoryPlaceholder": "Choose a game",
+      "categorySearch": "Search games",
+      "noGames": "No games match.",
+      "tagsLabel": "Tags",
+      "tagsPlaceholder": "Type a tag, press Enter",
+      "removeTag": "Remove tag {{tag}}",
+      "missing": "Still needed: {{fields}}.",
+      "fieldNames": {
+        "title": "title",
+        "content_markdown": "content",
+        "excerpt": "excerpt",
+        "thumbnail": "thumbnail",
+        "category": "game"
+      },
+      "saveDraft": "Save draft",
+      "publish": "Publish",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "discard": "Discard changes",
+      "errors": {
+        "title": "Give the article a title.",
+        "content": "Write the article content.",
+        "excerpt": "Add a short excerpt.",
+        "excerptMax": "Keep the excerpt under 150 characters.",
+        "thumbnail": "Upload a thumbnail.",
+        "category": "Choose the game this article is about."
+      }
+    },
+    "leaveConfirm": {
+      "eyebrow": "// Unsaved changes",
+      "title": "Leave without saving?",
+      "description": "Your changes to this article will be lost.",
+      "confirm": "Leave",
+      "cancel": "Keep editing"
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Delete article",
+      "title": "Delete “{{title}}”?",
+      "description": "It disappears from the storefront blog and can’t be restored.",
+      "confirm": "Delete article",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "published": "Article published",
+      "drafted": "Draft saved",
+      "updated": "Article updated",
+      "deleted": "Article deleted",
+      "createError": "Couldn’t save the article",
+      "updateError": "Couldn’t update the article",
+      "deleteError": "Couldn’t delete the article"
+    }
   },
   "deleteBlogModal": {
     "triggerAria": "Delete article",
@@ -537,29 +555,6 @@
     "cancel": "Cancel",
     "deleting": "Deleting…",
     "confirmDelete": "Delete"
-  },
-  "blogRowActions": {
-    "actionsHeader": "Actions",
-    "rowGroupAria": "Actions for this article",
-    "editAria": "Edit article",
-    "editLabel": "Edit"
-  },
-  "blogToasts": {
-    "thumbnailUploadSuccess": "Thumbnail uploaded",
-    "thumbnailUploadError": "Failed to upload image",
-    "updateSuccess": "Article updated",
-    "publishSuccess": "Article published",
-    "draftSavedSuccess": "Article saved as draft",
-    "serverErrorFallback": "A server error occurred",
-    "updateFailed": "Failed to update article: {{error}}",
-    "saveFailed": "Failed to save article: {{error}}",
-    "loadingList": "Loading article list…",
-    "loadError": "Failed to load article list",
-    "emptyList": "No articles yet",
-    "loadSuccess": "Article list loaded",
-    "deleteLoading": "Deleting article…",
-    "deleteSuccess": "Article deleted",
-    "deleteError": "Failed to delete article"
   },
   "gamePage": {
     "title": "Games",

@@ -5,15 +5,10 @@ import { Check, Gamepad2, Loader2, Search } from 'lucide-react'
 import { hudEyebrowClass, hudInputClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { useGetGameNames } from '@/hooks/useGame'
+import { useGetGameNames, type GameNames } from '@/hooks/useGame'
 import { useSetShowGames } from '@/hooks/useShow'
 import { cn } from '@/lib/utils'
 import type { Show } from '@/types/show'
-
-interface GameName {
-  id: string
-  name: string
-}
 
 interface ShowGamesDialogProps {
   show: Show | null
@@ -58,7 +53,7 @@ interface ShowGamesPickerProps {
 function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPickerProps) {
   const { t } = useTranslation('common')
   const { data, isLoading } = useGetGameNames()
-  const games: GameName[] = data ?? []
+  const games: GameNames[] = data ?? []
   const [selected, setSelected] = useState(() => new Set(show.games?.map((g) => g.id) ?? []))
   const [search, setSearch] = useState('')
 
@@ -71,10 +66,10 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
 
   const query = search.trim().toLowerCase()
   const visible = query ? games.filter((g) => g.name.toLowerCase().includes(query)) : games
-  // Chosen games first, so the current line-up is visible without scrolling.
-  const ordered = [...visible].sort((a, b) => Number(selected.has(b.id)) - Number(selected.has(a.id)))
-  const moving = [...selected].filter((id) => ownerByGame.has(id)).length
   const original = new Set(show.games?.map((g) => g.id) ?? [])
+  // The current line-up first. Sorted by the saved list, not the live ticks, so rows never jump under the cursor.
+  const ordered = [...visible].sort((a, b) => Number(original.has(b.id)) - Number(original.has(a.id)))
+  const moving = [...selected].filter((id) => ownerByGame.has(id)).length
   const unchanged = selected.size === original.size && [...selected].every((id) => original.has(id))
 
   const toggle = (id: string) =>
@@ -191,7 +186,7 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
             type='button'
             onClick={() => onSave([...selected])}
             disabled={unchanged || pending}
-            className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none sm:w-52')}
+            className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none sm:min-w-52')}
           >
             <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
             {pending && <Loader2 className='size-4 animate-spin' aria-hidden />}

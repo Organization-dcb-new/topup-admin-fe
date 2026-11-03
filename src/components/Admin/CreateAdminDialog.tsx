@@ -179,7 +179,7 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
         >
           {t('adminPage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton pending={create.isPending} pendingLabel={t('adminPage.form.creating')} cooldown={0}>
             {t('adminPage.form.create')}
           </AuthSubmitButton>

@@ -225,7 +225,7 @@ function MaintenanceForm({ maintenance, onDone }: { maintenance?: Maintenance; o
         >
           {t('maintenancePage.form.cancel')}
         </button>
-        <div className='sm:w-52'>
+        <div className='sm:min-w-52'>
           <AuthSubmitButton pending={pending} pendingLabel={t('maintenancePage.form.saving')} cooldown={0}>
             {maintenance ? t('maintenancePage.form.save') : t('maintenancePage.form.create')}
           </AuthSubmitButton>

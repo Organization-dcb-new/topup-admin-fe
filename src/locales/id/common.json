@@ -455,78 +455,95 @@
     }
   },
   "blogPage": {
-    "title": "Blog",
-    "subtitle": "Kelola artikel: lihat daftar, buat posting baru, atau ubah konten yang sudah terbit. Gunakan tombol di area kerja di bawah untuk beralih mode.",
-    "listHeading": "Daftar blog",
-    "createHeading": "Artikel baru",
-    "editHeading": "Ubah artikel",
-    "addArticle": "Tambah artikel",
-    "backToList": "Kembali ke daftar"
-  },
-  "blogTable": {
-    "colThumbnail": "Gambar",
-    "colTitle": "Judul",
-    "colCategory": "Kategori",
-    "colTags": "Tag",
-    "noTags": "Tanpa tag",
-    "colStatus": "Status",
-    "statusPublished": "Terbit",
-    "statusDraft": "Draf"
-  },
-  "blogList": {
-    "loadingTitle": "Memuat daftar artikel…",
-    "loadingHint": "Mohon tunggu sebentar.",
-    "loadError": "Gagal memuat daftar artikel. Periksa koneksi atau coba lagi nanti.",
+    "eyebrow": "// Etalase toko",
+    "title": "Artikel",
+    "subtitle": "Berita, panduan, dan promo untuk blog storefront. Draf tetap privat sampai diterbitkan.",
+    "total": "{{count}} artikel",
+    "addBtn": "Tulis artikel",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat artikel. Periksa koneksi lalu coba lagi.",
     "emptyTitle": "Belum ada artikel",
-    "emptyHint": "Tambah artikel pertama lewat tombol Tambah artikel di atas.",
-    "emptyPageRow": "Belum ada artikel di halaman ini."
-  },
-  "blogManage": {
-    "excerptLabel": "Ringkasan (excerpt)",
-    "excerptPlaceholder": "Ringkasan singkat untuk daftar artikel dan SEO…",
-    "statusLabel": "Status",
-    "publishedChangesHint": "Perubahan pada artikel yang sudah terbit akan langsung terlihat di halaman publik."
-  },
-  "blogField": {
-    "titlePlaceholder": "Judul artikel…",
-    "titleAria": "Judul artikel",
-    "editorPlaceholder": "Tulis konten di sini (Markdown didukung)…"
-  },
-  "blogThumbnail": {
-    "label": "Gambar thumbnail",
-    "ratioBadge": "16:9",
-    "previewAlt": "Pratinjau thumbnail",
-    "uploading": "Mengunggah…",
-    "uploadHint": "Klik atau pilih file gambar",
-    "uploadAria": "Unggah thumbnail",
-    "sizeHint": "Disarankan 1280×720 px (rasio 16:9)"
-  },
-  "blogCategory": {
-    "gameCategoryTitle": "Kategori game",
-    "selectPlaceholder": "Pilih kategori game",
-    "searchPlaceholder": "Cari game…",
-    "searchAria": "Cari kategori",
-    "noResults": "Tidak ada hasil",
-    "tagsTitle": "Tag / kata kunci",
-    "tagsInputPlaceholder": "Ketik tag, Enter atau koma",
-    "tagsInputAria": "Tambah tag",
-    "removeTagAria": "Hapus tag {{tag}}",
-    "quickAddTitle": "Tambah cepat dari game",
-    "quickSearchPlaceholder": "Cari…",
-    "quickSearchAria": "Cari untuk saran tag",
-    "noMatchingCategories": "Tidak ada kategori cocok"
-  },
-  "blogPublish": {
-    "sectionTitle": "Status publikasi",
-    "radiogroupAria": "Status publikasi",
-    "publishedLabel": "Terbit",
-    "publishedDesc": "Terlihat di halaman publik",
-    "draftLabel": "Draf",
-    "draftDesc": "Hanya di panel admin",
-    "processing": "Memproses…",
-    "saveChanges": "Simpan perubahan",
-    "publish": "Publikasikan",
-    "saveDraft": "Simpan draf"
+    "emptyBody": "Tulis panduan, rangkuman patch, atau promo untuk menarik pemain ke toko.",
+    "editBtn": "Ubah {{title}}",
+    "deleteBtn": "Hapus {{title}}",
+    "status": {
+      "draft": "Draf",
+      "published": "Terbit"
+    },
+    "editor": {
+      "back": "Kembali ke artikel",
+      "newEyebrow": "// Artikel baru",
+      "editEyebrow": "// Ubah artikel",
+      "newTitle": "Tulis artikel",
+      "editTitle": "Ubah artikel",
+      "unsaved": "Ada perubahan belum disimpan",
+      "titleLabel": "Judul",
+      "titlePlaceholder": "Contoh: 5 hero MLBB yang wajib dikuasai musim ini",
+      "contentLabel": "Isi",
+      "contentPlaceholder": "Tulis dalam Markdown. Tempel atau tarik gambar ke editor untuk mengunggahnya.",
+      "excerptLabel": "Ringkasan",
+      "excerptPlaceholder": "Satu atau dua kalimat yang tampil di kartu dan hasil pencarian.",
+      "excerptHint": "Tampil di kartu artikel dan hasil pencarian.",
+      "statusLabel": "Status",
+      "statusHint": {
+        "draft": "Draf hanya bisa dilihat admin.",
+        "published": "Langsung tampil di blog storefront setelah disimpan."
+      },
+      "publishedAt": "Terbit {{date}}",
+      "thumbnailLabel": "Thumbnail",
+      "thumbnailHint": "Paling pas 16:9; tampil di atas artikel dan di kartunya.",
+      "categoryLabel": "Game",
+      "categoryPlaceholder": "Pilih game",
+      "categorySearch": "Cari game",
+      "noGames": "Tidak ada game yang cocok.",
+      "tagsLabel": "Tag",
+      "tagsPlaceholder": "Ketik tag, tekan Enter",
+      "removeTag": "Hapus tag {{tag}}",
+      "missing": "Masih perlu diisi: {{fields}}.",
+      "fieldNames": {
+        "title": "judul",
+        "content_markdown": "isi",
+        "excerpt": "ringkasan",
+        "thumbnail": "thumbnail",
+        "category": "game"
+      },
+      "saveDraft": "Simpan draf",
+      "publish": "Terbitkan",
+      "save": "Simpan perubahan",
+      "saving": "Menyimpan…",
+      "discard": "Buang perubahan",
+      "errors": {
+        "title": "Beri judul artikel.",
+        "content": "Tulis isi artikel.",
+        "excerpt": "Tambahkan ringkasan singkat.",
+        "excerptMax": "Ringkasan maksimal 150 karakter.",
+        "thumbnail": "Unggah thumbnail.",
+        "category": "Pilih game yang dibahas artikel ini."
+      }
+    },
+    "leaveConfirm": {
+      "eyebrow": "// Perubahan belum disimpan",
+      "title": "Keluar tanpa menyimpan?",
+      "description": "Perubahan pada artikel ini akan hilang.",
+      "confirm": "Keluar",
+      "cancel": "Lanjut menulis"
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Hapus artikel",
+      "title": "Hapus “{{title}}”?",
+      "description": "Artikel hilang dari blog storefront dan tidak bisa dikembalikan.",
+      "confirm": "Hapus artikel",
+      "cancel": "Batal"
+    },
+    "toasts": {
+      "published": "Artikel diterbitkan",
+      "drafted": "Draf disimpan",
+      "updated": "Artikel diperbarui",
+      "deleted": "Artikel dihapus",
+      "createError": "Gagal menyimpan artikel",
+      "updateError": "Gagal memperbarui artikel",
+      "deleteError": "Gagal menghapus artikel"
+    }
   },
   "deleteBlogModal": {
     "triggerAria": "Hapus artikel",
@@ -536,29 +553,6 @@
     "cancel": "Batal",
     "deleting": "Menghapus…",
     "confirmDelete": "Hapus"
-  },
-  "blogRowActions": {
-    "actionsHeader": "Aksi",
-    "rowGroupAria": "Aksi untuk artikel ini",
-    "editAria": "Ubah artikel",
-    "editLabel": "Ubah"
-  },
-  "blogToasts": {
-    "thumbnailUploadSuccess": "Thumbnail berhasil diunggah",
-    "thumbnailUploadError": "Gagal mengunggah gambar",
-    "updateSuccess": "Artikel berhasil diperbarui",
-    "publishSuccess": "Artikel berhasil dipublikasikan",
-    "draftSavedSuccess": "Artikel disimpan sebagai draf",
-    "serverErrorFallback": "Terjadi kesalahan pada server",
-    "updateFailed": "Gagal memperbarui artikel: {{error}}",
-    "saveFailed": "Gagal menyimpan artikel: {{error}}",
-    "loadingList": "Sedang memuat daftar artikel…",
-    "loadError": "Gagal memuat daftar artikel",
-    "emptyList": "Belum ada artikel",
-    "loadSuccess": "Berhasil memuat daftar artikel",
-    "deleteLoading": "Menghapus artikel…",
-    "deleteSuccess": "Artikel berhasil dihapus",
-    "deleteError": "Gagal menghapus artikel"
   },
   "gamePage": {
     "title": "Game",

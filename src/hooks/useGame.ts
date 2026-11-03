@@ -176,7 +176,7 @@ export function useUpdateGame(setOpen: (open: boolean) => void, id: string) {
 }
 
 export function useGetGameNames() {
-  return useQuery({
+  return useQuery<GameNames[]>({
     queryKey: ['game-names'],
     queryFn: async () => {
       const res = await api.get('/games/names')
