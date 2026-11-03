@@ -241,7 +241,7 @@ function MethodRow({ method, onEdit, onDelete }: { method: PaymentMethod; onEdit
         </p>
       </div>
 
-      <dl className='grid shrink-0 grid-cols-2 gap-x-6 text-xs sm:w-72'>
+      <dl className='grid shrink-0 grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 text-xs sm:w-[23rem]'>
         <div className='min-w-0'>
           <dt className='font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('paymentMethodPage.fee')}</dt>
           <dd className='truncate font-medium tabular-nums text-slate-700'>{formatFee(method, t)}</dd>

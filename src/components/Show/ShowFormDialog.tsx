@@ -15,7 +15,8 @@ import { useCreateShow, useUpdateShow } from '@/hooks/useShow'
 import { cn } from '@/lib/utils'
 import { showSchema, type ShowFormInput, type ShowFormValues } from '@/schemas/show'
 import type { Show } from '@/types/show'
-import { SHOW_BADGES, toAlias } from './show-flags'
+import { toSlug as toAlias } from '@/lib/slug'
+import { SHOW_BADGES } from './show-flags'
 
 interface ShowFormDialogProps {
   open: boolean

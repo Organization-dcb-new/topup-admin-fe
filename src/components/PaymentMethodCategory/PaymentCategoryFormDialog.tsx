@@ -6,13 +6,13 @@ import { Layers } from 'lucide-react'
 
 import { AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudLabelClass } from '@/components/Auth/hud-styles'
-import { toAlias } from '@/components/Show/show-flags'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useCreatePaymentCategory, useUpdatePaymentCategory } from '@/hooks/usePaymentMethodCategory'
+import { toSlug } from '@/lib/slug'
 import { cn } from '@/lib/utils'
 import { paymentCategorySchema, type PaymentCategoryFormInput, type PaymentCategoryFormValues } from '@/schemas/payment'
 import type { PaymentMethodCategory } from '@/types/payment-method-categories'
@@ -125,7 +125,7 @@ function PaymentCategoryForm({
               onChange={(e) => {
                 void nameField.onChange(e)
                 if (!slugTouched.current) {
-                  setValue('slug', toAlias(e.target.value).replace(/-+$/, ''), { shouldValidate: isSubmitted })
+                  setValue('slug', toSlug(e.target.value).replace(/-+$/, ''), { shouldValidate: isSubmitted })
                 }
               }}
             />
@@ -144,7 +144,7 @@ function PaymentCategoryForm({
                 {...slugField}
                 onChange={(e) => {
                   slugTouched.current = true
-                  e.target.value = toAlias(e.target.value)
+                  e.target.value = toSlug(e.target.value)
                   void slugField.onChange(e)
                 }}
               />

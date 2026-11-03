@@ -1,5 +1,6 @@
 import type { TFunction } from 'i18next'
 
+import i18n from '@/i18n'
 import { formatCurrency } from '@/lib/format'
 import type { PaymentMethod } from '@/types/payment-method'
 
@@ -7,7 +8,8 @@ type FeeFields = Pick<PaymentMethod, 'fee_percentage' | 'fee_fixed'>
 type LimitFields = Pick<PaymentMethod, 'min_amount' | 'max_amount'>
 
 function formatPercent(value: number) {
-  return `${value.toLocaleString(undefined, { maximumFractionDigits: 2 })}%`
+  const locale = i18n.language.startsWith('id') ? 'id-ID' : 'en-US'
+  return `${value.toLocaleString(locale, { maximumFractionDigits: 2 })}%`
 }
 
 /** "0.7% + Rp1,000", "Rp2,500", "0.7%" or "Free". */
