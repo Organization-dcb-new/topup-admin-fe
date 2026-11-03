@@ -92,7 +92,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
             type='button'
             onClick={onCloseMobile}
             aria-label={t('sidebar.closeMenu')}
-            className='ml-auto grid size-9 place-items-center rounded-lg text-slate-500 outline-none transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-brand-purple/30 md:hidden'
+            className='ml-auto grid size-9 place-items-center bg-slate-100 text-slate-500 outline-none hud-clip-sm transition-colors hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40 md:hidden'
           >
             <X className='size-5' aria-hidden />
           </button>
@@ -109,7 +109,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
                 <div className='relative mb-2 h-4'>
                   <p
                     className={cn(
-                      'absolute inset-x-[18px] top-0 whitespace-nowrap text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition-opacity duration-300',
+                      'absolute inset-x-[18px] top-0 whitespace-nowrap font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-purple/70 transition-opacity duration-300',
                       rail && 'opacity-0'
                     )}
                   >
@@ -117,7 +117,7 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
                   </p>
                   <span
                     className={cn(
-                      'absolute left-[18px] top-1/2 h-px w-5 bg-slate-200 transition-opacity duration-300',
+                      'absolute left-[18px] top-1/2 h-px w-5 bg-linear-to-r from-brand-purple/50 to-brand-cyan/50 transition-opacity duration-300',
                       !rail && 'opacity-0'
                     )}
                     aria-hidden
@@ -152,6 +152,16 @@ export function Sidebar({ collapsed, mobileOpen, onCloseMobile }: SidebarProps) 
             </div>
           ))}
         </nav>
+
+        <p
+          className={cn(
+            'shrink-0 whitespace-nowrap border-t border-slate-100 px-[30px] py-3 font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-slate-300 transition-opacity duration-300',
+            rail && 'opacity-0'
+          )}
+        >
+          {'// '}
+          {t('authLayout.restricted')}
+        </p>
       </aside>
     </Tooltip.Provider>
   )
@@ -268,11 +278,8 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
                     onClick={onNavigate}
                     aria-current={active && expanded ? 'page' : undefined}
                     className={cn(
-                      'relative flex h-9 items-center whitespace-nowrap rounded-md px-3 text-[13px] outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-brand-purple/30',
-                      active
-                        ? // The bar sits on the guide line, marking where in the group you are.
-                          'bg-brand-purple/10 font-semibold text-brand-purple-deep before:absolute before:inset-y-1.5 before:-left-[9px] before:w-0.5 before:rounded-full before:bg-brand-purple'
-                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+                      'relative flex h-9 items-center whitespace-nowrap px-3 text-[13px] outline-none hud-clip-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40',
+                      active ? sidebarRowActiveClass : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
                     )}
                   >
                     <span className='truncate'>{tr(child.label)}</span>
@@ -288,9 +295,11 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
         side='right'
         align='start'
         sideOffset={14}
-        className='z-[60] w-56 rounded-xl border-slate-200 p-1.5 shadow-xl'
+        className='z-[60] w-56 overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl'
       >
-        <p className='px-2.5 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400'>
+        <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
+        <div className='p-1.5'>
+        <p className='px-2.5 pb-1.5 pt-1.5 font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-purple'>
           {label}
         </p>
         {items.map((child) => {
@@ -305,10 +314,8 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
               }}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors duration-200',
-                active
-                  ? 'bg-brand-purple/10 font-semibold text-brand-purple-deep'
-                  : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                'relative flex items-center gap-2.5 px-2.5 py-2 text-sm hud-clip-sm transition-colors duration-200',
+                active ? sidebarRowActiveClass : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
               )}
             >
               <child.icon
@@ -319,6 +326,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
             </Link>
           )
         })}
+        </div>
       </PopoverContent>
     </Popover>
   )

@@ -76,6 +76,14 @@ export function AppFrame({ children }: { children: ReactNode }) {
 
   return (
     <div className='flex min-h-screen bg-gray-50'>
+      {/* The login card's gradient edge, run across the top of the whole app. */}
+      <div
+        className='pointer-events-none fixed inset-x-0 top-0 z-[55] h-[3px] overflow-hidden bg-linear-to-r from-brand-purple to-brand-cyan'
+        aria-hidden
+      >
+        <span className='absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/80 to-transparent animate-hud-trace' />
+      </div>
+
       <Sidebar
         collapsed={collapsed}
         mobileOpen={mobileOpen}

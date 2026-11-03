@@ -26,7 +26,7 @@ export function Navbar({ onToggleSidebar, toggleLabel, sidebarExpanded }: Navbar
         onClick={onToggleSidebar}
         aria-label={toggleLabel}
         title={toggleLabel}
-        className='grid size-9 shrink-0 place-items-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40'
+        className='grid size-9 shrink-0 place-items-center bg-slate-100 text-slate-500 hud-clip-sm transition-colors hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40'
       >
         <ToggleIcon
           key={sidebarExpanded ? 'close' : 'open'}
@@ -68,31 +68,31 @@ function Breadcrumbs() {
     <nav aria-label={t('navbar.breadcrumb')} className='min-w-0 flex-1'>
       <ol
         key={pathname}
-        className='flex min-w-0 items-center gap-1.5 text-sm animate-in fade-in slide-in-from-left-1 duration-300 ease-hud'
+        className='flex min-w-0 items-center gap-2 font-display text-xs font-semibold uppercase tracking-[0.18em] animate-in fade-in slide-in-from-left-1 duration-300 ease-hud'
       >
         {crumbs.map((crumb, index) => {
           const last = index === crumbs.length - 1
           return (
             <li
               key={crumb.label}
-              className={cn('min-w-0 items-center gap-1.5', last ? 'flex' : 'hidden sm:flex')}
+              className={cn('min-w-0 items-center gap-2', last ? 'flex' : 'hidden sm:flex')}
             >
               {crumb.to ? (
                 <Link
                   to={crumb.to}
-                  className='truncate text-slate-500 transition-colors hover:text-slate-900'
+                  className='truncate text-slate-400 transition-colors hover:text-slate-700'
                 >
                   {crumb.label}
                 </Link>
               ) : (
                 <span
                   aria-current={last ? 'page' : undefined}
-                  className={cn('truncate', last ? 'font-semibold text-slate-900' : 'text-slate-500')}
+                  className={cn('truncate', last ? 'text-brand-purple' : 'text-slate-400')}
                 >
                   {crumb.label}
                 </span>
               )}
-              {!last && <ChevronRight className='size-3.5 shrink-0 text-slate-300' aria-hidden />}
+              {!last && <ChevronRight className='size-3.5 shrink-0 text-brand-cyan' aria-hidden />}
             </li>
           )
         })}

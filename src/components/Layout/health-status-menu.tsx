@@ -14,10 +14,10 @@ const STATUS_DOT: Record<ServerStatus, string> = {
 }
 
 const STATUS_PILL: Record<ServerStatus, string> = {
-  checking: 'border-slate-200 text-slate-500',
-  operational: 'border-slate-200 text-slate-600',
-  degraded: 'border-amber-200 bg-amber-50 text-amber-700',
-  unreachable: 'border-rose-200 bg-rose-50 text-rose-700',
+  checking: 'bg-slate-100 text-slate-500',
+  operational: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+  degraded: 'bg-amber-50 text-amber-700 hover:bg-amber-100',
+  unreachable: 'bg-rose-50 text-rose-700 hover:bg-rose-100',
 }
 
 function formatTimeSince(timestamp: number, language: string) {
@@ -54,7 +54,7 @@ export function HealthStatusMenu() {
           type='button'
           aria-label={`${t('sidebar.health.title')}: ${statusLabel}`}
           className={cn(
-            'inline-flex h-9 items-center gap-2 rounded-full border bg-white px-3 text-xs font-medium transition-colors duration-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
+            'inline-flex h-9 items-center gap-2 px-3 font-display text-[11px] font-semibold uppercase tracking-[0.15em] hud-clip-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40',
             STATUS_PILL[status]
           )}
         >
@@ -75,9 +75,12 @@ export function HealthStatusMenu() {
         sideOffset={8}
         className='z-[60] w-72 overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl'
       >
+        <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         <div className='flex items-start justify-between gap-3 p-4'>
           <div className='min-w-0'>
-            <p className='text-xs font-medium text-slate-500'>{t('sidebar.health.title')}</p>
+            <p className='font-display text-[10px] font-semibold uppercase tracking-[0.25em] text-brand-purple'>
+              {t('sidebar.health.title')}
+            </p>
             <p className='mt-1 flex items-center gap-2 text-sm font-semibold text-slate-900'>
               <span className={cn('size-2 shrink-0 rounded-full', STATUS_DOT[status])} aria-hidden />
               {statusLabel}
@@ -88,7 +91,7 @@ export function HealthStatusMenu() {
             onClick={() => refetch()}
             disabled={isFetching}
             aria-label={t('sidebar.health.refresh')}
-            className='grid size-8 shrink-0 place-items-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 disabled:opacity-60'
+            className='grid size-8 shrink-0 place-items-center bg-slate-100 text-slate-500 hud-clip-sm transition-colors hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40 disabled:opacity-60'
           >
             <RefreshCw className={cn('size-4', isFetching && 'animate-spin')} aria-hidden />
           </button>
