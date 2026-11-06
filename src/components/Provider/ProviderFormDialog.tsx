@@ -4,46 +4,36 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { KeyRound, Server } from 'lucide-react'
 
-import { AuthAlert, AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
+import { AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudLabelClass } from '@/components/Auth/hud-styles'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { ProviderCredentials } from '@/components/Provider/ProviderCredentials'
-import { providerErrorMessage, useCreateProvider, useUpdateProvider } from '@/hooks/useProvider'
+import { useUpdateProvider } from '@/hooks/useProvider'
 import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
 import { providerSchema, type ProviderFormInput, type ProviderFormValues } from '@/schemas/provider'
 import type { Provider, ProviderStatus } from '@/types/provider'
 
 interface ProviderFormDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  /** Edit this provider; leave out to add one. */
-  provider?: Provider
-  /** Suggested priority for a new provider, e.g. after the last one. */
-  nextPriority?: number
+  /** The provider to edit; the dialog is open while one is set. Providers are created by the backend, never here. */
+  provider: Provider | null
+  onClose: () => void
 }
 
-export function ProviderFormDialog({ open, onOpenChange, provider, nextPriority = 1 }: ProviderFormDialogProps) {
-  const target = useRetained(open ? (provider ?? 'new') : null)
+export function ProviderFormDialog({ provider, onClose }: ProviderFormDialogProps) {
+  const target = useRetained(provider)
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={provider !== null} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
         className='max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto rounded-xl border-slate-200 bg-white p-0 shadow-2xl sm:max-w-xl'
       >
         <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
         {/* The retained target keeps the form filled while the dialog animates out; Radix unmounts it afterwards, so every opening still starts fresh. */}
-        {target && (
-          <ProviderForm
-            key={target === 'new' ? 'new' : target.id}
-            provider={target === 'new' ? undefined : target}
-            nextPriority={nextPriority}
-            onDone={() => onOpenChange(false)}
-          />
-        )}
+        {target && <ProviderForm key={target.id} provider={target} onDone={onClose} />}
       </DialogContent>
     </Dialog>
   )
@@ -51,72 +41,41 @@ export function ProviderFormDialog({ open, onOpenChange, provider, nextPriority 
 
 const STATUSES: ProviderStatus[] = ['ACTIVE', 'INACTIVE']
 
-function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider; nextPriority: number; onDone: () => void }) {
+function ProviderForm({ provider, onDone }: { provider: Provider; onDone: () => void }) {
   const { t } = useTranslation('common')
   const ids = useId()
-  const isEdit = !!provider
-  const create = useCreateProvider(onDone)
   const update = useUpdateProvider(onDone)
-  const pending = create.isPending || update.isPending
+  // The backend refuses to switch on a provider it has no integration for.
+  const canActivate = provider.supported !== false
 
   const {
     register,
     handleSubmit,
     setValue,
-    setError,
-    setFocus,
     control,
     formState: { errors },
   } = useForm<ProviderFormInput, unknown, ProviderFormValues>({
     resolver: zodResolver(providerSchema()),
     defaultValues: {
-      name: provider?.name ?? '',
-      code: provider?.code ?? '',
-      api_url: provider?.api_url ?? '',
-      priority: provider?.priority ?? nextPriority,
-      status: provider?.status ?? 'ACTIVE',
-      config: JSON.stringify(provider?.config ?? { timeout: 30 }, null, 2),
+      api_url: provider.api_url,
+      priority: provider.priority,
+      status: provider.status,
+      config: JSON.stringify(provider.config ?? {}, null, 2),
     },
   })
   const status = useWatch({ control, name: 'status' })
-  const codeField = register('code')
 
   const onSubmit = (v: ProviderFormValues) => {
-    const config = JSON.stringify(JSON.parse(v.config))
-    if (provider) {
-      update.mutate({
-        id: provider.id,
-        payload: {
-          name: v.name,
-          api_url: v.api_url,
-          status: v.status,
-          priority: v.priority,
-          config,
-        },
-      })
-      return
-    }
-    create.mutate(
-      { name: v.name, code: v.code, api_url: v.api_url, priority: v.priority, config },
-      {
-        onError: (err) => {
-          if (providerErrorMessage(err) === 'provider code already exists') {
-            setError('code', { message: 'providerPage.form.errors.codeTaken' })
-            setFocus('code')
-          } else {
-            setError('root', { message: 'providerPage.form.errors.generic' })
-          }
-        },
-      }
-    )
+    update.mutate({
+      id: provider.id,
+      payload: {
+        api_url: v.api_url,
+        status: v.status,
+        priority: v.priority,
+        config: JSON.stringify(JSON.parse(v.config)),
+      },
+    })
   }
-
-  const textField = (name: 'name' | 'api_url', extra?: string) => ({
-    id: `${ids}-${name}`,
-    'aria-invalid': !!errors[name],
-    className: cn(hudInputClass, extra),
-    ...register(name),
-  })
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className='space-y-5 p-6 sm:p-7'>
@@ -125,52 +84,31 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
           <Server className='size-5' aria-hidden />
         </span>
         <div className='min-w-0 space-y-1'>
-          <p className={hudEyebrowClass}>{isEdit ? t('providerPage.form.editEyebrow') : t('providerPage.form.addEyebrow')}</p>
+          <p className={hudEyebrowClass}>{t('providerPage.form.editEyebrow')}</p>
           <DialogTitle className='font-display text-2xl font-bold leading-tight tracking-tight text-slate-900'>
-            {isEdit ? t('providerPage.form.editTitle') : t('providerPage.form.addTitle')}
+            {t('providerPage.form.editTitle', { name: provider.name })}
           </DialogTitle>
           <DialogDescription className='text-sm leading-relaxed text-slate-500'>
-            {isEdit ? t('providerPage.form.editDescription') : t('providerPage.form.addDescription')}
+            <span className='font-mono text-xs text-slate-600'>{provider.code}</span>
+            <span aria-hidden> · </span>
+            {t('providerPage.form.editDescription')}
           </DialogDescription>
-        </div>
-      </div>
-
-      {errors.root?.message && <AuthAlert>{t(errors.root.message)}</AuthAlert>}
-
-      <div className='grid gap-4 sm:grid-cols-[minmax(0,1fr)_11rem]'>
-        <div className='space-y-2'>
-          <Label htmlFor={`${ids}-name`} className={hudLabelClass}>{t('providerPage.form.nameLabel')}</Label>
-          <Input autoFocus autoComplete='off' placeholder='Digiflazz' {...textField('name')} />
-          {errors.name?.message && <FieldMessage tone='error'>{t(errors.name.message)}</FieldMessage>}
-        </div>
-        <div className='space-y-2'>
-          <Label htmlFor={`${ids}-code`} className={hudLabelClass}>{t('providerPage.form.codeLabel')}</Label>
-          <Input
-            id={`${ids}-code`}
-            readOnly={isEdit}
-            autoComplete='off'
-            autoCapitalize='characters'
-            spellCheck={false}
-            placeholder='DIGIFLAZZ'
-            aria-invalid={!!errors.code}
-            className={cn(hudInputClass, 'font-mono uppercase read-only:cursor-not-allowed read-only:bg-slate-100 read-only:text-slate-500')}
-            {...codeField}
-            onChange={(e) => {
-              e.target.value = e.target.value.toUpperCase().replace(/\s+/g, '_')
-              void codeField.onChange(e)
-            }}
-          />
-          {errors.code?.message ? (
-            <FieldMessage tone='error'>{t(errors.code.message)}</FieldMessage>
-          ) : (
-            isEdit && <p className='text-xs text-slate-500'>{t('providerPage.form.codeLocked')}</p>
-          )}
         </div>
       </div>
 
       <div className='space-y-2'>
         <Label htmlFor={`${ids}-api_url`} className={hudLabelClass}>{t('providerPage.form.urlLabel')}</Label>
-        <Input inputMode='url' autoComplete='off' spellCheck={false} placeholder='https://api.provider.com/v1/' {...textField('api_url', 'font-mono text-sm')} />
+        <Input
+          id={`${ids}-api_url`}
+          autoFocus
+          inputMode='url'
+          autoComplete='off'
+          spellCheck={false}
+          placeholder='https://api.provider.com/v1/'
+          aria-invalid={!!errors.api_url}
+          className={cn(hudInputClass, 'font-mono text-sm')}
+          {...register('api_url')}
+        />
         {errors.api_url?.message && <FieldMessage tone='error'>{t(errors.api_url.message)}</FieldMessage>}
       </div>
 
@@ -180,10 +118,8 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
           <KeyRound className='size-3.5' aria-hidden />
           {t('providerPage.form.credentialsLabel')}
         </p>
-        {provider && <ProviderCredentials credentials={provider.credentials} />}
-        <p className='text-xs leading-relaxed text-slate-500'>
-          {isEdit ? t('providerPage.form.credentialsEditHint') : t('providerPage.form.credentialsHint')}
-        </p>
+        <ProviderCredentials credentials={provider.credentials} />
+        <p className='text-xs leading-relaxed text-slate-500'>{t('providerPage.form.credentialsEditHint')}</p>
       </div>
 
       <div className='grid gap-4 sm:grid-cols-[9rem_minmax(0,1fr)]'>
@@ -200,37 +136,37 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
             {...register('priority')}
           />
         </div>
-        {isEdit ? (
-          <div className='space-y-2'>
-            <p className={hudLabelClass}>{t('providerPage.form.statusLabel')}</p>
-            <div role='radiogroup' aria-label={t('providerPage.form.statusLabel')} className='grid grid-cols-2 gap-2'>
-              {STATUSES.map((value) => {
-                const selected = status === value
-                return (
-                  <button
-                    key={value}
-                    type='button'
-                    role='radio'
-                    aria-checked={selected}
-                    onClick={() => setValue('status', value, { shouldDirty: true })}
-                    className={cn(
-                      'h-11 rounded-md px-3 text-sm font-medium ring-1 ring-inset transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40',
-                      selected
-                        ? value === 'ACTIVE'
-                          ? 'bg-emerald-50 text-emerald-700 ring-emerald-300'
-                          : 'bg-slate-100 text-slate-700 ring-slate-300'
-                        : 'bg-white text-slate-500 ring-slate-200 hover:bg-slate-50'
-                    )}
-                  >
-                    {t(`providerPage.status.${value}`)}
-                  </button>
-                )
-              })}
-            </div>
+        <div className='space-y-2'>
+          <p className={hudLabelClass}>{t('providerPage.form.statusLabel')}</p>
+          <div role='radiogroup' aria-label={t('providerPage.form.statusLabel')} className='grid grid-cols-2 gap-2'>
+            {STATUSES.map((value) => {
+              const selected = status === value
+              const disabled = value === 'ACTIVE' && !canActivate
+              return (
+                <button
+                  key={value}
+                  type='button'
+                  role='radio'
+                  aria-checked={selected}
+                  disabled={disabled}
+                  title={disabled ? t('providerPage.unsupportedHint') : undefined}
+                  onClick={() => setValue('status', value, { shouldDirty: true })}
+                  className={cn(
+                    'h-11 rounded-md px-3 text-sm font-medium ring-1 ring-inset transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 disabled:cursor-not-allowed disabled:opacity-50',
+                    selected
+                      ? value === 'ACTIVE'
+                        ? 'bg-emerald-50 text-emerald-700 ring-emerald-300'
+                        : 'bg-slate-100 text-slate-700 ring-slate-300'
+                      : 'bg-white text-slate-500 ring-slate-200 hover:bg-slate-50'
+                  )}
+                >
+                  {t(`providerPage.status.${value}`)}
+                </button>
+              )
+            })}
           </div>
-        ) : (
-          <p className='self-end pb-2 text-xs leading-relaxed text-slate-500'>{t('providerPage.form.priorityHint')}</p>
-        )}
+          {!canActivate && <p className='text-xs leading-relaxed text-amber-700'>{t('providerPage.unsupportedHint')}</p>}
+        </div>
       </div>
       {errors.priority?.message && <FieldMessage tone='error'>{t(errors.priority.message)}</FieldMessage>}
 
@@ -255,14 +191,14 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
         <button
           type='button'
           onClick={onDone}
-          disabled={pending}
+          disabled={update.isPending}
           className='inline-flex h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 disabled:opacity-50'
         >
           {t('providerPage.form.cancel')}
         </button>
         <div className='sm:min-w-52'>
-          <AuthSubmitButton pending={pending} pendingLabel={t('providerPage.form.saving')} cooldown={0}>
-            {isEdit ? t('providerPage.form.save') : t('providerPage.form.create')}
+          <AuthSubmitButton pending={update.isPending} pendingLabel={t('providerPage.form.saving')} cooldown={0}>
+            {t('providerPage.form.save')}
           </AuthSubmitButton>
         </div>
       </div>

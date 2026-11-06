@@ -1111,13 +1111,12 @@
   "providerPage": {
     "eyebrow": "// Supply chain",
     "title": "Providers",
-    "subtitle": "Upstream APIs that fulfil top-ups. Orders go to active providers in priority order, lowest number first.",
+    "subtitle": "Upstream APIs that fulfil top-ups. The list follows the integrations the backend has; here you set their status, priority, base URL and config. Orders go to active providers in priority order, lowest number first.",
     "total": "{{active}} of {{count}} active",
-    "addBtn": "Add provider",
     "retry": "Try again",
     "loadError": "Couldn’t load providers. Check your connection and try again.",
     "emptyTitle": "No providers yet",
-    "emptyBody": "Connect a provider API so orders can be fulfilled.",
+    "emptyBody": "The backend creates providers on its own when it starts, one for each supplier integration. Check the backend log if this list stays empty.",
     "priorityShort": "Prio",
     "priorityTitle": "Priority: lower runs first",
     "status": {
@@ -1126,6 +1125,8 @@
       "ERROR": "Error"
     },
     "toggleActive": "Use {{name}} for orders",
+    "unsupported": "Not supported",
+    "unsupportedHint": "This version of the backend has no integration for this provider, so it can’t be switched on.",
     "apiUrl": "Base URL",
     "credentials": "Credentials",
     "credentialSet": "{{env}} is set on the server",
@@ -1142,7 +1143,6 @@
     "copyFailed": "Couldn’t copy",
     "updatedAt": "Updated {{date}}",
     "editBtn": "Edit {{name}}",
-    "deleteBtn": "Delete {{name}}",
     "balance": {
       "label": "Balance",
       "error": "Couldn’t fetch the balance",
@@ -1151,54 +1151,31 @@
       "unsupported": "Can’t be checked for this provider yet"
     },
     "form": {
-      "addEyebrow": "// New provider",
       "editEyebrow": "// Edit provider",
-      "addTitle": "Add provider",
-      "editTitle": "Edit provider",
-      "addDescription": "Connection details for the provider’s API. New providers start active.",
-      "editDescription": "Update the connection, priority or status of this provider.",
-      "nameLabel": "Name",
-      "codeLabel": "Code",
-      "codeLocked": "The code can’t change after creation.",
+      "editTitle": "Edit {{name}}",
+      "editDescription": "Set the base URL, status, priority and config. The name and code come from the backend’s integration.",
       "urlLabel": "Base URL",
       "credentialsLabel": "Credentials",
-      "credentialsHint": "API keys, secrets and PINs aren’t stored here. Set them in the server env as SUPPLIER_<CODE>_API_KEY, e.g. SUPPLIER_DIGIFLAZZ_API_KEY.",
       "credentialsEditHint": "Read from the server env, not from this form. To change a key, update the env and restart the backend.",
       "priorityLabel": "Priority",
-      "priorityHint": "Lower numbers are tried first when several providers can fulfil an order.",
       "statusLabel": "Status",
       "configLabel": "Config (JSON)",
       "configHint": "A JSON object for non-secret settings, e.g. {\"timeout\": 30} for a 30-second timeout.",
       "cancel": "Cancel",
-      "create": "Add provider",
       "save": "Save changes",
       "saving": "Saving…",
       "errors": {
-        "nameRequired": "Give the provider a name.",
-        "codeRequired": "Give the provider a code.",
-        "codeTaken": "Another provider already uses this code.",
         "urlInvalid": "Use a full URL starting with http:// or https://.",
         "urlSecret": "The base URL can’t carry credentials such as user:password@ or ?apikey=. Put them in the server env.",
         "priorityInvalid": "Use a whole number, 0 or more.",
         "configInvalid": "This isn’t a valid JSON object.",
-        "configSecret": "Config can’t hold credentials (api_key, secret, token, password, PIN). Put them in the server env.",
-        "generic": "Couldn’t add the provider. Check the details and try again."
+        "configSecret": "Config can’t hold credentials (api_key, secret, token, password, PIN). Put them in the server env."
       }
     },
-    "deleteConfirm": {
-      "eyebrow": "// Delete provider",
-      "title": "Delete {{name}}?",
-      "description": "Orders can no longer be sent to this provider. Games and products that rely on it may stop working.",
-      "confirm": "Delete provider",
-      "cancel": "Cancel"
-    },
     "toasts": {
-      "created": "Provider added",
       "updated": "Provider updated",
       "statusSaved": "Provider status updated",
-      "deleted": "Provider deleted",
-      "updateError": "Couldn’t update the provider",
-      "deleteError": "Couldn’t delete the provider"
+      "updateError": "Couldn’t update the provider"
     }
   },
   "paymentMethodPage": {

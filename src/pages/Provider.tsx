@@ -1,31 +1,23 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
-import { Check, Copy, Globe, KeyRound, Pencil, Plus, RefreshCw, Server, Timer, Trash2, Wallet, type LucideIcon } from 'lucide-react'
+import { Check, CircleAlert, Copy, Globe, KeyRound, Pencil, RefreshCw, Server, Timer, Wallet, type LucideIcon } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
-import { DangerDialog } from '@/components/Auth/DangerDialog'
-import { hudEyebrowClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
+import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { ProviderCredentials } from '@/components/Provider/ProviderCredentials'
 import { ProviderFormDialog } from '@/components/Provider/ProviderFormDialog'
 import { Switch } from '@/components/ui/switch'
 import { PERM } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
-import {
-  toProviderUpdate,
-  useDeleteProvider,
-  useGetProvider,
-  useProviderBalance,
-  useUpdateProvider,
-} from '@/hooks/useProvider'
+import { toProviderUpdate, useGetProvider, useProviderBalance, useUpdateProvider } from '@/hooks/useProvider'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Provider, ProviderStatus } from '@/types/provider'
-import { useRetained } from '@/hooks/useRetained'
 
 const STATUS_STYLE: Record<ProviderStatus, { chip: string; dot: string; bar: string }> = {
   ACTIVE: { chip: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500', bar: 'bg-linear-to-r from-brand-purple to-brand-cyan' },
@@ -36,19 +28,16 @@ const STATUS_STYLE: Record<ProviderStatus, { chip: string; dot: string; bar: str
 const iconButtonClass =
   'grid size-8 shrink-0 place-items-center text-slate-400 hud-clip-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset'
 
+/**
+ * Providers are read and edited here, never added or deleted: the backend creates one for every
+ * supplier it has an integration for, and a supplier that's no longer used is switched off.
+ */
 export default function ProviderPages() {
   const { t } = useTranslation('common')
   const { data, isLoading, isError, isFetching, refetch } = useGetProvider()
-  const deleteProvider = useDeleteProvider()
   const providers = data?.data ?? []
-  const [formTarget, setFormTarget] = useState<Provider | 'new' | null>(null)
-  const [toDelete, setToDelete] = useState<Provider | null>(null)
-  // The confirm dialog keeps naming its target while it animates closed.
-  const deleting = useRetained(toDelete)
+  const [editing, setEditing] = useState<Provider | null>(null)
   const activeCount = providers.filter((p) => p.status === 'ACTIVE').length
-  const nextPriority = providers.reduce((max, p) => Math.max(max, p.priority), 0) + 1
-
-  const openCreate = () => setFormTarget('new')
 
   return (
     <DashboardLayout>
@@ -59,20 +48,11 @@ export default function ProviderPages() {
             <h1 className='font-display text-3xl font-bold tracking-tight text-slate-900'>{t('providerPage.title')}</h1>
             <p className='max-w-2xl text-sm leading-relaxed text-slate-500'>{t('providerPage.subtitle')}</p>
           </div>
-          <div className='flex shrink-0 items-center gap-3'>
-            {data && (
-              <span className='font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
-                {t('providerPage.total', { active: activeCount, count: providers.length })}
-              </span>
-            )}
-            <Can permission={PERM.providerCreate}>
-              <button type='button' onClick={openCreate} className={hudPrimaryButtonClass}>
-                <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
-                <Plus className='size-4' aria-hidden />
-                {t('providerPage.addBtn')}
-              </button>
-            </Can>
-          </div>
+          {data && (
+            <span className='shrink-0 font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-400'>
+              {t('providerPage.total', { active: activeCount, count: providers.length })}
+            </span>
+          )}
         </header>
 
         {isError && (
@@ -102,38 +82,13 @@ export default function ProviderPages() {
             {isLoading &&
               Array.from({ length: 4 }, (_, i) => <li key={i} className='h-64 animate-pulse bg-slate-200/60 hud-clip' aria-hidden />)}
             {providers.map((provider, index) => (
-              <ProviderCard
-                key={provider.id}
-                provider={provider}
-                order={index}
-                onEdit={() => setFormTarget(provider)}
-                onDelete={() => setToDelete(provider)}
-              />
+              <ProviderCard key={provider.id} provider={provider} order={index} onEdit={() => setEditing(provider)} />
             ))}
           </ul>
         )}
       </div>
 
-      <ProviderFormDialog
-        open={formTarget !== null}
-        onOpenChange={(open) => !open && setFormTarget(null)}
-        provider={formTarget === 'new' ? undefined : (formTarget ?? undefined)}
-        nextPriority={nextPriority}
-      />
-      <DangerDialog
-        open={!!toDelete}
-        onOpenChange={(open) => !open && setToDelete(null)}
-        eyebrow={t('providerPage.deleteConfirm.eyebrow')}
-        title={t('providerPage.deleteConfirm.title', { name: deleting?.name ?? '' })}
-        description={t('providerPage.deleteConfirm.description')}
-        confirmLabel={t('providerPage.deleteConfirm.confirm')}
-        cancelLabel={t('providerPage.deleteConfirm.cancel')}
-        pending={deleteProvider.isPending}
-        onConfirm={() => {
-          if (!toDelete) return
-          deleteProvider.mutate(toDelete.id, { onSuccess: () => setToDelete(null) })
-        }}
-      />
+      <ProviderFormDialog provider={editing} onClose={() => setEditing(null)} />
     </DashboardLayout>
   )
 }
@@ -142,14 +97,15 @@ interface ProviderCardProps {
   provider: Provider
   order: number
   onEdit: () => void
-  onDelete: () => void
 }
 
-function ProviderCard({ provider, order, onEdit, onDelete }: ProviderCardProps) {
+function ProviderCard({ provider, order, onEdit }: ProviderCardProps) {
   const { t } = useTranslation('common')
   const { can } = usePermissions()
   const update = useUpdateProvider(undefined, 'providerPage.toasts.statusSaved')
   const style = STATUS_STYLE[provider.status] ?? STATUS_STYLE.INACTIVE
+  // A provider left over from a supplier the backend no longer integrates can be switched off, not on.
+  const unsupported = provider.supported === false
   const timeout = typeof provider.config?.timeout === 'number' ? provider.config.timeout : null
   const extraConfig = Object.keys(provider.config ?? {}).filter((k) => k !== 'timeout').length
 
@@ -189,12 +145,21 @@ function ProviderCard({ provider, order, onEdit, onDelete }: ProviderCardProps) 
                     <span className={cn('size-1.5 rounded-full', style.dot)} aria-hidden />
                     {t(`providerPage.status.${provider.status}`)}
                   </span>
+                  {unsupported && (
+                    <span
+                      title={t('providerPage.unsupportedHint')}
+                      className='inline-flex items-center gap-1 bg-amber-50 px-2 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-amber-800 hud-clip-sm'
+                    >
+                      <CircleAlert className='size-3' aria-hidden />
+                      {t('providerPage.unsupported')}
+                    </span>
+                  )}
                 </div>
               </div>
               {can(PERM.providerUpdate) && (
                 <Switch
                   checked={provider.status === 'ACTIVE'}
-                  disabled={update.isPending}
+                  disabled={update.isPending || (unsupported && provider.status !== 'ACTIVE')}
                   onCheckedChange={(checked) =>
                     update.mutate({ id: provider.id, payload: { ...toProviderUpdate(provider), status: checked ? 'ACTIVE' : 'INACTIVE' } })
                   }
@@ -247,17 +212,6 @@ function ProviderCard({ provider, order, onEdit, onDelete }: ProviderCardProps) 
                     className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40`}
                   >
                     <Pencil className='size-4' aria-hidden />
-                  </button>
-                </Can>
-                <Can permission={PERM.providerDelete}>
-                  <button
-                    type='button'
-                    onClick={onDelete}
-                    aria-label={t('providerPage.deleteBtn', { name: provider.name })}
-                    title={t('providerPage.deleteBtn', { name: provider.name })}
-                    className={`${iconButtonClass} hover:bg-rose-50 hover:text-rose-600 focus-visible:ring-rose-500/30`}
-                  >
-                    <Trash2 className='size-4' aria-hidden />
                   </button>
                 </Can>
               </div>

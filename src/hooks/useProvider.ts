@@ -3,7 +3,6 @@ import i18n from '@/i18n'
 import type {
   Provider,
   ProviderBalance,
-  ProviderCreatePayload,
   ProviderResponse,
   ProviderUpdatePayload,
 } from '@/types/provider'
@@ -36,7 +35,6 @@ export const useProviderBalance = (id: string, enabled: boolean) =>
 /** Everything PUT /providers/:id needs, taken from the provider as it is now. */
 export function toProviderUpdate(provider: Provider): ProviderUpdatePayload {
   return {
-    name: provider.name,
     api_url: provider.api_url,
     status: provider.status,
     priority: provider.priority,
@@ -44,26 +42,7 @@ export function toProviderUpdate(provider: Provider): ProviderUpdatePayload {
   }
 }
 
-/** Backend error text, for the few messages the form maps onto a field. */
-export function providerErrorMessage(err: unknown) {
-  return (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-}
-
-export function useCreateProvider(onDone?: () => void) {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (payload: ProviderCreatePayload) => {
-      const res = await api.post('/providers/', payload)
-      return res.data
-    },
-    onSuccess: () => {
-      toast.success(i18n.t('providerPage.toasts.created'))
-      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
-      onDone?.()
-    },
-  })
-}
-
+/** Providers are only read and edited here: the backend creates them from its supplier integrations and never deletes them. */
 export function useUpdateProvider(onDone?: () => void, successKey = 'providerPage.toasts.updated') {
   const queryClient = useQueryClient()
   return useMutation({
@@ -77,17 +56,5 @@ export function useUpdateProvider(onDone?: () => void, successKey = 'providerPag
       onDone?.()
     },
     onError: () => toast.error(i18n.t('providerPage.toasts.updateError')),
-  })
-}
-
-export function useDeleteProvider() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: (id: string) => api.delete(`/providers/${id}`),
-    onSuccess: () => {
-      toast.success(i18n.t('providerPage.toasts.deleted'))
-      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
-    },
-    onError: () => toast.error(i18n.t('providerPage.toasts.deleteError')),
   })
 }

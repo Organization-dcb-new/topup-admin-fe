@@ -47,10 +47,9 @@ function urlHasCredentials(value: string) {
   }
 }
 
+/** The edit form; providers are never created from the admin panel. */
 export function providerSchema() {
   return z.object({
-    name: z.string().trim().min(1, 'providerPage.form.errors.nameRequired'),
-    code: z.string().trim().min(1, 'providerPage.form.errors.codeRequired'),
     api_url: z
       .string()
       .trim()

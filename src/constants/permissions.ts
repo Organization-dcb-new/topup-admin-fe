@@ -41,9 +41,7 @@ export const PERM = {
   gameInputUpdate: 'game_input.update',
 
   providerView: 'provider.view',
-  providerCreate: 'provider.create',
   providerUpdate: 'provider.update',
-  providerDelete: 'provider.delete',
 
   paymentMethodView: 'payment_method.view',
   paymentMethodCreate: 'payment_method.create',

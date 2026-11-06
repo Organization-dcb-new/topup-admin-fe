@@ -15,6 +15,8 @@ export type Provider = {
   /** Credentials live in the server env; this only names the variables and whether they are set. */
   credentials?: ProviderCredential[]
   status: ProviderStatus
+  /** False for a provider left over from a supplier the backend no longer integrates. It can be switched off, not on. */
+  supported?: boolean
   /** The backend can ask this supplier for our deposit balance (GET /providers/:id/balance). */
   balance_supported?: boolean
   /** Lower runs first. */
@@ -25,18 +27,11 @@ export type Provider = {
   updated_at: string
 }
 
-/** POST /providers; `config` is a JSON string. */
-export type ProviderCreatePayload = {
-  name: string
-  code: string
-  api_url: string
-  priority: number
-  config: string
-}
-
-/** PUT /providers/:id; an empty `config` keeps the stored one. */
+/**
+ * PUT /providers/:id, the only write: providers are created by the backend and never deleted.
+ * Name and code are fixed by the backend's supplier list. An empty `config` keeps the stored one.
+ */
 export type ProviderUpdatePayload = {
-  name: string
   api_url: string
   status: ProviderStatus
   priority: number
