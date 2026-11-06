@@ -11,6 +11,7 @@ export const PERM = {
 
   orderView: 'order.view',
   customerView: 'customer.view',
+  customerUpdate: 'customer.update',
   cashflowView: 'cashflow.view',
   summaryView: 'summary.view',
 

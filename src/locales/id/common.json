@@ -44,6 +44,7 @@
       "rekap": "Rekap",
       "cashflow": "Cashflow",
       "pesanan": "Pesanan",
+      "pelanggan": "Pelanggan",
       "konten": "Konten",
       "banner": "Banner",
       "acara": "Acara",
@@ -355,6 +356,174 @@
         "rejected": "Penyedia menolak pesanan ini dengan kode {{code}}.",
         "unsent": "Belum ada respons penyedia. Pesanan baru dikirim setelah pembayaran berhasil."
       }
+    }
+  },
+  "customerPage": {
+    "eyebrow": "// Akun storefront",
+    "title": "Pelanggan",
+    "subtitle": "Akun pembeli di storefront. Cari akun, perbaiki nama atau email, nonaktifkan akun bermasalah, dan kirim link reset password.",
+    "total": "{{formatted}} pelanggan",
+    "results": "{{formatted}} hasil",
+    "refresh": "Muat ulang",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat pelanggan. Periksa koneksi lalu coba lagi.",
+    "listLabel": "Daftar pelanggan",
+    "emptyTitle": "Belum ada pelanggan",
+    "emptyBody": "Akun muncul di sini begitu pembeli mendaftar di storefront, dengan email atau Google.",
+    "noMatchTitle": "Tidak ada pelanggan yang cocok",
+    "noMatchBody": "Coba nama atau email lain, atau reset filter.",
+    "noName": "Tanpa nama",
+    "neverLoggedIn": "Belum pernah",
+    "filters": {
+      "searchPlaceholder": "Cari nama atau email",
+      "status": "Status",
+      "method": "Metode masuk",
+      "statusOptions": {
+        "all": "Semua",
+        "active": "Aktif",
+        "inactive": "Nonaktif"
+      },
+      "methodOptions": {
+        "all": "Semua",
+        "password": "Password",
+        "google": "Google"
+      },
+      "reset": "Reset"
+    },
+    "columns": {
+      "customer": "Pelanggan",
+      "email": "Email",
+      "methods": "Metode masuk",
+      "status": "Status",
+      "createdAt": "Terdaftar",
+      "lastLogin": "Login terakhir"
+    },
+    "row": {
+      "lastLogin": "Login terakhir: {{value}}"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Nonaktif"
+    },
+    "methods": {
+      "password": "Password",
+      "google": "Google",
+      "none": "Tidak ada"
+    },
+    "actions": {
+      "edit": "Ubah nama/email",
+      "deactivate": "Nonaktifkan",
+      "activate": "Aktifkan",
+      "sendReset": "Kirim link reset password",
+      "resetCooldown": "Kirim ulang dalam {{seconds}} dtk",
+      "resetBlockedHint": "Akun nonaktif tidak bisa menerima link reset password. Aktifkan akun ini dulu."
+    },
+    "deactivateConfirm": {
+      "eyebrow": "// Nonaktifkan akun",
+      "title": "Nonaktifkan {{name}}?",
+      "description": "Akun ini tidak bisa masuk lagi, baik dengan password maupun Google, dan tidak bisa meminta reset password. Riwayat pembeliannya tetap tersimpan.",
+      "sessionNote": "Sesi yang sudah terbuka tetap berjalan sampai token-nya kedaluwarsa (paling lama 12 jam).",
+      "confirm": "Nonaktifkan",
+      "cancel": "Batal"
+    },
+    "activateConfirm": {
+      "eyebrow": "// Aktifkan akun",
+      "title": "Aktifkan {{name}}?",
+      "description": "Pembeli bisa masuk lagi dengan password atau Google, dan bisa meminta reset password.",
+      "confirm": "Aktifkan akun",
+      "cancel": "Batal",
+      "pending": "Mengaktifkan…"
+    },
+    "resetConfirm": {
+      "eyebrow": "// Reset password",
+      "title": "Kirim link reset password?",
+      "description": "Link \"Atur password\" sekali pakai akan dikirim ke {{email}}, sama seperti \"Lupa password\" di storefront. Link berlaku 30 menit.",
+      "passwordNote": "Admin tidak pernah melihat atau mengetik password; pembeli mengaturnya sendiri lewat link itu.",
+      "noPasswordNote": "Akun ini belum punya password. Lewat link ini pembeli bisa membuatnya, lalu masuk dengan email dan password juga.",
+      "confirm": "Kirim link",
+      "cancel": "Batal",
+      "pending": "Mengirim…"
+    },
+    "edit": {
+      "eyebrow": "// Ubah akun",
+      "title": "Ubah nama atau email",
+      "description": "Hanya kolom yang Anda ubah yang dikirim.",
+      "nameLabel": "Nama",
+      "namePlaceholder": "Contoh: Budi Santoso",
+      "emailLabel": "Email",
+      "emailNoteTitle": "Jika email diganti:",
+      "emailNoteUnverified": "Email baru ditandai belum terverifikasi.",
+      "emailNoteOrders": "Pesanan sebelumnya tetap tercatat atas {{email}}, jadi tidak muncul di riwayat pembelian storefront pembeli dan tidak dihitung di ringkasan pembelian di sini.",
+      "emailNoteSession": "Pembeli perlu masuk ulang agar sesinya memakai email baru.",
+      "cancel": "Batal",
+      "save": "Simpan",
+      "saving": "Menyimpan…"
+    },
+    "detail": {
+      "back": "Kembali ke pelanggan",
+      "eyebrow": "// Pelanggan",
+      "loading": "Memuat pelanggan…",
+      "notFoundTitle": "Pelanggan tidak ditemukan",
+      "notFoundBody": "Akun ini tidak ada atau tautannya salah.",
+      "errorTitle": "Gagal memuat pelanggan",
+      "errorBody": "Periksa koneksi lalu coba lagi.",
+      "inactiveNote": "Akun ini nonaktif: tidak bisa masuk dan tidak bisa meminta reset password.",
+      "emailVerified": "Email terverifikasi",
+      "emailUnverified": "Email belum terverifikasi",
+      "summaryTitle": "Ringkasan pembelian",
+      "summaryHint": "Dari pesanan yang memakai email akun ini.",
+      "metrics": {
+        "transactions": "Jumlah transaksi",
+        "paid": "Transaksi lunas",
+        "spent": "Total belanja",
+        "spentHint": "Hanya transaksi lunas",
+        "lastTransaction": "Transaksi terakhir",
+        "noTransaction": "Belum ada"
+      },
+      "profileTitle": "Profil",
+      "methodsTitle": "Metode masuk",
+      "methodsFooter": "Admin tidak pernah melihat atau mengetik password. Kirim link reset agar pembeli mengatur password sendiri.",
+      "fields": {
+        "name": "Nama",
+        "email": "Email",
+        "emailStatus": "Verifikasi email",
+        "phone": "Telepon",
+        "status": "Status",
+        "createdAt": "Terdaftar",
+        "lastLogin": "Login terakhir",
+        "id": "ID pelanggan",
+        "password": "Password",
+        "google": "Google",
+        "createdVia": "Dibuat lewat"
+      },
+      "passwordSet": "Sudah diatur",
+      "passwordNotSet": "Belum ada",
+      "googleLinked": "Tertaut",
+      "googleNotLinked": "Tidak tertaut",
+      "viaGoogle": "Google",
+      "viaManual": "Daftar dengan email"
+    },
+    "toasts": {
+      "updated": "Data pelanggan disimpan",
+      "activated": "{{name}} diaktifkan",
+      "deactivated": "{{name}} dinonaktifkan",
+      "resetSent": "Link reset password dikirim ke {{email}}"
+    },
+    "errors": {
+      "notFound": "Pelanggan tidak ditemukan. Mungkin tautannya salah.",
+      "nameRequired": "Nama tidak boleh kosong.",
+      "nameTooLong": "Nama maksimal 100 karakter.",
+      "nothingToUpdate": "Tidak ada perubahan untuk disimpan.",
+      "emailRequired": "Email tidak boleh kosong.",
+      "emailTaken": "Email ini sudah dipakai akun lain.",
+      "emailInvalid": "Format email tidak valid.",
+      "inactive": "Akun ini nonaktif, jadi link reset password tidak bisa dikirim.",
+      "resetTooSoon": "Link reset baru saja dikirim. Coba lagi dalam {{seconds}} detik.",
+      "badFilter": "Filter tidak valid. Reset filter lalu coba lagi.",
+      "forbidden": "Anda tidak punya akses untuk tindakan ini.",
+      "network": "Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.",
+      "tooManyRequests": "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
+      "generic": "Terjadi kesalahan. Coba lagi."
     }
   },
   "bannerPage": {
