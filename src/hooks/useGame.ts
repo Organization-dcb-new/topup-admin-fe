@@ -229,13 +229,17 @@ export function useInitGamesFromProvider(onDone?: () => void) {
   })
 }
 
+/** The backend sends `data: null` when there are no games, and a `= []` default only covers undefined. */
+async function fetchGameNames(): Promise<GameNames[]> {
+  const res = await api.get('/games/names')
+  const raw = res.data?.data
+  return Array.isArray(raw) ? raw : []
+}
+
 export function useGetGameNames(enabled = true) {
   return useQuery<GameNames[]>({
     queryKey: ['game-names'],
-    queryFn: async () => {
-      const res = await api.get('/games/names')
-      return res.data.data
-    },
+    queryFn: fetchGameNames,
     enabled,
   })
 }
@@ -243,9 +247,6 @@ export function useGetGameNames(enabled = true) {
 export function useGetGameNamesWithType() {
   return useQuery<GameNames[]>({
     queryKey: ['game-names'],
-    queryFn: async () => {
-      const res = await api.get('/games/names')
-      return res.data.data
-    },
+    queryFn: fetchGameNames,
   })
 }

@@ -74,7 +74,7 @@ function GameImageForm({ initialGame, games, canPickGame, pending, onCancel, onS
   // The by-game listing has no images; the admin list does, but only filters by game name (substring),
   // so keep just this game's rows.
   const { data: named } = useGetProducts(1, 20, { search: '', sku: '', game_name: gameName ?? '' }, !!gameId && !!gameName)
-  const currentImage = named?.data.find((p) => p.game_id === gameId && p.image)?.image
+  const currentImage = named?.data?.find((p) => p.game_id === gameId && p.image)?.image
 
   const submit = () => {
     setSubmitted(true)
