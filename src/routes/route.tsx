@@ -26,6 +26,8 @@ import AdminManagementPage from "@/pages/Admin";
 import MaintenancePage from "@/pages/Maintenance";
 import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
+import CustomerPage from '@/pages/Customer'
+import CustomerDetailPage from '@/pages/CustomerDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
 import { AuthLayout } from '@/components/Auth/AuthLayout'
 import { AppShell } from '@/components/Layout/app-shell'
@@ -103,6 +105,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.orderView}>
             <OrderPages />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'customers',
+        element: (
+          <RoleGuard permission={PERM.customerView}>
+            <CustomerPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'customers/:id',
+        element: (
+          <RoleGuard permission={PERM.customerView}>
+            <CustomerDetailPage />
           </RoleGuard>
         ),
       },

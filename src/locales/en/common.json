@@ -44,6 +44,7 @@
       "rekap": "Summary",
       "cashflow": "Cashflow",
       "pesanan": "Orders",
+      "pelanggan": "Customers",
       "konten": "Content",
       "banner": "Banner",
       "acara": "Shows",
@@ -359,6 +360,176 @@
         "rejected": "The provider rejected this order with code {{code}}.",
         "unsent": "No provider response yet. Orders are only sent once the payment succeeds."
       }
+    }
+  },
+  "customerPage": {
+    "eyebrow": "// Storefront accounts",
+    "title": "Customers",
+    "subtitle": "Buyer accounts on the storefront. Find an account, fix its name or email, deactivate a problem account and send password reset links.",
+    "total_one": "{{formatted}} customer",
+    "total_other": "{{formatted}} customers",
+    "results_one": "{{formatted}} result",
+    "results_other": "{{formatted}} results",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "loadError": "Couldn't load the customers. Check your connection and try again.",
+    "listLabel": "Customer list",
+    "emptyTitle": "No customers yet",
+    "emptyBody": "Accounts show up here once buyers sign up on the storefront, with email or Google.",
+    "noMatchTitle": "No customers match",
+    "noMatchBody": "Try another name or email, or reset the filters.",
+    "noName": "No name",
+    "neverLoggedIn": "Never",
+    "filters": {
+      "searchPlaceholder": "Search name or email",
+      "status": "Status",
+      "method": "Sign-in method",
+      "statusOptions": {
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "methodOptions": {
+        "all": "All",
+        "password": "Password",
+        "google": "Google"
+      },
+      "reset": "Reset"
+    },
+    "columns": {
+      "customer": "Customer",
+      "email": "Email",
+      "methods": "Sign-in",
+      "status": "Status",
+      "createdAt": "Joined",
+      "lastLogin": "Last login"
+    },
+    "row": {
+      "lastLogin": "Last login: {{value}}"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "methods": {
+      "password": "Password",
+      "google": "Google",
+      "none": "None"
+    },
+    "actions": {
+      "edit": "Edit name/email",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "sendReset": "Send password reset link",
+      "resetCooldown": "Send again in {{seconds}}s",
+      "resetBlockedHint": "An inactive account can't receive a password reset link. Activate it first."
+    },
+    "deactivateConfirm": {
+      "eyebrow": "// Deactivate account",
+      "title": "Deactivate {{name}}?",
+      "description": "This account can no longer sign in, with a password or with Google, and can't request a password reset. Its purchase history is kept.",
+      "sessionNote": "A session that is already open keeps working until its token expires (up to 12 hours).",
+      "confirm": "Deactivate",
+      "cancel": "Cancel"
+    },
+    "activateConfirm": {
+      "eyebrow": "// Activate account",
+      "title": "Activate {{name}}?",
+      "description": "The buyer can sign in again with a password or Google, and can request a password reset.",
+      "confirm": "Activate account",
+      "cancel": "Cancel",
+      "pending": "Activating…"
+    },
+    "resetConfirm": {
+      "eyebrow": "// Password reset",
+      "title": "Send a password reset link?",
+      "description": "A one-time \"Atur password\" (set password) link goes to {{email}}, the same one the storefront's \"Lupa password\" (forgot password) sends. It's valid for 30 minutes.",
+      "passwordNote": "Admins never see or type passwords; the buyer sets their own through that link.",
+      "noPasswordNote": "This account has no password yet. The link lets the buyer create one, so they can also sign in with email and password.",
+      "confirm": "Send link",
+      "cancel": "Cancel",
+      "pending": "Sending…"
+    },
+    "edit": {
+      "eyebrow": "// Edit account",
+      "title": "Edit name or email",
+      "description": "Only the fields you change are sent.",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Budi Santoso",
+      "emailLabel": "Email",
+      "emailNoteTitle": "If you change the email:",
+      "emailNoteUnverified": "The new email is marked unverified.",
+      "emailNoteOrders": "Earlier orders stay under {{email}}, so they won't show in the buyer's storefront purchase history or in the purchase summary here.",
+      "emailNoteSession": "The buyer has to sign in again for their session to use the new email.",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…"
+    },
+    "detail": {
+      "back": "Back to customers",
+      "eyebrow": "// Customer",
+      "loading": "Loading customer…",
+      "notFoundTitle": "Customer not found",
+      "notFoundBody": "This account doesn't exist or the link is wrong.",
+      "errorTitle": "Couldn't load the customer",
+      "errorBody": "Check your connection and try again.",
+      "inactiveNote": "This account is inactive: it can't sign in or request a password reset.",
+      "emailVerified": "Email verified",
+      "emailUnverified": "Email unverified",
+      "summaryTitle": "Purchase summary",
+      "summaryHint": "From orders placed with this account's email.",
+      "metrics": {
+        "transactions": "Transactions",
+        "paid": "Paid transactions",
+        "spent": "Total spent",
+        "spentHint": "Paid transactions only",
+        "lastTransaction": "Last transaction",
+        "noTransaction": "None yet"
+      },
+      "profileTitle": "Profile",
+      "methodsTitle": "Sign-in methods",
+      "methodsFooter": "Admins never see or type passwords. Send a reset link so the buyer sets their own.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "emailStatus": "Email verification",
+        "phone": "Phone",
+        "status": "Status",
+        "createdAt": "Joined",
+        "lastLogin": "Last login",
+        "id": "Customer ID",
+        "password": "Password",
+        "google": "Google",
+        "createdVia": "Created via"
+      },
+      "passwordSet": "Set",
+      "passwordNotSet": "None",
+      "googleLinked": "Linked",
+      "googleNotLinked": "Not linked",
+      "viaGoogle": "Google",
+      "viaManual": "Email sign-up"
+    },
+    "toasts": {
+      "updated": "Customer saved",
+      "activated": "{{name}} activated",
+      "deactivated": "{{name}} deactivated",
+      "resetSent": "Password reset link sent to {{email}}"
+    },
+    "errors": {
+      "notFound": "Customer not found. The link may be wrong.",
+      "nameRequired": "Name can't be empty.",
+      "nameTooLong": "Name can be at most 100 characters.",
+      "nothingToUpdate": "There are no changes to save.",
+      "emailRequired": "Email can't be empty.",
+      "emailTaken": "Another account already uses this email.",
+      "emailInvalid": "Email format is invalid.",
+      "inactive": "This account is inactive, so a password reset link can't be sent.",
+      "resetTooSoon": "A reset link was just sent. Try again in {{seconds}} seconds.",
+      "badFilter": "Invalid filter. Reset the filters and try again.",
+      "forbidden": "You don't have access to do this.",
+      "network": "Can't reach the server. Check your connection and try again.",
+      "tooManyRequests": "Too many requests. Wait a moment and try again.",
+      "generic": "Something went wrong. Try again."
     }
   },
   "bannerPage": {

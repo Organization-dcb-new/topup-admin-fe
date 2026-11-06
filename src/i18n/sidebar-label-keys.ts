@@ -7,6 +7,7 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   Rekap: 'sidebar.menu.rekap',
   Cashflow: 'sidebar.menu.cashflow',
   Pesanan: 'sidebar.menu.pesanan',
+  Pelanggan: 'sidebar.menu.pelanggan',
   Konten: 'sidebar.menu.konten',
   Banner: 'sidebar.menu.banner',
   Acara: 'sidebar.menu.acara',

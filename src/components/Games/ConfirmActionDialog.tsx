@@ -17,6 +17,8 @@ interface ConfirmActionDialogProps {
   pending: boolean
   onConfirm: () => void
   icon?: LucideIcon
+  /** Spin the icon while pending; meant for refresh-style icons. */
+  spinIcon?: boolean
 }
 
 /** Confirmation for heavy but non-destructive actions, like pulling data from the provider. */
@@ -32,6 +34,7 @@ export function ConfirmActionDialog({
   pending,
   onConfirm,
   icon: Icon = RefreshCw,
+  spinIcon = true,
 }: ConfirmActionDialogProps) {
   return (
     <Dialog open={open} onOpenChange={(next) => !pending && onOpenChange(next)}>
@@ -40,7 +43,7 @@ export function ConfirmActionDialog({
         <div className='space-y-6 p-6 sm:p-7'>
           <div className='flex items-start gap-4'>
             <span className='grid size-12 shrink-0 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm'>
-              <Icon className={cn('size-5', pending && 'animate-spin')} aria-hidden />
+              <Icon className={cn('size-5', pending && spinIcon && 'animate-spin')} aria-hidden />
             </span>
             <div className='min-w-0 space-y-1'>
               <p className={hudEyebrowClass}>{eyebrow}</p>

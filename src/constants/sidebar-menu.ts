@@ -23,6 +23,7 @@ import {
   WalletCards,
   Percent,
   UserCog,
+  UsersRound,
 } from 'lucide-react'
 
 import { PERM, type Permission } from '@/constants/permissions'
@@ -57,6 +58,7 @@ export const sidebarMenus: SidebarSection[] = [
           { label: 'Ikhtisar', path: '/transactions', icon: LayoutDashboard, permission: PERM.transactionView },
           { label: 'Cashflow', path: '/cashflow', icon: Banknote, permission: PERM.cashflowView },
           { label: 'Pesanan', path: '/orders', icon: ListOrdered, permission: PERM.orderView },
+          { label: 'Pelanggan', path: '/customers', icon: UsersRound, permission: PERM.customerView },
         ],
       },
       {
