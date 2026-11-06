@@ -44,7 +44,6 @@ export const PERM = {
   providerCreate: 'provider.create',
   providerUpdate: 'provider.update',
   providerDelete: 'provider.delete',
-  providerViewBalance: 'provider.view_balance',
 
   paymentMethodView: 'payment_method.view',
   paymentMethodCreate: 'payment_method.create',

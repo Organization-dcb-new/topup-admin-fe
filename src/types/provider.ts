@@ -1,14 +1,22 @@
 export type ProviderStatus = 'ACTIVE' | 'INACTIVE' | 'ERROR'
 
+/** One server env variable that holds a supplier credential. Its value never leaves the server. */
+export type ProviderCredential = {
+  env: string
+  set: boolean
+}
+
 export type Provider = {
   id: string
   name: string
   code: string
+  /** Base URL of the supplier's API. */
   api_url: string
-  /** Despite the name, the backend stores and returns the key as-is; treat it as a secret. */
-  api_key_encrypted: string
+  /** Credentials live in the server env; this only names the variables and whether they are set. */
+  credentials?: ProviderCredential[]
   status: ProviderStatus
-  balance: number
+  /** The backend can ask this supplier for our deposit balance (GET /providers/:id/balance). */
+  balance_supported?: boolean
   /** Lower runs first. */
   priority: number
   config?: Record<string, unknown> | null
@@ -22,19 +30,14 @@ export type ProviderCreatePayload = {
   name: string
   code: string
   api_url: string
-  api_key_encrypted: string
   priority: number
   config: string
 }
 
-/**
- * PUT /providers/:id. The backend overwrites the key with whatever is sent, so the current key
- * must be sent back when it isn't being changed.
- */
+/** PUT /providers/:id; an empty `config` keeps the stored one. */
 export type ProviderUpdatePayload = {
   name: string
   api_url: string
-  api_key_encrypted: string
   status: ProviderStatus
   priority: number
   config: string
@@ -46,19 +49,10 @@ export interface ProviderResponse {
   status: string
 }
 
-export interface LapakGamingBalanceResponse {
-  status: string
-  message: string
-  data: {
-    balance: number
-  }
-}
-
-export interface PpobBalanceResponse {
-  status: string
-  message: string
-  data: {
-    balance: number
-    username: string
-  }
+/** GET /providers/:id/balance: our deposit at the supplier, asked live. */
+export type ProviderBalance = {
+  provider_id: string
+  balance: number
+  /** RFC3339 in WIB. */
+  checked_at: string
 }

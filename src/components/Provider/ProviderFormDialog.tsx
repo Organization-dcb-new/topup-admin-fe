@@ -1,8 +1,8 @@
-import { useId, useState } from 'react'
+import { useId } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Eye, EyeOff, KeyRound, Server } from 'lucide-react'
+import { KeyRound, Server } from 'lucide-react'
 
 import { AuthAlert, AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudLabelClass } from '@/components/Auth/hud-styles'
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { ProviderCredentials } from '@/components/Provider/ProviderCredentials'
 import { providerErrorMessage, useCreateProvider, useUpdateProvider } from '@/hooks/useProvider'
 import { useRetained } from '@/hooks/useRetained'
 import { cn } from '@/lib/utils'
@@ -57,7 +58,6 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
   const create = useCreateProvider(onDone)
   const update = useUpdateProvider(onDone)
   const pending = create.isPending || update.isPending
-  const [showKey, setShowKey] = useState(false)
 
   const {
     register,
@@ -68,12 +68,11 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
     control,
     formState: { errors },
   } = useForm<ProviderFormInput, unknown, ProviderFormValues>({
-    resolver: zodResolver(providerSchema(isEdit)),
+    resolver: zodResolver(providerSchema()),
     defaultValues: {
       name: provider?.name ?? '',
       code: provider?.code ?? '',
       api_url: provider?.api_url ?? '',
-      api_key: '',
       priority: provider?.priority ?? nextPriority,
       status: provider?.status ?? 'ACTIVE',
       config: JSON.stringify(provider?.config ?? { timeout: 30 }, null, 2),
@@ -90,8 +89,6 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
         payload: {
           name: v.name,
           api_url: v.api_url,
-          // The backend overwrites the key with whatever arrives, so an empty field resends the current one.
-          api_key_encrypted: v.api_key.trim() || provider.api_key_encrypted,
           status: v.status,
           priority: v.priority,
           config,
@@ -100,7 +97,7 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
       return
     }
     create.mutate(
-      { name: v.name, code: v.code, api_url: v.api_url, api_key_encrypted: v.api_key.trim(), priority: v.priority, config },
+      { name: v.name, code: v.code, api_url: v.api_url, priority: v.priority, config },
       {
         onError: (err) => {
           if (providerErrorMessage(err) === 'provider code already exists') {
@@ -177,40 +174,16 @@ function ProviderForm({ provider, nextPriority, onDone }: { provider?: Provider;
         {errors.api_url?.message && <FieldMessage tone='error'>{t(errors.api_url.message)}</FieldMessage>}
       </div>
 
-      <div className='space-y-2'>
-        <Label htmlFor={`${ids}-key`} className={cn(hudLabelClass, 'flex items-center gap-1.5')}>
+      {/* Credentials are read from the server env, so the form only says which variables they are. */}
+      <div className='space-y-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5'>
+        <p className={cn(hudLabelClass, 'flex items-center gap-1.5')}>
           <KeyRound className='size-3.5' aria-hidden />
-          {t('providerPage.form.keyLabel')}
-        </Label>
-        <div className='relative'>
-          <Input
-            id={`${ids}-key`}
-            type={showKey ? 'text' : 'password'}
-            autoComplete='new-password'
-            spellCheck={false}
-            placeholder={isEdit ? t('providerPage.form.keyKeepPlaceholder') : ''}
-            aria-invalid={!!errors.api_key}
-            aria-describedby={`${ids}-key-hint`}
-            className={cn(hudInputClass, 'pr-11 font-mono text-sm')}
-            {...register('api_key')}
-          />
-          <button
-            type='button'
-            onClick={() => setShowKey((v) => !v)}
-            aria-label={showKey ? t('providerPage.hideKey') : t('providerPage.showKey')}
-            aria-pressed={showKey}
-            className='absolute inset-y-0 right-0 grid w-11 place-items-center text-slate-400 transition-colors hover:text-brand-purple focus-visible:text-brand-purple focus-visible:outline-none'
-          >
-            {showKey ? <EyeOff className='size-4' aria-hidden /> : <Eye className='size-4' aria-hidden />}
-          </button>
-        </div>
-        {errors.api_key?.message ? (
-          <FieldMessage tone='error'>{t(errors.api_key.message)}</FieldMessage>
-        ) : (
-          <p id={`${ids}-key-hint`} className='text-xs text-slate-500'>
-            {isEdit ? t('providerPage.form.keyKeepHint') : t('providerPage.form.keyHint')}
-          </p>
-        )}
+          {t('providerPage.form.credentialsLabel')}
+        </p>
+        {provider && <ProviderCredentials credentials={provider.credentials} />}
+        <p className='text-xs leading-relaxed text-slate-500'>
+          {isEdit ? t('providerPage.form.credentialsEditHint') : t('providerPage.form.credentialsHint')}
+        </p>
       </div>
 
       <div className='grid gap-4 sm:grid-cols-[9rem_minmax(0,1fr)]'>

@@ -1,9 +1,8 @@
 import { api } from '@/api/axios'
 import i18n from '@/i18n'
 import type {
-  LapakGamingBalanceResponse,
-  PpobBalanceResponse,
   Provider,
+  ProviderBalance,
   ProviderCreatePayload,
   ProviderResponse,
   ProviderUpdatePayload,
@@ -22,23 +21,13 @@ export const useGetProvider = () =>
     },
   })
 
-export const useGetLapakGamingBalance = (enabled = true) =>
-  useQuery<LapakGamingBalanceResponse>({
-    queryKey: ['lapak-gaming-balance'],
+/** Our deposit at the provider's supplier, asked live from the supplier whenever the card loads. */
+export const useProviderBalance = (id: string, enabled: boolean) =>
+  useQuery<ProviderBalance>({
+    queryKey: ['provider-balance', id],
     queryFn: async () => {
-      const res = await api.get('/lapak-gaming/balance')
-      return res.data
-    },
-    enabled,
-    retry: 1,
-  })
-
-export const useGetPpobBalance = (enabled = true) =>
-  useQuery<PpobBalanceResponse>({
-    queryKey: ['ppob-balance'],
-    queryFn: async () => {
-      const res = await api.get('/providers/ppob/balance')
-      return res.data
+      const res = await api.get(`/providers/${id}/balance`)
+      return res.data.data
     },
     enabled,
     retry: 1,
@@ -49,7 +38,6 @@ export function toProviderUpdate(provider: Provider): ProviderUpdatePayload {
   return {
     name: provider.name,
     api_url: provider.api_url,
-    api_key_encrypted: provider.api_key_encrypted,
     status: provider.status,
     priority: provider.priority,
     config: JSON.stringify(provider.config ?? {}),

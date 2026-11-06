@@ -1,13 +1,14 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
-import { Check, Copy, Eye, EyeOff, Globe, KeyRound, Pencil, Plus, RefreshCw, Server, Timer, Trash2, Wallet, type LucideIcon } from 'lucide-react'
+import { Check, Copy, Globe, KeyRound, Pencil, Plus, RefreshCw, Server, Timer, Trash2, Wallet, type LucideIcon } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
 import { DangerDialog } from '@/components/Auth/DangerDialog'
 import { hudEyebrowClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
+import { ProviderCredentials } from '@/components/Provider/ProviderCredentials'
 import { ProviderFormDialog } from '@/components/Provider/ProviderFormDialog'
 import { Switch } from '@/components/ui/switch'
 import { PERM } from '@/constants/permissions'
@@ -15,9 +16,8 @@ import { usePermissions } from '@/hooks/usePermissions'
 import {
   toProviderUpdate,
   useDeleteProvider,
-  useGetLapakGamingBalance,
-  useGetPpobBalance,
   useGetProvider,
+  useProviderBalance,
   useUpdateProvider,
 } from '@/hooks/useProvider'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
@@ -74,8 +74,6 @@ export default function ProviderPages() {
             </Can>
           </div>
         </header>
-
-        <BalanceStrip />
 
         {isError && (
           <div className='space-y-3'>
@@ -137,95 +135,6 @@ export default function ProviderPages() {
         }}
       />
     </DashboardLayout>
-  )
-}
-
-/** Live balances straight from the integrations, for the admins allowed to see them. */
-function BalanceStrip() {
-  const { t } = useTranslation('common')
-  const { can } = usePermissions()
-  const canLapak = can(PERM.integrationViewBalance)
-  const canPpob = can(PERM.providerViewBalance)
-  const lapak = useGetLapakGamingBalance(canLapak)
-  const ppob = useGetPpobBalance(canPpob)
-
-  if (!canLapak && !canPpob) return null
-
-  return (
-    <ul className='grid gap-4 sm:grid-cols-2'>
-      {canLapak && (
-        <BalanceTile
-          order={0}
-          label={t('providerPage.balance.lapak')}
-          value={lapak.data?.data.balance}
-          isLoading={lapak.isLoading}
-          isError={lapak.isError}
-          isFetching={lapak.isFetching}
-          onRefresh={() => void lapak.refetch()}
-        />
-      )}
-      {canPpob && (
-        <BalanceTile
-          order={1}
-          label={t('providerPage.balance.ppob')}
-          sublabel={ppob.data?.data.username}
-          value={ppob.data?.data.balance}
-          isLoading={ppob.isLoading}
-          isError={ppob.isError}
-          isFetching={ppob.isFetching}
-          onRefresh={() => void ppob.refetch()}
-        />
-      )}
-    </ul>
-  )
-}
-
-interface BalanceTileProps {
-  order: number
-  label: string
-  sublabel?: string
-  value?: number
-  isLoading: boolean
-  isError: boolean
-  isFetching: boolean
-  onRefresh: () => void
-}
-
-function BalanceTile({ order, label, sublabel, value, isLoading, isError, isFetching, onRefresh }: BalanceTileProps) {
-  const { t } = useTranslation('common')
-  return (
-    <li className='min-w-0 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both' style={{ animationDelay: `${order * 60}ms` }}>
-      <div className='h-full bg-slate-200/80 p-px hud-clip-sm'>
-        <div className='flex h-full items-center gap-4 bg-white p-4 hud-clip-sm'>
-          <span className='grid size-11 shrink-0 place-items-center bg-linear-to-br from-brand-purple to-brand-cyan text-white hud-clip-sm' aria-hidden>
-            <Wallet className='size-5' />
-          </span>
-          <div className='min-w-0 flex-1'>
-            <p className='truncate font-display text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400'>
-              {label}
-              {sublabel && <span className='ml-1.5 normal-case tracking-normal text-slate-400'>· {sublabel}</span>}
-            </p>
-            {isLoading ? (
-              <div className='mt-1.5 h-7 w-40 animate-pulse rounded bg-slate-100' aria-hidden />
-            ) : isError ? (
-              <p className='mt-1 text-sm font-medium text-rose-600'>{t('providerPage.balance.error')}</p>
-            ) : (
-              <p className='truncate font-display text-2xl font-bold text-slate-900'>{formatCurrency(value)}</p>
-            )}
-          </div>
-          <button
-            type='button'
-            onClick={onRefresh}
-            disabled={isFetching}
-            aria-label={t('providerPage.balance.refresh', { name: label })}
-            title={t('providerPage.balance.refresh', { name: label })}
-            className={`${iconButtonClass} hover:bg-brand-purple/10 hover:text-brand-purple focus-visible:ring-brand-purple/40 disabled:opacity-60`}
-          >
-            <RefreshCw className={cn('size-4', isFetching && 'animate-spin')} aria-hidden />
-          </button>
-        </div>
-      </div>
-    </li>
   )
 }
 
@@ -297,14 +206,24 @@ function ProviderCard({ provider, order, onEdit, onDelete }: ProviderCardProps) 
             </div>
 
             <dl className='divide-y divide-slate-100 rounded-lg border border-slate-200 text-sm'>
+              {/* Same permission the backend asks for on GET /providers/:id/balance. */}
+              {can(PERM.integrationViewBalance) && (
+                <DetailRow icon={Wallet} label={t('providerPage.balance.label')}>
+                  {provider.balance_supported ? (
+                    <ProviderBalance provider={provider} />
+                  ) : (
+                    <span className='min-w-0 flex-1 truncate text-xs text-slate-400'>{t('providerPage.balance.unsupported')}</span>
+                  )}
+                </DetailRow>
+              )}
               <DetailRow icon={Globe} label={t('providerPage.apiUrl')}>
                 <span className='min-w-0 flex-1 truncate font-mono text-xs text-slate-700' title={provider.api_url}>
                   {provider.api_url || '—'}
                 </span>
                 {provider.api_url && <CopyButton value={provider.api_url} label={t('providerPage.copyUrl')} />}
               </DetailRow>
-              <DetailRow icon={KeyRound} label={t('providerPage.apiKey')}>
-                <SecretValue value={provider.api_key_encrypted} />
+              <DetailRow icon={KeyRound} label={t('providerPage.credentials')}>
+                <ProviderCredentials credentials={provider.credentials} />
               </DetailRow>
               <DetailRow icon={Timer} label={t('providerPage.config')}>
                 <span className='min-w-0 flex-1 truncate text-xs text-slate-700'>
@@ -362,27 +281,40 @@ function DetailRow({ icon: Icon, label, children }: { icon: LucideIcon; label: s
   )
 }
 
-/** The key is a secret even though the API hands it over; keep it masked unless asked. */
-function SecretValue({ value }: { value: string }) {
+/** Our deposit at this supplier, asked live from the supplier when the card loads. */
+function ProviderBalance({ provider }: { provider: Provider }) {
   const { t } = useTranslation('common')
-  const [revealed, setRevealed] = useState(false)
-  if (!value) return <span className='text-xs text-rose-600'>{t('providerPage.noKey')}</span>
+  const balance = useProviderBalance(provider.id, true)
+  const refreshLabel = t('providerPage.balance.refresh', { name: provider.name })
 
-  const masked = `${'•'.repeat(8)}${value.length > 8 ? value.slice(-4) : ''}`
   return (
     <>
-      <span className='min-w-0 flex-1 truncate font-mono text-xs text-slate-700'>{revealed ? value : masked}</span>
+      <span className='min-w-0 flex-1 truncate'>
+        {balance.isLoading ? (
+          <span className='inline-block h-4 w-28 animate-pulse rounded bg-slate-100 align-middle' aria-hidden />
+        ) : balance.isError ? (
+          <span className='text-xs font-medium text-rose-600'>{t('providerPage.balance.error')}</span>
+        ) : (
+          <>
+            <span className='font-display text-sm font-bold tabular-nums text-slate-900'>{formatCurrency(balance.data?.balance)}</span>
+            {balance.data?.checked_at && (
+              <span className='ml-2 text-xs text-slate-400'>
+                {t('providerPage.balance.checkedAt', { time: formatBackendDateTime(balance.data.checked_at, 'HH:mm') })}
+              </span>
+            )}
+          </>
+        )}
+      </span>
       <button
         type='button'
-        onClick={() => setRevealed((v) => !v)}
-        aria-pressed={revealed}
-        aria-label={revealed ? t('providerPage.hideKey') : t('providerPage.showKey')}
-        title={revealed ? t('providerPage.hideKey') : t('providerPage.showKey')}
-        className='grid size-7 shrink-0 place-items-center rounded text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700'
+        onClick={() => void balance.refetch()}
+        disabled={balance.isFetching}
+        aria-label={refreshLabel}
+        title={refreshLabel}
+        className='grid size-7 shrink-0 place-items-center rounded text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 disabled:opacity-60'
       >
-        {revealed ? <EyeOff className='size-3.5' aria-hidden /> : <Eye className='size-3.5' aria-hidden />}
+        <RefreshCw className={cn('size-3.5', balance.isFetching && 'animate-spin')} aria-hidden />
       </button>
-      <CopyButton value={value} label={t('providerPage.copyKey')} />
     </>
   )
 }
