@@ -81,16 +81,23 @@
   "imageDropzone": {
     "title": "Klik atau tarik gambar ke sini",
     "dropNow": "Lepaskan untuk mengunggah",
-    "formats": "JPG, PNG, WebP, atau SVG · maks 10 MB",
+    "formats": "JPG, PNG, WebP, atau SVG · maks {{max}}",
     "replace": "Ganti gambar",
     "uploading": "Mengunggah {{percent}}%",
     "errors": {
-      "invalidType": "File tersebut bukan gambar.",
-      "tooLarge": "Ukuran gambar lebih dari 10 MB.",
+      "invalidType": "Format harus JPG, PNG, WebP, atau SVG.",
+      "tooLarge": "Ukuran gambar lebih dari {{max}}. Kecilkan atau kompres dulu.",
       "uploadFailed": "Gagal mengunggah. Coba lagi atau pilih gambar lain."
     },
     "titleShort": "Unggah gambar",
-    "formatsShort": "PNG/SVG · maks 10 MB"
+    "hints": {
+      "banner": "2560 × 800 px (16:5), minimal 1280 × 400 · JPG/WebP. Jauhkan teks penting dari tepi bawah dan samping (tertutup tombol carousel).",
+      "gameThumbnail": "Persegi 512 × 512 px (minimal 256 × 256) · JPG/PNG/WebP.",
+      "gameBanner": "Opsional. 2400 × 800 px (3:1) · JPG/WebP. Taruh objek penting di tengah; tepinya terpotong di HP dan desktop.",
+      "paymentLogo": "Logo melebar ±300 × 120 px, PNG transparan/SVG, tanpa margin kosong.",
+      "icon": "Persegi 256 × 256 px, PNG transparan/SVG.",
+      "blogThumbnail": "1600 × 900 px (16:9) · JPG/WebP. Tampil di atas artikel dan di kartunya."
+    }
   },
   "dateRangeFilter": {
     "clear": "Hapus tanggal"
@@ -561,7 +568,6 @@
       "editTitle": "Ubah banner",
       "description": "Unggah gambar lebar dan tentukan ke mana banner mengarah saat diklik.",
       "imageLabel": "Gambar",
-      "imageHint": "Gambar lebar paling pas; bingkai ini kira-kira menunjukkan potongan di carousel.",
       "linkLabel": "Tautan tujuan",
       "linkPlaceholder": "/games/mobile-legends atau https://…",
       "linkHint": "Opsional. Pakai /path untuk halaman toko atau URL lengkap untuk situs lain. Kosongkan jika banner tidak perlu bisa diklik.",
@@ -627,7 +633,6 @@
       },
       "publishedAt": "Terbit {{date}}",
       "thumbnailLabel": "Thumbnail",
-      "thumbnailHint": "Paling pas 16:9; tampil di atas artikel dan di kartunya.",
       "categoryLabel": "Game",
       "categoryPlaceholder": "Pilih game",
       "categorySearch": "Cari game",
@@ -911,10 +916,8 @@
     "title": "Gambar {{name}}",
     "description": "Thumbnail tampil di daftar dan pencarian. Banner jadi kepala halaman game di storefront.",
     "thumbnailLabel": "Thumbnail",
-    "thumbnailHint": "Persegi, minimal 256 × 256.",
     "thumbnailRequired": "Game wajib punya thumbnail.",
     "bannerLabel": "Banner",
-    "bannerHint": "Opsional. Gambar lebar, sekitar 21:9.",
     "removeBanner": "Hapus banner",
     "cancel": "Batal",
     "save": "Simpan gambar",
@@ -2392,7 +2395,6 @@
     "publisherLabel": "Publisher",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
-    "bannerHint": "Opsional. Gambar lebar, sekitar 21:9.",
     "descriptionLabel": "Deskripsi",
     "descriptionPlaceholder": "Beberapa kalimat tentang game untuk pembeli",
     "instructionLabel": "Cara top up",

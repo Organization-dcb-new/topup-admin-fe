@@ -142,7 +142,7 @@ function GameImageForm({ initialGame, games, canPickGame, pending, onCancel, onS
             aspectClassName='aspect-square'
             fit='contain'
             labelledBy={`${ids}-image`}
-            hint={t('imageDropzone.formatsShort')}
+            hint={t('imageDropzone.hints.icon')}
             error={submitted && !image ? t('productsPage.gameImage.errors.image') : undefined}
           />
         </div>

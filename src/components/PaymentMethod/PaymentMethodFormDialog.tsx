@@ -161,7 +161,7 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
             aspectClassName='aspect-square'
             fit='contain'
             labelledBy={`${ids}-icon`}
-            hint={t('imageDropzone.formatsShort')}
+            hint={t('imageDropzone.hints.paymentLogo')}
           />
         </div>
         <div className='grid content-start gap-4 sm:grid-cols-2'>

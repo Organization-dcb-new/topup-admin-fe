@@ -273,7 +273,7 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
                   onUploadingChange={setUploadingThumb}
                   aspectClassName='aspect-square'
                   labelledBy={`${ids}-thumb`}
-                  hint={t('imageDropzone.formatsShort')}
+                  hint={t('imageDropzone.hints.gameThumbnail')}
                   error={errors.thumbnail_url?.message && t(errors.thumbnail_url.message)}
                 />
               </div>
@@ -283,9 +283,9 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
                   value={banner ?? ''}
                   onChange={(url) => setValue('banner_url', url, { shouldDirty: true })}
                   onUploadingChange={setUploadingBanner}
-                  aspectClassName='aspect-[21/9]'
+                  aspectClassName='aspect-[3/1]'
                   labelledBy={`${ids}-banner`}
-                  hint={t('gameForm.bannerHint')}
+                  hint={t('imageDropzone.hints.gameBanner')}
                 />
               </div>
             </div>

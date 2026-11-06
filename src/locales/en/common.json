@@ -81,16 +81,23 @@
   "imageDropzone": {
     "title": "Click or drop an image here",
     "dropNow": "Drop to upload",
-    "formats": "JPG, PNG, WebP or SVG · up to 10 MB",
+    "formats": "JPG, PNG, WebP or SVG · up to {{max}}",
     "replace": "Replace image",
     "uploading": "Uploading {{percent}}%",
     "errors": {
-      "invalidType": "That file isn’t an image.",
-      "tooLarge": "The image is larger than 10 MB.",
+      "invalidType": "Use a JPG, PNG, WebP or SVG image.",
+      "tooLarge": "The image is larger than {{max}}. Resize or compress it first.",
       "uploadFailed": "Upload failed. Try again, or pick another image."
     },
     "titleShort": "Upload image",
-    "formatsShort": "PNG/SVG · max 10 MB"
+    "hints": {
+      "banner": "2560 × 800 px (16:5), at least 1280 × 400 · JPG/WebP. Keep key text away from the bottom and side edges (the carousel controls cover them).",
+      "gameThumbnail": "Square 512 × 512 px (at least 256 × 256) · JPG/PNG/WebP.",
+      "gameBanner": "Optional. 2400 × 800 px (3:1) · JPG/WebP. Keep the subject centred; phones and desktops crop the edges.",
+      "paymentLogo": "Wide logo, about 300 × 120 px, transparent PNG/SVG, no empty margin.",
+      "icon": "Square 256 × 256 px, transparent PNG/SVG.",
+      "blogThumbnail": "1600 × 900 px (16:9) · JPG/WebP. It heads the article and its card."
+    }
   },
   "dateRangeFilter": {
     "clear": "Clear dates"
@@ -568,7 +575,6 @@
       "editTitle": "Edit banner",
       "description": "Upload a wide image and choose where a click on it should go.",
       "imageLabel": "Image",
-      "imageHint": "Wide images work best; this frame shows roughly how the carousel crops it.",
       "linkLabel": "Redirect link",
       "linkPlaceholder": "/games/mobile-legends or https://…",
       "linkHint": "Optional. Use a /path for a store page or a full URL for another site. Leave empty if the banner shouldn’t be clickable.",
@@ -635,7 +641,6 @@
       },
       "publishedAt": "Published {{date}}",
       "thumbnailLabel": "Thumbnail",
-      "thumbnailHint": "16:9 works best; it heads the article and its card.",
       "categoryLabel": "Game",
       "categoryPlaceholder": "Choose a game",
       "categorySearch": "Search games",
@@ -919,10 +924,8 @@
     "title": "Images of {{name}}",
     "description": "The thumbnail appears in lists and search. The banner heads the game's storefront page.",
     "thumbnailLabel": "Thumbnail",
-    "thumbnailHint": "Square, at least 256 × 256.",
     "thumbnailRequired": "A game needs a thumbnail.",
     "bannerLabel": "Banner",
-    "bannerHint": "Optional. Wide image, about 21:9.",
     "removeBanner": "Remove banner",
     "cancel": "Cancel",
     "save": "Save images",
@@ -2443,7 +2446,6 @@
     "publisherLabel": "Publisher",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
-    "bannerHint": "Optional. Wide image, about 21:9.",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "A few lines about the game for buyers",
     "instructionLabel": "How to top up",

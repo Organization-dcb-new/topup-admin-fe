@@ -13,10 +13,12 @@ import { DangerDialog } from '@/components/Auth/DangerDialog'
 import { hudEyebrowClass, hudLabelClass } from '@/components/Auth/hud-styles'
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Textarea } from '@/components/ui/textarea'
+import { getImageFileValidationError } from '@/helpers/validate'
 import { useSaveBlog } from '@/hooks/useBlog'
 import { useGetGameNames } from '@/hooks/useGame'
 import { uploadFile } from '@/hooks/useUpload'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { MAX_FILE_SIZE_LABEL } from '@/lib/file'
 import { cn } from '@/lib/utils'
 import { EXCERPT_MAX_LENGTH, blogSchema, type BlogFormValues } from '@/schemas/blog'
 import type { Blog, BlogStatus } from '@/types/blog'
@@ -74,6 +76,11 @@ export function BlogEditor({ blog, onClose }: BlogEditorProps) {
   const missing = FIELD_ORDER.filter((key) => errors[key])
 
   const uploadEditorImage = async (file: File) => {
+    const invalid = getImageFileValidationError(file)
+    if (invalid) {
+      toast.error(t(`imageDropzone.errors.${invalid}`, { max: MAX_FILE_SIZE_LABEL }))
+      throw new Error(invalid)
+    }
     try {
       const res = await uploadFile(file)
       return res.data.url as string
@@ -263,7 +270,7 @@ export function BlogEditor({ blog, onClose }: BlogEditorProps) {
                 onUploadingChange={setUploading}
                 aspectClassName='aspect-video'
                 labelledBy={`${ids}-thumb`}
-                hint={t('blogPage.editor.thumbnailHint')}
+                hint={t('imageDropzone.hints.blogThumbnail')}
                 error={errors.thumbnail?.message && t(errors.thumbnail.message)}
               />
             </div>
