@@ -2,7 +2,7 @@ import { useId, useRef, useState, type ComponentProps, type ReactNode } from 're
 import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Gamepad2, Pencil, Star, type LucideIcon } from 'lucide-react'
+import { Gamepad2, Pencil, type LucideIcon } from 'lucide-react'
 
 import { AuthAlert, AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudLabelClass } from '@/components/Auth/hud-styles'
@@ -11,7 +11,7 @@ import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+import { Segmented } from '@/components/ui/segmented'
 import { Textarea } from '@/components/ui/textarea'
 import { PERM } from '@/constants/permissions'
 import { gameServerMessage, useCreateGame, useUpdateGame } from '@/hooks/useGame'
@@ -26,7 +26,7 @@ import {
   type GameEditFormInput,
   type GameEditFormValues,
 } from '@/schemas/game'
-import type { Game, GameUpdateRequest } from '@/types/game'
+import { GAME_STATUSES, type Game, type GameStatus, type GameUpdateRequest } from '@/types/game'
 import { CategorySelect } from './CategorySelect'
 import { GameInputsBuilder } from './GameInputsBuilder'
 import { gameSelectTriggerClass, toSlug } from './game-utils'
@@ -105,8 +105,9 @@ function Footer({ pending, uploading, onCancel, submitLabel }: { pending: boolea
 }
 
 /** Backend messages that belong to one field of the create form. */
-const CREATE_ERRORS: Record<string, ['slug' | 'category_id' | 'provider_id', string]> = {
+const CREATE_ERRORS: Record<string, ['slug' | 'code' | 'category_id' | 'provider_id', string]> = {
   'Slug already exists': ['slug', 'gameForm.errors.slugTaken'],
+  'code already exists': ['code', 'gameForm.errors.codeTaken'],
   'Category Not Found': ['category_id', 'gameForm.errors.categoryMissing'],
   'Provider Not Found': ['provider_id', 'gameForm.errors.providerMissing'],
 }
@@ -138,10 +139,9 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
       code: '',
       thumbnail_url: '',
       banner_url: '',
-      developer: '',
-      publisher: '',
       description: '',
-      instruction: '',
+      // A new game waits off the storefront until it has its images and products.
+      status: 'HIDDEN',
       inputs: [{ key: 'user_id', label: 'User ID', input_type: 'tel', placeholder: '' }],
     },
   })
@@ -151,7 +151,13 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
 
   const onSubmit = (v: GameCreateFormValues) =>
     create.mutate(
-      { ...v, inputs: v.inputs.map((input, index) => ({ ...input, sort_order: index + 1, required: true })) },
+      {
+        ...v,
+        status: v.status as GameStatus,
+        // Left out, the backend makes the code from the slug.
+        code: v.code || undefined,
+        inputs: v.inputs.map((input, index) => ({ ...input, sort_order: index + 1, required: true })),
+      },
       {
         onError: (err) => {
           const known = CREATE_ERRORS[gameServerMessage(err) ?? '']
@@ -161,7 +167,7 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
       }
     )
 
-  const textInput = (name: 'code' | 'developer' | 'publisher', extra?: string) => ({
+  const textInput = (name: 'code', extra?: string) => ({
     id: `${ids}-${name}`,
     autoComplete: 'off',
     'aria-invalid': !!errors[name],
@@ -194,7 +200,7 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
               </div>
               <div className='space-y-2'>
                 <Label htmlFor={`${ids}-code`} className={hudLabelClass}>{t('gameForm.codeLabel')}</Label>
-                <Input placeholder='MOBILELEGENDS' spellCheck={false} {...textInput('code', 'font-mono text-sm')} />
+                <Input placeholder={t('gameForm.codePlaceholder')} spellCheck={false} {...textInput('code', 'font-mono text-sm')} />
                 {errors.code?.message ? (
                   <FieldMessage tone='error'>{t(errors.code.message)}</FieldMessage>
                 ) : (
@@ -252,13 +258,22 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
                 />
                 {errors.slug?.message && <FieldMessage tone='error'>{t(errors.slug.message)}</FieldMessage>}
               </div>
-              <div className='space-y-2'>
-                <Label htmlFor={`${ids}-developer`} className={hudLabelClass}>{t('gameForm.developerLabel')}</Label>
-                <Input placeholder='Moonton' {...textInput('developer')} />
-              </div>
-              <div className='space-y-2'>
-                <Label htmlFor={`${ids}-publisher`} className={hudLabelClass}>{t('gameForm.publisherLabel')}</Label>
-                <Input placeholder='Moonton' {...textInput('publisher')} />
+              <div className='space-y-2 sm:col-span-2'>
+                <p id={`${ids}-status`} className={hudLabelClass}>{t('gameForm.statusLabel')}</p>
+                <Controller
+                  control={control}
+                  name='status'
+                  render={({ field }) => (
+                    <Segmented
+                      size='md'
+                      value={field.value as GameStatus}
+                      onChange={field.onChange}
+                      label={t('gameForm.statusLabel')}
+                      options={GAME_STATUSES.map((s) => ({ value: s, label: t(`gamePage.status.${s}`) }))}
+                    />
+                  )}
+                />
+                <p className='text-[11px] leading-snug text-slate-500'>{t('gameForm.statusHint')}</p>
               </div>
             </div>
           </Section>
@@ -293,7 +308,6 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
 
           <Section title={t('gameForm.sectionContent')}>
             <TextBlock id={`${ids}-description`} label={t('gameForm.descriptionLabel')} placeholder={t('gameForm.descriptionPlaceholder')} {...register('description')} />
-            <TextBlock id={`${ids}-instruction`} label={t('gameForm.instructionLabel')} placeholder={t('gameForm.instructionPlaceholder')} {...register('instruction')} />
           </Section>
         </div>
 
@@ -337,7 +351,13 @@ function TextBlock({ id, label, ...props }: { id: string; label: string } & Comp
   )
 }
 
-const TEXT_FIELDS = ['name', 'developer', 'publisher', 'description', 'instruction'] as const
+const TEXT_FIELDS = ['name', 'description'] as const
+
+/** Backend messages that belong to one field of the edit form. */
+const EDIT_ERRORS: Record<string, ['slug' | 'category_id', string]> = {
+  'Slug already exists': ['slug', 'gameForm.errors.slugTaken'],
+  'Category Not Found': ['category_id', 'gameForm.errors.categoryMissing'],
+}
 
 function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
   const { t } = useTranslation('common')
@@ -345,14 +365,11 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
   const update = useUpdateGame(onDone)
   const initial: GameEditFormInput = {
     name: game.name ?? '',
+    slug: game.slug ?? '',
     // The detail endpoint has no category_id, only the category object.
     category_id: game.category_id || game.category?.id || '',
-    developer: game.developer ?? '',
-    publisher: game.publisher ?? '',
     description: game.description ?? '',
-    instruction: game.instruction ?? '',
     popularity_score: game.popularity_score ?? 0,
-    is_featured: !!game.is_featured,
   }
 
   const {
@@ -365,11 +382,11 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
     resolver: zodResolver(gameEditSchema),
     defaultValues: initial,
   })
-  const [name, featured] = useWatch({ control, name: ['name', 'is_featured'] })
-  const nameChanged = (name ?? '').trim() !== initial.name.trim()
+  const slug = useWatch({ control, name: 'slug' })
+  const slugField = register('slug')
+  const slugChanged = (slug ?? '').trim().replace(/-+$/, '') !== initial.slug
 
-  // Only changed fields are sent: the backend can't clear a field, and resending the name
-  // regenerates the slug.
+  // Only changed fields are sent: the backend can't clear a text field.
   const onSubmit = (v: GameEditFormValues) => {
     const payload: GameUpdateRequest = {}
     let blocked = false
@@ -383,28 +400,21 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
         payload[key] = v[key]
       }
     }
-    if (v.popularity_score !== Number(initial.popularity_score)) {
-      if (v.popularity_score === 0) {
-        setError('popularity_score', { message: 'gameForm.errors.popularityZero' })
-        blocked = true
-      } else {
-        payload.popularity_score = v.popularity_score
-      }
-    }
-    if (v.is_featured !== initial.is_featured) payload.is_featured = v.is_featured
+    if (v.slug !== initial.slug) payload.slug = v.slug
+    if (v.popularity_score !== Number(initial.popularity_score)) payload.popularity_score = v.popularity_score
     if (v.category_id && v.category_id !== initial.category_id) payload.category_id = v.category_id
     if (blocked) return
     if (Object.keys(payload).length === 0) return onDone()
-    update.mutate({ id: game.id, payload })
+    update.mutate(
+      { id: game.id, payload },
+      {
+        onError: (err) => {
+          const known = EDIT_ERRORS[gameServerMessage(err) ?? '']
+          if (known) setError(known[0], { message: known[1] })
+        },
+      }
+    )
   }
-
-  const textInput = (key: 'developer' | 'publisher') => ({
-    id: `${ids}-${key}`,
-    autoComplete: 'off',
-    'aria-invalid': !!errors[key],
-    className: hudInputClass,
-    ...register(key),
-  })
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className='space-y-6 p-6 sm:p-7'>
@@ -415,20 +425,32 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
           <span className='font-display font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gameForm.codeLabel')} </span>
           <span className='font-mono text-slate-700'>{game.code}</span>
         </span>
-        <span>
-          <span className='font-display font-semibold uppercase tracking-[0.15em] text-slate-400'>{t('gameForm.slugLabel')} </span>
-          <span className='font-mono text-slate-700'>{game.slug}</span>
-        </span>
       </div>
 
       <div className='grid gap-4 sm:grid-cols-2'>
-        <div className='space-y-2 sm:col-span-2'>
+        <div className='space-y-2'>
           <Label htmlFor={`${ids}-name`} className={hudLabelClass}>{t('gameForm.nameLabel')}</Label>
           <Input id={`${ids}-name`} autoFocus autoComplete='off' aria-invalid={!!errors.name} className={hudInputClass} {...register('name')} />
-          {errors.name?.message ? (
-            <FieldMessage tone='error'>{t(errors.name.message)}</FieldMessage>
+          {errors.name?.message && <FieldMessage tone='error'>{t(errors.name.message)}</FieldMessage>}
+        </div>
+        <div className='space-y-2'>
+          <Label htmlFor={`${ids}-slug`} className={hudLabelClass}>{t('gameForm.slugLabel')}</Label>
+          <Input
+            id={`${ids}-slug`}
+            autoComplete='off'
+            spellCheck={false}
+            aria-invalid={!!errors.slug}
+            className={cn(hudInputClass, 'font-mono text-sm')}
+            {...slugField}
+            onChange={(e) => {
+              e.target.value = toSlug(e.target.value)
+              void slugField.onChange(e)
+            }}
+          />
+          {errors.slug?.message ? (
+            <FieldMessage tone='error'>{t(errors.slug.message)}</FieldMessage>
           ) : (
-            nameChanged && <FieldMessage tone='warning'>{t('gameForm.slugWillChange')}</FieldMessage>
+            slugChanged && <FieldMessage tone='warning'>{t('gameForm.slugWillChange')}</FieldMessage>
           )}
         </div>
         <div className='space-y-2'>
@@ -437,9 +459,10 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
             control={control}
             name='category_id'
             render={({ field }) => (
-              <CategorySelect id={`${ids}-category`} value={field.value} onChange={field.onChange} currentName={game.category?.name} enabled />
+              <CategorySelect id={`${ids}-category`} value={field.value} onChange={field.onChange} currentName={game.category?.name} invalid={!!errors.category_id} enabled />
             )}
           />
+          {errors.category_id?.message && <FieldMessage tone='error'>{t(errors.category_id.message)}</FieldMessage>}
         </div>
         <div className='space-y-2'>
           <Label htmlFor={`${ids}-popularity`} className={hudLabelClass}>{t('gameForm.popularityLabel')}</Label>
@@ -455,50 +478,12 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
           />
           {errors.popularity_score?.message && <FieldMessage tone='error'>{t(errors.popularity_score.message)}</FieldMessage>}
         </div>
-        <div className='space-y-2'>
-          <Label htmlFor={`${ids}-developer`} className={hudLabelClass}>{t('gameForm.developerLabel')}</Label>
-          <Input {...textInput('developer')} />
-          {errors.developer?.message && <FieldMessage tone='error'>{t(errors.developer.message)}</FieldMessage>}
-        </div>
-        <div className='space-y-2'>
-          <Label htmlFor={`${ids}-publisher`} className={hudLabelClass}>{t('gameForm.publisherLabel')}</Label>
-          <Input {...textInput('publisher')} />
-          {errors.publisher?.message && <FieldMessage tone='error'>{t(errors.publisher.message)}</FieldMessage>}
-        </div>
       </div>
 
-      <div className='space-y-4'>
-        <div className='space-y-1'>
-          <TextBlock id={`${ids}-description`} label={t('gameForm.descriptionLabel')} aria-invalid={!!errors.description} {...register('description')} />
-          {errors.description?.message && <FieldMessage tone='error'>{t(errors.description.message)}</FieldMessage>}
-        </div>
-        <div className='space-y-1'>
-          <TextBlock id={`${ids}-instruction`} label={t('gameForm.instructionLabel')} aria-invalid={!!errors.instruction} {...register('instruction')} />
-          {errors.instruction?.message && <FieldMessage tone='error'>{t(errors.instruction.message)}</FieldMessage>}
-        </div>
+      <div className='space-y-1'>
+        <TextBlock id={`${ids}-description`} label={t('gameForm.descriptionLabel')} aria-invalid={!!errors.description} {...register('description')} />
+        {errors.description?.message && <FieldMessage tone='error'>{t(errors.description.message)}</FieldMessage>}
       </div>
-
-      <Controller
-        control={control}
-        name='is_featured'
-        render={({ field }) => (
-          <label
-            className={cn(
-              'flex cursor-pointer items-center justify-between gap-4 rounded-md border px-4 py-3 transition-colors',
-              featured ? 'border-amber-200 bg-amber-50/60' : 'border-slate-200 hover:bg-slate-50'
-            )}
-          >
-            <span className='flex min-w-0 items-center gap-3'>
-              <Star className={cn('size-4 shrink-0', featured ? 'text-amber-500' : 'text-slate-400')} aria-hidden />
-              <span className='min-w-0'>
-                <span className='block text-sm font-medium text-slate-800'>{t('gameForm.featuredLabel')}</span>
-                <span className='block text-xs text-slate-500'>{t('gameForm.featuredHint')}</span>
-              </span>
-            </span>
-            <Switch checked={!!field.value} onCheckedChange={field.onChange} className='data-[state=checked]:bg-amber-500' />
-          </label>
-        )}
-      />
 
       <p className='text-[11px] leading-snug text-slate-500'>{t('gameForm.editNote')}</p>
 

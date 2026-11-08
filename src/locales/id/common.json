@@ -59,6 +59,7 @@
       "metode": "Metode",
       "kategoriPembayaran": "Kategori pembayaran",
       "penyedia": "Penyedia",
+      "katalogSupplier": "Katalog supplier",
       "referral": "Kode referral",
       "keamanan": "Keamanan",
       "twoFa": "2FA",
@@ -689,15 +690,12 @@
   "gamePage": {
     "eyebrow": "// Katalog",
     "title": "Game",
-    "subtitle": "Semua game yang dijual toko. Aktifkan atau matikan game, pilih yang tampil di storefront, dan atur markup.",
+    "subtitle": "Semua game yang dijual toko. Atur statusnya (aktif, maintenance, tersembunyi) dan markup harganya.",
     "syncBtn": "Sinkron dari provider",
     "addBtn": "Tambah game",
     "stats": {
       "total": "Game",
       "results": "Hasil",
-      "active": "Aktif",
-      "shown": "Tampil",
-      "allGames": "dari semua game",
       "totalHint": "di katalog",
       "resultsHint": "sesuai filter"
     },
@@ -707,8 +705,9 @@
       "image": "Thumbnail",
       "statusOptions": {
         "all": "Semua",
-        "active": "Aktif",
-        "inactive": "Nonaktif"
+        "ACTIVE": "Aktif",
+        "MAINTENANCE": "Maintenance",
+        "HIDDEN": "Tersembunyi"
       },
       "imageOptions": {
         "all": "Semua gambar",
@@ -738,40 +737,38 @@
       "pending": "Menyinkronkan…"
     },
     "status": {
-      "active": "Aktif",
-      "inactive": "Nonaktif",
-      "shown": "Tampil",
-      "hidden": "Tersembunyi",
-      "featured": "Unggulan",
+      "ACTIVE": "Aktif",
+      "MAINTENANCE": "Maintenance",
+      "HIDDEN": "Tersembunyi",
       "checkId": "Cek ID"
-    },
-    "toggle": {
-      "active": "Aktif",
-      "activeAria": "Terima pesanan untuk {{name}}",
-      "shown": "Tampil",
-      "shownAria": "Tampilkan {{name}} di storefront"
     },
     "toasts": {
       "created": "Game ditambahkan",
       "updated": "Game disimpan",
       "updateError": "Gagal menyimpan game",
-      "shown": "Game kini tampil di storefront",
-      "hidden": "Game kini disembunyikan dari storefront",
-      "activated": "Game diaktifkan",
-      "deactivated": "Game dinonaktifkan",
       "statusError": "Gagal mengubah status game",
       "imagesSaved": "Gambar disimpan",
       "imagesError": "Gagal menyimpan gambar",
-      "deleted": "Game dihapus",
-      "deleteError": "Gagal menghapus game",
-      "deleteInUse": "Game ini masih punya produk atau pesanan, jadi tidak bisa dihapus. Nonaktifkan saja.",
       "priceSaved": "Markup diterapkan",
       "priceError": "Gagal menerapkan markup",
       "productsSynced": "Produk disinkronkan dari provider",
       "gamesSynced": "Game disinkronkan dari provider",
-      "syncError": "Sinkronisasi gagal"
+      "syncError": "Sinkronisasi gagal",
+      "status": {
+        "ACTIVE": "Game aktif: tampil dan bisa dibeli",
+        "MAINTENANCE": "Game dalam maintenance: tetap tampil, belum bisa dibeli",
+        "HIDDEN": "Game disembunyikan dari storefront"
+      },
+      "archived": "Game diarsipkan. Pilih status lain kapan saja untuk menampilkannya lagi.",
+      "archiveError": "Gagal mengarsipkan game"
     },
-    "openAria": "Buka {{name}}"
+    "openAria": "Buka {{name}}",
+    "statusHint": {
+      "ACTIVE": "Tampil dan bisa dibeli",
+      "MAINTENANCE": "Tampil, belum bisa dibeli",
+      "HIDDEN": "Tidak tampil di storefront"
+    },
+    "statusControl": "Status {{name}}"
   },
   "gameDetailPage": {
     "back": "Semua game",
@@ -793,8 +790,6 @@
       "slug": "Slug",
       "category": "Kategori",
       "popularity": "Popularitas",
-      "developer": "Developer",
-      "publisher": "Publisher",
       "created": "Dibuat",
       "updated": "Diperbarui"
     },
@@ -803,9 +798,8 @@
       "description": "Tampil untuk pembeli di halaman game.",
       "edit": "Ubah",
       "descriptionLabel": "Deskripsi",
-      "instructionLabel": "Cara top up",
       "notSet": "Belum diisi",
-      "empty": "Belum ada deskripsi atau petunjuk.",
+      "empty": "Belum ada deskripsi.",
       "showMore": "Selengkapnya",
       "showLess": "Ringkas"
     },
@@ -862,19 +856,18 @@
       "cancel": "Batal",
       "pending": "Menyinkronkan…"
     },
-    "danger": {
-      "title": "Hapus game ini",
-      "body": "Menghapus game beserta field checkout-nya. Untuk berhenti menjual tanpa kehilangan data, nonaktifkan saja.",
-      "button": "Hapus game"
-    },
-    "delete": {
-      "eyebrow": "// Hapus game",
-      "title": "Hapus {{name}}?",
-      "description": "Game dan field checkout-nya dihapus permanen. Game yang masih punya produk atau pesanan tidak bisa dihapus.",
-      "confirm": "Hapus",
-      "cancel": "Batal"
-    },
-    "eyebrowCategory": "// {{category}}"
+    "eyebrowCategory": "// {{category}}",
+    "archive": {
+      "title": "Arsipkan game ini",
+      "body": "Game disembunyikan dari storefront. Produk, pesanan, acara, dan hubungan supplier-nya tetap ada, jadi bisa ditampilkan lagi kapan saja.",
+      "button": "Arsipkan",
+      "eyebrow": "// Arsipkan game",
+      "dialogTitle": "Arsipkan {{name}}?",
+      "description": "Statusnya jadi Tersembunyi: hilang dari storefront dan tidak bisa dibeli. Tidak ada data yang dihapus. Pilih status Aktif kapan saja untuk mengembalikannya.",
+      "confirm": "Arsipkan game",
+      "cancel": "Batal",
+      "pending": "Mengarsipkan…"
+    }
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -1159,6 +1152,188 @@
       "updateError": "Gagal memperbarui penyedia"
     }
   },
+  "supplierCatalogPage": {
+    "eyebrow": "// Rantai pasokan",
+    "title": "Katalog supplier",
+    "subtitle": "Semua yang dijual supplier, ditarik lengkap dari API mereka. Hubungkan brand ke game dan produk supplier ke produk storefront supaya bisa dipakai.",
+    "total": {
+      "brands": "{{formatted}} brand",
+      "products": "{{formatted}} produk"
+    },
+    "refresh": "Muat ulang daftar",
+    "retry": "Coba lagi",
+    "noProvider": "Belum ada penyedia. Penyedia dibuat otomatis oleh backend saat berjalan.",
+    "emptyTitle": "Katalog masih kosong",
+    "emptyBody": "Tarik katalog supplier dengan tombol Sync katalog di atas.",
+    "noMatchTitle": "Tidak ada yang cocok",
+    "noMatchBody": "Ubah atau hapus filter untuk melihat lebih banyak.",
+    "never": "Belum pernah",
+    "yes": "Ya",
+    "no": "Tidak",
+    "close": "Tutup",
+    "autoMapped": "Otomatis (kode atau SKU sama)",
+    "tabs": {
+      "label": "Tampilan",
+      "brands": "Brand",
+      "products": "Produk"
+    },
+    "filters": {
+      "search": {
+        "brands": "Cari nama atau kode brand",
+        "products": "Cari nama produk atau SKU"
+      },
+      "mapping": "Status mapping",
+      "mappingOptions": {
+        "all": "Semua",
+        "UNMAPPED": "Belum dipetakan",
+        "MAPPED": "Dipetakan",
+        "IGNORED": "Diabaikan"
+      },
+      "stock": "Stok",
+      "stockOptions": {
+        "all": "Semua",
+        "available": "Tersedia",
+        "empty": "Kosong"
+      },
+      "brand": "Brand: {{name}}",
+      "clearBrand": "Tampilkan semua brand",
+      "reset": "Reset filter"
+    },
+    "mapping": {
+      "UNMAPPED": "Belum dipetakan",
+      "MAPPED": "Dipetakan",
+      "IGNORED": "Diabaikan"
+    },
+    "stock": {
+      "available": "Tersedia",
+      "empty": "Kosong",
+      "unknown": "Tidak diketahui"
+    },
+    "columns": {
+      "brand": "Brand",
+      "products": "Produk",
+      "mapping": "Mapping",
+      "lastSeen": "Terakhir terlihat",
+      "product": "Produk",
+      "brandCode": "Brand",
+      "cost": "Modal",
+      "stock": "Stok"
+    },
+    "row": {
+      "checkId": "Cek ID",
+      "products": "{{formatted}} produk",
+      "disabled": "Tidak dipakai untuk routing"
+    },
+    "sync": {
+      "label": "Sinkronisasi katalog",
+      "provider": "Supplier",
+      "never": "Katalog supplier ini belum pernah ditarik.",
+      "counts": "{{brands}} brand · {{products}} produk",
+      "failed": "{{count}} brand gagal",
+      "runningSince": "berjalan sejak {{time}}",
+      "finishedAt": "selesai {{time}}",
+      "runningHint": "Sync berjalan di server. Status di sini diperbarui sendiri, dan halaman ini boleh ditinggal.",
+      "start": "Sync katalog",
+      "running": "Sedang sync…",
+      "status": {
+        "RUNNING": "Berjalan",
+        "SUCCEEDED": "Berhasil",
+        "PARTIAL": "Sebagian",
+        "FAILED": "Gagal"
+      }
+    },
+    "brand": {
+      "eyebrow": "// Brand supplier",
+      "notFound": "Brand tidak ditemukan",
+      "notFoundBody": "Brand ini mungkin sudah tidak ada. Tutup lalu muat ulang daftarnya.",
+      "mapping": "Mapping",
+      "game": "Game",
+      "products": "Produk di supplier",
+      "checkId": "Cek ID di supplier",
+      "lastSeen": "Terakhir terlihat",
+      "mappedBy": "Dipetakan oleh",
+      "tieTitle": "Hubungkan ke game",
+      "tieHint": "Pilih game storefront yang dipasok brand ini. Satu game hanya bisa terhubung ke satu brand dari supplier yang sama.",
+      "pickGame": "Pilih game",
+      "tie": "Hubungkan",
+      "sync": "Sync produk brand ini",
+      "importGame": "Buat game baru dari brand ini",
+      "importGameHint": "Membuat game baru beserta field input-nya dari data supplier, lalu langsung menghubungkannya. Kalau gamenya sudah ada, pilih saja di atas.",
+      "importProducts": "Import produk",
+      "importProductsHint": "Import produk membuat produk storefront untuk produk supplier yang belum dipetakan, di harga modal tanpa markup. Atur harga jualnya di halaman produk.",
+      "untie": "Lepas dari game",
+      "ignore": "Abaikan",
+      "unignore": "Batalkan abaikan",
+      "showProducts": "Lihat {{count}} produk"
+    },
+    "product": {
+      "eyebrow": "// Produk supplier",
+      "notFound": "Produk tidak ditemukan",
+      "notFoundBody": "Produk ini mungkin sudah tidak ada. Tutup lalu muat ulang daftarnya.",
+      "cost": "Modal",
+      "stock": "Stok di supplier",
+      "brand": "Brand",
+      "subProvider": "Sub-server",
+      "costUpdated": "Modal terakhir berubah",
+      "lastSeen": "Terakhir terlihat",
+      "mapping": "Mapping",
+      "mappedBy": "Dipetakan oleh",
+      "tieTitle": "Hubungkan ke produk",
+      "tieHint": "Pilih produk {{game}} yang dipenuhi produk supplier ini. Produk dengan nama yang sama ditaruh paling atas.",
+      "brandNotTied": "Brand produk ini belum terhubung ke game. Hubungkan brand-nya dulu, baru produknya bisa dipetakan.",
+      "openBrand": "Buka brand",
+      "openGame": "Buka game {{name}}",
+      "pickProduct": "Pilih produk",
+      "loadingProducts": "Memuat produk…",
+      "searchProduct": "Cari produk",
+      "noProducts": "Tidak ada produk yang cocok",
+      "sameName": "Nama sama",
+      "tie": "Hubungkan",
+      "untie": "Lepas dari produk",
+      "ignore": "Abaikan",
+      "unignore": "Batalkan abaikan",
+      "offerTitle": "Pemakaian untuk routing",
+      "offerHint": "Nanti, saat order bisa dikirim lewat beberapa supplier, produk yang tidak dipakai dilewati dan prioritas yang lebih kecil dicoba lebih dulu.",
+      "enabled": "Dipakai",
+      "disabled": "Tidak dipakai",
+      "priority": "Prioritas",
+      "savePriority": "Simpan"
+    },
+    "raw": {
+      "title": "Data asli dari supplier",
+      "copy": "Salin JSON",
+      "copyFailed": "Gagal menyalin"
+    },
+    "toasts": {
+      "syncStarted": "Sync katalog dimulai",
+      "brandSynced": "{{count}} produk disinkronkan",
+      "brandMapping": {
+        "MAPPED": "Brand terhubung ke game",
+        "UNMAPPED": "Brand dilepas dari game",
+        "IGNORED": "Brand diabaikan"
+      },
+      "brandImported": "Game {{name}} dibuat dan terhubung",
+      "productsImported": "{{created}} produk dibuat, {{mapped}} dipetakan, {{skipped}} dilewati",
+      "productMapping": {
+        "MAPPED": "Produk terhubung",
+        "UNMAPPED": "Produk dilepas",
+        "IGNORED": "Produk diabaikan"
+      },
+      "productUpdated": "Produk supplier diperbarui"
+    },
+    "errors": {
+      "generic": "Ada yang gagal. Coba lagi sebentar lagi.",
+      "notFound": "Data ini sudah tidak ada. Muat ulang daftarnya.",
+      "syncRunning": "Sync untuk supplier ini masih berjalan. Tunggu sampai selesai.",
+      "supplierUnavailable": "Supplier tidak bisa dihubungi atau menolak permintaan. Coba lagi nanti.",
+      "gameTaken": "Game itu sudah terhubung ke brand lain dari supplier yang sama.",
+      "codeTakenOtherSupplier": "Sudah ada game dengan kode ini dari supplier lain. Hubungkan brand ini ke game yang tepat secara manual.",
+      "productOtherGame": "Produk itu milik game lain, bukan game yang dipasok brand ini.",
+      "brandNotMapped": "Hubungkan brand ke game dulu, atau buat game baru darinya.",
+      "brandAlreadyMapped": "Brand ini sudah terhubung ke game.",
+      "noCatalog": "Supplier ini belum punya integrasi katalog."
+    }
+  },
   "paymentMethodPage": {
     "eyebrow": "// Checkout",
     "title": "Metode pembayaran",
@@ -1368,7 +1543,7 @@
     "games": {
       "eyebrow": "// Susunan game",
       "title": "Game di {{name}}",
-      "description": "Centang game yang tampil di bagian ini. Menyimpan akan mengganti seluruh daftar.",
+      "description": "Centang game yang tampil di bagian ini. Menyimpan mengganti daftar di acara ini saja; game tetap ada di acara lain.",
       "searchPlaceholder": "Cari game",
       "listLabel": "Game",
       "selected": "{{count}} game dipilih",
@@ -1376,12 +1551,10 @@
       "loading": "Memuat game…",
       "noGames": "Tidak ada game.",
       "noMatch": "Tidak ada game yang cocok.",
-      "inShow": "Di {{name}}",
-      "willMove": "Pindah dari {{name}}",
-      "movingNote": "Satu game hanya bisa ada di satu acara. {{count}} game terpilih akan dipindahkan dari acara asalnya.",
       "cancel": "Batal",
       "save": "Simpan game",
-      "saving": "Menyimpan…"
+      "saving": "Menyimpan…",
+      "alsoIn": "Juga di {{name}}"
     },
     "deleteConfirm": {
       "eyebrow": "// Hapus acara",
@@ -1443,6 +1616,22 @@
       "saved": "Field disimpan",
       "savedMany": "{{count}} field disimpan",
       "saveError": "Gagal menyimpan field"
+    },
+    "rules": {
+      "title": "Aturan isian",
+      "min": "Min. karakter",
+      "max": "Maks. karakter",
+      "pattern": "Pola (regex)",
+      "patternPlaceholder": "mis. [0-9]+",
+      "hint": "Dicek saat checkout. Kosongkan untuk menerima isian apa saja. Pola harus cocok dengan seluruh isian.",
+      "fixFirst": "Perbaiki aturan isian dulu.",
+      "errors": {
+        "number": "Panjang harus bilangan bulat, 0 atau lebih.",
+        "tooLong": "Panjang paling banyak 255 karakter.",
+        "crossed": "Min. karakter tidak boleh lebih dari maks.",
+        "pattern": "Pola ini bukan regex yang valid.",
+        "patternTooLong": "Pola paling panjang 200 karakter."
+      }
     }
   },
   "maintenancePage": {
@@ -2346,7 +2535,7 @@
   "gameForm": {
     "addEyebrow": "// Game baru",
     "addTitle": "Tambah game",
-    "addDescription": "Hubungkan dengan kode game di provider, lalu isi yang tampil di storefront.",
+    "addDescription": "Isi identitas dan tampilan game di storefront. Supplier yang menjualnya dihubungkan lewat Katalog supplier.",
     "editEyebrow": "// Ubah game",
     "editTitle": "Ubah {{name}}",
     "editDescription": "Hanya kolom yang kamu ubah yang disimpan.",
@@ -2359,8 +2548,8 @@
     "providerPlaceholder": "Pilih provider",
     "providerLoading": "Memuat provider…",
     "providerNoAccess": "Kamu tidak punya akses ke daftar provider. Minta admin yang punya akses untuk menambahkan game ini.",
-    "codeLabel": "Kode game di provider",
-    "codeHint": "Kode yang dipakai provider untuk game ini, mis. MOBILELEGENDS.",
+    "codeLabel": "Kode game",
+    "codeHint": "Opsional. Kode internal game; kosongkan dan dibuat dari slug. Kode di supplier diatur di Katalog supplier.",
     "categoryLabel": "Kategori",
     "categoryPlaceholder": "Pilih kategori",
     "categoryLoading": "Memuat kategori…",
@@ -2368,18 +2557,12 @@
     "categoryError": "Gagal memuat kategori.",
     "nameLabel": "Nama game",
     "slugLabel": "Slug",
-    "slugWillChange": "Mengubah nama juga mengubah slug, dan ikut mengubah tautan storefront.",
-    "developerLabel": "Developer",
-    "publisherLabel": "Publisher",
+    "slugWillChange": "Slug adalah alamat game di storefront. Mengubahnya membuat tautan lama tidak berlaku lagi.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
     "descriptionLabel": "Deskripsi",
     "descriptionPlaceholder": "Beberapa kalimat tentang game untuk pembeli",
-    "instructionLabel": "Cara top up",
-    "instructionPlaceholder": "Di mana pembeli menemukan user ID, dan apa yang harus diisi",
     "popularityLabel": "Popularitas",
-    "featuredLabel": "Unggulan",
-    "featuredHint": "Tonjolkan game ini di storefront.",
     "inputsEmpty": "Tidak ada field checkout. Pembeli tidak akan diminta mengisi apa pun.",
     "inputsHint": "Semua field wajib diisi saat checkout. Key adalah nama yang dikirim ke provider.",
     "inputNumber": "Field {{number}}",
@@ -2411,17 +2594,19 @@
       "nameRequired": "Isi nama game.",
       "slugRequired": "Isi slug.",
       "slugTaken": "Slug ini sudah dipakai game lain.",
-      "codeRequired": "Isi kode game di provider.",
       "thumbnailRequired": "Unggah thumbnail.",
       "inputKeyRequired": "Isi key.",
       "inputKeyFormat": "Gunakan huruf kecil, angka, dan garis bawah.",
       "inputKeyDuplicate": "Setiap field butuh key sendiri.",
       "inputLabelRequired": "Isi label.",
       "popularityInvalid": "Isi bilangan bulat, 0 atau lebih.",
-      "popularityZero": "Popularitas tidak bisa dikembalikan ke 0 di sini.",
       "cannotClear": "Kolom ini tidak bisa dikosongkan. Isi nilai baru atau biarkan nilai lama.",
-      "createGeneric": "Gagal menambahkan game. Periksa isian lalu coba lagi."
-    }
+      "createGeneric": "Gagal menambahkan game. Periksa isian lalu coba lagi.",
+      "codeTaken": "Kode ini sudah dipakai game lain."
+    },
+    "codePlaceholder": "Dibuat dari slug",
+    "statusLabel": "Status awal",
+    "statusHint": "Game baru sebaiknya mulai tersembunyi sampai gambar dan produknya siap."
   },
   "gamePriceDialog": {
     "gameEyebrow": "// Atur markup",

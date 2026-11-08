@@ -8,9 +8,18 @@ export type GameUpdatedBy = {
   name: string
 }
 
+/**
+ * Where a game stands on the storefront. ACTIVE is listed and sold, MAINTENANCE is listed but not
+ * sold, HIDDEN is off the storefront (new, archived, or not ready).
+ */
+export type GameStatus = 'ACTIVE' | 'MAINTENANCE' | 'HIDDEN'
+
+export const GAME_STATUSES: readonly GameStatus[] = ['ACTIVE', 'MAINTENANCE', 'HIDDEN']
+
 export interface Game {
   id: string
   category_id: string
+  /** Deprecated: which suppliers sell the game is in the supplier catalog. Empty when none. */
   provider_id: string
   name: string
   slug: string
@@ -18,10 +27,8 @@ export interface Game {
   thumbnail_url: string
   banner_url: string
   description: string
-  instruction: string
-  developer: string
-  publisher: string
-  is_featured: boolean
+  status: GameStatus
+  /** Read from status: is_show is ACTIVE or MAINTENANCE, is_active is ACTIVE. */
   is_show: boolean
   is_active: boolean
   /** When true, customer ID is validated (e.g. against provider). */
@@ -37,16 +44,25 @@ export interface Game {
   product: Product[] | null
 }
 
+/** What a buyer's answer must look like; checked at checkout. Empty fields check nothing. */
+export type GameInputValidation = {
+  min_length?: number
+  max_length?: number
+  /** A regular expression the whole answer must match. */
+  pattern?: string
+}
+
 export type GameInput = {
   id: string
   game_id: string
   key: string
   label: string
-  input_type: 'text' | 'number' | 'email' | 'password' | 'select' | 'tel'
+  input_type: 'text' | 'number' | 'email' | 'password' | 'select' | 'tel' | 'dropdown'
   required: boolean
   sort_order: number
   placeholder: string
   Options?: unknown
+  validation?: GameInputValidation | null
 }
 
 export interface GameByIDResponse {
@@ -69,8 +85,11 @@ export interface PaginationMeta {
   total_page: number
   has_next: boolean
   has_prev: boolean
+  /** Games that can be bought (ACTIVE). */
   game_active: number
+  /** Games the storefront lists (ACTIVE and MAINTENANCE). */
   game_show: number
+  status_counts?: Record<GameStatus, number>
 }
 
 export type GameInputPayload = {
@@ -83,16 +102,13 @@ export type GameInputPayload = {
 
 export type CreateGamePayload = {
   category_id: string
-  provider_id: string
+  provider_id?: string
   name: string
   slug: string
-  code: string
+  code?: string
   description?: string
-  instruction?: string
   thumbnail_url: string
   banner_url: string
-  developer?: string
-  publisher?: string
   inputs: GameInputPayload[]
 }
 
@@ -123,7 +139,7 @@ export interface GameInputFormProps {
   inputs: GameInputPayload[]
 }
 
-/** One checkout field sent with POST /games (the backend stores every field as required). */
+/** One checkout field sent with POST /games. */
 export type GameCreateInputRequest = {
   key: string
   label: string
@@ -133,38 +149,36 @@ export type GameCreateInputRequest = {
   required: boolean
 }
 
-/** POST /games; `category_id` and `provider_id` must be valid ids or the backend rejects it. */
+/**
+ * POST /games. `category_id` must be a valid id. `provider_id` is optional (suppliers are tied in
+ * the supplier catalog), `code` is made from the slug when empty, and the game starts HIDDEN
+ * unless `status` says otherwise.
+ */
 export type GameCreateRequest = {
   category_id: string
-  provider_id: string
+  provider_id?: string
   name: string
   slug: string
-  code: string
+  code?: string
   thumbnail_url: string
   banner_url: string
   description: string
-  instruction: string
-  developer: string
-  publisher: string
+  status?: GameStatus
   inputs: GameCreateInputRequest[]
 }
 
 /**
- * PUT /games/:id. The backend only writes fields that are non-empty (or non-zero), so a field
- * can't be cleared, and sending `name` also regenerates the slug from it.
+ * PUT /games/:id. The backend writes only what is sent and non-empty, so a text field can't be
+ * cleared. The slug (the storefront URL) changes only when `slug` is sent, never with the name.
  */
 export type GameUpdateRequest = Partial<{
   category_id: string
   name: string
+  slug: string
   code: string
   description: string
-  instruction: string
-  developer: string
-  publisher: string
   popularity_score: number
-  is_featured: boolean
-  is_show: boolean
-  is_active: boolean
+  status: GameStatus
 }>
 
 /** PATCH /games/image writes both images as sent, so the current one must be resent to keep it. */

@@ -8,6 +8,7 @@ import GameDetailPage from "@/pages/GameDetail";
 import ProductPage from "@/pages/Product";
 import PaymentMethodPage from "@/pages/PaymentMethod";
 import ProviderPages from "@/pages/Provider";
+import SupplierCatalogPage from '@/pages/SupplierCatalog'
 import ReferralPage from "@/pages/Referral";
 import ReferralDetailPage from "@/pages/ReferralDetail";
 import PaymentDetailPage from "@/pages/TransactionDetail";
@@ -236,6 +237,14 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.providerView}>
             <ProviderPages />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'supplier-catalog',
+        element: (
+          <RoleGuard permission={PERM.providerView}>
+            <SupplierCatalogPage />
           </RoleGuard>
         ),
       },

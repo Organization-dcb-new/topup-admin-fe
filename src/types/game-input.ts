@@ -1,4 +1,4 @@
-import type { PaginationMeta } from './game'
+import type { GameInputValidation, PaginationMeta } from './game'
 
 export interface GameInputOption {
   name: string
@@ -15,6 +15,7 @@ export interface GameInput {
   sort_order: number
   placeholder: string
   Options: GameInputOption[] | null
+  validation?: GameInputValidation | null
 }
 
 export interface GameWithInputs {

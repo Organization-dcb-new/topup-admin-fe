@@ -26,13 +26,12 @@ export const gameCreateSchema = z
       .trim()
       .min(1, 'gameForm.errors.slugRequired')
       .transform((v) => v.replace(/-+$/, '')),
-    code: z.string().trim().min(1, 'gameForm.errors.codeRequired'),
+    // Optional: the backend makes one from the slug.
+    code: text,
     thumbnail_url: z.string().min(1, 'gameForm.errors.thumbnailRequired'),
     banner_url: z.string(),
-    developer: text,
-    publisher: text,
     description: text,
-    instruction: text,
+    status: z.enum(['ACTIVE', 'MAINTENANCE', 'HIDDEN']),
     inputs: z.array(gameInputDraftSchema),
   })
   .superRefine((v, ctx) => {
@@ -51,16 +50,17 @@ export type GameCreateFormValues = z.output<typeof gameCreateSchema>
 
 export const gameEditSchema = z.object({
   name: z.string().trim().min(1, 'gameForm.errors.nameRequired'),
+  slug: z
+    .string()
+    .trim()
+    .min(1, 'gameForm.errors.slugRequired')
+    .transform((v) => v.replace(/-+$/, '')),
   category_id: z.string(),
-  developer: text,
-  publisher: text,
   description: text,
-  instruction: text,
   popularity_score: z.coerce
     .number({ error: 'gameForm.errors.popularityInvalid' })
     .int('gameForm.errors.popularityInvalid')
     .min(0, 'gameForm.errors.popularityInvalid'),
-  is_featured: z.boolean(),
 })
 
 export type GameEditFormInput = z.input<typeof gameEditSchema>

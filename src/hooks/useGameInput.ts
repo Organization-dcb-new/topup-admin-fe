@@ -1,5 +1,6 @@
 import { api } from '@/api/axios'
 import i18n from '@/i18n'
+import type { GameInputValidation } from '@/types/game'
 import type { GameInputResponse } from '@/types/game-input'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -21,6 +22,8 @@ export interface GameInputLabelChange {
   label: string
   /** The backend overwrites the placeholder too, so always send the value to keep. */
   placeholder: string
+  /** Sent only when the rules change; an empty object clears them. */
+  validation?: GameInputValidation
 }
 
 const patchLabel = (payload: GameInputLabelChange) => api.patch('/game-inputs/label', payload)

@@ -1,12 +1,13 @@
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Keyboard, Loader2 } from 'lucide-react'
+import { Keyboard, ListChecks, Loader2 } from 'lucide-react'
 
 import { hudEyebrowClass, hudInputClass, hudPrimaryButtonClass } from '@/components/Auth/hud-styles'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-import { useSaveGameInputs } from '@/hooks/useGameInput'
+import { useSaveGameInputs, type GameInputLabelChange } from '@/hooks/useGameInput'
 import { cn } from '@/lib/utils'
+import type { GameInputValidation } from '@/types/game'
 import type { GameInput, GameWithInputs } from '@/types/game-input'
 import { InputPreview, InputTypeChip } from './GameInputParts'
 import { useRetained } from '@/hooks/useRetained'
@@ -42,13 +43,66 @@ export function GameInputsDialog({ game, onOpenChange }: GameInputsDialogProps) 
   )
 }
 
-type Draft = Record<string, { label: string; placeholder: string }>
+type FieldDraft = { label: string; placeholder: string; min: string; max: string; pattern: string }
+type Draft = Record<string, FieldDraft>
+
+/** The backend's limits on a rule. */
+const MAX_LENGTH = 255
+const MAX_PATTERN = 200
+
+function draftOf(input: GameInput): FieldDraft {
+  const v = input.validation ?? {}
+  return {
+    label: input.label ?? '',
+    placeholder: input.placeholder ?? '',
+    min: v.min_length ? String(v.min_length) : '',
+    max: v.max_length ? String(v.max_length) : '',
+    pattern: v.pattern ?? '',
+  }
+}
+
+/** The rules a draft describes; empty fields check nothing. */
+function rulesOf(d: Pick<FieldDraft, 'min' | 'max' | 'pattern'>): GameInputValidation {
+  const rules: GameInputValidation = {}
+  const min = Number(d.min.trim() || 0)
+  const max = Number(d.max.trim() || 0)
+  if (min > 0) rules.min_length = min
+  if (max > 0) rules.max_length = max
+  if (d.pattern.trim()) rules.pattern = d.pattern.trim()
+  return rules
+}
+
+const sameRules = (a: GameInputValidation, b: GameInputValidation) =>
+  (a.min_length ?? 0) === (b.min_length ?? 0) && (a.max_length ?? 0) === (b.max_length ?? 0) && (a.pattern ?? '') === (b.pattern ?? '')
+
+/** Why the draft's rules can't be saved, as a translation key, or null. */
+function ruleError(d: FieldDraft): string | null {
+  for (const raw of [d.min, d.max]) {
+    const text = raw.trim()
+    if (!text) continue
+    const n = Number(text)
+    if (!Number.isInteger(n) || n < 0) return 'inputPage.rules.errors.number'
+    if (n > MAX_LENGTH) return 'inputPage.rules.errors.tooLong'
+  }
+  const { min_length = 0, max_length = 0 } = rulesOf(d)
+  if (max_length > 0 && min_length > max_length) return 'inputPage.rules.errors.crossed'
+  const pattern = d.pattern.trim()
+  if (pattern.length > MAX_PATTERN) return 'inputPage.rules.errors.patternTooLong'
+  if (pattern) {
+    try {
+      new RegExp(`^(?:${pattern})$`)
+    } catch {
+      return 'inputPage.rules.errors.pattern'
+    }
+  }
+  return null
+}
 
 interface GameInputsFormProps {
   game: GameWithInputs
   pending: boolean
   onCancel: () => void
-  onSave: (changes: { id: string; label: string; placeholder: string }[]) => void
+  onSave: (changes: GameInputLabelChange[]) => void
 }
 
 function GameInputsForm({ game, pending, onCancel, onSave }: GameInputsFormProps) {
@@ -56,19 +110,27 @@ function GameInputsForm({ game, pending, onCancel, onSave }: GameInputsFormProps
   const ids = useId()
   const inputs = [...game.inputs].sort((a, b) => a.sort_order - b.sort_order)
   // Both values start from what is saved: the endpoint writes the placeholder even when only the label changes.
-  const [draft, setDraft] = useState<Draft>(() =>
-    Object.fromEntries(inputs.map((i) => [i.id, { label: i.label ?? '', placeholder: i.placeholder ?? '' }]))
+  const [draft, setDraft] = useState<Draft>(() => Object.fromEntries(inputs.map((i) => [i.id, draftOf(i)])))
+
+  const rulesChanged = (i: GameInput) => !sameRules(rulesOf(draft[i.id]), i.validation ?? {})
+  const changed = inputs.filter(
+    (i) => draft[i.id].label.trim() !== (i.label ?? '') || draft[i.id].placeholder.trim() !== (i.placeholder ?? '') || rulesChanged(i)
   )
-
-  const changed = inputs.filter((i) => draft[i.id].label.trim() !== (i.label ?? '') || draft[i.id].placeholder.trim() !== (i.placeholder ?? ''))
   const emptyLabel = inputs.some((i) => !draft[i.id].label.trim())
+  const badRules = inputs.some((i) => ruleError(draft[i.id]) !== null)
 
-  const set = (id: string, key: 'label' | 'placeholder', value: string) =>
-    setDraft((prev) => ({ ...prev, [id]: { ...prev[id], [key]: value } }))
+  const set = (id: string, key: keyof FieldDraft, value: string) => setDraft((prev) => ({ ...prev, [id]: { ...prev[id], [key]: value } }))
 
   const submit = () => {
-    if (emptyLabel || changed.length === 0) return
-    onSave(changed.map((i) => ({ id: i.id, label: draft[i.id].label.trim(), placeholder: draft[i.id].placeholder.trim() })))
+    if (emptyLabel || badRules || changed.length === 0) return
+    onSave(
+      changed.map((i) => ({
+        id: i.id,
+        label: draft[i.id].label.trim(),
+        placeholder: draft[i.id].placeholder.trim(),
+        ...(rulesChanged(i) && { validation: rulesOf(draft[i.id]) }),
+      }))
+    )
   }
 
   return (
@@ -125,13 +187,15 @@ function GameInputsForm({ game, pending, onCancel, onSave }: GameInputsFormProps
           <span className='text-center text-xs text-slate-500'>
             {emptyLabel ? (
               <span className='text-rose-600'>{t('inputPage.dialog.labelRequired')}</span>
+            ) : badRules ? (
+              <span className='text-rose-600'>{t('inputPage.rules.fixFirst')}</span>
             ) : (
               t('inputPage.dialog.changed', { count: changed.length })
             )}
           </span>
           <button
             type='submit'
-            disabled={pending || emptyLabel || changed.length === 0}
+            disabled={pending || emptyLabel || badRules || changed.length === 0}
             className={cn(hudPrimaryButtonClass, 'justify-center disabled:pointer-events-none sm:min-w-52')}
           >
             <span className='pointer-events-none absolute inset-y-0 right-0 w-1.5 bg-brand-cyan' aria-hidden />
@@ -147,9 +211,9 @@ function GameInputsForm({ game, pending, onCancel, onSave }: GameInputsFormProps
 interface FieldEditorProps {
   idPrefix: string
   input: GameInput
-  value: { label: string; placeholder: string }
+  value: FieldDraft
   dirty: boolean
-  onChange: (key: 'label' | 'placeholder', value: string) => void
+  onChange: (key: keyof FieldDraft, value: string) => void
 }
 
 function FieldEditor({ idPrefix, input, value, dirty, onChange }: FieldEditorProps) {
@@ -200,6 +264,57 @@ function FieldEditor({ idPrefix, input, value, dirty, onChange }: FieldEditorPro
           <InputPreview input={input} label={value.label} placeholder={value.placeholder} />
         </div>
       </div>
+      {input.input_type !== 'dropdown' && <RulesEditor idPrefix={idPrefix} value={value} onChange={onChange} />}
     </section>
   )
 }
+
+/** Min and max length and a pattern the buyer's answer must fit; checked at checkout. */
+function RulesEditor({ idPrefix, value, onChange }: Pick<FieldEditorProps, 'idPrefix' | 'value' | 'onChange'>) {
+  const { t } = useTranslation('common')
+  const error = ruleError(value)
+  const lengthField = (key: 'min' | 'max', label: string) => (
+    <div className='space-y-1.5'>
+      <label htmlFor={`${idPrefix}-${key}`} className='text-xs font-medium text-slate-500'>{label}</label>
+      <Input
+        id={`${idPrefix}-${key}`}
+        type='number'
+        inputMode='numeric'
+        min={0}
+        max={MAX_LENGTH}
+        placeholder='—'
+        value={value[key]}
+        onChange={(e) => onChange(key, e.target.value)}
+        aria-invalid={!!error}
+        className={cn(hudInputClass, 'h-10 bg-white text-sm tabular-nums')}
+      />
+    </div>
+  )
+  return (
+    <div className='mt-4 space-y-3 border-t border-slate-100 pt-4'>
+      <p className='flex items-center gap-1.5 font-display text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400'>
+        <ListChecks className='size-3.5' aria-hidden />
+        {t('inputPage.rules.title')}
+      </p>
+      <div className='grid grid-cols-2 gap-3 sm:grid-cols-[6.5rem_6.5rem_minmax(0,1fr)]'>
+        {lengthField('min', t('inputPage.rules.min'))}
+        {lengthField('max', t('inputPage.rules.max'))}
+        <div className='col-span-2 space-y-1.5 sm:col-span-1'>
+          <label htmlFor={`${idPrefix}-pattern`} className='text-xs font-medium text-slate-500'>{t('inputPage.rules.pattern')}</label>
+          <Input
+            id={`${idPrefix}-pattern`}
+            placeholder={t('inputPage.rules.patternPlaceholder')}
+            value={value.pattern}
+            onChange={(e) => onChange('pattern', e.target.value)}
+            aria-invalid={!!error}
+            autoComplete='off'
+            spellCheck={false}
+            className={cn(hudInputClass, 'h-10 bg-white font-mono text-sm')}
+          />
+        </div>
+      </div>
+      <p className={cn('text-[11px] leading-snug', error ? 'text-rose-600' : 'text-slate-500')}>{error ? t(error) : t('inputPage.rules.hint')}</p>
+    </div>
+  )
+}
+

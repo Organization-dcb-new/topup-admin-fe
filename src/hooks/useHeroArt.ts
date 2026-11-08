@@ -76,10 +76,7 @@ export function useHeroArt(): HeroArt[] {
       if (game.is_active && game.is_show && game.thumbnail_url) byId.set(game.id, game)
     }
     return [...byId.values()]
-      .sort(
-        (a, b) =>
-          Number(b.is_featured) - Number(a.is_featured) || b.popularity_score - a.popularity_score
-      )
+      .sort((a, b) => b.popularity_score - a.popularity_score)
       // Extra candidates, since some thumbnails may fail to load.
       .slice(0, MAX_ART * 2)
       .map((game) => ({ src: game.thumbnail_url, name: game.name }))

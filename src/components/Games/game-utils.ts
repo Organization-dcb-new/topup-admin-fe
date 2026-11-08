@@ -1,6 +1,6 @@
 import i18n from '@/i18n'
 import { formatCurrency } from '@/lib/format'
-import type { Game, GameInput } from '@/types/game'
+import type { Game, GameInput, GameStatus } from '@/types/game'
 import type { GameInput as EditableGameInput } from '@/types/game-input'
 import type { Product } from '@/types/product'
 
@@ -113,4 +113,11 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 /** GET /games/:id answers a malformed id with a 500 (uuid.MustParse panics), so check first. */
 export function isUuid(value: string) {
   return UUID_RE.test(value)
+}
+
+/** The game's status; read from the two flags for a backend that does not send it yet. */
+export function gameStatus(game: Pick<Game, 'is_active' | 'is_show'> & { status?: GameStatus }): GameStatus {
+  if (game.status) return game.status
+  if (!game.is_show) return 'HIDDEN'
+  return game.is_active ? 'ACTIVE' : 'MAINTENANCE'
 }

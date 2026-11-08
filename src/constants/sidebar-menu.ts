@@ -2,6 +2,7 @@ import type { ElementType } from 'react'
 // Phosphor duotone instead of the stock Lucide set, so the nav doesn't read as a default template.
 import {
   PiArticleDuotone,
+  PiBooksDuotone,
   PiCardholderDuotone,
   PiChartLineUpDuotone,
   PiClockCounterClockwiseDuotone,
@@ -114,6 +115,12 @@ export const sidebarMenus: SidebarSection[] = [
         label: 'Penyedia',
         icon: PiHandshakeDuotone,
         path: '/provider',
+        permission: PERM.providerView,
+      },
+      {
+        label: 'Katalog supplier',
+        icon: PiBooksDuotone,
+        path: '/supplier-catalog',
         permission: PERM.providerView,
       },
       {

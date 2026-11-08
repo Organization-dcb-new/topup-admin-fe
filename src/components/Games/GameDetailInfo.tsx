@@ -36,12 +36,6 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
         <DetailRow label={t('gameDetailPage.overview.popularity')}>
           <span className='tabular-nums'>{formatNumber(game.popularity_score)}</span>
         </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.developer')}>
-          <span className='min-w-0 truncate'>{game.developer || '—'}</span>
-        </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.publisher')}>
-          <span className='min-w-0 truncate'>{game.publisher || '—'}</span>
-        </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.created')}>
           <span className='tabular-nums'>{formatBackendDateTime(game.created_at, DATE_PATTERN)}</span>
         </DetailRow>
@@ -54,17 +48,16 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
 }
 
 interface GameAboutPanelProps {
-  game: Pick<Game, 'description' | 'instruction'>
+  game: Pick<Game, 'description'>
   /** Left out for admins who can't edit the game. */
   onEdit?: () => void
   order?: number
 }
 
-/** The storefront copy: the description and the how-to-top-up instructions. */
+/** The storefront copy: the game's description. */
 export function GameAboutPanel({ game, onEdit, order }: GameAboutPanelProps) {
   const { t } = useTranslation('common')
   const description = game.description?.trim()
-  const instruction = game.instruction?.trim()
 
   return (
     <DetailPanel
@@ -81,11 +74,8 @@ export function GameAboutPanel({ game, onEdit, order }: GameAboutPanelProps) {
         )
       }
     >
-      {description || instruction ? (
-        <div className='space-y-5'>
-          <TextBlock label={t('gameDetailPage.about.descriptionLabel')} text={description} />
-          <TextBlock label={t('gameDetailPage.about.instructionLabel')} text={instruction} />
-        </div>
+      {description ? (
+        <TextBlock label={t('gameDetailPage.about.descriptionLabel')} text={description} />
       ) : (
         <p className='text-sm text-slate-500'>{t('gameDetailPage.about.empty')}</p>
       )}

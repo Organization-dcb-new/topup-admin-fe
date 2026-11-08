@@ -59,6 +59,7 @@
       "metode": "Methods",
       "kategoriPembayaran": "Payment categories",
       "penyedia": "Provider",
+      "katalogSupplier": "Supplier catalog",
       "referral": "Referral codes",
       "keamanan": "Security",
       "twoFa": "2FA",
@@ -697,15 +698,12 @@
   "gamePage": {
     "eyebrow": "// Catalog",
     "title": "Games",
-    "subtitle": "Every game the store sells. Switch games on or off, choose what the storefront lists, and set markups.",
+    "subtitle": "Every game the store sells. Set each one’s status (active, maintenance, hidden) and its price markup.",
     "syncBtn": "Sync from provider",
     "addBtn": "Add game",
     "stats": {
       "total": "Games",
       "results": "Results",
-      "active": "Active",
-      "shown": "Shown",
-      "allGames": "across all games",
       "totalHint": "in the catalogue",
       "resultsHint": "match the filters"
     },
@@ -715,8 +713,9 @@
       "image": "Thumbnail",
       "statusOptions": {
         "all": "All",
-        "active": "Active",
-        "inactive": "Inactive"
+        "ACTIVE": "Active",
+        "MAINTENANCE": "Maintenance",
+        "HIDDEN": "Hidden"
       },
       "imageOptions": {
         "all": "Any image",
@@ -746,40 +745,38 @@
       "pending": "Syncing…"
     },
     "status": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "shown": "Shown",
-      "hidden": "Hidden",
-      "featured": "Featured",
+      "ACTIVE": "Active",
+      "MAINTENANCE": "Maintenance",
+      "HIDDEN": "Hidden",
       "checkId": "ID check"
-    },
-    "toggle": {
-      "active": "Active",
-      "activeAria": "Take orders for {{name}}",
-      "shown": "Shown",
-      "shownAria": "Show {{name}} on the storefront"
     },
     "toasts": {
       "created": "Game added",
       "updated": "Game saved",
       "updateError": "Couldn't save the game",
-      "shown": "Game is now shown on the storefront",
-      "hidden": "Game is now hidden from the storefront",
-      "activated": "Game activated",
-      "deactivated": "Game deactivated",
       "statusError": "Couldn't change the game's status",
       "imagesSaved": "Images saved",
       "imagesError": "Couldn't save the images",
-      "deleted": "Game deleted",
-      "deleteError": "Couldn't delete the game",
-      "deleteInUse": "This game still has products or orders, so it can't be deleted. Deactivate it instead.",
       "priceSaved": "Markup applied",
       "priceError": "Couldn't apply the markup",
       "productsSynced": "Products synced from the provider",
       "gamesSynced": "Games synced from the provider",
-      "syncError": "Sync failed"
+      "syncError": "Sync failed",
+      "status": {
+        "ACTIVE": "Game is active: listed and on sale",
+        "MAINTENANCE": "Game is in maintenance: still listed, not on sale",
+        "HIDDEN": "Game is hidden from the storefront"
+      },
+      "archived": "Game archived. Pick another status any time to list it again.",
+      "archiveError": "Couldn’t archive the game"
     },
-    "openAria": "Open {{name}}"
+    "openAria": "Open {{name}}",
+    "statusHint": {
+      "ACTIVE": "Listed and on sale",
+      "MAINTENANCE": "Listed, not on sale yet",
+      "HIDDEN": "Off the storefront"
+    },
+    "statusControl": "Status of {{name}}"
   },
   "gameDetailPage": {
     "back": "All games",
@@ -801,8 +798,6 @@
       "slug": "Slug",
       "category": "Category",
       "popularity": "Popularity",
-      "developer": "Developer",
-      "publisher": "Publisher",
       "created": "Created",
       "updated": "Updated"
     },
@@ -811,9 +806,8 @@
       "description": "Shown to buyers on the game's page.",
       "edit": "Edit",
       "descriptionLabel": "Description",
-      "instructionLabel": "How to top up",
       "notSet": "Not set",
-      "empty": "No description or instructions yet.",
+      "empty": "No description yet.",
       "showMore": "Show more",
       "showLess": "Show less"
     },
@@ -870,19 +864,18 @@
       "cancel": "Cancel",
       "pending": "Syncing…"
     },
-    "danger": {
-      "title": "Delete this game",
-      "body": "Removes the game and its checkout fields. To stop selling it but keep its data, deactivate it instead.",
-      "button": "Delete game"
-    },
-    "delete": {
-      "eyebrow": "// Delete game",
-      "title": "Delete {{name}}?",
-      "description": "The game and its checkout fields are removed for good. Games that still have products or orders can't be deleted.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
-    },
-    "eyebrowCategory": "// {{category}}"
+    "eyebrowCategory": "// {{category}}",
+    "archive": {
+      "title": "Archive this game",
+      "body": "The game leaves the storefront. Its products, orders, shows and supplier ties stay, so it can be listed again any time.",
+      "button": "Archive",
+      "eyebrow": "// Archive game",
+      "dialogTitle": "Archive {{name}}?",
+      "description": "Its status becomes Hidden: off the storefront and not for sale. Nothing is deleted. Set it to Active any time to bring it back.",
+      "confirm": "Archive game",
+      "cancel": "Cancel",
+      "pending": "Archiving…"
+    }
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -1178,6 +1171,194 @@
       "updateError": "Couldn’t update the provider"
     }
   },
+  "supplierCatalogPage": {
+    "eyebrow": "// Supply chain",
+    "title": "Supplier catalog",
+    "subtitle": "Everything the suppliers sell, pulled whole from their APIs. Tie brands to games and supplier products to storefront products to put them to use.",
+    "total": {
+      "brands_one": "{{formatted}} brand",
+      "brands_other": "{{formatted}} brands",
+      "products_one": "{{formatted}} product",
+      "products_other": "{{formatted}} products"
+    },
+    "refresh": "Reload the list",
+    "retry": "Try again",
+    "noProvider": "No providers yet. The backend creates them on its own when it starts.",
+    "emptyTitle": "The catalog is empty",
+    "emptyBody": "Pull the supplier's catalog with the Sync catalog button above.",
+    "noMatchTitle": "Nothing matches",
+    "noMatchBody": "Change or clear the filters to see more.",
+    "never": "Never",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "autoMapped": "Automatically (same code or SKU)",
+    "tabs": {
+      "label": "View",
+      "brands": "Brands",
+      "products": "Products"
+    },
+    "filters": {
+      "search": {
+        "brands": "Search brand name or code",
+        "products": "Search product name or SKU"
+      },
+      "mapping": "Mapping status",
+      "mappingOptions": {
+        "all": "All",
+        "UNMAPPED": "Not tied",
+        "MAPPED": "Tied",
+        "IGNORED": "Ignored"
+      },
+      "stock": "Stock",
+      "stockOptions": {
+        "all": "All",
+        "available": "Available",
+        "empty": "Empty"
+      },
+      "brand": "Brand: {{name}}",
+      "clearBrand": "Show every brand",
+      "reset": "Reset filters"
+    },
+    "mapping": {
+      "UNMAPPED": "Not tied",
+      "MAPPED": "Tied",
+      "IGNORED": "Ignored"
+    },
+    "stock": {
+      "available": "Available",
+      "empty": "Empty",
+      "unknown": "Unknown"
+    },
+    "columns": {
+      "brand": "Brand",
+      "products": "Products",
+      "mapping": "Mapping",
+      "lastSeen": "Last seen",
+      "product": "Product",
+      "brandCode": "Brand",
+      "cost": "Cost",
+      "stock": "Stock"
+    },
+    "row": {
+      "checkId": "ID check",
+      "products_one": "{{formatted}} product",
+      "products_other": "{{formatted}} products",
+      "disabled": "Not used for routing"
+    },
+    "sync": {
+      "label": "Catalog sync",
+      "provider": "Supplier",
+      "never": "This supplier's catalog has never been pulled.",
+      "counts": "{{brands}} brands · {{products}} products",
+      "failed_one": "{{count}} brand failed",
+      "failed_other": "{{count}} brands failed",
+      "runningSince": "running since {{time}}",
+      "finishedAt": "finished {{time}}",
+      "runningHint": "The sync runs on the server. This status updates on its own, and you can leave the page.",
+      "start": "Sync catalog",
+      "running": "Syncing…",
+      "status": {
+        "RUNNING": "Running",
+        "SUCCEEDED": "Succeeded",
+        "PARTIAL": "Partial",
+        "FAILED": "Failed"
+      }
+    },
+    "brand": {
+      "eyebrow": "// Supplier brand",
+      "notFound": "Brand not found",
+      "notFoundBody": "This brand may no longer exist. Close this and reload the list.",
+      "mapping": "Mapping",
+      "game": "Game",
+      "products": "Products at the supplier",
+      "checkId": "Supplier's ID check",
+      "lastSeen": "Last seen",
+      "mappedBy": "Tied by",
+      "tieTitle": "Tie to a game",
+      "tieHint": "Pick the storefront game this brand supplies. A game can be tied to only one brand of the same supplier.",
+      "pickGame": "Pick a game",
+      "tie": "Tie",
+      "sync": "Sync this brand's products",
+      "importGame": "Create a new game from this brand",
+      "importGameHint": "Creates a new game with its input fields from the supplier's data and ties it right away. If the game already exists, pick it above instead.",
+      "importProducts": "Import products",
+      "importProductsHint": "Importing creates storefront products for the supplier products that aren't tied yet, at cost with no markup. Set their selling prices on the products page.",
+      "untie": "Untie from the game",
+      "ignore": "Ignore",
+      "unignore": "Stop ignoring",
+      "showProducts_one": "Show {{count}} product",
+      "showProducts_other": "Show {{count}} products"
+    },
+    "product": {
+      "eyebrow": "// Supplier product",
+      "notFound": "Product not found",
+      "notFoundBody": "This product may no longer exist. Close this and reload the list.",
+      "cost": "Cost",
+      "stock": "Stock at the supplier",
+      "brand": "Brand",
+      "subProvider": "Sub-server",
+      "costUpdated": "Cost last changed",
+      "lastSeen": "Last seen",
+      "mapping": "Mapping",
+      "mappedBy": "Tied by",
+      "tieTitle": "Tie to a product",
+      "tieHint": "Pick the {{game}} product this supplier product fulfils. Products with the same name are listed first.",
+      "brandNotTied": "This product's brand isn't tied to a game yet. Tie the brand first, then its products can be tied.",
+      "openBrand": "Open the brand",
+      "openGame": "Open {{name}}",
+      "pickProduct": "Pick a product",
+      "loadingProducts": "Loading products…",
+      "searchProduct": "Search products",
+      "noProducts": "No products match",
+      "sameName": "Same name",
+      "tie": "Tie",
+      "untie": "Untie from the product",
+      "ignore": "Ignore",
+      "unignore": "Stop ignoring",
+      "offerTitle": "Use for routing",
+      "offerHint": "Once orders can go through several suppliers, products that aren't used are skipped and a lower priority is tried first.",
+      "enabled": "Used",
+      "disabled": "Not used",
+      "priority": "Priority",
+      "savePriority": "Save"
+    },
+    "raw": {
+      "title": "The supplier's original data",
+      "copy": "Copy JSON",
+      "copyFailed": "Couldn’t copy"
+    },
+    "toasts": {
+      "syncStarted": "Catalog sync started",
+      "brandSynced_one": "{{count}} product synced",
+      "brandSynced_other": "{{count}} products synced",
+      "brandMapping": {
+        "MAPPED": "Brand tied to the game",
+        "UNMAPPED": "Brand untied from its game",
+        "IGNORED": "Brand ignored"
+      },
+      "brandImported": "{{name}} created and tied",
+      "productsImported": "{{created}} products created, {{mapped}} tied, {{skipped}} skipped",
+      "productMapping": {
+        "MAPPED": "Product tied",
+        "UNMAPPED": "Product untied",
+        "IGNORED": "Product ignored"
+      },
+      "productUpdated": "Supplier product updated"
+    },
+    "errors": {
+      "generic": "Something went wrong. Try again in a moment.",
+      "notFound": "This no longer exists. Reload the list.",
+      "syncRunning": "A sync for this supplier is still running. Wait for it to finish.",
+      "supplierUnavailable": "The supplier couldn’t be reached or refused the request. Try again later.",
+      "gameTaken": "That game is already tied to another brand of the same supplier.",
+      "codeTakenOtherSupplier": "A game with this code already exists for another supplier. Tie this brand to the right game by hand.",
+      "productOtherGame": "That product belongs to another game, not the one this brand supplies.",
+      "brandNotMapped": "Tie the brand to a game first, or create a new game from it.",
+      "brandAlreadyMapped": "This brand is already tied to a game.",
+      "noCatalog": "This supplier has no catalog integration yet."
+    }
+  },
   "paymentMethodPage": {
     "eyebrow": "// Checkout",
     "title": "Payment methods",
@@ -1395,7 +1576,7 @@
     "games": {
       "eyebrow": "// Line-up",
       "title": "Games in {{name}}",
-      "description": "Tick the games this section should show. Saving replaces the whole list.",
+      "description": "Tick the games shown in this section. Saving replaces this show’s list only; the games stay in their other shows.",
       "searchPlaceholder": "Search games",
       "listLabel": "Games",
       "selected_one": "{{count}} game selected",
@@ -1404,13 +1585,10 @@
       "loading": "Loading games…",
       "noGames": "No games found.",
       "noMatch": "No games match your search.",
-      "inShow": "In {{name}}",
-      "willMove": "Moves from {{name}}",
-      "movingNote_one": "A game can only be in one show. {{count}} selected game will be moved out of its current show.",
-      "movingNote_other": "A game can only be in one show. {{count}} selected games will be moved out of their current show.",
       "cancel": "Cancel",
       "save": "Save games",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "alsoIn": "Also in {{name}}"
     },
     "deleteConfirm": {
       "eyebrow": "// Delete show",
@@ -1477,6 +1655,22 @@
       "savedMany_one": "{{count}} field saved",
       "savedMany_other": "{{count}} fields saved",
       "saveError": "Couldn’t save the fields"
+    },
+    "rules": {
+      "title": "Answer rules",
+      "min": "Min. characters",
+      "max": "Max. characters",
+      "pattern": "Pattern (regex)",
+      "patternPlaceholder": "e.g. [0-9]+",
+      "hint": "Checked at checkout. Leave empty to take any answer. The pattern must match the whole answer.",
+      "fixFirst": "Fix the answer rules first.",
+      "errors": {
+        "number": "Lengths must be whole numbers, 0 or more.",
+        "tooLong": "Lengths go up to 255 characters.",
+        "crossed": "Min. characters can’t be more than max.",
+        "pattern": "This pattern isn’t a valid regex.",
+        "patternTooLong": "Patterns go up to 200 characters."
+      }
     }
   },
   "maintenancePage": {
@@ -2397,7 +2591,7 @@
   "gameForm": {
     "addEyebrow": "// New game",
     "addTitle": "Add a game",
-    "addDescription": "Link it to the provider's game code, then fill in what the storefront shows.",
+    "addDescription": "Fill in the game’s identity and storefront look. The suppliers that sell it are tied in the supplier catalog.",
     "editEyebrow": "// Edit game",
     "editTitle": "Edit {{name}}",
     "editDescription": "Only the fields you change are saved.",
@@ -2410,8 +2604,8 @@
     "providerPlaceholder": "Choose a provider",
     "providerLoading": "Loading providers…",
     "providerNoAccess": "You don't have access to the provider list. Ask an admin who does to add this game.",
-    "codeLabel": "Provider game code",
-    "codeHint": "The code the provider uses for this game, e.g. MOBILELEGENDS.",
+    "codeLabel": "Game code",
+    "codeHint": "Optional. The game’s internal code; leave it empty to make one from the slug. Supplier codes are set in the supplier catalog.",
     "categoryLabel": "Category",
     "categoryPlaceholder": "Choose a category",
     "categoryLoading": "Loading categories…",
@@ -2419,18 +2613,12 @@
     "categoryError": "Couldn't load the categories.",
     "nameLabel": "Game name",
     "slugLabel": "Slug",
-    "slugWillChange": "Changing the name also changes the slug, and with it the storefront link.",
-    "developerLabel": "Developer",
-    "publisherLabel": "Publisher",
+    "slugWillChange": "The slug is the game’s storefront address. Changing it breaks links to the old one.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "A few lines about the game for buyers",
-    "instructionLabel": "How to top up",
-    "instructionPlaceholder": "Where buyers find their user ID, and what to enter",
     "popularityLabel": "Popularity",
-    "featuredLabel": "Featured",
-    "featuredHint": "Highlight this game on the storefront.",
     "inputsEmpty": "No checkout fields. Buyers won't be asked for anything.",
     "inputsHint": "Every field is required at checkout. The key is what gets sent to the provider.",
     "inputNumber": "Field {{number}}",
@@ -2462,17 +2650,19 @@
       "nameRequired": "Enter the game's name.",
       "slugRequired": "Enter a slug.",
       "slugTaken": "Another game already uses this slug.",
-      "codeRequired": "Enter the provider's game code.",
       "thumbnailRequired": "Upload a thumbnail.",
       "inputKeyRequired": "Enter a key.",
       "inputKeyFormat": "Use lower-case letters, digits and underscores.",
       "inputKeyDuplicate": "Each field needs its own key.",
       "inputLabelRequired": "Enter a label.",
       "popularityInvalid": "Enter a whole number, 0 or more.",
-      "popularityZero": "Popularity can't be set back to 0 here.",
       "cannotClear": "This field can't be emptied. Enter a new value or keep the old one.",
-      "createGeneric": "Couldn't add the game. Check the fields and try again."
-    }
+      "createGeneric": "Couldn't add the game. Check the fields and try again.",
+      "codeTaken": "Another game already uses this code."
+    },
+    "codePlaceholder": "Made from the slug",
+    "statusLabel": "Starting status",
+    "statusHint": "A new game is best kept hidden until its images and products are ready."
   },
   "gamePriceDialog": {
     "gameEyebrow": "// Set markup",

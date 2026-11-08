@@ -1,3 +1,5 @@
+import type { GameStatus } from './game'
+
 /** Game dalam respons GET /shows/admin (nested di tiap show). */
 export type ShowGame = {
   id: string
@@ -7,8 +9,8 @@ export type ShowGame = {
   thumbnail_url: string
   banner_url: string
   popularity_score: number
+  status: GameStatus
   is_active: boolean
-  is_featured: boolean
 }
 
 export type Show = {
