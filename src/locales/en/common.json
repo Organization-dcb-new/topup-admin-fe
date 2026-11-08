@@ -242,7 +242,8 @@
     "entries_other": "{{count}} entries",
     "kind": {
       "in": "Payment received",
-      "out": "Provider cost"
+      "out": "Provider cost",
+      "fee": "Gateway fee"
     },
     "via": "via {{method}}",
     "order": "Order {{id}}",
@@ -1375,6 +1376,8 @@
     "methodCount_one": "{{count}} method",
     "methodCount_other": "{{count}} methods",
     "inactive": "Inactive",
+    "unsupported": "Unsupported",
+    "unsupportedHint": "Paylabs does not offer this method, so it cannot be switched on.",
     "fee": "Fee",
     "limit": "Amount",
     "feeFree": "Free",
@@ -1393,7 +1396,6 @@
       "nameLabel": "Name",
       "codeLabel": "Channel code",
       "typeLabel": "Type",
-      "providerLabel": "Gateway",
       "feeSection": "Fee charged to the player",
       "feePercentLabel": "Percentage",
       "feeFixedLabel": "Fixed",
@@ -1415,13 +1417,25 @@
         "nameRequired": "Give the method a name.",
         "codeRequired": "Enter the channel code.",
         "typeRequired": "Enter the type.",
-        "providerRequired": "Enter the gateway.",
         "feeInvalid": "Use a number from 0 (percentages up to 100).",
         "amountInvalid": "Use an amount of 0 or more.",
         "maxBelowMin": "The maximum must be at least the minimum.",
         "orderInvalid": "Use a whole number.",
-        "configInvalid": "This isn’t a valid JSON object."
-      }
+        "configInvalid": "This isn’t a valid JSON object.",
+        "methodRequired": "Choose a method.",
+        "fullNameRequired": "Enter a display name."
+      },
+      "methodLabel": "Method",
+      "methodPlaceholder": "Choose a method",
+      "methodLoading": "Loading methods…",
+      "catalogError": "Could not load the method list. Try opening this form again.",
+      "alreadyAdded": "already added",
+      "methodInfo": "Code {{code}} · {{type}}",
+      "methodFixed": "The method cannot be changed. Create a new one for a different method.",
+      "fullNameLabel": "Display name",
+      "fullNameHint": "What buyers see when picking a method.",
+      "unsupported": "Paylabs does not offer this method, so it can no longer be switched on.",
+      "unsupportedActiveHint": "Paylabs does not support this method, so it stays off."
     },
     "deleteConfirm": {
       "eyebrow": "// Delete method",
@@ -1438,6 +1452,12 @@
       "createError": "Couldn’t add the payment method",
       "updateError": "Couldn’t update the payment method",
       "deleteError": "Couldn’t delete the payment method"
+    },
+    "type": {
+      "QRIS": "QRIS",
+      "EWALLET": "E-wallet",
+      "VA": "Virtual account",
+      "RETAIL": "Retail outlet"
     }
   },
   "paymentCategoryPage": {
@@ -2343,7 +2363,13 @@
       "awaitingBody": "The customer can still pay with the details below.",
       "noInstructions": "The gateway sent no QR code, VA number or payment page for this payment.",
       "qrAlt": "Payment QR code",
-      "qrHint": "Scan to pay"
+      "qrHint": "Scan to pay",
+      "gateway": "Gateway",
+      "gatewayReference": "Gateway reference",
+      "gatewayName": {
+        "paylabs": "Paylabs",
+        "redision": "Redision (before the move to Paylabs)"
+      }
     },
     "refs": {
       "title": "References",

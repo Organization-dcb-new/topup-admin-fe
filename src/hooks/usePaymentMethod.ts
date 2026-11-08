@@ -2,6 +2,7 @@ import { api } from '@/api/axios'
 import i18n from '@/i18n'
 import type {
   PaymentMethod,
+  PaymentMethodCatalogEntry,
   PaymentMethodCreatePayload,
   PaymentMethodResponse,
   PaymentMethodUpdatePayload,
@@ -20,12 +21,24 @@ export const useGetPaymentMethods = (page: number, limit: number) =>
     },
   })
 
+/** The methods the gateways support; the only source of a new method's name, code and type. */
+export const useGetPaymentMethodCatalog = () =>
+  useQuery({
+    queryKey: [...paymentMethodsQueryKey, 'catalog'],
+    queryFn: async (): Promise<PaymentMethodCatalogEntry[]> => {
+      const res = await api.get('/payment-methods/catalog')
+      return res.data.data ?? []
+    },
+    staleTime: Infinity,
+  })
+
 /** Everything PUT /payment-methods/:id needs, taken from the method as it is now. */
 export function toPaymentMethodUpdate(pm: PaymentMethod): PaymentMethodUpdatePayload {
   return {
     name: pm.name,
     code: pm.code,
     type: pm.type,
+    full_name: pm.full_name,
     provider: pm.provider,
     icon_url: pm.icon_url,
     fee_percentage: pm.fee_percentage,

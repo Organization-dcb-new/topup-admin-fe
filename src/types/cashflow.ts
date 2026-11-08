@@ -1,9 +1,11 @@
 /**
- * The backend writes two kinds of rows, both with a positive amount:
+ * The backend writes three kinds of rows, all with a positive amount:
  * - `PAYMENT_GATEWAY`: money in, what the player paid through the gateway (notes "Payment Revenue for Method: X").
  * - `PROVIDER`: money out, what the provider charged for the order (notes "<provider> provider cost for Product: SKU, TID: …").
+ * - `PAYMENT_GATEWAY_FEE`: money out, the fee the gateway kept (notes "Payment gateway fee (paylabs) for method: X").
+ *   Payments made through Redision, before the move to Paylabs, have none.
  */
-export type CashflowType = 'PROVIDER' | 'PAYMENT_GATEWAY'
+export type CashflowType = 'PROVIDER' | 'PAYMENT_GATEWAY' | 'PAYMENT_GATEWAY_FEE'
 
 export interface CashflowItem {
   id: string
@@ -27,7 +29,7 @@ export interface CashflowMeta {
 export interface CashflowStats {
   /** Sum of PROVIDER rows. */
   total_out_provider: number
-  /** Gateway fees; the backend doesn't record them yet, so this is always 0. */
+  /** Sum of PAYMENT_GATEWAY_FEE rows; only Paylabs payments record one. */
   total_out_pg: number
   /** total_out_provider + total_out_pg. */
   total_outflow: number

@@ -111,6 +111,10 @@ export interface TransactionDetail {
   amount: number
   status: string
   payment_method_id: string
+  /** Gateway that took the payment: `paylabs`, or `redision` for payments made before the switch. Older backends do not send it. */
+  gateway?: 'paylabs' | 'redision'
+  /** The gateway's own order number (Paylabs), for looking the payment up in its dashboard. */
+  gateway_reference?: string
   payment_channel: string
   order_item: TransactionDetailOrderItem
   order: TransactionDetailOrder
@@ -121,7 +125,7 @@ export interface TransactionDetail {
   qr_string: string
   va_number: string
   guide?: PaymentGuide
-  /** `yyyy-MM-dd HH:mm:ss` in WIB. */
+  /** RFC3339 in WIB; older backends sent `yyyy-MM-dd HH:mm:ss` in WIB. */
   created_at: string
 }
 

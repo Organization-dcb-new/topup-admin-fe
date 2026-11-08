@@ -240,7 +240,8 @@
     "entries": "{{count}} entri",
     "kind": {
       "in": "Pembayaran masuk",
-      "out": "Biaya penyedia"
+      "out": "Biaya penyedia",
+      "fee": "Biaya gateway"
     },
     "via": "via {{method}}",
     "order": "Order {{id}}",
@@ -1349,6 +1350,8 @@
     "uncategorized": "Tanpa kategori",
     "methodCount": "{{count}} metode",
     "inactive": "Nonaktif",
+    "unsupported": "Tidak didukung",
+    "unsupportedHint": "Paylabs tidak menyediakan metode ini, jadi tidak bisa diaktifkan.",
     "fee": "Biaya",
     "limit": "Nominal",
     "feeFree": "Gratis",
@@ -1367,7 +1370,6 @@
       "nameLabel": "Nama",
       "codeLabel": "Kode kanal",
       "typeLabel": "Tipe",
-      "providerLabel": "Gateway",
       "feeSection": "Biaya yang dibebankan ke pemain",
       "feePercentLabel": "Persentase",
       "feeFixedLabel": "Tetap",
@@ -1389,13 +1391,25 @@
         "nameRequired": "Beri nama metode.",
         "codeRequired": "Masukkan kode kanal.",
         "typeRequired": "Masukkan tipe.",
-        "providerRequired": "Masukkan gateway.",
         "feeInvalid": "Gunakan angka mulai 0 (persentase maks 100).",
         "amountInvalid": "Gunakan nominal 0 atau lebih.",
         "maxBelowMin": "Maksimum harus sama atau lebih dari minimum.",
         "orderInvalid": "Gunakan bilangan bulat.",
-        "configInvalid": "Ini bukan objek JSON yang valid."
-      }
+        "configInvalid": "Ini bukan objek JSON yang valid.",
+        "methodRequired": "Pilih metode.",
+        "fullNameRequired": "Masukkan nama tampilan."
+      },
+      "methodLabel": "Metode",
+      "methodPlaceholder": "Pilih metode",
+      "methodLoading": "Memuat daftar metode…",
+      "catalogError": "Daftar metode gagal dimuat. Coba buka ulang form ini.",
+      "alreadyAdded": "sudah ada",
+      "methodInfo": "Kode {{code}} · {{type}}",
+      "methodFixed": "Metode tidak bisa diganti. Buat metode baru kalau perlu metode lain.",
+      "fullNameLabel": "Nama tampilan",
+      "fullNameHint": "Nama yang dilihat pembeli saat memilih metode.",
+      "unsupported": "Paylabs tidak menyediakan metode ini, jadi metode ini tidak bisa diaktifkan lagi.",
+      "unsupportedActiveHint": "Metode ini tidak didukung Paylabs, jadi tetap nonaktif."
     },
     "deleteConfirm": {
       "eyebrow": "// Hapus metode",
@@ -1412,6 +1426,12 @@
       "createError": "Gagal menambah metode pembayaran",
       "updateError": "Gagal memperbarui metode pembayaran",
       "deleteError": "Gagal menghapus metode pembayaran"
+    },
+    "type": {
+      "QRIS": "QRIS",
+      "EWALLET": "E-wallet",
+      "VA": "Virtual Account",
+      "RETAIL": "Gerai retail"
     }
   },
   "paymentCategoryPage": {
@@ -2291,7 +2311,13 @@
       "awaitingBody": "Pelanggan masih bisa membayar dengan detail di bawah.",
       "noInstructions": "Gateway tidak mengirim kode QR, nomor VA, atau halaman pembayaran untuk transaksi ini.",
       "qrAlt": "Kode QR pembayaran",
-      "qrHint": "Pindai untuk membayar"
+      "qrHint": "Pindai untuk membayar",
+      "gateway": "Gateway",
+      "gatewayReference": "No. transaksi gateway",
+      "gatewayName": {
+        "paylabs": "Paylabs",
+        "redision": "Redision (sebelum pindah ke Paylabs)"
+      }
     },
     "refs": {
       "title": "Referensi",

@@ -15,10 +15,11 @@ const amount = (key: string) =>
 
 export const paymentMethodSchema = z
   .object({
-    name: z.string().trim().min(1, 'paymentMethodPage.form.errors.nameRequired'),
-    code: z.string().trim().min(1, 'paymentMethodPage.form.errors.codeRequired'),
-    type: z.string().trim().min(1, 'paymentMethodPage.form.errors.typeRequired'),
-    provider: z.string().trim().min(1, 'paymentMethodPage.form.errors.providerRequired'),
+    // name, code and type are set together from the catalog entry the admin picks.
+    name: z.string().trim().min(1, 'paymentMethodPage.form.errors.methodRequired'),
+    code: z.string().trim().min(1, 'paymentMethodPage.form.errors.methodRequired'),
+    type: z.string().trim().min(1, 'paymentMethodPage.form.errors.methodRequired'),
+    full_name: z.string().trim().min(1, 'paymentMethodPage.form.errors.fullNameRequired'),
     icon_url: z.string(),
     fee_percentage: amount('feeInvalid').max(100, 'paymentMethodPage.form.errors.feeInvalid'),
     fee_fixed: amount('feeInvalid'),

@@ -10,14 +10,15 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/compone
 import { ImageDropzone } from '@/components/ui/image-dropzone'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { useCreatePaymentMethod, useUpdatePaymentMethod } from '@/hooks/usePaymentMethod'
+import { useCreatePaymentMethod, useGetPaymentMethodCatalog, useUpdatePaymentMethod } from '@/hooks/usePaymentMethod'
 import { useRetained } from '@/hooks/useRetained'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { paymentMethodSchema, type PaymentMethodFormInput, type PaymentMethodFormValues } from '@/schemas/payment'
-import type { PaymentMethod } from '@/types/payment-method'
+import { PAYMENT_METHOD_TYPES, PAYMENT_PROVIDER, type PaymentMethod, type PaymentMethodCatalogEntry } from '@/types/payment-method'
 import { feeFor } from './payment-format'
 
 const SAMPLE_AMOUNT = 100_000
@@ -26,12 +27,12 @@ interface PaymentMethodFormDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   method?: PaymentMethod
-  /** Existing values offered as suggestions, so spellings stay consistent. */
-  suggestions: { types: string[]; providers: string[] }
+  /** Names of the methods that already exist; the picker offers each method only once. */
+  existingNames: string[]
   nextSortOrder?: number
 }
 
-export function PaymentMethodFormDialog({ open, onOpenChange, method, suggestions, nextSortOrder = 1 }: PaymentMethodFormDialogProps) {
+export function PaymentMethodFormDialog({ open, onOpenChange, method, existingNames, nextSortOrder = 1 }: PaymentMethodFormDialogProps) {
   const target = useRetained(open ? (method ?? 'new') : null)
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,7 +46,7 @@ export function PaymentMethodFormDialog({ open, onOpenChange, method, suggestion
           <PaymentMethodForm
             key={target === 'new' ? 'new' : target.id}
             method={target === 'new' ? undefined : target}
-            suggestions={suggestions}
+            existingNames={existingNames}
             nextSortOrder={nextSortOrder}
             onDone={() => onOpenChange(false)}
           />
@@ -57,12 +58,12 @@ export function PaymentMethodFormDialog({ open, onOpenChange, method, suggestion
 
 interface PaymentMethodFormProps {
   method?: PaymentMethod
-  suggestions: { types: string[]; providers: string[] }
+  existingNames: string[]
   nextSortOrder: number
   onDone: () => void
 }
 
-function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: PaymentMethodFormProps) {
+function PaymentMethodForm({ method, existingNames, nextSortOrder, onDone }: PaymentMethodFormProps) {
   const { t } = useTranslation('common')
   const ids = useId()
   const isEdit = !!method
@@ -70,6 +71,9 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
   const update = useUpdatePaymentMethod(onDone)
   const pending = create.isPending || update.isPending
   const [uploading, setUploading] = useState(false)
+  const catalog = useGetPaymentMethodCatalog()
+  // A leftover method Paylabs does not offer can be edited but never switched on.
+  const unsupported = method?.supported === false
 
   const {
     register,
@@ -83,18 +87,35 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
       name: method?.name ?? '',
       code: method?.code ?? '',
       type: method?.type ?? '',
-      provider: method?.provider ?? '',
+      full_name: method?.full_name || method?.name || '',
       icon_url: method?.icon_url ?? '',
       fee_percentage: method?.fee_percentage ?? 0,
       fee_fixed: method?.fee_fixed ?? 0,
       min_amount: method?.min_amount ?? 10_000,
       max_amount: method?.max_amount ?? 0,
       sort_order: method?.sort_order ?? nextSortOrder,
-      is_active: method?.is_active ?? true,
+      is_active: unsupported ? false : (method?.is_active ?? true),
       config: '{}',
     },
   })
-  const [icon, feePct, feeFixed, isActive] = useWatch({ control, name: ['icon_url', 'fee_percentage', 'fee_fixed', 'is_active'] })
+  const [icon, feePct, feeFixed, isActive, name] = useWatch({
+    control,
+    name: ['icon_url', 'fee_percentage', 'fee_fixed', 'is_active', 'name'],
+  })
+  const entry = catalog.data?.find((e) => e.name === name)
+  const existing = new Set(existingNames)
+
+  /** Name, code and type all come from the catalog entry, so they always match what Paylabs expects. */
+  const pickMethod = (picked: PaymentMethodCatalogEntry) => {
+    const opts = { shouldDirty: true, shouldValidate: true }
+    setValue('name', picked.name, opts)
+    setValue('code', picked.name, opts)
+    setValue('type', picked.type, opts)
+    setValue('full_name', picked.full_name, opts)
+    // Paylabs' own limits are a sound starting point; the backend enforces them anyway.
+    setValue('min_amount', picked.min_amount, opts)
+    setValue('max_amount', picked.max_amount, opts)
+  }
   const sampleFee = feeFor({ fee_percentage: Number(feePct) || 0, fee_fixed: Number(feeFixed) || 0 }, SAMPLE_AMOUNT)
 
   const onSubmit = (v: PaymentMethodFormValues) => {
@@ -102,7 +123,8 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
       name: v.name,
       code: v.code,
       type: v.type,
-      provider: v.provider,
+      full_name: v.full_name,
+      provider: PAYMENT_PROVIDER,
       icon_url: v.icon_url,
       fee_percentage: v.fee_percentage,
       fee_fixed: v.fee_fixed,
@@ -114,7 +136,7 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
     else create.mutate({ ...base, config: JSON.stringify(JSON.parse(v.config)) })
   }
 
-  const field = (name: 'name' | 'code' | 'type' | 'provider', extra?: string) => ({
+  const field = (name: 'full_name', extra?: string) => ({
     id: `${ids}-${name}`,
     'aria-invalid': !!errors[name],
     autoComplete: 'off',
@@ -166,30 +188,63 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
         </div>
         <div className='grid content-start gap-4 sm:grid-cols-2'>
           <div className='space-y-2 sm:col-span-2'>
-            <Label htmlFor={`${ids}-name`} className={hudLabelClass}>{t('paymentMethodPage.form.nameLabel')}</Label>
-            <Input autoFocus placeholder='QRIS' {...field('name')} />
-            {message('name')}
-          </div>
-          <div className='space-y-2'>
-            <Label htmlFor={`${ids}-code`} className={hudLabelClass}>{t('paymentMethodPage.form.codeLabel')}</Label>
-            <Input spellCheck={false} placeholder='qris' {...field('code', 'font-mono text-sm')} />
-            {message('code')}
-          </div>
-          <div className='space-y-2'>
-            <Label htmlFor={`${ids}-type`} className={hudLabelClass}>{t('paymentMethodPage.form.typeLabel')}</Label>
-            <Input list={`${ids}-types`} placeholder='EWALLET' {...field('type')} />
-            <datalist id={`${ids}-types`}>
-              {suggestions.types.map((v) => <option key={v} value={v} />)}
-            </datalist>
-            {message('type')}
+            <Label htmlFor={`${ids}-method`} className={hudLabelClass}>{t('paymentMethodPage.form.methodLabel')}</Label>
+            {isEdit ? (
+              <p id={`${ids}-method`} className='rounded-md border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700'>
+                <span className='font-medium text-slate-900'>{entry?.full_name || method.full_name || method.name}</span>
+              </p>
+            ) : (
+              <Select
+                value={name || undefined}
+                onValueChange={(v) => {
+                  const picked = catalog.data?.find((e) => e.name === v)
+                  if (picked) pickMethod(picked)
+                }}
+                disabled={!catalog.data}
+              >
+                <SelectTrigger id={`${ids}-method`} aria-invalid={!!errors.name} className='h-10 w-full bg-white'>
+                  <SelectValue placeholder={t(catalog.isLoading ? 'paymentMethodPage.form.methodLoading' : 'paymentMethodPage.form.methodPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_METHOD_TYPES.map((type) => {
+                    const items = catalog.data?.filter((e) => e.type === type) ?? []
+                    if (!items.length) return null
+                    return (
+                      <SelectGroup key={type}>
+                        <SelectLabel>{t(`paymentMethodPage.type.${type}`)}</SelectLabel>
+                        {items.map((e) => (
+                          <SelectItem key={e.name} value={e.name} disabled={existing.has(e.name)}>
+                            {e.full_name}
+                            {existing.has(e.name) && <span className='text-slate-400'> · {t('paymentMethodPage.form.alreadyAdded')}</span>}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    )
+                  })}
+                </SelectContent>
+              </Select>
+            )}
+            {catalog.isError && !isEdit ? (
+              <FieldMessage tone='error'>{t('paymentMethodPage.form.catalogError')}</FieldMessage>
+            ) : unsupported ? (
+              <FieldMessage tone='error'>{t('paymentMethodPage.form.unsupported')}</FieldMessage>
+            ) : (
+              message('name') ??
+              (name && (
+                <p className='text-xs text-slate-500'>
+                  {t('paymentMethodPage.form.methodInfo', {
+                    code: name,
+                    type: entry ? t(`paymentMethodPage.type.${entry.type}`) : (method?.type ?? ''),
+                  })}
+                  {isEdit && <> · {t('paymentMethodPage.form.methodFixed')}</>}
+                </p>
+              ))
+            )}
           </div>
           <div className='space-y-2 sm:col-span-2'>
-            <Label htmlFor={`${ids}-provider`} className={hudLabelClass}>{t('paymentMethodPage.form.providerLabel')}</Label>
-            <Input list={`${ids}-providers`} placeholder='Tripay' {...field('provider')} />
-            <datalist id={`${ids}-providers`}>
-              {suggestions.providers.map((v) => <option key={v} value={v} />)}
-            </datalist>
-            {message('provider')}
+            <Label htmlFor={`${ids}-full_name`} className={hudLabelClass}>{t('paymentMethodPage.form.fullNameLabel')}</Label>
+            <Input placeholder='QRIS' {...field('full_name')} />
+            {message('full_name') ?? <p className='text-xs text-slate-500'>{t('paymentMethodPage.form.fullNameHint')}</p>}
           </div>
         </div>
       </section>
@@ -243,16 +298,20 @@ function PaymentMethodForm({ method, suggestions, nextSortOrder, onDone }: Payme
       {isEdit ? (
         <label
           className={cn(
-            'flex cursor-pointer items-center justify-between gap-4 rounded-md border px-4 py-3 transition-colors',
-            isActive ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 hover:bg-slate-50'
+            'flex items-center justify-between gap-4 rounded-md border px-4 py-3 transition-colors',
+            unsupported ? 'cursor-not-allowed border-slate-200 opacity-70' : 'cursor-pointer',
+            !unsupported && (isActive ? 'border-emerald-200 bg-emerald-50/50' : 'border-slate-200 hover:bg-slate-50')
           )}
         >
           <span className='min-w-0'>
             <span className='block text-sm font-medium text-slate-800'>{t('paymentMethodPage.form.activeLabel')}</span>
-            <span className='block text-xs text-slate-500'>{t('paymentMethodPage.form.activeHint')}</span>
+            <span className='block text-xs text-slate-500'>
+              {t(unsupported ? 'paymentMethodPage.form.unsupportedActiveHint' : 'paymentMethodPage.form.activeHint')}
+            </span>
           </span>
           <Switch
             checked={!!isActive}
+            disabled={unsupported}
             onCheckedChange={(checked) => setValue('is_active', checked, { shouldDirty: true })}
             className='data-[state=checked]:bg-emerald-500'
           />

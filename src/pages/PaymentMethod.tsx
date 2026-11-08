@@ -13,7 +13,13 @@ import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { PERM } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
-import { toPaymentMethodUpdate, useDeletePaymentMethod, useGetPaymentMethods, useUpdatePaymentMethod } from '@/hooks/usePaymentMethod'
+import {
+  toPaymentMethodUpdate,
+  useDeletePaymentMethod,
+  useGetPaymentMethodCatalog,
+  useGetPaymentMethods,
+  useUpdatePaymentMethod,
+} from '@/hooks/usePaymentMethod'
 import { useGetPaymentMethodCategory } from '@/hooks/usePaymentMethodCategory'
 import { cn } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/payment-method'
@@ -46,19 +52,13 @@ export default function PaymentMethodPage() {
 
   const methods = useMemo(() => [...(data?.data ?? [])].sort((a, b) => a.sort_order - b.sort_order), [data])
   const activeCount = methods.filter((m) => m.is_active).length
-  const suggestions = useMemo(
-    () => ({
-      types: [...new Set(methods.map((m) => m.type).filter(Boolean))].sort(),
-      providers: [...new Set(methods.map((m) => m.provider).filter(Boolean))].sort(),
-    }),
-    [methods]
-  )
+  const existingNames = useMemo(() => methods.map((m) => m.name), [methods])
   const nextSortOrder = methods.reduce((max, m) => Math.max(max, m.sort_order), 0) + 1
 
   const query = search.trim().toLowerCase()
   const groups = useMemo<Group[]>(() => {
     const visible = query
-      ? methods.filter((m) => [m.name, m.code, m.type, m.provider].some((v) => v?.toLowerCase().includes(query)))
+      ? methods.filter((m) => [m.name, m.full_name, m.code, m.type, m.provider].some((v) => v?.toLowerCase().includes(query)))
       : methods
     const categories = [...(categoryData?.data ?? [])].sort((a, b) => a.sort_order - b.sort_order)
     const known = new Set(categories.map((c) => c.id))
@@ -189,7 +189,7 @@ export default function PaymentMethodPage() {
         open={formTarget !== null}
         onOpenChange={(open) => !open && setFormTarget(null)}
         method={formTarget === 'new' ? undefined : (formTarget ?? undefined)}
-        suggestions={suggestions}
+        existingNames={existingNames}
         nextSortOrder={nextSortOrder}
       />
       <DangerDialog
@@ -215,6 +215,10 @@ function MethodRow({ method, onEdit, onDelete }: { method: PaymentMethod; onEdit
   const { can } = usePermissions()
   const update = useUpdatePaymentMethod(undefined, 'paymentMethodPage.toasts.statusSaved')
   const [iconFailed, setIconFailed] = useState(false)
+  // Older rows hold the method code in `type`; the catalog knows the real kind.
+  const catalogType = useGetPaymentMethodCatalog().data?.find((e) => e.name === method.name)?.type
+  // Paylabs does not offer it (a leftover such as smartfren_airtime): it can be switched off, not on.
+  const unsupported = method.supported === false
 
   return (
     <li className={cn('flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3.5 transition-colors hover:bg-slate-50/70 sm:px-5', !method.is_active && 'bg-slate-50/50')}>
@@ -228,20 +232,25 @@ function MethodRow({ method, onEdit, onDelete }: { method: PaymentMethod; onEdit
 
       <div className='min-w-0 flex-1 basis-48 space-y-1'>
         <div className='flex flex-wrap items-center gap-x-2 gap-y-1'>
-          <p className={cn('truncate font-semibold', method.is_active ? 'text-slate-900' : 'text-slate-500')}>{method.name}</p>
-          {method.type && (
+          <p className={cn('truncate font-semibold', method.is_active ? 'text-slate-900' : 'text-slate-500')}>{method.full_name || method.name}</p>
+          {(catalogType || method.type) && (
             <span className='bg-slate-100 px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600 hud-clip-sm'>
-              {method.type}
+              {catalogType ? t(`paymentMethodPage.type.${catalogType}`) : method.type}
             </span>
           )}
           {!method.is_active && (
             <span className='font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-400'>{t('paymentMethodPage.inactive')}</span>
           )}
+          {unsupported && (
+            <span
+              title={t('paymentMethodPage.unsupportedHint')}
+              className='bg-amber-50 px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-700 hud-clip-sm'
+            >
+              {t('paymentMethodPage.unsupported')}
+            </span>
+          )}
         </div>
-        <p className='truncate text-xs text-slate-500'>
-          <span className='font-mono'>{method.code}</span>
-          {method.provider && <span> · {method.provider}</span>}
-        </p>
+        <p className='truncate text-xs font-mono text-slate-500'>{method.code}</p>
       </div>
 
       <dl className='grid shrink-0 grid-cols-[5.5rem_minmax(0,1fr)] gap-x-5 text-xs sm:w-[23rem]'>
@@ -259,7 +268,7 @@ function MethodRow({ method, onEdit, onDelete }: { method: PaymentMethod; onEdit
         {can(PERM.paymentMethodUpdate) && (
           <Switch
             checked={method.is_active}
-            disabled={update.isPending}
+            disabled={update.isPending || (unsupported && !method.is_active)}
             onCheckedChange={(checked) => update.mutate({ id: method.id, payload: { ...toPaymentMethodUpdate(method), is_active: checked } })}
             aria-label={t('paymentMethodPage.toggleActive', { name: method.name })}
             title={t('paymentMethodPage.toggleActive', { name: method.name })}

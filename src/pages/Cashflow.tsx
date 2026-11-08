@@ -15,6 +15,7 @@ import {
   DIRECTION_TYPE,
   RANGE_KEYS,
   directionOf,
+  kindOf,
   fromDay,
   parseNotes,
   rangeDays,
@@ -264,12 +265,13 @@ export default function CashflowPage() {
 function CashflowRow({ item, onOpen }: { item: CashflowItem; onOpen: () => void }) {
   const { t } = useTranslation('common')
   const direction = directionOf(item.type)
+  const kind = kindOf(item.type)
   const note = parseNotes(item.notes)
   const time = formatBackendDateTime(item.created_at, 'HH:mm:ss')
   const order = t('cashflowPage.order', { id: item.order_id.slice(0, 8) })
 
   const detail =
-    direction === 'in'
+    direction === 'in' || kind === 'fee'
       ? [note.method && t('cashflowPage.via', { method: formatPaymentChannel(note.method) }), order]
       : direction === 'out'
         ? [note.provider, note.sku, order]
@@ -285,7 +287,7 @@ function CashflowRow({ item, onOpen }: { item: CashflowItem; onOpen: () => void 
         <DirectionTile direction={direction} />
         <span className='min-w-0'>
           <span className='block truncate text-sm font-medium text-slate-900 transition-colors group-hover:text-brand-purple'>
-            {direction === 'other' ? item.type : t(`cashflowPage.kind.${direction}`)}
+            {kind ? t(`cashflowPage.kind.${kind}`) : item.type}
           </span>
           <span className='block truncate text-xs text-slate-500'>{detail.filter(Boolean).join(' · ')}</span>
         </span>
