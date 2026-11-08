@@ -28,10 +28,6 @@ export const PERM = {
   productViewAnomaly: 'product.view_anomaly',
   productViewCallbackLog: 'product.view_callback_log',
 
-  categoryView: 'category.view',
-  categoryCreate: 'category.create',
-  categoryUpdate: 'category.update',
-  categoryDelete: 'category.delete',
 
   categoryProductView: 'category_product.view',
   categoryProductCreate: 'category_product.create',

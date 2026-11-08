@@ -30,9 +30,6 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
         <DetailRow label={t('gameDetailPage.overview.slug')}>
           <span className='min-w-0 truncate'>/{game.slug}</span>
         </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.category')}>
-          <span className='min-w-0 truncate'>{game.category?.name || '—'}</span>
-        </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.popularity')}>
           <span className='tabular-nums'>{formatNumber(game.popularity_score)}</span>
         </DetailRow>

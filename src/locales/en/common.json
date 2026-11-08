@@ -797,7 +797,6 @@
       "code": "Code",
       "copyCode": "Copy code",
       "slug": "Slug",
-      "category": "Category",
       "popularity": "Popularity",
       "created": "Created",
       "updated": "Updated"
@@ -865,7 +864,6 @@
       "cancel": "Cancel",
       "pending": "Syncing…"
     },
-    "eyebrowCategory": "// {{category}}",
     "archive": {
       "title": "Archive this game",
       "body": "The game leaves the storefront. Its products, orders, shows and supplier ties stay, so it can be listed again any time.",
@@ -2207,7 +2205,6 @@
       "summary": "Summary",
       "game": "Games",
       "product": "Products",
-      "category": "Categories",
       "category_product": "Product categories",
       "game_input": "Input fields",
       "provider": "Providers",
@@ -2632,11 +2629,6 @@
     "providerNoAccess": "You don't have access to the provider list. Ask an admin who does to add this game.",
     "codeLabel": "Game code",
     "codeHint": "Optional. The game’s internal code; leave it empty to make one from the slug. Supplier codes are set in the supplier catalog.",
-    "categoryLabel": "Category",
-    "categoryPlaceholder": "Choose a category",
-    "categoryLoading": "Loading categories…",
-    "categoryFallback": "The category list isn't available, so only categories other games already use are offered.",
-    "categoryError": "Couldn't load the categories.",
     "nameLabel": "Game name",
     "slugLabel": "Slug",
     "slugWillChange": "The slug is the game’s storefront address. Changing it breaks links to the old one.",
@@ -2671,8 +2663,6 @@
     "errors": {
       "providerRequired": "Choose a provider.",
       "providerMissing": "That provider no longer exists. Choose another.",
-      "categoryRequired": "Choose a category.",
-      "categoryMissing": "That category no longer exists. Choose another.",
       "nameRequired": "Enter the game's name.",
       "slugRequired": "Enter a slug.",
       "slugTaken": "Another game already uses this slug.",

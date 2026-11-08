@@ -19,7 +19,6 @@ export const gameInputDraftSchema = z.object({
 export const gameCreateSchema = z
   .object({
     provider_id: z.string().min(1, 'gameForm.errors.providerRequired'),
-    category_id: z.string().min(1, 'gameForm.errors.categoryRequired'),
     name: z.string().trim().min(1, 'gameForm.errors.nameRequired'),
     slug: z
       .string()
@@ -55,7 +54,6 @@ export const gameEditSchema = z.object({
     .trim()
     .min(1, 'gameForm.errors.slugRequired')
     .transform((v) => v.replace(/-+$/, '')),
-  category_id: z.string(),
   description: text,
   popularity_score: z.coerce
     .number({ error: 'gameForm.errors.popularityInvalid' })

@@ -789,7 +789,6 @@
       "code": "Kode",
       "copyCode": "Salin kode",
       "slug": "Slug",
-      "category": "Kategori",
       "popularity": "Popularitas",
       "created": "Dibuat",
       "updated": "Diperbarui"
@@ -857,7 +856,6 @@
       "cancel": "Batal",
       "pending": "Menyinkronkan…"
     },
-    "eyebrowCategory": "// {{category}}",
     "archive": {
       "title": "Arsipkan game ini",
       "body": "Game disembunyikan dari storefront. Produk, pesanan, acara, dan hubungan supplier-nya tetap ada, jadi bisa ditampilkan lagi kapan saja.",
@@ -2155,7 +2153,6 @@
       "summary": "Rekap",
       "game": "Game",
       "product": "Produk",
-      "category": "Kategori",
       "category_product": "Kategori produk",
       "game_input": "Field input",
       "provider": "Penyedia",
@@ -2576,11 +2573,6 @@
     "providerNoAccess": "Kamu tidak punya akses ke daftar provider. Minta admin yang punya akses untuk menambahkan game ini.",
     "codeLabel": "Kode game",
     "codeHint": "Opsional. Kode internal game; kosongkan dan dibuat dari slug. Kode di supplier diatur di Katalog supplier.",
-    "categoryLabel": "Kategori",
-    "categoryPlaceholder": "Pilih kategori",
-    "categoryLoading": "Memuat kategori…",
-    "categoryFallback": "Daftar kategori tidak tersedia, jadi hanya kategori yang sudah dipakai game lain yang bisa dipilih.",
-    "categoryError": "Gagal memuat kategori.",
     "nameLabel": "Nama game",
     "slugLabel": "Slug",
     "slugWillChange": "Slug adalah alamat game di storefront. Mengubahnya membuat tautan lama tidak berlaku lagi.",
@@ -2615,8 +2607,6 @@
     "errors": {
       "providerRequired": "Pilih provider.",
       "providerMissing": "Provider itu sudah tidak ada. Pilih yang lain.",
-      "categoryRequired": "Pilih kategori.",
-      "categoryMissing": "Kategori itu sudah tidak ada. Pilih yang lain.",
       "nameRequired": "Isi nama game.",
       "slugRequired": "Isi slug.",
       "slugTaken": "Slug ini sudah dipakai game lain.",

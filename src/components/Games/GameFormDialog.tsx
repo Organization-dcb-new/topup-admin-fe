@@ -27,7 +27,6 @@ import {
   type GameEditFormValues,
 } from '@/schemas/game'
 import { GAME_STATUSES, type Game, type GameStatus, type GameUpdateRequest } from '@/types/game'
-import { CategorySelect } from './CategorySelect'
 import { GameInputsBuilder } from './GameInputsBuilder'
 import { gameSelectTriggerClass, toSlug } from './game-utils'
 import { useRetained } from '@/hooks/useRetained'
@@ -105,10 +104,9 @@ function Footer({ pending, uploading, onCancel, submitLabel }: { pending: boolea
 }
 
 /** Backend messages that belong to one field of the create form. */
-const CREATE_ERRORS: Record<string, ['slug' | 'code' | 'category_id' | 'provider_id', string]> = {
+const CREATE_ERRORS: Record<string, ['slug' | 'code' | 'provider_id', string]> = {
   'Slug already exists': ['slug', 'gameForm.errors.slugTaken'],
   'code already exists': ['code', 'gameForm.errors.codeTaken'],
-  'Category Not Found': ['category_id', 'gameForm.errors.categoryMissing'],
   'Provider Not Found': ['provider_id', 'gameForm.errors.providerMissing'],
 }
 
@@ -133,7 +131,6 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
     resolver: zodResolver(gameCreateSchema),
     defaultValues: {
       provider_id: '',
-      category_id: '',
       name: '',
       slug: '',
       code: '',
@@ -206,17 +203,6 @@ function CreateGameForm({ onDone }: { onDone: () => void }) {
                 ) : (
                   <p className='text-[11px] leading-snug text-slate-500'>{t('gameForm.codeHint')}</p>
                 )}
-              </div>
-              <div className='space-y-2 sm:col-span-2'>
-                <Label htmlFor={`${ids}-category`} className={hudLabelClass}>{t('gameForm.categoryLabel')}</Label>
-                <Controller
-                  control={control}
-                  name='category_id'
-                  render={({ field }) => (
-                    <CategorySelect id={`${ids}-category`} value={field.value} onChange={field.onChange} invalid={!!errors.category_id} enabled />
-                  )}
-                />
-                {errors.category_id?.message && <FieldMessage tone='error'>{t(errors.category_id.message)}</FieldMessage>}
               </div>
             </div>
           </Section>
@@ -354,9 +340,8 @@ function TextBlock({ id, label, ...props }: { id: string; label: string } & Comp
 const TEXT_FIELDS = ['name', 'description'] as const
 
 /** Backend messages that belong to one field of the edit form. */
-const EDIT_ERRORS: Record<string, ['slug' | 'category_id', string]> = {
+const EDIT_ERRORS: Record<string, ['slug', string]> = {
   'Slug already exists': ['slug', 'gameForm.errors.slugTaken'],
-  'Category Not Found': ['category_id', 'gameForm.errors.categoryMissing'],
 }
 
 function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
@@ -366,8 +351,6 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
   const initial: GameEditFormInput = {
     name: game.name ?? '',
     slug: game.slug ?? '',
-    // The detail endpoint has no category_id, only the category object.
-    category_id: game.category_id || game.category?.id || '',
     description: game.description ?? '',
     popularity_score: game.popularity_score ?? 0,
   }
@@ -402,7 +385,6 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
     }
     if (v.slug !== initial.slug) payload.slug = v.slug
     if (v.popularity_score !== Number(initial.popularity_score)) payload.popularity_score = v.popularity_score
-    if (v.category_id && v.category_id !== initial.category_id) payload.category_id = v.category_id
     if (blocked) return
     if (Object.keys(payload).length === 0) return onDone()
     update.mutate(
@@ -452,17 +434,6 @@ function EditGameForm({ game, onDone }: { game: Game; onDone: () => void }) {
           ) : (
             slugChanged && <FieldMessage tone='warning'>{t('gameForm.slugWillChange')}</FieldMessage>
           )}
-        </div>
-        <div className='space-y-2'>
-          <Label htmlFor={`${ids}-category`} className={hudLabelClass}>{t('gameForm.categoryLabel')}</Label>
-          <Controller
-            control={control}
-            name='category_id'
-            render={({ field }) => (
-              <CategorySelect id={`${ids}-category`} value={field.value} onChange={field.onChange} currentName={game.category?.name} invalid={!!errors.category_id} enabled />
-            )}
-          />
-          {errors.category_id?.message && <FieldMessage tone='error'>{t(errors.category_id.message)}</FieldMessage>}
         </div>
         <div className='space-y-2'>
           <Label htmlFor={`${ids}-popularity`} className={hudLabelClass}>{t('gameForm.popularityLabel')}</Label>

@@ -1,5 +1,4 @@
 import type { UseFormRegister, UseFormSetValue } from 'react-hook-form'
-import type { Category, CategoryResponse } from './category'
 import type { ProviderResponse } from './provider'
 import type { Product } from './product'
 
@@ -18,7 +17,6 @@ export const GAME_STATUSES: readonly GameStatus[] = ['ACTIVE', 'MAINTENANCE', 'H
 
 export interface Game {
   id: string
-  category_id: string
   /** Deprecated: which suppliers sell the game is in the supplier catalog. Empty when none. */
   provider_id: string
   name: string
@@ -39,7 +37,6 @@ export interface Game {
   created_at: string
   updated_at: string
   updated_by?: GameUpdatedBy | null
-  category: Category
   input: GameInput[] | GameInput | null
   product: Product[] | null
 }
@@ -101,7 +98,6 @@ export type GameInputPayload = {
 }
 
 export type CreateGamePayload = {
-  category_id: string
   provider_id?: string
   name: string
   slug: string
@@ -122,7 +118,6 @@ export type UploadFileHandler = (
 export interface GameInputProps {
   setValue: UseFormSetValue<CreateGamePayload>
   register: UseFormRegister<CreateGamePayload>
-  categories: CategoryResponse
   providers: ProviderResponse
 }
 
@@ -150,12 +145,11 @@ export type GameCreateInputRequest = {
 }
 
 /**
- * POST /games. `category_id` must be a valid id. `provider_id` is optional (suppliers are tied in
+ * POST /games. `provider_id` is optional (suppliers are tied in
  * the supplier catalog), `code` is made from the slug when empty, and the game starts HIDDEN
  * unless `status` says otherwise.
  */
 export type GameCreateRequest = {
-  category_id: string
   provider_id?: string
   name: string
   slug: string
@@ -172,7 +166,6 @@ export type GameCreateRequest = {
  * cleared. The slug (the storefront URL) changes only when `slug` is sent, never with the name.
  */
 export type GameUpdateRequest = Partial<{
-  category_id: string
   name: string
   slug: string
   code: string
