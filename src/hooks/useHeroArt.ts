@@ -26,10 +26,6 @@ const MAX_ART = 6
 const IMAGE_TIMEOUT_MS = 6000
 const DESKTOP_QUERY = '(min-width: 1024px)'
 
-interface CatalogCategory {
-  games: Game[]
-}
-
 function captionFromPath(path: string) {
   const file = path.split('/').pop() ?? ''
   return file
@@ -60,7 +56,8 @@ export function useHeroArt(): HeroArt[] {
   const { data } = useQuery({
     queryKey: ['auth-hero-games'],
     queryFn: async () => {
-      const res = await api.get<{ data: CatalogCategory[] }>('/games/by-categories')
+      // The storefront catalog: public, so it works before anyone signs in.
+      const res = await api.get<{ data: Game[] }>('/games/letter', { params: { letter: 'all' } })
       return res.data.data
     },
     // The hero only shows on desktop, and bundled art makes the catalog unnecessary.
@@ -72,7 +69,7 @@ export function useHeroArt(): HeroArt[] {
   const candidates = useMemo(() => {
     if (BUNDLED_ART.length > 0) return BUNDLED_ART
     const byId = new Map<string, Game>()
-    for (const game of (data ?? []).flatMap((category) => category.games)) {
+    for (const game of data ?? []) {
       if (game.is_active && game.is_show && game.thumbnail_url) byId.set(game.id, game)
     }
     return [...byId.values()]
