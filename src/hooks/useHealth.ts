@@ -12,7 +12,10 @@ export function useHealthCheck() {
   return useQuery<HealthCheckResponse>({
     queryKey: ['health'],
     queryFn: async () => {
-      const { data } = await api.get('/health')
+      // A 503 still says which services are down: that is "degraded", not "unreachable".
+      const { data } = await api.get<HealthCheckResponse>('/health', {
+        validateStatus: (status) => status === 200 || status === 503,
+      })
       return data
     },
     refetchInterval: HEALTH_REFRESH_MINUTES * 60 * 1000,
