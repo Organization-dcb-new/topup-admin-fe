@@ -5,8 +5,11 @@ import { ArrowLeft, FileQuestion, RefreshCw, SearchX, TriangleAlert, type Lucide
 
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { TransactionCustomerPanel, TransactionItemPanel, TransactionReferencePanel } from '@/components/Transaction/TransactionInfoPanels'
+import { TransactionPaylabsPanel, TransactionProviderPanel } from '@/components/Transaction/TransactionIntegrationPanels'
 import { TransactionPaymentPanel } from '@/components/Transaction/TransactionPaymentPanel'
 import { TransactionSummary } from '@/components/Transaction/TransactionSummary'
+import { PERM } from '@/constants/permissions'
+import { usePermissions } from '@/hooks/usePermissions'
 import { isInFlight, isNotFoundError, isTransactionId, useTransactionDetail } from '@/hooks/useTransaction'
 import { cn } from '@/lib/utils'
 import type { TransactionRowState } from '@/types/transaction'
@@ -16,6 +19,7 @@ export default function TransactionDetailPage() {
   const { paymentId } = useParams<{ paymentId: string }>()
   const location = useLocation()
   const { data, isLoading, isError, error, isFetching, refetch } = useTransactionDetail(paymentId)
+  const { can } = usePermissions()
 
   // Only trust what the list handed over for this very transaction.
   const passed = (location.state as { row?: TransactionRowState } | null)?.row
@@ -86,10 +90,12 @@ export default function TransactionDetailPage() {
               <div className='space-y-6'>
                 <TransactionItemPanel detail={data} row={row} order={0} />
                 <TransactionCustomerPanel detail={data} order={1} />
+                {can(PERM.providerOrderLogView) && <TransactionProviderPanel detail={data} order={4} />}
               </div>
               <div className='space-y-6'>
                 <TransactionPaymentPanel detail={data} order={2} />
                 <TransactionReferencePanel detail={data} order={3} />
+                {can(PERM.paymentCallbackView) && <TransactionPaylabsPanel detail={data} order={5} />}
               </div>
             </div>
           </>

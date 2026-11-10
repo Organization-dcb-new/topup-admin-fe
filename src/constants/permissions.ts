@@ -44,6 +44,9 @@ export const PERM = {
   paymentMethodUpdate: 'payment_method.update',
   paymentMethodDelete: 'payment_method.delete',
 
+  paymentCallbackView: 'payment_callback.view',
+  providerOrderLogView: 'provider_order_log.view',
+
   paymentCategoryView: 'payment_category.view',
   paymentCategoryCreate: 'payment_category.create',
   paymentCategoryUpdate: 'payment_category.update',

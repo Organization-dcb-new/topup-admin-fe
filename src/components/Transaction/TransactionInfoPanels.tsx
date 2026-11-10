@@ -13,22 +13,25 @@ interface PanelProps {
   order?: number
 }
 
-/** The product bought; margin and provider status only exist on the list row, so they come along from there. */
+/** The product bought. Margin and provider status come with the detail; older backends only sent them on the list row. */
 export function TransactionItemPanel({ detail, row, order }: PanelProps & { row?: TransactionRowState }) {
   const { t } = useTranslation('common')
   const item = detail.order_item
   const sku = item?.product_sku || detail.sku
   const voucher = item?.voucher_code
   const orderTotal = detail.order?.total_amount
+  const rawMargin = item?.margin ?? row?.margin
   // Unpaid payments carry a zero margin, which is noise rather than a number.
-  const margin = row?.margin === 0 && detail.status !== 'PAID' ? undefined : row?.margin
+  const margin = rawMargin === 0 && detail.status !== 'PAID' ? undefined : rawMargin
+  const providerStatus = item?.status_provider ?? row?.status_provider
+  const fromBackend = item?.status_provider !== undefined
 
   return (
     <DetailPanel
       icon={Package}
       title={t('transactionDetailPage.item.title')}
       order={order}
-      footer={row ? undefined : t('transactionDetailPage.item.fromListHint')}
+      footer={row || fromBackend ? undefined : t('transactionDetailPage.item.fromListHint')}
     >
       <dl>
         <DetailField label={t('transactionDetailPage.item.product')}>{item?.product_name || <EmptyValue />}</DetailField>
@@ -57,7 +60,7 @@ export function TransactionItemPanel({ detail, row, order }: PanelProps & { row?
           )}
         </DetailField>
         <DetailField label={t('transactionDetailPage.item.providerStatus')}>
-          <ProviderStatusChip status={row?.status_provider} />
+          <ProviderStatusChip status={providerStatus} />
         </DetailField>
       </dl>
     </DetailPanel>

@@ -84,6 +84,11 @@ export interface TransactionDetailOrderItem {
   unit_price: number
   subtotal: number
   voucher_code: string
+  /** The supplier's raw fulfilment status, e.g. SUCCESS or USER_ID_EMPTY. Older backends do not send it. */
+  status_provider?: string
+  /** The supplier's order id (TID). */
+  provider_order_id?: string
+  margin?: number
 }
 
 export interface TransactionDetailOrder {
@@ -101,8 +106,8 @@ export interface TransactionDetailOrder {
 }
 
 /**
- * GET /transactions/detail/:id. It has no margin or provider status (those only come with the list),
- * and the customer's IP, game fields and TID sit under `order`.
+ * GET /transactions/detail/:id. Margin and provider status sit under `order_item` (older backends only
+ * sent them with the list), and the customer's IP, game fields and TID under `order`.
  */
 export interface TransactionDetail {
   id: string

@@ -36,6 +36,10 @@ import UnauthorizedPage from "@/pages/Unauthorized";
 import AnomalyProduct from "@/pages/AnomalyProduct";
 import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
 import ProductCallbackLogDetailPage from "@/pages/ProductCallbackLogDetail";
+import PaymentCallbackLogPage from '@/pages/PaymentCallbackLog'
+import PaymentCallbackLogDetailPage from '@/pages/PaymentCallbackLogDetail'
+import ProviderOrderLogPage from '@/pages/ProviderOrderLog'
+import ProviderOrderLogDetailPage from '@/pages/ProviderOrderLogDetail'
 import NotFoundPage from "@/pages/NotFound";
 import RolesPage from '@/pages/Roles'
 import RoleEditorPage from '@/pages/RoleEditor'
@@ -147,6 +151,38 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.transactionView}>
             <PaymentDetailPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'payment-callbacks',
+        element: (
+          <RoleGuard permission={PERM.paymentCallbackView}>
+            <PaymentCallbackLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'payment-callbacks/:id',
+        element: (
+          <RoleGuard permission={PERM.paymentCallbackView}>
+            <PaymentCallbackLogDetailPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'provider-order-logs',
+        element: (
+          <RoleGuard permission={PERM.providerOrderLogView}>
+            <ProviderOrderLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'provider-order-logs/:id',
+        element: (
+          <RoleGuard permission={PERM.providerOrderLogView}>
+            <ProviderOrderLogDetailPage />
           </RoleGuard>
         ),
       },

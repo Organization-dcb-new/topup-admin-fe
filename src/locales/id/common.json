@@ -67,7 +67,9 @@
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk",
-      "roles": "Role & akses"
+      "roles": "Role & akses",
+      "paylabsCallbacks": "Callback Paylabs",
+      "providerOrderLogs": "Log order supplier"
     }
   },
   "pagination": {
@@ -2168,7 +2170,9 @@
       "admin_log": "Log admin",
       "upload": "Unggahan",
       "integration": "Integrasi",
-      "security": "Keamanan"
+      "security": "Keamanan",
+      "payment_callback": "Callback pembayaran",
+      "provider_order_log": "Log order supplier"
     },
     "actions": {
       "view": "Lihat",
@@ -2323,6 +2327,28 @@
       "orderId": "ID pesanan",
       "providerRef": "Referensi provider (TID)",
       "paymentMethodId": "ID metode pembayaran"
+    },
+    "paylabs": {
+      "title": "Callback Paylabs",
+      "empty": "Belum ada callback dari Paylabs. Paylabs hanya mengirim saat pembayaran final (sukses atau gagal).",
+      "otherGateway": "Transaksi ini dibayar lewat gateway lama, jadi tidak ada callback Paylabs."
+    },
+    "provider": {
+      "title": "Order di LapakGaming",
+      "storedStatus": "Status tersimpan",
+      "tid": "TID",
+      "check": "Cek status di LapakGaming",
+      "checking": "Mengecek…",
+      "checkFailed": "Gagal menghubungi LapakGaming.",
+      "liveAnswer": "Jawaban live",
+      "liveNotOk": "LapakGaming tidak mengembalikan SUCCESS. Order mungkin belum pernah terkirim atau ditolak; cek log Buat order di bawah.",
+      "checkedAt": "Dicek pukul {{time}}. Status pesanan tidak diubah.",
+      "empty": "Belum ada pertukaran dengan LapakGaming. Order dikirim setelah pembayaran sukses."
+    },
+    "trail": {
+      "seeAll": "Lihat semua ({{count}})",
+      "openList": "Buka di daftar",
+      "loadError": "Gagal memuat log."
     }
   },
   "referralPage": {
@@ -2650,6 +2676,120 @@
     "errors": {
       "percentInvalid": "Isi persentase, 0 atau lebih.",
       "percentMax": "Markup maksimal {{max}}%."
+    }
+  },
+  "integrationLog": {
+    "all": "Semua",
+    "reset": "Reset filter",
+    "retry": "Coba lagi",
+    "refresh": "Muat ulang",
+    "datePlaceholder": "Semua tanggal",
+    "noMatchTitle": "Tidak ada log yang cocok",
+    "noMatchBody": "Coba perluas rentang tanggal atau kurangi filter.",
+    "receivedAt": "Diterima",
+    "duration": "Durasi",
+    "ms": "{{ms}} ms",
+    "logId": "ID log",
+    "openTransaction": "Buka transaksi",
+    "copy": "Salin",
+    "copied": "Tersalin",
+    "copyFailed": "Gagal menyalin",
+    "emptyPayload": "Kosong.",
+    "unverified": "Belum terverifikasi",
+    "signatureValid": "Signature valid",
+    "signatureInvalid": "Signature tidak valid",
+    "outcome": {
+      "PROCESSED": "Diproses",
+      "DUPLICATE": "Duplikat",
+      "FAILED": "Gagal diproses",
+      "REJECTED": "Ditolak",
+      "UNAVAILABLE": "Paylabs nonaktif"
+    },
+    "outcomeHint": {
+      "PROCESSED": "Signature valid dan status pembayaran diperbarui. Paylabs dibalas errCode 0, jadi tidak mengirim ulang.",
+      "DUPLICATE": "Signature valid, tapi pembayaran sudah berstatus ini atau sudah dibayar. Dibalas errCode 0 supaya Paylabs berhenti mengirim ulang.",
+      "FAILED": "Signature valid, tapi status gagal diterapkan (lihat pesan error). Paylabs dibalas errCode 1 dan akan mengirim ulang, sampai 8 kali dalam sekitar 55 menit.",
+      "REJECTED": "Ditolak dengan 401 karena signature, merchant ID atau isi body tidak cocok. Data order di bawah belum terverifikasi; bisa jadi bukan dari Paylabs.",
+      "UNAVAILABLE": "Dijawab 503 karena integrasi Paylabs belum dikonfigurasi di server ini."
+    },
+    "paylabsStatus": {
+      "01": "Pending",
+      "02": "Sukses",
+      "09": "Gagal"
+    },
+    "result": {
+      "SENT": "Terkirim",
+      "SUCCESS": "Sukses",
+      "FAILED": "Gagal"
+    },
+    "operation": {
+      "CREATE_ORDER": "Buat order",
+      "CHECK_STATUS": "Cek status",
+      "CALLBACK": "Callback"
+    },
+    "logType": {
+      "REQUEST_TO_PROVIDER": "Request",
+      "RESPONSE_FROM_PROVIDER": "Response",
+      "CALLBACK_FROM_PROVIDER": "Dari supplier"
+    }
+  },
+  "paymentCallbackLogPage": {
+    "eyebrow": "// Payment gateway",
+    "title": "Callback Paylabs",
+    "subtitle": "Setiap notifikasi yang dikirim Paylabs ke kita apa adanya, termasuk yang ditolak, beserta apa yang kita lakukan dengannya. Paylabs hanya mengirim saat status pembayaran final.",
+    "total": "{{formatted}} callback",
+    "searchPlaceholder": "Cari nomor pembayaran, request ID, trade no, atau ID",
+    "statusLabel": "Status Paylabs",
+    "statusAll": "Semua status",
+    "outcomeLabel": "Hasil",
+    "noReference": "Tanpa referensi",
+    "loadError": "Gagal memuat callback. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada callback",
+    "emptyBody": "Notifikasi dari Paylabs akan muncul di sini saat masuk.",
+    "detail": {
+      "back": "Kembali ke callback Paylabs",
+      "eyebrow": "// Notifikasi Paylabs",
+      "loadError": "Gagal memuat callback ini.",
+      "amount": "Nominal",
+      "paymentType": "Tipe pembayaran",
+      "requestId": "Request ID",
+      "merchantTradeNo": "Merchant trade no",
+      "platformTradeNo": "Platform trade no (Paylabs)",
+      "reply": "Balasan kita",
+      "ack": "errCode {{code}} · HTTP {{http}}",
+      "httpOnly": "HTTP {{http}}, tanpa errCode",
+      "clientIp": "IP pengirim",
+      "paymentStatus": "Status transaksi sekarang",
+      "body": "Body yang diterima",
+      "headers": "Header",
+      "replyBody": "Balasan ke Paylabs",
+      "noReply": "Tidak ada balasan bertanda tangan; Paylabs hanya menerima status HTTP."
+    }
+  },
+  "providerOrderLogPage": {
+    "eyebrow": "// Supplier",
+    "title": "Log order supplier",
+    "subtitle": "Order yang kita kirim ke LapakGaming, jawabannya, cek status, dan callback darinya. LapakGaming membalas sebagian error dengan HTTP 200, jadi kodenya ikut dinilai.",
+    "total": "{{formatted}} log",
+    "searchPlaceholder": "Cari nomor pembayaran, TID, atau ID",
+    "operationLabel": "Operasi",
+    "resultLabel": "Hasil",
+    "noOrder": "Order tidak dikenal",
+    "loadError": "Gagal memuat log. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada log",
+    "emptyBody": "Log muncul saat order pertama dikirim ke supplier.",
+    "detail": {
+      "back": "Kembali ke log order supplier",
+      "eyebrow": "// {{provider}}",
+      "loadError": "Gagal memuat log ini.",
+      "payment": "Nomor pembayaran",
+      "tid": "TID supplier",
+      "orderId": "ID pesanan",
+      "http": "HTTP",
+      "request": "Request",
+      "response": "Response",
+      "callbackBody": "Body callback",
+      "responseElsewhere": "Response-nya dicatat sebagai log tersendiri tepat setelah request ini."
     }
   }
 }

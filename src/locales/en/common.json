@@ -67,7 +67,9 @@
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs",
-      "roles": "Roles & access"
+      "roles": "Roles & access",
+      "paylabsCallbacks": "Paylabs callbacks",
+      "providerOrderLogs": "Supplier order logs"
     }
   },
   "pagination": {
@@ -2220,7 +2222,9 @@
       "admin_log": "Admin logs",
       "upload": "Uploads",
       "integration": "Integrations",
-      "security": "Security"
+      "security": "Security",
+      "payment_callback": "Payment callbacks",
+      "provider_order_log": "Supplier order logs"
     },
     "actions": {
       "view": "View",
@@ -2375,6 +2379,28 @@
       "orderId": "Order ID",
       "providerRef": "Provider reference (TID)",
       "paymentMethodId": "Payment method ID"
+    },
+    "paylabs": {
+      "title": "Paylabs callbacks",
+      "empty": "No callback from Paylabs yet. Paylabs only sends once the payment is final (paid or failed).",
+      "otherGateway": "This transaction was paid through the old gateway, so there are no Paylabs callbacks."
+    },
+    "provider": {
+      "title": "Order at LapakGaming",
+      "storedStatus": "Stored status",
+      "tid": "TID",
+      "check": "Check status at LapakGaming",
+      "checking": "Checking…",
+      "checkFailed": "Couldn't reach LapakGaming.",
+      "liveAnswer": "Live answer",
+      "liveNotOk": "LapakGaming didn't return SUCCESS. The order may never have been sent, or was refused; see the Create order logs below.",
+      "checkedAt": "Checked at {{time}}. The order status wasn't changed.",
+      "empty": "No exchanges with LapakGaming yet. The order is sent once the payment succeeds."
+    },
+    "trail": {
+      "seeAll": "See all ({{count}})",
+      "openList": "Open in the list",
+      "loadError": "Couldn't load logs."
     }
   },
   "referralPage": {
@@ -2706,6 +2732,120 @@
     "errors": {
       "percentInvalid": "Enter a percentage, 0 or more.",
       "percentMax": "The markup can be at most {{max}}%."
+    }
+  },
+  "integrationLog": {
+    "all": "All",
+    "reset": "Reset filters",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "datePlaceholder": "All dates",
+    "noMatchTitle": "No matching logs",
+    "noMatchBody": "Try a wider date range or fewer filters.",
+    "receivedAt": "Received",
+    "duration": "Duration",
+    "ms": "{{ms}} ms",
+    "logId": "Log ID",
+    "openTransaction": "Open transaction",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy",
+    "emptyPayload": "Empty.",
+    "unverified": "Not verified",
+    "signatureValid": "Valid signature",
+    "signatureInvalid": "Invalid signature",
+    "outcome": {
+      "PROCESSED": "Processed",
+      "DUPLICATE": "Duplicate",
+      "FAILED": "Failed",
+      "REJECTED": "Rejected",
+      "UNAVAILABLE": "Paylabs off"
+    },
+    "outcomeHint": {
+      "PROCESSED": "Valid signature, and the payment status was updated. Paylabs got errCode 0, so it won't resend.",
+      "DUPLICATE": "Valid signature, but the payment already had this status or was already paid. Answered errCode 0 so Paylabs stops resending.",
+      "FAILED": "Valid signature, but the status couldn't be applied (see the error). Paylabs got errCode 1 and will resend, up to 8 times over about 55 minutes.",
+      "REJECTED": "Refused with a 401: the signature, merchant ID or body didn't check out. The order fields below are unverified and may not come from Paylabs.",
+      "UNAVAILABLE": "Answered 503 because Paylabs isn't configured on this server."
+    },
+    "paylabsStatus": {
+      "01": "Pending",
+      "02": "Success",
+      "09": "Failed"
+    },
+    "result": {
+      "SENT": "Sent",
+      "SUCCESS": "Success",
+      "FAILED": "Failed"
+    },
+    "operation": {
+      "CREATE_ORDER": "Create order",
+      "CHECK_STATUS": "Check status",
+      "CALLBACK": "Callback"
+    },
+    "logType": {
+      "REQUEST_TO_PROVIDER": "Request",
+      "RESPONSE_FROM_PROVIDER": "Response",
+      "CALLBACK_FROM_PROVIDER": "From supplier"
+    }
+  },
+  "paymentCallbackLogPage": {
+    "eyebrow": "// Payment gateway",
+    "title": "Paylabs callbacks",
+    "subtitle": "Every notification Paylabs sent us, as received and including rejected ones, with what we did about it. Paylabs only sends once a payment is final.",
+    "total": "{{formatted}} callbacks",
+    "searchPlaceholder": "Search payment number, request ID, trade no or ID",
+    "statusLabel": "Paylabs status",
+    "statusAll": "All statuses",
+    "outcomeLabel": "Outcome",
+    "noReference": "No reference",
+    "loadError": "Couldn't load callbacks. Check your connection and try again.",
+    "emptyTitle": "No callbacks yet",
+    "emptyBody": "Notifications from Paylabs show up here as they arrive.",
+    "detail": {
+      "back": "Back to Paylabs callbacks",
+      "eyebrow": "// Paylabs notification",
+      "loadError": "Couldn't load this callback.",
+      "amount": "Amount",
+      "paymentType": "Payment type",
+      "requestId": "Request ID",
+      "merchantTradeNo": "Merchant trade no",
+      "platformTradeNo": "Platform trade no (Paylabs)",
+      "reply": "Our reply",
+      "ack": "errCode {{code}} · HTTP {{http}}",
+      "httpOnly": "HTTP {{http}}, no errCode",
+      "clientIp": "Sender IP",
+      "paymentStatus": "Transaction status now",
+      "body": "Body received",
+      "headers": "Headers",
+      "replyBody": "Reply to Paylabs",
+      "noReply": "No signed reply; Paylabs only got the HTTP status."
+    }
+  },
+  "providerOrderLogPage": {
+    "eyebrow": "// Supplier",
+    "title": "Supplier order logs",
+    "subtitle": "Orders we sent to LapakGaming, its answers, status checks and its callbacks. LapakGaming answers some errors with HTTP 200, so its code counts too.",
+    "total": "{{formatted}} logs",
+    "searchPlaceholder": "Search payment number, TID or ID",
+    "operationLabel": "Operation",
+    "resultLabel": "Result",
+    "noOrder": "Unknown order",
+    "loadError": "Couldn't load logs. Check your connection and try again.",
+    "emptyTitle": "No logs yet",
+    "emptyBody": "Logs appear once the first order is sent to the supplier.",
+    "detail": {
+      "back": "Back to supplier order logs",
+      "eyebrow": "// {{provider}}",
+      "loadError": "Couldn't load this log.",
+      "payment": "Payment number",
+      "tid": "Supplier TID",
+      "orderId": "Order ID",
+      "http": "HTTP",
+      "request": "Request",
+      "response": "Response",
+      "callbackBody": "Callback body",
+      "responseElsewhere": "Its response is logged as a separate entry right after this request."
     }
   }
 }

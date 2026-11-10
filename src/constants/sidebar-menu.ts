@@ -26,9 +26,11 @@ import {
   PiTagDuotone,
   PiTextboxDuotone,
   PiTicketDuotone,
+  PiTruckDuotone,
   PiUsersThreeDuotone,
   PiWalletDuotone,
   PiWarningDiamondDuotone,
+  PiWebhooksLogoDuotone,
   PiWrenchDuotone,
 } from 'react-icons/pi'
 
@@ -65,6 +67,8 @@ export const sidebarMenus: SidebarSection[] = [
           { label: 'Cashflow', path: '/cashflow', icon: PiCoinsDuotone, permission: PERM.cashflowView },
           { label: 'Pesanan', path: '/orders', icon: PiShoppingBagOpenDuotone, permission: PERM.orderView },
           { label: 'Pelanggan', path: '/customers', icon: PiUsersThreeDuotone, permission: PERM.customerView },
+          { label: 'Callback Paylabs', path: '/payment-callbacks', icon: PiWebhooksLogoDuotone, permission: PERM.paymentCallbackView },
+          { label: 'Log order supplier', path: '/provider-order-logs', icon: PiTruckDuotone, permission: PERM.providerOrderLogView },
         ],
       },
       {
