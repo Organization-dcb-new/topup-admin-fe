@@ -13,6 +13,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { useRetained } from '@/hooks/useRetained'
 import { useImportBrand, useImportBrandProducts, useMapBrand, useSupplierBrand, useSyncBrand } from '@/hooks/useSupplierCatalog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { regionName } from '@/lib/regions'
 
 interface BrandDialogProps {
   /** The supplier brand to show; the dialog is open while one is set. */
@@ -108,6 +109,12 @@ function BrandDetail({ brandId, onClose, onShowProducts }: { brandId: string; on
         </InfoItem>
         <InfoItem label={t('supplierCatalogPage.brand.checkId')}>
           {brand.check_id_enabled ? t('supplierCatalogPage.yes') : t('supplierCatalogPage.no')}
+        </InfoItem>
+        <InfoItem label={t('supplierCatalogPage.brand.region')}>
+          {regionName(brand.region, i18n.resolvedLanguage)} <span className='font-mono text-xs text-slate-400'>{brand.region.toUpperCase()}</span>
+        </InfoItem>
+        <InfoItem label={t('supplierCatalogPage.brand.variant')}>
+          {brand.variant === 'VOUCHER' || brand.variant === 'DIGITAL' ? t(`gamePage.variant.${brand.variant}`) : brand.variant || '—'}
         </InfoItem>
         <InfoItem label={t('supplierCatalogPage.brand.lastSeen')}>
           {brand.last_seen_at ? formatBackendDateTime(brand.last_seen_at, 'dd MMM yyyy, HH:mm') : t('supplierCatalogPage.never')}

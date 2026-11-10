@@ -13,11 +13,13 @@ import { ProductDialog } from '@/components/SupplierCatalog/ProductDialog'
 import { SyncPanel } from '@/components/SupplierCatalog/SyncPanel'
 import { Input } from '@/components/ui/input'
 import { Segmented } from '@/components/ui/segmented'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useDebounce } from '@/hooks/useDebounce'
 import { useGetProvider } from '@/hooks/useProvider'
 import { catalogErrorKey, useSupplierBrand, useSupplierBrands, useSupplierProducts } from '@/hooks/useSupplierCatalog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { formatCurrency } from '@/lib/format'
+import { providerRegions, regionName } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import type { SupplierBrand, SupplierMappingStatus, SupplierProduct, SupplierStockStatus } from '@/types/supplier-catalog'
 
@@ -57,6 +59,10 @@ export default function SupplierCatalogPage() {
   // Providers left over from suppliers the backend no longer integrates have no catalog to show.
   const providers = (providersQuery.data?.data ?? []).filter((p) => p.supported !== false)
   const providerId = providers.some((p) => p.id === params.get('provider')) ? params.get('provider')! : (providers[0]?.id ?? '')
+  // The regions the provider's sync pulls; the filter shows only when there is more than one.
+  const regions = providerRegions(providers.find((p) => p.id === providerId)?.config)
+  const multiRegion = regions.length > 1
+  const region = multiRegion && regions.includes(params.get('region') ?? '') ? params.get('region')! : 'all'
 
   const update = (patch: Record<string, string | null>) =>
     setParams(
@@ -73,7 +79,7 @@ export default function SupplierCatalogPage() {
 
   const mappingStatus = mapping === 'all' ? undefined : (mapping as SupplierMappingStatus)
   const brands = useSupplierBrands(
-    { providerId, search, mappingStatus, page, limit: PAGE_SIZE },
+    { providerId, search, mappingStatus, region: region === 'all' ? undefined : region, page, limit: PAGE_SIZE },
     !!providerId && tab === 'brands'
   )
   const products = useSupplierProducts(
@@ -90,10 +96,15 @@ export default function SupplierCatalogPage() {
   )
   const active = tab === 'brands' ? brands : products
   const total = active.data?.meta?.total_data
-  const filtered = !!(q.trim() || mapping !== 'all' || (tab === 'products' && (stock !== 'all' || brandFilter)))
+  const filtered = !!(
+    q.trim() ||
+    mapping !== 'all' ||
+    (tab === 'brands' && region !== 'all') ||
+    (tab === 'products' && (stock !== 'all' || brandFilter))
+  )
   const emptyByChoice = filtered || page > 1
 
-  const reset = () => update({ q: null, mapping: null, stock: null, brand: null, page: null })
+  const reset = () => update({ q: null, mapping: null, stock: null, brand: null, region: null, page: null })
   const showProductsOf = (brandId: string) => {
     setOpenBrand(null)
     update({ tab: 'products', brand: brandId, q: null, stock: null, mapping: null, page: null })
@@ -171,6 +182,21 @@ export default function SupplierCatalogPage() {
                 label={t('supplierCatalogPage.filters.mapping')}
                 options={MAPPINGS.map((m) => ({ value: m, label: t(`supplierCatalogPage.filters.mappingOptions.${m}`) }))}
               />
+              {tab === 'brands' && multiRegion && (
+                <Select value={region} onValueChange={(v) => update({ region: v, page: null })}>
+                  <SelectTrigger aria-label={t('supplierCatalogPage.filters.region')} className='h-10 w-full bg-white sm:w-48'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='all'>{t('supplierCatalogPage.filters.regionAll')}</SelectItem>
+                    {regions.map((code) => (
+                      <SelectItem key={code} value={code}>
+                        {regionName(code, i18n.resolvedLanguage)} · {code.toUpperCase()}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               {tab === 'products' && (
                 <Segmented
                   size='md'
@@ -235,7 +261,13 @@ export default function SupplierCatalogPage() {
             )}
           </div>
         ) : tab === 'brands' ? (
-          <BrandList brands={brands.data?.list ?? []} dimmed={brands.isPlaceholderData} busy={brands.isFetching} onOpen={setOpenBrand} />
+          <BrandList
+            brands={brands.data?.list ?? []}
+            showRegion={multiRegion}
+            dimmed={brands.isPlaceholderData}
+            busy={brands.isFetching}
+            onOpen={setOpenBrand}
+          />
         ) : (
           <ProductList products={products.data?.list ?? []} dimmed={products.isPlaceholderData} busy={products.isFetching} onOpen={setOpenProduct} />
         )}
@@ -277,7 +309,8 @@ interface ListProps {
   onOpen: (id: string) => void
 }
 
-function BrandList({ brands, dimmed, busy, onOpen }: ListProps & { brands: SupplierBrand[] }) {
+/** showRegion marks each brand's country, for providers that sell in more than one. */
+function BrandList({ brands, showRegion, dimmed, busy, onOpen }: ListProps & { brands: SupplierBrand[]; showRegion: boolean }) {
   const { t, i18n } = useTranslation('common')
   return (
     <section aria-label={t('supplierCatalogPage.tabs.brands')} className={cn('bg-slate-200/80 p-px transition-opacity duration-300 hud-clip', dimmed && 'opacity-60')}>
@@ -309,6 +342,12 @@ function BrandList({ brands, dimmed, busy, onOpen }: ListProps & { brands: Suppl
                   <p className='truncate text-sm font-semibold text-slate-900 transition-colors group-hover:text-brand-purple'>{brand.name}</p>
                   <p className='flex flex-wrap items-center gap-x-2 text-xs text-slate-500'>
                     <span className='font-mono'>{brand.supplier_brand_code}</span>
+                    {showRegion && (
+                      <span className='font-mono text-slate-600' title={regionName(brand.region, i18n.resolvedLanguage)}>
+                        {brand.region.toUpperCase()}
+                      </span>
+                    )}
+                    {brand.variant === 'VOUCHER' && <span className='text-amber-700'>{t('supplierCatalogPage.row.voucher')}</span>}
                     {brand.check_id_enabled && <span className='text-cyan-700'>{t('supplierCatalogPage.row.checkId')}</span>}
                     <span className='tabular-nums lg:hidden'>
                       · {t('supplierCatalogPage.row.products', { count: brand.product_count, formatted: brand.product_count.toLocaleString(i18n.resolvedLanguage) })}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BadgeCheck, Check, CircleCheck, Copy, EyeOff, Gamepad2, Wrench, type LucideIcon } from 'lucide-react'
+import { BadgeCheck, Check, CircleCheck, Copy, EyeOff, Gamepad2, Globe, Ticket, Wrench, type LucideIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Segmented } from '@/components/ui/segmented'
@@ -8,6 +8,7 @@ import { PERM } from '@/constants/permissions'
 import { useSetGameStatus } from '@/hooks/useGame'
 import { usePermissions } from '@/hooks/usePermissions'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
+import { HOME_REGION, regionName } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import { GAME_STATUSES, type Game, type GameStatus } from '@/types/game'
 import { gameChipClass, gameStatus } from './game-utils'
@@ -28,7 +29,7 @@ export function GameThumb({ src, className, iconClassName }: { src?: string | nu
   return <img src={url} alt='' loading='lazy' onError={() => setFailedSrc(url)} className={cn('object-cover', className)} />
 }
 
-type GameStatusFields = Pick<Game, 'is_active' | 'is_show' | 'is_check_id'> & { status?: GameStatus }
+type GameStatusFields = Pick<Game, 'is_active' | 'is_show' | 'is_check_id' | 'variant' | 'region'> & { status?: GameStatus }
 
 interface GameStatusChipsProps {
   game: GameStatusFields
@@ -43,11 +44,16 @@ const STATUS_CHIP: Record<GameStatus, { className: string; icon: LucideIcon }> =
   HIDDEN: { className: 'bg-slate-100 text-slate-500', icon: EyeOff },
 }
 
-/** The game's status and its ID-check flag as small chips. */
+/**
+ * The game's status and its flags as small chips: ID check, a voucher game, and the country of a
+ * game sold outside Indonesia.
+ */
 export function GameStatusChips({ game, flagsOnly, className }: GameStatusChipsProps) {
-  const { t } = useTranslation('common')
+  const { t, i18n } = useTranslation('common')
   const status = gameStatus(game)
-  if (flagsOnly && !game.is_check_id) return null
+  const voucher = game.variant === 'VOUCHER'
+  const region = game.region && game.region !== HOME_REGION ? game.region : null
+  if (flagsOnly && !game.is_check_id && !voucher && !region) return null
   const chip = STATUS_CHIP[status]
   return (
     <div className={cn('flex flex-wrap items-center gap-1.5', className)}>
@@ -61,6 +67,18 @@ export function GameStatusChips({ game, flagsOnly, className }: GameStatusChipsP
         <span className={cn(gameChipClass, 'bg-brand-purple/10 text-brand-purple')}>
           <BadgeCheck className='size-3' aria-hidden />
           {t('gamePage.status.checkId')}
+        </span>
+      )}
+      {voucher && (
+        <span className={cn(gameChipClass, 'bg-cyan-50 text-cyan-700')} title={t('gamePage.variantHint.VOUCHER')}>
+          <Ticket className='size-3' aria-hidden />
+          {t('gamePage.variant.VOUCHER')}
+        </span>
+      )}
+      {region && (
+        <span className={cn(gameChipClass, 'bg-slate-100 text-slate-600')} title={regionName(region, i18n.resolvedLanguage)}>
+          <Globe className='size-3' aria-hidden />
+          {region.toUpperCase()}
         </span>
       )}
     </div>

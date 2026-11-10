@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pencil, TextCursorInput } from 'lucide-react'
+import { Pencil, TextCursorInput, TriangleAlert } from 'lucide-react'
 
 import { Can } from '@/components/Auth/Can'
 import { InputPreview, InputTypeChip } from '@/components/Inputs/GameInputParts'
@@ -10,11 +10,17 @@ import type { Game } from '@/types/game'
 import { DetailPanel } from './GameDetailParts'
 import { editableInputs, gamePanelButtonClass } from './game-utils'
 
-/** The fields buyers fill in at checkout (user ID, server…), roughly as the storefront draws them. */
-export function GameCheckoutPanel({ game, order }: { game: Pick<Game, 'id' | 'name' | 'thumbnail_url' | 'input'>; order?: number }) {
+type CheckoutGame = Pick<Game, 'id' | 'name' | 'thumbnail_url' | 'input' | 'variant' | 'missing_inputs' | 'supplier_brand_code'>
+
+/**
+ * The fields buyers fill in at checkout (user ID, server…), roughly as the storefront draws them,
+ * and the ones the LapakGaming category asks for that the game still lacks.
+ */
+export function GameCheckoutPanel({ game, order }: { game: CheckoutGame; order?: number }) {
   const { t } = useTranslation('common')
   const [editing, setEditing] = useState(false)
   const inputs = editableInputs(game)
+  const missing = game.missing_inputs ?? []
 
   return (
     <>
@@ -34,8 +40,22 @@ export function GameCheckoutPanel({ game, order }: { game: Pick<Game, 'id' | 'na
           )
         }
       >
+        {missing.length > 0 && (
+          <div role='alert' className='mb-4 flex gap-2.5 rounded-md border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700'>
+            <TriangleAlert className='mt-0.5 size-4 shrink-0' aria-hidden />
+            <p>
+              {t('gameDetailPage.checkout.missing', {
+                code: game.supplier_brand_code,
+                fields: missing.join(', '),
+                count: missing.length,
+              })}
+            </p>
+          </div>
+        )}
         {inputs.length === 0 ? (
-          <p className='text-sm text-slate-500'>{t('gameDetailPage.checkout.empty')}</p>
+          <p className='text-sm text-slate-500'>
+            {game.variant === 'VOUCHER' ? t('gameDetailPage.checkout.emptyVoucher') : t('gameDetailPage.checkout.empty')}
+          </p>
         ) : (
           <ul className='grid gap-3 sm:grid-cols-2'>
             {inputs.map((input) => (

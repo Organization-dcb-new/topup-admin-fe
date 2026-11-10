@@ -74,6 +74,7 @@ export function useSupplierBrands(filters: SupplierBrandFilters, enabled = true)
   const params = pickNonEmpty({
     provider_id: filters.providerId,
     game_id: filters.gameId,
+    region: filters.region,
     search: filters.search?.trim(),
     mapping_status: filters.mappingStatus,
     page: filters.page,

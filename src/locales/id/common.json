@@ -771,7 +771,15 @@
       "MAINTENANCE": "Tampil, belum bisa dibeli",
       "HIDDEN": "Tidak tampil di storefront"
     },
-    "statusControl": "Status {{name}}"
+    "statusControl": "Status {{name}}",
+    "variant": {
+      "DIGITAL": "Digital",
+      "VOUCHER": "Voucher"
+    },
+    "variantHint": {
+      "DIGITAL": "Top up langsung ke akun pembeli: pembeli mengisi data akun yang diminta LapakGaming, misalnya user ID.",
+      "VOUCHER": "Pembeli tidak mengisi data akun. Kode voucher dikirim setelah order selesai."
+    }
   },
   "gameDetailPage": {
     "back": "Semua game",
@@ -793,7 +801,11 @@
       "slug": "Slug",
       "popularity": "Popularitas",
       "created": "Dibuat",
-      "updated": "Diperbarui"
+      "updated": "Diperbarui",
+      "variant": "Jenis",
+      "region": "Region",
+      "supplierBrand": "Kategori LapakGaming",
+      "supplierBrandNone": "Belum terhubung"
     },
     "about": {
       "title": "Teks storefront",
@@ -809,7 +821,9 @@
       "title": "Field checkout",
       "description": "Yang diisi pembeli sebelum membayar.",
       "edit": "Ubah label",
-      "empty": "Game ini tidak punya field checkout."
+      "empty": "Game ini tidak punya field checkout.",
+      "missing_other": "Kategori LapakGaming {{code}} meminta {{fields}}, tapi game ini belum punya input itu. Checkout game ini ditolak sampai input-nya ada. Jalankan Sync katalog di halaman Penyedia untuk menambahkannya.",
+      "emptyVoucher": "Game voucher: pembeli tidak mengisi data akun. Kode voucher dikirim setelah order selesai."
     },
     "products": {
       "title": "Produk",
@@ -1135,7 +1149,7 @@
       "priorityLabel": "Prioritas",
       "statusLabel": "Status",
       "configLabel": "Konfigurasi (JSON)",
-      "configHint": "Objek JSON untuk pengaturan yang tidak rahasia, misalnya {\"timeout\": 30} untuk timeout 30 detik.",
+      "configHint": "Objek JSON untuk pengaturan yang tidak rahasia, misalnya {\"timeout\": 30} untuk timeout 30 detik. \"regions\" memilih negara yang ikut di-sync dari LapakGaming, misalnya {\"regions\": [\"id\", \"my\"]}; tanpa itu hanya Indonesia.",
       "cancel": "Batal",
       "save": "Simpan perubahan",
       "saving": "Menyimpan…",
@@ -1198,7 +1212,9 @@
       },
       "brand": "Brand: {{name}}",
       "clearBrand": "Tampilkan semua brand",
-      "reset": "Reset filter"
+      "reset": "Reset filter",
+      "region": "Region",
+      "regionAll": "Semua region"
     },
     "mapping": {
       "UNMAPPED": "Belum dipetakan",
@@ -1223,7 +1239,8 @@
     "row": {
       "checkId": "Cek ID",
       "products": "{{formatted}} produk",
-      "disabled": "Tidak dipakai untuk routing"
+      "disabled": "Tidak dipakai untuk routing",
+      "voucher": "Voucher"
     },
     "sync": {
       "label": "Sinkronisasi katalog",
@@ -1265,7 +1282,9 @@
       "untie": "Lepas dari game",
       "ignore": "Abaikan",
       "unignore": "Batalkan abaikan",
-      "showProducts": "Lihat {{count}} produk"
+      "showProducts": "Lihat {{count}} produk",
+      "region": "Region",
+      "variant": "Jenis"
     },
     "product": {
       "eyebrow": "// Produk supplier",
@@ -1970,6 +1989,20 @@
     "health": {
       "degradedTitle": "Sebagian layanan bermasalah",
       "degradedBody": "Terdampak: {{services}}. Order bisa gagal sampai layanan pulih."
+    },
+    "fx": {
+      "title": "Kurs LapakGaming",
+      "subtitle": "Harga 1 unit mata uang dalam rupiah menurut LapakGaming, yang memperbaruinya setiap hari. Mata uang region yang di-sync tampil paling atas.",
+      "fetchedAt": "diambil {{time}}",
+      "synced": "Di-sync",
+      "buy": "Beli",
+      "sell": "Jual",
+      "updated": "per {{date}}",
+      "updatedStale": "per {{date}} · sudah lama",
+      "showAll": "Tampilkan semua ({{count}})",
+      "showLess": "Tampilkan lebih sedikit",
+      "missing": "Tidak ada kurs untuk {{currencies}}.",
+      "loadError": "Kurs LapakGaming gagal dimuat."
     }
   },
   "unauthorizedPage": {

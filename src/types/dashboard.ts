@@ -125,3 +125,25 @@ export interface DashboardTimeseriesResponse {
   message: string
   data: DashboardTimeseriesData
 }
+
+/** LapakGaming's rate for one currency into rupiah: how many rupiah one unit costs. */
+export interface FxRate {
+  currency: string
+  to_currency: string
+  buy_rate: number
+  sell_rate: number
+  /** When LapakGaming set the rate, as it sends it (WIB, `YYYY-MM-DD HH:mm:ss`). */
+  updated_at: string
+  /** LapakGaming's countries that use the currency, e.g. `['my']` for MYR. */
+  regions: string[]
+  /** A currency of a region the LapakGaming provider syncs; these come first. */
+  synced: boolean
+}
+
+export interface FxRateBoard {
+  rates: FxRate[]
+  /** Currencies LapakGaming gave no rate for this time. */
+  missing: string[]
+  /** When the backend read the rates (RFC3339); it keeps them about ten minutes. */
+  fetched_at: string
+}

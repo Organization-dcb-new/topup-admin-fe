@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FileText, Info, Pencil } from 'lucide-react'
 
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { HOME_REGION, regionName } from '@/lib/regions'
 import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Game } from '@/types/game'
@@ -14,7 +15,9 @@ const DATE_PATTERN = 'dd MMM yyyy, HH:mm'
 
 /** Identifiers and bookkeeping: what support staff look up and copy. */
 export function GameOverviewPanel({ game, order }: { game: Game; order?: number }) {
-  const { t } = useTranslation('common')
+  const { t, i18n } = useTranslation('common')
+  const variant = game.variant ?? 'DIGITAL'
+  const region = game.region || HOME_REGION
 
   return (
     <DetailPanel icon={Info} title={t('gameDetailPage.overview.title')} order={order}>
@@ -29,6 +32,19 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
         </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.slug')}>
           <span className='min-w-0 truncate'>/{game.slug}</span>
+        </DetailRow>
+        <DetailRow label={t('gameDetailPage.overview.variant')}>
+          <span className='min-w-0 truncate' title={t(`gamePage.variantHint.${variant}`)}>{t(`gamePage.variant.${variant}`)}</span>
+        </DetailRow>
+        <DetailRow label={t('gameDetailPage.overview.region')}>
+          <span className='min-w-0 truncate'>
+            {regionName(region, i18n.resolvedLanguage)} <span className='font-mono text-xs text-slate-400'>{region.toUpperCase()}</span>
+          </span>
+        </DetailRow>
+        <DetailRow label={t('gameDetailPage.overview.supplierBrand')}>
+          <span className={cn('min-w-0 truncate', game.supplier_brand_code ? 'font-mono text-xs' : 'text-slate-400')}>
+            {game.supplier_brand_code || t('gameDetailPage.overview.supplierBrandNone')}
+          </span>
         </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.popularity')}>
           <span className='tabular-nums'>{formatNumber(game.popularity_score)}</span>

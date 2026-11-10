@@ -19,6 +19,10 @@ export interface SupplierBrand {
   provider_code: string
   provider_name: string
   supplier_brand_code: string
+  /** The country the brand is sold for (lowercase code, e.g. my). The same code in another region is another brand. */
+  region: string
+  /** LapakGaming's DIGITAL or VOUCHER; empty when the supplier gives none. */
+  variant: string
   name: string
   check_id_enabled: boolean
   /** The storefront game this brand supplies, when tied. */
@@ -103,6 +107,8 @@ export interface SupplierListResponse<T> {
 export interface SupplierBrandFilters {
   providerId?: string
   gameId?: string
+  /** A region code such as my; all regions when empty. */
+  region?: string
   search?: string
   mappingStatus?: SupplierMappingStatus
   page: number

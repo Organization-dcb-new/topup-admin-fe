@@ -779,7 +779,15 @@
       "MAINTENANCE": "Listed, not on sale yet",
       "HIDDEN": "Off the storefront"
     },
-    "statusControl": "Status of {{name}}"
+    "statusControl": "Status of {{name}}",
+    "variant": {
+      "DIGITAL": "Digital",
+      "VOUCHER": "Voucher"
+    },
+    "variantHint": {
+      "DIGITAL": "Tops up the buyer's own account: the buyer fills in the account details LapakGaming asks for, such as a user ID.",
+      "VOUCHER": "The buyer fills in no account details. The voucher code is sent once the order is done."
+    }
   },
   "gameDetailPage": {
     "back": "All games",
@@ -801,7 +809,11 @@
       "slug": "Slug",
       "popularity": "Popularity",
       "created": "Created",
-      "updated": "Updated"
+      "updated": "Updated",
+      "variant": "Type",
+      "region": "Region",
+      "supplierBrand": "LapakGaming category",
+      "supplierBrandNone": "Not tied"
     },
     "about": {
       "title": "Storefront text",
@@ -817,7 +829,10 @@
       "title": "Checkout fields",
       "description": "What buyers fill in before they pay.",
       "edit": "Edit labels",
-      "empty": "This game has no checkout fields."
+      "empty": "This game has no checkout fields.",
+      "missing_one": "LapakGaming category {{code}} asks for {{fields}}, but this game has no input for it. Checkout refuses this game until the input exists. Run Sync catalog on the Providers page to add it.",
+      "missing_other": "LapakGaming category {{code}} asks for {{fields}}, but this game has no inputs for them. Checkout refuses this game until the inputs exist. Run Sync catalog on the Providers page to add them.",
+      "emptyVoucher": "Voucher game: the buyer fills in no account details. The voucher code is sent once the order is done."
     },
     "products": {
       "title": "Products",
@@ -1154,7 +1169,7 @@
       "priorityLabel": "Priority",
       "statusLabel": "Status",
       "configLabel": "Config (JSON)",
-      "configHint": "A JSON object for non-secret settings, e.g. {\"timeout\": 30} for a 30-second timeout.",
+      "configHint": "A JSON object for settings that aren't secret, e.g. {\"timeout\": 30} for a 30-second timeout. \"regions\" picks the countries synced from LapakGaming, e.g. {\"regions\": [\"id\", \"my\"]}; without it, Indonesia only.",
       "cancel": "Cancel",
       "save": "Save changes",
       "saving": "Saving…",
@@ -1219,7 +1234,9 @@
       },
       "brand": "Brand: {{name}}",
       "clearBrand": "Show every brand",
-      "reset": "Reset filters"
+      "reset": "Reset filters",
+      "region": "Region",
+      "regionAll": "All regions"
     },
     "mapping": {
       "UNMAPPED": "Not tied",
@@ -1245,7 +1262,8 @@
       "checkId": "ID check",
       "products_one": "{{formatted}} product",
       "products_other": "{{formatted}} products",
-      "disabled": "Not used for routing"
+      "disabled": "Not used for routing",
+      "voucher": "Voucher"
     },
     "sync": {
       "label": "Catalog sync",
@@ -1289,7 +1307,9 @@
       "ignore": "Ignore",
       "unignore": "Stop ignoring",
       "showProducts_one": "Show {{count}} product",
-      "showProducts_other": "Show {{count}} products"
+      "showProducts_other": "Show {{count}} products",
+      "region": "Region",
+      "variant": "Type"
     },
     "product": {
       "eyebrow": "// Supplier product",
@@ -2020,6 +2040,20 @@
     "health": {
       "degradedTitle": "Some services are down",
       "degradedBody": "Affected: {{services}}. Orders may fail until they recover."
+    },
+    "fx": {
+      "title": "LapakGaming exchange rates",
+      "subtitle": "What one unit of each currency costs in rupiah at LapakGaming, which updates the rates daily. Currencies of synced regions come first.",
+      "fetchedAt": "read at {{time}}",
+      "synced": "Synced",
+      "buy": "Buy",
+      "sell": "Sell",
+      "updated": "as of {{date}}",
+      "updatedStale": "as of {{date}} · old",
+      "showAll": "Show all ({{count}})",
+      "showLess": "Show less",
+      "missing": "No rate for {{currencies}}.",
+      "loadError": "Couldn't load LapakGaming's rates."
     }
   },
   "unauthorizedPage": {

@@ -15,6 +15,13 @@ export type GameStatus = 'ACTIVE' | 'MAINTENANCE' | 'HIDDEN'
 
 export const GAME_STATUSES: readonly GameStatus[] = ['ACTIVE', 'MAINTENANCE', 'HIDDEN']
 
+/**
+ * How the supplier fulfils the game, from the LapakGaming category tied to it. DIGITAL tops up
+ * the buyer's account, so the buyer fills in what the supplier asks for; VOUCHER sells a code
+ * that is sent once the order is done.
+ */
+export type GameVariant = 'DIGITAL' | 'VOUCHER'
+
 export interface Game {
   id: string
   /** Deprecated: which suppliers sell the game is in the supplier catalog. Empty when none. */
@@ -31,6 +38,17 @@ export interface Game {
   is_active: boolean
   /** When true, customer ID is validated (e.g. against provider). */
   is_check_id?: boolean
+  /** From the tied LapakGaming category; DIGITAL when none is tied. */
+  variant?: GameVariant
+  /** The country the game is sold for (lowercase code, e.g. my); id when no category of another region is tied. */
+  region?: string
+  /** Admin detail only: the LapakGaming category tied to the game, empty when none is. */
+  supplier_brand_code?: string
+  /**
+   * Admin detail only: fields that category asks for which the game has no input for. Checkout
+   * refuses the game until they exist; a catalog sync adds them.
+   */
+  missing_inputs?: string[]
   additional_fee?: number
   additional_percent?: number
   popularity_score: number
