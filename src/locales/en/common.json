@@ -2917,5 +2917,47 @@
       "callbackBody": "Callback body",
       "responseElsewhere": "Its response is logged as a separate entry right after this request."
     }
+  },
+  "activityLogPage": {
+    "eyebrow": "Security",
+    "title": "Activity log",
+    "subtitle": "Every request that changes data (anything but GET), from anyone: buyers, guests, admins, and the Paylabs/LapakGaming callbacks. Kept 90 days; passwords, tokens and codes are hidden.",
+    "total_one": "{{formatted}} request",
+    "total_other": "{{formatted}} requests",
+    "searchPlaceholder": "Search email, IP, endpoint, record ID or message",
+    "actorLabel": "Actor",
+    "methodLabel": "Method",
+    "outcomeLabel": "Outcome",
+    "actor": {
+      "ADMIN": "Admin",
+      "USER": "Buyer",
+      "GUEST": "Guest",
+      "SYSTEM": "System",
+      "ANONYMOUS": "Unknown"
+    },
+    "outcome": {
+      "success": "Succeeded",
+      "failed": "Failed"
+    },
+    "unknownActor": "Unknown",
+    "noOrigin": "Origin unknown",
+    "loadError": "Could not load the activity log.",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Requests that change data show up here.",
+    "detail": {
+      "back": "Back to the activity log",
+      "loadError": "Could not load this entry, or it is past 90 days.",
+      "eyebrow": "Request",
+      "time": "Time",
+      "ip": "IP address",
+      "device": "Device",
+      "path": "Path",
+      "resource": "Record ID",
+      "openResource": "Open the record",
+      "openCustomer": "Open the buyer",
+      "body": "Request body",
+      "noBody": "No request body",
+      "redactedNote": "Passwords, tokens, OTPs, voucher codes and other secret codes are hidden; phone numbers keep their last 3 digits. File uploads are logged by type and size only."
+    }
   }
 }

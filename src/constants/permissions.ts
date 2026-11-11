@@ -88,6 +88,7 @@ export const PERM = {
   roleDelete: 'role.delete',
 
   adminLogView: 'admin_log.view',
+  activityLogView: 'activity_log.view',
   uploadCreate: 'upload.create',
 
   integrationViewBalance: 'integration.view_balance',

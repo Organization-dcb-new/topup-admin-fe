@@ -2856,5 +2856,46 @@
       "callbackBody": "Body callback",
       "responseElsewhere": "Response-nya dicatat sebagai log tersendiri tepat setelah request ini."
     }
+  },
+  "activityLogPage": {
+    "eyebrow": "Keamanan",
+    "title": "Log aktivitas",
+    "subtitle": "Semua request yang mengubah data (selain GET) dari siapa pun: pembeli, tamu, admin, dan callback Paylabs/LapakGaming. Disimpan 90 hari; password, token, dan kode disembunyikan.",
+    "total": "{{formatted}} request",
+    "searchPlaceholder": "Cari email, IP, endpoint, ID data, atau pesan",
+    "actorLabel": "Pelaku",
+    "methodLabel": "Method",
+    "outcomeLabel": "Hasil",
+    "actor": {
+      "ADMIN": "Admin",
+      "USER": "Pembeli",
+      "GUEST": "Tamu",
+      "SYSTEM": "Sistem",
+      "ANONYMOUS": "Tidak dikenal"
+    },
+    "outcome": {
+      "success": "Berhasil",
+      "failed": "Gagal"
+    },
+    "unknownActor": "Tidak dikenal",
+    "noOrigin": "Asal tidak diketahui",
+    "loadError": "Log aktivitas gagal dimuat.",
+    "emptyTitle": "Belum ada aktivitas",
+    "emptyBody": "Request yang mengubah data akan muncul di sini.",
+    "detail": {
+      "back": "Kembali ke log aktivitas",
+      "loadError": "Entri log gagal dimuat atau sudah lewat 90 hari.",
+      "eyebrow": "Request",
+      "time": "Waktu",
+      "ip": "Alamat IP",
+      "device": "Perangkat",
+      "path": "Path",
+      "resource": "ID data",
+      "openResource": "Buka data terkait",
+      "openCustomer": "Buka pembeli",
+      "body": "Isi request",
+      "noBody": "Tanpa isi request",
+      "redactedNote": "Password, token, OTP, kode voucher, dan kode rahasia lain disembunyikan; nomor HP hanya 3 digit terakhir. Upload file hanya dicatat jenis dan ukurannya."
+    }
   }
 }

@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
 
-type ToneName = 'success' | 'warn' | 'danger' | 'info' | 'neutral'
+export type ToneName = 'success' | 'warn' | 'danger' | 'info' | 'neutral'
 
 const TONES: Record<ToneName, { chip: string; dot: string }> = {
   success: { chip: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
@@ -16,7 +16,8 @@ const TONES: Record<ToneName, { chip: string; dot: string }> = {
   neutral: { chip: 'bg-slate-100 text-slate-600', dot: 'bg-slate-400' },
 }
 
-function LogChip({ tone, children, title }: { tone: ToneName; children: ReactNode; title?: string }) {
+/** A small status chip in the logs' style. */
+export function LogChip({ tone, children, title }: { tone: ToneName; children: ReactNode; title?: string }) {
   return (
     <span
       title={title}

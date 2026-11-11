@@ -27,6 +27,8 @@ import AdminManagementPage from "@/pages/Admin";
 import MaintenancePage from "@/pages/Maintenance";
 import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
+import ActivityLogPage from '@/pages/ActivityLog'
+import ActivityLogDetailPage from '@/pages/ActivityLogDetail'
 import CustomerPage from '@/pages/Customer'
 import CustomerDetailPage from '@/pages/CustomerDetail'
 import { RoleGuard } from "@/components/Auth/RoleGuard";
@@ -361,6 +363,22 @@ export const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.adminLogView}>
             <AdminLogDetailPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'activity-logs',
+        element: (
+          <RoleGuard permission={PERM.activityLogView}>
+            <ActivityLogPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'activity-logs/:id',
+        element: (
+          <RoleGuard permission={PERM.activityLogView}>
+            <ActivityLogDetailPage />
           </RoleGuard>
         ),
       },
