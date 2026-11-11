@@ -138,10 +138,12 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
               <li key={game.id}>
                 <label
                   className={cn(
-                    'flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-purple/40',
+                    'relative flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-purple/40',
                     checked ? 'bg-brand-purple/[0.06]' : 'hover:bg-slate-50'
                   )}
                 >
+                  {/* relative on the label keeps this absolutely placed input inside its row: focusing it
+                      then scrolls the list, not the whole dialog. */}
                   <input type='checkbox' checked={checked} onChange={() => toggle(game.id)} className='sr-only' />
                   <span
                     className={cn(

@@ -1185,6 +1185,36 @@
       "updated": "Provider updated",
       "statusSaved": "Provider status updated",
       "updateError": "Couldn’t update the provider"
+    },
+    "regions": {
+      "label": "Regions",
+      "manage": "Manage",
+      "eyebrow": "Supplier regions",
+      "title": "{{name}} regions",
+      "description": "Countries pulled by the catalog sync. The storefront offers the regions that have a listed game, and buyers pick one in the navbar.",
+      "searchPlaceholder": "Search country, code or currency",
+      "selected_one": "{{count}} country synced",
+      "selected_other": "{{count}} countries synced",
+      "listLabel": "LapakGaming countries",
+      "loading": "Loading countries…",
+      "loadError": "Could not load the countries.",
+      "noMatch": "No country matches.",
+      "brands_one": "{{count}} brand",
+      "brands_other": "{{count}} brands",
+      "listedGames_one": "{{count}} listed game",
+      "listedGames_other": "{{count}} listed games",
+      "notSynced": "Never synced",
+      "homeOff": "{{name}} is not synced: its brands and products are not refreshed by the catalog sync.",
+      "hint": "New countries fill in on the next catalog sync. Countries taken out keep their brands and games; the games stay listed until hidden.",
+      "savedTitle": "Regions saved",
+      "savedAdded": "{{names}} brands and products arrive with the next {{name}} catalog sync. Then tie the brands to games in the Supplier Catalog.",
+      "savedNoNew": "No new countries, so no new sync is needed.",
+      "syncNow": "Sync catalog now",
+      "close": "Close",
+      "toasts": {
+        "saved": "Regions saved",
+        "saveError": "Could not save the regions"
+      }
     }
   },
   "supplierCatalogPage": {
@@ -1648,6 +1678,12 @@
       "updateError": "Couldn’t update the show",
       "deleteError": "Couldn’t delete the show",
       "gamesError": "Couldn’t save the games"
+    },
+    "regions": {
+      "label": "Per region:",
+      "count_one": "{{count}} game",
+      "count_other": "{{count}} games",
+      "hint": "Games buyers of each region see: each game is swapped for the buyer's region version, and games without one are left out."
     }
   },
   "inputPage": {

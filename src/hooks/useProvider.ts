@@ -1,8 +1,10 @@
 import { api } from '@/api/axios'
 import i18n from '@/i18n'
+import { apiErrorMessage } from '@/hooks/useIntegrationLog'
 import type {
   Provider,
   ProviderBalance,
+  ProviderRegions,
   ProviderResponse,
   ProviderUpdatePayload,
 } from '@/types/provider'
@@ -56,5 +58,40 @@ export function useUpdateProvider(onDone?: () => void, successKey = 'providerPag
       onDone?.()
     },
     onError: () => toast.error(i18n.t('providerPage.toasts.updateError')),
+  })
+}
+
+export const providerRegionsKey = (id: string | undefined) => ['provider-regions', id] as const
+
+/** Every country the supplier sells for, with what is stored for each (GET /providers/:id/regions). */
+export const useProviderRegions = (id: string | undefined) =>
+  useQuery<ProviderRegions>({
+    queryKey: providerRegionsKey(id),
+    queryFn: async () => {
+      const res = await api.get(`/providers/${id}/regions`)
+      return res.data.data
+    },
+    enabled: !!id,
+  })
+
+/**
+ * Sets the countries the catalog sync pulls (PUT /providers/:id/regions). Only the config's
+ * "regions" changes; the backend keeps the rest of it.
+ */
+export function useUpdateProviderRegions(onDone?: (saved: ProviderRegions) => void) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, regions }: { id: string; regions: string[] }) => {
+      const res = await api.put(`/providers/${id}/regions`, { regions })
+      return res.data.data as ProviderRegions
+    },
+    onSuccess: (saved, { id }) => {
+      toast.success(i18n.t('providerPage.regions.toasts.saved'))
+      queryClient.setQueryData(providerRegionsKey(id), saved)
+      // The provider cards and the supplier catalog's region filter read the provider's config.
+      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
+      onDone?.(saved)
+    },
+    onError: (err) => toast.error(apiErrorMessage(err) ?? i18n.t('providerPage.regions.toasts.saveError')),
   })
 }

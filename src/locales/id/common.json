@@ -1165,6 +1165,33 @@
       "updated": "Penyedia diperbarui",
       "statusSaved": "Status penyedia diperbarui",
       "updateError": "Gagal memperbarui penyedia"
+    },
+    "regions": {
+      "label": "Region",
+      "manage": "Atur",
+      "eyebrow": "Region supplier",
+      "title": "Region {{name}}",
+      "description": "Negara yang ditarik saat sync katalog. Storefront menampilkan region yang punya game tampil, dan pembeli memilihnya di navbar.",
+      "searchPlaceholder": "Cari negara, kode, atau mata uang",
+      "selected": "{{count}} negara di-sync",
+      "listLabel": "Negara LapakGaming",
+      "loading": "Memuat negara…",
+      "loadError": "Daftar negara gagal dimuat.",
+      "noMatch": "Tidak ada negara yang cocok.",
+      "brands": "{{count}} brand",
+      "listedGames": "{{count}} game tampil",
+      "notSynced": "Belum pernah di-sync",
+      "homeOff": "{{name}} tidak di-sync: brand dan produk game {{name}} tidak diperbarui saat sync katalog.",
+      "hint": "Negara baru terisi setelah sync katalog berikutnya. Negara yang dilepas tetap menyimpan brand dan game-nya; game-nya tetap tampil sampai disembunyikan.",
+      "savedTitle": "Region disimpan",
+      "savedAdded": "Brand dan produk {{names}} masuk setelah sync katalog {{name}} berikutnya. Setelah itu, hubungkan brand-nya ke game di Katalog Supplier.",
+      "savedNoNew": "Tidak ada negara baru, jadi tidak perlu sync ulang.",
+      "syncNow": "Sync katalog sekarang",
+      "close": "Tutup",
+      "toasts": {
+        "saved": "Region disimpan",
+        "saveError": "Region gagal disimpan"
+      }
     }
   },
   "supplierCatalogPage": {
@@ -1612,6 +1639,11 @@
       "updateError": "Gagal memperbarui acara",
       "deleteError": "Gagal menghapus acara",
       "gamesError": "Gagal menyimpan game"
+    },
+    "regions": {
+      "label": "Per region:",
+      "count": "{{count}} game",
+      "hint": "Jumlah game yang dilihat pembeli tiap region: tiap game diganti versi region pembeli, dan game tanpa versi region itu tidak tampil."
     }
   },
   "inputPage": {

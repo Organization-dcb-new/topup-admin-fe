@@ -19,6 +19,10 @@ export type Provider = {
   supported?: boolean
   /** The backend can ask this supplier for our deposit balance (GET /providers/:id/balance). */
   balance_supported?: boolean
+  /** The supplier sells per country (LapakGaming); its countries are set on GET/PUT /providers/:id/regions. */
+  regions_supported?: boolean
+  /** The countries its catalog sync pulls (config "regions"), ['id'] when the config lists none. */
+  regions?: string[]
   /** Lower runs first. */
   priority: number
   config?: Record<string, unknown> | null
@@ -50,4 +54,24 @@ export type ProviderBalance = {
   balance: number
   /** RFC3339 in WIB. */
   checked_at: string
+}
+
+/** One of the supplier's countries on the region settings (GET /providers/:id/regions). */
+export type ProviderRegion = {
+  code: string
+  /** English; shown through regionName in the admin's language. */
+  name: string
+  currency: string
+  /** The catalog sync pulls this country. */
+  synced: boolean
+  /** Categories stored for the country, the ones tied to a game, and the listed games tied to them. */
+  brands: number
+  mapped_brands: number
+  listed_games: number
+}
+
+/** Every country the supplier sells for, the synced ones first. */
+export type ProviderRegions = {
+  provider_id: string
+  regions: ProviderRegion[]
 }

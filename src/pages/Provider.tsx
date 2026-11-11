@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
-import { Check, CircleAlert, Copy, Globe, KeyRound, Pencil, RefreshCw, Server, Timer, Wallet, type LucideIcon } from 'lucide-react'
+import { Check, CircleAlert, Copy, Earth, Globe, KeyRound, Pencil, RefreshCw, Server, Timer, Wallet, type LucideIcon } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
@@ -9,6 +9,7 @@ import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { ProviderCredentials } from '@/components/Provider/ProviderCredentials'
 import { ProviderFormDialog } from '@/components/Provider/ProviderFormDialog'
+import { ProviderRegionsDialog } from '@/components/Provider/ProviderRegionsDialog'
 import { Switch } from '@/components/ui/switch'
 import { PERM } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
@@ -16,6 +17,7 @@ import { toProviderUpdate, useGetProvider, useProviderBalance, useUpdateProvider
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { formatCurrency } from '@/lib/format'
+import { regionName } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import type { Provider, ProviderStatus } from '@/types/provider'
 
@@ -37,6 +39,7 @@ export default function ProviderPages() {
   const { data, isLoading, isError, isFetching, refetch } = useGetProvider()
   const providers = data?.data ?? []
   const [editing, setEditing] = useState<Provider | null>(null)
+  const [editingRegions, setEditingRegions] = useState<Provider | null>(null)
   const activeCount = providers.filter((p) => p.status === 'ACTIVE').length
 
   return (
@@ -82,13 +85,20 @@ export default function ProviderPages() {
             {isLoading &&
               Array.from({ length: 4 }, (_, i) => <li key={i} className='h-64 animate-pulse bg-slate-200/60 hud-clip' aria-hidden />)}
             {providers.map((provider, index) => (
-              <ProviderCard key={provider.id} provider={provider} order={index} onEdit={() => setEditing(provider)} />
+              <ProviderCard
+                key={provider.id}
+                provider={provider}
+                order={index}
+                onEdit={() => setEditing(provider)}
+                onEditRegions={() => setEditingRegions(provider)}
+              />
             ))}
           </ul>
         )}
       </div>
 
       <ProviderFormDialog provider={editing} onClose={() => setEditing(null)} />
+      <ProviderRegionsDialog provider={editingRegions} onClose={() => setEditingRegions(null)} />
     </DashboardLayout>
   )
 }
@@ -97,17 +107,20 @@ interface ProviderCardProps {
   provider: Provider
   order: number
   onEdit: () => void
+  onEditRegions: () => void
 }
 
-function ProviderCard({ provider, order, onEdit }: ProviderCardProps) {
-  const { t } = useTranslation('common')
+function ProviderCard({ provider, order, onEdit, onEditRegions }: ProviderCardProps) {
+  const { t, i18n } = useTranslation('common')
   const { can } = usePermissions()
   const update = useUpdateProvider(undefined, 'providerPage.toasts.statusSaved')
   const style = STATUS_STYLE[provider.status] ?? STATUS_STYLE.INACTIVE
   // A provider left over from a supplier the backend no longer integrates can be switched off, not on.
   const unsupported = provider.supported === false
   const timeout = typeof provider.config?.timeout === 'number' ? provider.config.timeout : null
-  const extraConfig = Object.keys(provider.config ?? {}).filter((k) => k !== 'timeout').length
+  // The regions have a row of their own.
+  const extraConfig = Object.keys(provider.config ?? {}).filter((k) => k !== 'timeout' && !(provider.regions_supported && k === 'regions')).length
+  const regions = provider.regions ?? []
 
   return (
     <li className='min-w-0 animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both' style={{ animationDelay: `${order * 50}ms` }}>
@@ -190,6 +203,30 @@ function ProviderCard({ provider, order, onEdit }: ProviderCardProps) {
               <DetailRow icon={KeyRound} label={t('providerPage.credentials')}>
                 <ProviderCredentials credentials={provider.credentials} />
               </DetailRow>
+              {provider.regions_supported && (
+                <DetailRow icon={Earth} label={t('providerPage.regions.label')}>
+                  <span className='flex min-w-0 flex-1 flex-wrap items-center gap-1'>
+                    {regions.map((code) => (
+                      <span
+                        key={code}
+                        title={regionName(code, i18n.resolvedLanguage)}
+                        className='bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-slate-600 hud-clip-sm'
+                      >
+                        {code}
+                      </span>
+                    ))}
+                  </span>
+                  {can(PERM.providerUpdate) && (
+                    <button
+                      type='button'
+                      onClick={onEditRegions}
+                      className='inline-flex h-7 shrink-0 items-center gap-1 rounded px-2 text-xs font-medium text-brand-purple transition-colors hover:bg-brand-purple/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40'
+                    >
+                      {t('providerPage.regions.manage')}
+                    </button>
+                  )}
+                </DetailRow>
+              )}
               <DetailRow icon={Timer} label={t('providerPage.config')}>
                 <span className='min-w-0 flex-1 truncate text-xs text-slate-700'>
                   {timeout !== null ? t('providerPage.timeout', { seconds: timeout }) : t('providerPage.noTimeout')}
