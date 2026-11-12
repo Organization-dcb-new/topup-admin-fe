@@ -5,29 +5,39 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-  packages: write
+# Nothing by default; each job asks for what it needs.
+permissions: {}
+
+# One production deploy at a time, in push order.
+concurrency:
+  group: deploy-prod-dashboard
+  cancel-in-progress: false
 
 jobs:
   build-and-push:
-    runs-on: [self-hosted, prod, pakargaming-production]
+    # GitHub-hosted: building never needs Docker on the production server.
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write # push the prod-x.y.z tag
+      packages: write # push the image to GHCR
     outputs:
       new_tag: ${{ steps.bump.outputs.new_tag }}
-      repo_lower: ${{ steps.repo_lower.outputs.repo }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Lowercase Repo
         id: repo_lower
-        run: echo "repo=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+        run: echo "repo=${GITHUB_REPOSITORY@L}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Login GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -55,64 +65,76 @@ jobs:
             patch=$((patch + 1))
           fi
 
-
           NEW_TAG="$major.$minor.$patch"
 
-          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
           echo "🚀 Angka Versi Baru: $NEW_TAG"
 
       - name: Build & Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
+          platforms: linux/amd64
           push: true
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL_PROD }}
           tags: |
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:prod-latest
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:prod-${{ steps.bump.outputs.new_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Create Git Tag
+        env:
+          TAG: prod-${{ steps.bump.outputs.new_tag }}
         run: |
-          TAG="prod-${{ steps.bump.outputs.new_tag }}"
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           if ! git rev-parse "$TAG" >/dev/null 2>&1; then
-            git tag $TAG
-            git push origin $TAG
+            git tag "$TAG"
+            git push origin "$TAG"
           fi
 
   deploy:
     needs: build-and-push
+    # Only main reaches the production server, and only through the protected environment.
+    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, prod, pakargaming-production]
+    environment: production
+    permissions:
+      packages: read # pull the image from GHCR
 
     steps:
       - name: Deploy
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_TAG: prod-${{ needs.build-and-push.outputs.new_tag }}
         run: |
           set -e
 
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+          # Leave no registry credential behind on the server.
+          trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
 
           cd /data/prod-deploy/fe-dashboard-prod
 
           CURRENT_IMAGE=$(docker inspect --format='{{.Config.Image}}' fe-dashboard 2>/dev/null || echo "")
-          CURRENT_TAG=$(echo $CURRENT_IMAGE | awk -F: '{print $2}')
-
-          NEW_TAG="prod-${{ needs.build-and-push.outputs.new_tag }}"
+          CURRENT_TAG=$(echo "$CURRENT_IMAGE" | awk -F: '{print $2}')
 
           echo "Current: ${CURRENT_TAG:-none}"
           echo "New: $NEW_TAG"
 
+          export IMAGE_TAG="$NEW_TAG"
           docker compose pull
-          docker compose up -d --remove-orphans
 
-          if [ $? -ne 0 ]; then
+          if ! docker compose up -d --remove-orphans; then
             echo "Deploy failed ❌"
 
             if [ -n "$CURRENT_TAG" ]; then
               echo "Rolling back..."
-              export IMAGE_TAG=$CURRENT_TAG
+              export IMAGE_TAG="$CURRENT_TAG"
               docker compose up -d --remove-orphans
               echo "Rollback done 🔄"
             fi

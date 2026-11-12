@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useCooldown } from '@/hooks/useCooldown'
 import { useLogin, useLoginForm } from '@/hooks/useLogin'
-import { getSafeRedirect, useAuthUser, withRedirect } from '@/lib/auth'
+import { getSafeRedirect, REQUIRED_2FA_PATH, useAuthUser, withRedirect } from '@/lib/auth'
 import { toAuthError, type AuthError } from '@/lib/auth-error'
 import { cn } from '@/lib/utils'
 import type { LoginFormValues } from '@/schemas/login'
@@ -34,7 +34,7 @@ export default function LoginPage() {
   const redirectTo = getSafeRedirect(searchParams.get('redirect'))
   const identifierId = useId()
   const passwordId = useId()
-  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser()
+  const { isAuthenticated, isMfaRequired, isMfaSetupRequired, isLoading } = useAuthUser()
   const form = useLoginForm()
   const { mutate: login } = useLogin()
   const cooldown = useCooldown()
@@ -60,7 +60,10 @@ export default function LoginPage() {
     setServerError(null)
     login(values, {
       onSuccess: (session) => {
-        if (session.user) {
+        if (session.mfa_setup) {
+          // 2FA is mandatory for this account and not set up yet: that comes before the panel.
+          setStage({ name: 'handoff', to: withRedirect(REQUIRED_2FA_PATH, redirectTo), mfa: true })
+        } else if (session.user) {
           setStage({ name: 'handoff', to: redirectTo, mfa: false })
         } else if (session.mfa_pending) {
           setStage({ name: 'handoff', to: withRedirect('/verify-otp', redirectTo), mfa: true })
@@ -76,6 +79,7 @@ export default function LoginPage() {
   if (stage.name === 'form') {
     if (isAuthenticated) return <Navigate to={redirectTo} replace />
     if (isMfaRequired) return <Navigate to={withRedirect('/verify-otp', redirectTo)} replace />
+    if (isMfaSetupRequired) return <Navigate to={withRedirect(REQUIRED_2FA_PATH, redirectTo)} replace />
   }
 
   if (isLoading) return <SessionCheck />

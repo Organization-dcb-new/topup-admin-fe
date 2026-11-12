@@ -24,6 +24,7 @@ import {
   clearAuthSession,
   getSafeRedirect,
   refreshAuthSession,
+  REQUIRED_2FA_PATH,
   useAuthUser,
   withRedirect,
 } from '@/lib/auth'
@@ -49,7 +50,7 @@ const VerifyOtpPage = () => {
   const redirectTo = getSafeRedirect(searchParams.get('redirect'))
   const codeId = useId()
   const codeInputRef = useRef<HTMLInputElement>(null)
-  const { isMfaRequired, isAuthenticated, isLoading } = useAuthUser()
+  const { isMfaRequired, isMfaSetupRequired, isAuthenticated, isLoading } = useAuthUser()
   const cooldown = useCooldown()
   const [mode, setMode] = useState<Mode>('otp')
   const [modeSwitched, setModeSwitched] = useState(false)
@@ -123,6 +124,7 @@ const VerifyOtpPage = () => {
   // Send visitors without a pending 2FA step to where they belong; our own success leaves through the handoff.
   if (stage.name === 'form' && !isLoading) {
     if (isAuthenticated) return <Navigate to={redirectTo} replace />
+    if (isMfaSetupRequired) return <Navigate to={withRedirect(REQUIRED_2FA_PATH, redirectTo)} replace />
     if (!isMfaRequired) return <Navigate to={withRedirect('/login', redirectTo)} replace />
   }
 

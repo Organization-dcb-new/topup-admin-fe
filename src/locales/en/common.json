@@ -70,7 +70,8 @@
       "roles": "Roles & access",
       "paylabsCallbacks": "Paylabs callbacks",
       "providerOrderLogs": "Supplier order logs"
-    }
+    },
+    "changePassword": "Change password"
   },
   "pagination": {
     "label": "Pages",
@@ -195,7 +196,8 @@
     "PROCESSING": "Processing",
     "FAILED": "Failed",
     "EXPIRED": "Expired",
-    "REFUNDED": "Refunded"
+    "REFUNDED": "Refunded",
+    "FULFILMENT_FAILED": "Supplier order failed"
   },
   "summaryPage": {
     "title": "Summary",
@@ -1860,7 +1862,7 @@
       "usernameLabel": "Username",
       "emailLabel": "Email",
       "passwordLabel": "Password",
-      "passwordHint": "At least 6 characters. Share it with them privately.",
+      "passwordHint": "At least 12 characters, and not their email address. Share it with them privately.",
       "roleLabel": "Role",
       "confirmLabel": "Confirm with your password",
       "confirmHint": "Adding an admin hands out access, so enter your own password to approve it.",
@@ -1877,10 +1879,11 @@
         "emailRequired": "Enter their email.",
         "emailInvalid": "That doesn’t look like an email address.",
         "emailTaken": "An admin with this email already exists.",
-        "passwordMin": "Use at least 6 characters.",
+        "passwordMin": "Use at least 12 characters.",
         "confirmRequired": "Enter your password to approve.",
         "confirmInvalid": "That’s not your password.",
-        "generic": "Couldn’t add the admin. Check the details and try again."
+        "generic": "Couldn’t add the admin. Check the details and try again.",
+        "passwordIsEmail": "The password can't be the email address."
       }
     },
     "roleDialog": {
@@ -2214,7 +2217,9 @@
     "onTip": "Lost your phone? Choose “Use a recovery code” on the sign-in screen.",
     "disable": "Turn off 2FA",
     "disableTitle": "Turn off two-factor authentication?",
-    "disableBody": "Your account will only be protected by its password. Enter a code from your authenticator app to confirm.",
+    "disableBody": "Your account will only be protected by its password, and roles that require 2FA must set it up again at their next sign-in. Enter your password and a code from your authenticator app to confirm.",
+    "passwordLabel": "Your password",
+    "alreadyOn": "2FA is already on for this account. Turn 2FA off first to set it up again.",
     "keepOn": "Keep 2FA on",
     "disabling": "Turning off…",
     "deactivated": "2FA has been turned off.",
@@ -2222,6 +2227,12 @@
     "fileAccount": "Account: {{email}}",
     "fileGenerated": "Generated: {{date}}",
     "fileNote": "Each code can be used once. Keep this file somewhere safe."
+  },
+  "twoFaRequired": {
+    "eyebrow": "Required for admin accounts",
+    "title": "Turn on 2FA to continue",
+    "description": "Admin accounts must use two-factor authentication. Set it up now and the panel opens right after.",
+    "logout": "Log out"
   },
   "rolesPage": {
     "eyebrow": "Security",
@@ -2340,6 +2351,7 @@
   "authErrors": {
     "forbidden": "You don't have permission to do that. Ask a developer if you need access.",
     "invalidCredentials": "Incorrect email/username or password.",
+    "wrongPassword": "Your current password is incorrect.",
     "invalidOtp": "That code is invalid or expired. Use the latest code from your app.",
     "invalidRecoveryCode": "That recovery code isn't valid or was already used.",
     "tooManyAttempts": "Too many attempts. Take a short break, then try again.",
@@ -2371,7 +2383,8 @@
       "COMPLETED": "Completed",
       "FAILED": "Failed",
       "EXPIRED": "Expired",
-      "REFUNDED": "Refunded"
+      "REFUNDED": "Refunded",
+      "FULFILMENT_FAILED": "Supplier order failed"
     },
     "timeline": {
       "label": "Progress",
@@ -2385,7 +2398,8 @@
         "PROCESSING": "The gateway is confirming the payment.",
         "FAILED": "The payment didn't go through.",
         "EXPIRED": "The customer didn't pay in time.",
-        "REFUNDED": "The money went back to the customer."
+        "REFUNDED": "The money went back to the customer.",
+        "FULFILMENT_FAILED": "The customer has paid."
       },
       "fulfilmentHint": {
         "waiting": "Starts once the payment is in.",
@@ -2396,7 +2410,8 @@
         "COMPLETED": "Delivered to the customer's account.",
         "FAILED": "The provider couldn't deliver it.",
         "EXPIRED": "The order expired before delivery.",
-        "REFUNDED": "The order was refunded."
+        "REFUNDED": "The order was refunded.",
+        "FULFILMENT_FAILED": "Placing the order with the supplier failed; it waits to be sent again."
       }
     },
     "item": {
@@ -2411,7 +2426,8 @@
       "paid": "Paid",
       "margin": "Margin",
       "providerStatus": "Provider status",
-      "fromListHint": "Margin and provider status only come with the transaction list. Open this transaction from there to see them."
+      "fromListHint": "Margin and provider status only come with the transaction list. Open this transaction from there to see them.",
+      "vouchers": "Voucher codes ({{count}})"
     },
     "customer": {
       "title": "Customer",
@@ -2471,6 +2487,32 @@
       "seeAll": "See all ({{count}})",
       "openList": "Open in the list",
       "loadError": "Couldn't load logs."
+    },
+    "retryFulfilment": {
+      "title": "The supplier order failed",
+      "body": "The customer paid, but the order never reached the supplier. Check the supplier balance and logs, then send it again.",
+      "bodyNoAccess": "The customer paid, but the order never reached the supplier. Ask an admin who may resend orders.",
+      "button": "Send to supplier again",
+      "confirmEyebrow": "Order fulfilment",
+      "confirmTitle": "Send to the supplier again?",
+      "confirmBody": "Order {{number}} goes to the supplier again and uses the deposit balance. Go ahead only if the supplier has not processed it.",
+      "confirm": "Send again",
+      "pending": "Sending…",
+      "cancel": "Cancel",
+      "success": "The order was sent to the supplier again.",
+      "successStatus": "The order was sent to the supplier again. Status now: {{status}}.",
+      "error": "Couldn't send the order again. Try again."
+    },
+    "reveal": {
+      "show": "Show",
+      "hide": "Hide",
+      "showHint": "Show the real voucher and buyer data. Every view is logged.",
+      "hideHint": "Mask again",
+      "masked": "Masked",
+      "shownNote": "The real data shows on this page only, and the view is in the admin log.",
+      "accountHidden": "The game account and IP are masked. Press Show to see them.",
+      "accountHiddenNoAccess": "The game account and IP are masked for your role.",
+      "error": "Couldn't show the real data. Try again."
     }
   },
   "referralPage": {
@@ -2958,6 +3000,28 @@
       "body": "Request body",
       "noBody": "No request body",
       "redactedNote": "Passwords, tokens, OTPs, voucher codes and other secret codes are hidden; phone numbers keep their last 3 digits. File uploads are logged by type and size only."
+    }
+  },
+  "changePassword": {
+    "eyebrow": "// Account security",
+    "title": "Change password",
+    "description": "Once changed, every other session of this account is signed out.",
+    "currentLabel": "Current password",
+    "newLabel": "New password",
+    "newHint": "At least {{count}} characters, and not your email address.",
+    "confirmLabel": "Repeat the new password",
+    "submit": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "success": "Password changed. Your other sessions were signed out.",
+    "error": "Couldn't change the password. Try again.",
+    "errors": {
+      "currentRequired": "Enter your current password.",
+      "newMin": "Use at least 12 characters.",
+      "newIsEmail": "The password can't be your email address.",
+      "newSameAsCurrent": "Choose a password different from the current one.",
+      "confirmRequired": "Repeat the new password.",
+      "confirmMismatch": "The passwords don't match."
     }
   }
 }

@@ -1,9 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom'
 
+import { AppSplash } from '@/components/Layout/app-shell'
 import { firstAccessiblePath, visibleMenus } from '@/components/Layout/sidebar-nav'
 import type { Permission } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
-import { useAuthUser, withRedirect } from '@/lib/auth'
+import { REQUIRED_2FA_PATH, useAuthUser, withRedirect } from '@/lib/auth'
 
 interface RoleGuardProps {
   children: React.ReactNode
@@ -12,17 +13,20 @@ interface RoleGuardProps {
 }
 
 export const RoleGuard = ({ children, permission }: RoleGuardProps) => {
-  const { isAuthenticated, isMfaRequired, isLoading } = useAuthUser()
+  const { isAuthenticated, isMfaRequired, isMfaSetupRequired, isLoading } = useAuthUser()
   const { can } = usePermissions()
   const location = useLocation()
 
-  if (isLoading) return <div className='flex h-screen items-center justify-center'>Loading...</div>
+  if (isLoading) return <AppSplash />
 
   if (!isAuthenticated) {
     // Remember the requested page so login can bring the admin back to it.
     const redirectTo = location.pathname + location.search
     if (isMfaRequired) {
       return <Navigate to={withRedirect('/verify-otp', redirectTo)} replace />
+    }
+    if (isMfaSetupRequired) {
+      return <Navigate to={withRedirect(REQUIRED_2FA_PATH, redirectTo)} replace />
     }
     return <Navigate to={withRedirect('/login', redirectTo)} replace />
   }

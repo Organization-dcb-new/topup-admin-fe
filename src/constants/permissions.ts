@@ -8,6 +8,10 @@ export const PERM = {
 
   transactionView: 'transaction.view',
   transactionExport: 'transaction.export',
+  /** Send a paid order whose supplier order failed to the supplier again. */
+  transactionRetry: 'transaction.retry',
+  /** See the real voucher codes, buyer email, IP and game account; the API masks them otherwise. */
+  transactionReveal: 'transaction.reveal',
 
   orderView: 'order.view',
   customerView: 'customer.view',
@@ -99,11 +103,10 @@ export type Permission = (typeof PERM)[keyof typeof PERM]
 
 const ALL_PERMISSIONS = Object.values(PERM)
 
-/** Mirrors `nocPermissions` in the backend seeder. */
+/** Mirrors `nocPermissions` in the backend seeder: no export, retry or reveal of buyer data. */
 const NOC_PERMISSIONS: Permission[] = [
   PERM.dashboardView,
   PERM.transactionView,
-  PERM.transactionExport,
   PERM.gameView,
   PERM.productView,
   PERM.productViewAnomaly,

@@ -44,10 +44,21 @@ export interface PaymentResponse {
  * Every payment status the backend can send. `Payment['status']` keeps the common ones (other pages key
  * maps by it), so treat incoming values as this wider union and expect unknown strings too.
  */
-export type TransactionStatus = Payment['status'] | 'WAITING' | 'REFUNDED'
+export type TransactionStatus = Payment['status'] | 'WAITING' | 'REFUNDED' | 'FULFILMENT_FAILED'
 
-/** Fulfilment status of the order behind a payment. */
-export type OrderFulfilmentStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'EXPIRED' | 'REFUNDED'
+/**
+ * Fulfilment status of the order behind a payment. `FULFILMENT_FAILED`: the buyer paid, but placing the
+ * order with the supplier failed; it waits for an admin to send it again.
+ */
+export type OrderFulfilmentStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'FULFILMENT_FAILED'
+  | 'EXPIRED'
+  | 'REFUNDED'
 
 /** GET /transactions query; dates are `yyyy-MM-dd HH:mm:ss` and the backend reads them as UTC. */
 export interface TransactionListFilters {
@@ -132,6 +143,17 @@ export interface TransactionDetail {
   guide?: PaymentGuide
   /** RFC3339 in WIB; older backends sent `yyyy-MM-dd HH:mm:ss` in WIB. */
   created_at: string
+}
+
+/**
+ * POST /transactions/detail/:id/reveal. The list, detail and export always mask the voucher codes,
+ * buyer email, IP and game account; this returns them for one transaction, and the backend logs it.
+ */
+export interface TransactionReveal {
+  voucher_codes: string[]
+  customer_email: string
+  client_ip: string
+  meta_data: Record<string, unknown> | null
 }
 
 /** What the list knows about a row and the detail endpoint doesn't; passed along as router state. */

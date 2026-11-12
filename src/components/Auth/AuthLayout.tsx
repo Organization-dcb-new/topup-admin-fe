@@ -10,13 +10,14 @@ import { AnimatedHeight } from '@/components/ui/animated-height'
 import { HudCard } from './AuthPanel'
 import { useServerStatus } from '@/hooks/useHealth'
 import { useHeroArt, type HeroArt } from '@/hooks/useHeroArt'
+import { REQUIRED_2FA_PATH } from '@/lib/auth'
 import { cn } from '@/lib/utils'
 
 const YEAR = new Date().getFullYear()
 
 /**
- * Shared shell for /login and /verify-otp. It is a layout route, so the hero and panel
- * frame stay mounted between the two pages and only the panel content swaps.
+ * Shared shell for /login, /verify-otp and the mandatory 2FA setup. It is a layout route, so the
+ * hero and panel frame stay mounted between those pages and only the panel content swaps.
  */
 export function AuthLayout() {
   const { t } = useTranslation()
@@ -41,7 +42,13 @@ export function AuthLayout() {
           </header>
 
           <main className='flex flex-1 items-center justify-center py-8'>
-            <HudCard className='max-w-[26rem] animate-in fade-in zoom-in-[0.97] slide-in-from-bottom-4 duration-700 ease-hud'>
+            <HudCard
+              className={cn(
+                // The setup wizard puts a QR code beside its steps, so it gets a wider card.
+                location.pathname === REQUIRED_2FA_PATH ? 'max-w-[36rem]' : 'max-w-[26rem]',
+                'transition-[max-width] animate-in fade-in zoom-in-[0.97] slide-in-from-bottom-4 duration-700 ease-hud'
+              )}
+            >
               <AnimatedHeight>
                 <div
                   key={location.pathname}

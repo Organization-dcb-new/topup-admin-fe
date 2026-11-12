@@ -15,8 +15,18 @@ export const api = axios.create({
   withCredentials: true,
 })
 
+/** Where an admin who must set up 2FA first is sent; only /admin/me and the 2FA setup work until then. */
+export const REQUIRED_2FA_PATH = '/2fa-required'
+
+/** The backend's answer to every other admin route while that setup is pending. */
+export const MFA_SETUP_REQUIRED_MESSAGE = 'Two-factor setup required'
+
 /** Auth pages handle their own 401s (a wrong OTP answers 401), so they must not trigger the global redirect. */
-const AUTH_PAGES = ['/login', '/verify-otp']
+const AUTH_PAGES = ['/login', '/verify-otp', REQUIRED_2FA_PATH]
+
+function currentPath() {
+  return encodeURIComponent(window.location.pathname + window.location.search)
+}
 
 api.interceptors.response.use(
   (response) => response,
@@ -27,10 +37,17 @@ api.interceptors.response.use(
       !error.config?.skipAuthRedirect &&
       !AUTH_PAGES.includes(window.location.pathname)
     ) {
-      const redirect = encodeURIComponent(window.location.pathname + window.location.search)
-      window.location.href = `/login?redirect=${redirect}`
+      window.location.href = `/login?redirect=${currentPath()}`
     }
-    // RBAC refusal (not the MFA gate, which is also a 403). One shared toast id, so a page whose
+    // The account must set up 2FA before anything else answers; the setup page brings the admin back.
+    if (
+      error.response?.status === 403 &&
+      error.response.data?.message === MFA_SETUP_REQUIRED_MESSAGE &&
+      !AUTH_PAGES.includes(window.location.pathname)
+    ) {
+      window.location.href = `${REQUIRED_2FA_PATH}?redirect=${currentPath()}`
+    }
+    // RBAC refusal (not the MFA gates, which are also 403s). One shared toast id, so a page whose
     // queries all fail says it once.
     if (
       error.response?.status === 403 &&

@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Outlet, useMatches } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
+import { SessionCheck } from '@/components/Auth/AuthPanel'
 import { useMediaQuery } from '@/hooks/useMediaQuery'
 import { useAuthUser } from '@/lib/auth'
 import { Navbar } from './navbar'
@@ -29,6 +30,31 @@ export function AppShell() {
         <Outlet />
       </AppFrame>
     </AppShellContext.Provider>
+  )
+}
+
+/** The login card's gradient edge, run across the top of the whole app. */
+function TopTrace() {
+  return (
+    <div
+      className='pointer-events-none fixed inset-x-0 top-0 z-[55] h-[3px] overflow-hidden bg-linear-to-r from-brand-purple to-brand-cyan'
+      aria-hidden
+    >
+      <span className='absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/80 to-transparent animate-hud-trace' />
+    </div>
+  )
+}
+
+/**
+ * Shown while a reload re-checks the session, before the chrome can render. The top bar sits where
+ * the app's will be, and the loader fades in late so a fast check never flashes it.
+ */
+export function AppSplash() {
+  return (
+    <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <TopTrace />
+      <SessionCheck />
+    </div>
   )
 }
 
@@ -76,13 +102,7 @@ export function AppFrame({ children }: { children: ReactNode }) {
 
   return (
     <div className='flex min-h-screen bg-gray-50'>
-      {/* The login card's gradient edge, run across the top of the whole app. */}
-      <div
-        className='pointer-events-none fixed inset-x-0 top-0 z-[55] h-[3px] overflow-hidden bg-linear-to-r from-brand-purple to-brand-cyan'
-        aria-hidden
-      >
-        <span className='absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-transparent via-white/80 to-transparent animate-hud-trace' />
-      </div>
+      <TopTrace />
 
       <Sidebar
         collapsed={collapsed}

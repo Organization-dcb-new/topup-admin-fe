@@ -69,6 +69,7 @@
     "vite": "npm:rolldown-vite@7.3.1"
   },
   "resolutions": {
-    "vite": "npm:rolldown-vite@7.2.5"
+    "vite": "npm:rolldown-vite@7.2.5",
+    "react-markdown-editor-lite/nanoid": "^5.1.16"
   }
 }

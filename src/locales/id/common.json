@@ -70,7 +70,8 @@
       "roles": "Role & akses",
       "paylabsCallbacks": "Callback Paylabs",
       "providerOrderLogs": "Log order supplier"
-    }
+    },
+    "changePassword": "Ganti password"
   },
   "pagination": {
     "label": "Halaman",
@@ -195,7 +196,8 @@
     "PROCESSING": "Diproses",
     "FAILED": "Gagal",
     "EXPIRED": "Kedaluwarsa",
-    "REFUNDED": "Dikembalikan"
+    "REFUNDED": "Dikembalikan",
+    "FULFILMENT_FAILED": "Gagal dikirim ke supplier"
   },
   "summaryPage": {
     "title": "Ringkasan",
@@ -1815,7 +1817,7 @@
       "usernameLabel": "Username",
       "emailLabel": "Email",
       "passwordLabel": "Kata sandi",
-      "passwordHint": "Minimal 6 karakter. Bagikan kepada mereka secara pribadi.",
+      "passwordHint": "Minimal 12 karakter dan bukan alamat emailnya. Bagikan kepada mereka secara pribadi.",
       "roleLabel": "Role",
       "confirmLabel": "Konfirmasi dengan kata sandi Anda",
       "confirmHint": "Menambah admin berarti memberi akses, jadi masukkan kata sandi Anda sendiri untuk menyetujuinya.",
@@ -1832,10 +1834,11 @@
         "emailRequired": "Masukkan emailnya.",
         "emailInvalid": "Format email tidak valid.",
         "emailTaken": "Admin dengan email ini sudah ada.",
-        "passwordMin": "Gunakan minimal 6 karakter.",
+        "passwordMin": "Gunakan minimal 12 karakter.",
         "confirmRequired": "Masukkan kata sandi Anda untuk menyetujui.",
         "confirmInvalid": "Kata sandi Anda salah.",
-        "generic": "Gagal menambah admin. Periksa data lalu coba lagi."
+        "generic": "Gagal menambah admin. Periksa data lalu coba lagi.",
+        "passwordIsEmail": "Kata sandi tidak boleh sama dengan email."
       }
     },
     "roleDialog": {
@@ -2159,7 +2162,9 @@
     "onTip": "Ponsel hilang? Pilih “Pakai kode pemulihan” di halaman login.",
     "disable": "Nonaktifkan 2FA",
     "disableTitle": "Nonaktifkan autentikasi dua faktor?",
-    "disableBody": "Akun hanya akan dilindungi kata sandi. Masukkan kode dari aplikasi authenticator untuk konfirmasi.",
+    "disableBody": "Akun hanya akan dilindungi kata sandi, dan role yang wajib 2FA harus mengaktifkannya lagi saat login berikutnya. Masukkan kata sandi dan kode dari aplikasi authenticator untuk konfirmasi.",
+    "passwordLabel": "Kata sandi Anda",
+    "alreadyOn": "2FA sudah aktif di akun ini. Nonaktifkan 2FA dulu untuk mengaturnya ulang.",
     "keepOn": "Tetap aktif",
     "disabling": "Menonaktifkan…",
     "deactivated": "2FA telah dinonaktifkan.",
@@ -2167,6 +2172,12 @@
     "fileAccount": "Akun: {{email}}",
     "fileGenerated": "Dibuat: {{date}}",
     "fileNote": "Setiap kode hanya bisa dipakai sekali. Simpan file ini di tempat aman."
+  },
+  "twoFaRequired": {
+    "eyebrow": "Wajib untuk akun admin",
+    "title": "Aktifkan 2FA untuk melanjutkan",
+    "description": "Akun admin wajib memakai autentikasi dua faktor. Atur sekarang, lalu panel langsung terbuka.",
+    "logout": "Keluar"
   },
   "rolesPage": {
     "eyebrow": "Keamanan",
@@ -2283,6 +2294,7 @@
   "authErrors": {
     "forbidden": "Anda tidak punya izin untuk melakukan itu. Hubungi developer jika butuh akses.",
     "invalidCredentials": "Email/nama pengguna atau kata sandi salah.",
+    "wrongPassword": "Kata sandi saat ini salah.",
     "invalidOtp": "Kode salah atau kedaluwarsa. Gunakan kode terbaru dari aplikasi Anda.",
     "invalidRecoveryCode": "Kode pemulihan tidak valid atau sudah pernah dipakai.",
     "tooManyAttempts": "Terlalu banyak percobaan. Tunggu sebentar, lalu coba lagi.",
@@ -2314,7 +2326,8 @@
       "COMPLETED": "Selesai",
       "FAILED": "Gagal",
       "EXPIRED": "Kedaluwarsa",
-      "REFUNDED": "Dikembalikan"
+      "REFUNDED": "Dikembalikan",
+      "FULFILMENT_FAILED": "Gagal dikirim ke supplier"
     },
     "timeline": {
       "label": "Progres",
@@ -2328,7 +2341,8 @@
         "PROCESSING": "Gateway sedang mengonfirmasi pembayaran.",
         "FAILED": "Pembayaran tidak berhasil.",
         "EXPIRED": "Pelanggan tidak membayar tepat waktu.",
-        "REFUNDED": "Dana sudah dikembalikan ke pelanggan."
+        "REFUNDED": "Dana sudah dikembalikan ke pelanggan.",
+        "FULFILMENT_FAILED": "Pelanggan sudah membayar."
       },
       "fulfilmentHint": {
         "waiting": "Dimulai setelah pembayaran masuk.",
@@ -2339,7 +2353,8 @@
         "COMPLETED": "Sudah masuk ke akun pelanggan.",
         "FAILED": "Provider gagal mengirimkannya.",
         "EXPIRED": "Pesanan kedaluwarsa sebelum dikirim.",
-        "REFUNDED": "Pesanan sudah dikembalikan dananya."
+        "REFUNDED": "Pesanan sudah dikembalikan dananya.",
+        "FULFILMENT_FAILED": "Pesanan gagal dikirim ke supplier dan menunggu dikirim ulang."
       }
     },
     "item": {
@@ -2354,7 +2369,8 @@
       "paid": "Dibayar",
       "margin": "Margin",
       "providerStatus": "Status provider",
-      "fromListHint": "Margin dan status provider hanya tersedia di daftar transaksi. Buka transaksi ini dari sana untuk melihatnya."
+      "fromListHint": "Margin dan status provider hanya tersedia di daftar transaksi. Buka transaksi ini dari sana untuk melihatnya.",
+      "vouchers": "Kode voucher ({{count}})"
     },
     "customer": {
       "title": "Pelanggan",
@@ -2414,6 +2430,32 @@
       "seeAll": "Lihat semua ({{count}})",
       "openList": "Buka di daftar",
       "loadError": "Gagal memuat log."
+    },
+    "retryFulfilment": {
+      "title": "Pesanan gagal dikirim ke supplier",
+      "body": "Pelanggan sudah membayar, tetapi pesanan tidak sampai ke supplier. Periksa saldo dan log supplier, lalu kirim ulang.",
+      "bodyNoAccess": "Pelanggan sudah membayar, tetapi pesanan tidak sampai ke supplier. Minta admin yang berwenang untuk mengirim ulang.",
+      "button": "Kirim ulang ke supplier",
+      "confirmEyebrow": "Pemenuhan pesanan",
+      "confirmTitle": "Kirim ulang ke supplier?",
+      "confirmBody": "Pesanan {{number}} akan dikirim lagi ke supplier dan memakai saldo deposit. Lanjutkan hanya jika supplier memang belum memprosesnya.",
+      "confirm": "Kirim ulang",
+      "pending": "Mengirim…",
+      "cancel": "Batal",
+      "success": "Pesanan dikirim ulang ke supplier.",
+      "successStatus": "Pesanan dikirim ulang ke supplier. Status sekarang: {{status}}.",
+      "error": "Gagal mengirim ulang pesanan. Coba lagi."
+    },
+    "reveal": {
+      "show": "Tampilkan",
+      "hide": "Sembunyikan",
+      "showHint": "Tampilkan voucher dan data pembeli yang asli. Setiap tampilan dicatat.",
+      "hideHint": "Samarkan lagi",
+      "masked": "Disamarkan",
+      "shownNote": "Data asli hanya tampil di halaman ini dan tercatat di log admin.",
+      "accountHidden": "Akun game dan IP disamarkan. Tekan Tampilkan untuk melihatnya.",
+      "accountHiddenNoAccess": "Akun game dan IP disamarkan untuk role Anda.",
+      "error": "Gagal menampilkan data asli. Coba lagi."
     }
   },
   "referralPage": {
@@ -2896,6 +2938,28 @@
       "body": "Isi request",
       "noBody": "Tanpa isi request",
       "redactedNote": "Password, token, OTP, kode voucher, dan kode rahasia lain disembunyikan; nomor HP hanya 3 digit terakhir. Upload file hanya dicatat jenis dan ukurannya."
+    }
+  },
+  "changePassword": {
+    "eyebrow": "// Keamanan akun",
+    "title": "Ganti password",
+    "description": "Setelah diganti, sesi akun ini di perangkat lain akan dikeluarkan.",
+    "currentLabel": "Kata sandi saat ini",
+    "newLabel": "Kata sandi baru",
+    "newHint": "Minimal {{count}} karakter dan bukan alamat email Anda.",
+    "confirmLabel": "Ulangi kata sandi baru",
+    "submit": "Simpan",
+    "saving": "Menyimpan…",
+    "cancel": "Batal",
+    "success": "Password diganti. Sesi di perangkat lain sudah dikeluarkan.",
+    "error": "Gagal mengganti password. Coba lagi.",
+    "errors": {
+      "currentRequired": "Masukkan kata sandi saat ini.",
+      "newMin": "Gunakan minimal 12 karakter.",
+      "newIsEmail": "Kata sandi tidak boleh sama dengan email Anda.",
+      "newSameAsCurrent": "Pilih kata sandi yang berbeda dari yang sekarang.",
+      "confirmRequired": "Ulangi kata sandi baru.",
+      "confirmMismatch": "Kata sandi tidak sama."
     }
   }
 }

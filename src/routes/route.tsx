@@ -1,53 +1,55 @@
-import React from "react";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import LoginPage from "../pages/Login";
-import DashboardPage from "@/pages/Dashboard";
-import TransactionPage from "@/pages/Transaction";
-import GamePage from "@/pages/Game";
-import GameDetailPage from "@/pages/GameDetail";
-import ProductPage from "@/pages/Product";
-import PaymentMethodPage from "@/pages/PaymentMethod";
-import ProviderPages from "@/pages/Provider";
+import React from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import LoginPage from '../pages/Login'
+import DashboardPage from '@/pages/Dashboard'
+import TransactionPage from '@/pages/Transaction'
+import GamePage from '@/pages/Game'
+import GameDetailPage from '@/pages/GameDetail'
+import ProductPage from '@/pages/Product'
+import PaymentMethodPage from '@/pages/PaymentMethod'
+import ProviderPages from '@/pages/Provider'
 import SupplierCatalogPage from '@/pages/SupplierCatalog'
-import ReferralPage from "@/pages/Referral";
-import ReferralDetailPage from "@/pages/ReferralDetail";
-import PaymentDetailPage from "@/pages/TransactionDetail";
-import BannerPage from "@/pages/Banner";
-import ShowPage from "@/pages/Show";
-import InputPages from "@/pages/Input";
-import OrderPages from "@/pages/Order";
-import CategoryProduct from "@/pages/CategoryProduct";
-import PaymentMethodCategoryPages from "@/pages/PaymentMethodCategory";
-import SpendingPages from "@/pages/Summary";
-import BlogPage from "@/pages/Blog";
-import CashflowPage from "@/pages/Cashflow";
-import VerifyOtpPage from "@/pages/VerifyOTP";
-import Setup2FAPage from "@/pages/SetupAuth";
-import AdminManagementPage from "@/pages/Admin";
-import MaintenancePage from "@/pages/Maintenance";
+import ReferralPage from '@/pages/Referral'
+import ReferralDetailPage from '@/pages/ReferralDetail'
+import PaymentDetailPage from '@/pages/TransactionDetail'
+import BannerPage from '@/pages/Banner'
+import ShowPage from '@/pages/Show'
+import InputPages from '@/pages/Input'
+import OrderPages from '@/pages/Order'
+import CategoryProduct from '@/pages/CategoryProduct'
+import PaymentMethodCategoryPages from '@/pages/PaymentMethodCategory'
+import SpendingPages from '@/pages/Summary'
+import BlogPage from '@/pages/Blog'
+import CashflowPage from '@/pages/Cashflow'
+import VerifyOtpPage from '@/pages/VerifyOTP'
+import Setup2FAPage from '@/pages/SetupAuth'
+import Required2FAPage from '@/pages/Required2FA'
+import AdminManagementPage from '@/pages/Admin'
+import MaintenancePage from '@/pages/Maintenance'
 import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import ActivityLogPage from '@/pages/ActivityLog'
 import ActivityLogDetailPage from '@/pages/ActivityLogDetail'
 import CustomerPage from '@/pages/Customer'
 import CustomerDetailPage from '@/pages/CustomerDetail'
-import { RoleGuard } from "@/components/Auth/RoleGuard";
+import { RoleGuard } from '@/components/Auth/RoleGuard'
 import { AuthLayout } from '@/components/Auth/AuthLayout'
 import { AppShell } from '@/components/Layout/app-shell'
-import UnauthorizedPage from "@/pages/Unauthorized";
-import AnomalyProduct from "@/pages/AnomalyProduct";
-import ProductCallbackLogPage from "@/pages/ProductCallbackLog";
-import ProductCallbackLogDetailPage from "@/pages/ProductCallbackLogDetail";
+import UnauthorizedPage from '@/pages/Unauthorized'
+import AnomalyProduct from '@/pages/AnomalyProduct'
+import ProductCallbackLogPage from '@/pages/ProductCallbackLog'
+import ProductCallbackLogDetailPage from '@/pages/ProductCallbackLogDetail'
 import PaymentCallbackLogPage from '@/pages/PaymentCallbackLog'
 import PaymentCallbackLogDetailPage from '@/pages/PaymentCallbackLogDetail'
 import ProviderOrderLogPage from '@/pages/ProviderOrderLog'
 import ProviderOrderLogDetailPage from '@/pages/ProviderOrderLogDetail'
-import NotFoundPage from "@/pages/NotFound";
+import NotFoundPage from '@/pages/NotFound'
 import RolesPage from '@/pages/Roles'
 import RoleEditorPage from '@/pages/RoleEditor'
 import { PERM } from '@/constants/permissions'
+import { REQUIRED_2FA_PATH } from '@/lib/auth'
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     // Pathless layout: the auth shell stays mounted while moving between login and OTP.
     element: <AuthLayout />,
@@ -59,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: '/verify-otp',
         element: <VerifyOtpPage />,
+      },
+      {
+        path: REQUIRED_2FA_PATH,
+        element: <Required2FAPage />,
       },
     ],
   },
@@ -383,7 +389,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "unauthorized",
+        path: 'unauthorized',
         element: <UnauthorizedPage />,
       },
       {
