@@ -1,0 +1,49 @@
+name: CI
+
+# Runs on every pull request, and from dev.yml and main.yml before an image is built, so nothing
+# deploys without passing it.
+on:
+  pull_request:
+  workflow_call:
+
+# Every job asks for the token permissions it needs; nothing is granted by default.
+permissions: {}
+
+# A newer push to the same pull request cancels the run it replaces. A deploy's run is never
+# cancelled: the deploy waits on it.
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Actions are pinned to a commit, so a moved tag can't change what runs. The version each one was
+# pinned at is in the comment beside it.
+jobs:
+  check:
+    name: lint + build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The same Node as the Dockerfile's builder image; Yarn 1 comes with the runner, as yarn.lock
+      # (lockfile v1) needs.
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.3"
+          cache: yarn
+
+      - name: Install
+        run: yarn install --frozen-lockfile
+
+      - name: Lint
+        run: yarn lint
+
+      # tsc -b and vite build, the same command the image build runs.
+      - name: Build
+        run: yarn build

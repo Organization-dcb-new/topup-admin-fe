@@ -1,0 +1,51 @@
+# Admin panel on the dev server.
+#
+# The deploy job (.github/workflows/dev.yml → deploy/deploy.sh) installs this file as
+# /opt/dev-deploy/fe-dashboard-dev/docker-compose.yml and starts it with IMAGE_TAG set to the version
+# it deploys. Change it here, not on the server: the next deploy overwrites the server's copy.
+#
+# What is the server's, not the repo's, goes in the .env beside it (compose reads it for the ${...}
+# below; the container gets only what `environment` lists):
+#   FE_PUBLISH    required: the host side of the port mapping, where the reverse proxy sends the
+#                 panel's traffic. A port (4173, every address) or address:port (127.0.0.1:4173).
+#   BACKEND_URL   where nginx forwards the panel's /api/ calls, ending in /v1/. Default: the backend
+#                 container on the pakargaming-dev network (topup-be: deploy/docker-compose.dev.yml).
+# The first deploy with deploy.sh copies both from the container running then.
+#
+# By hand on the server, with the version that is deployed:
+#   IMAGE_TAG=$(cat .deployed-tag) docker compose up -d
+services:
+  fe-dashboard:
+    image: ${IMAGE_REPO:-ghcr.io/organization-dcb-new/topup-admin-fe}:${IMAGE_TAG:?set IMAGE_TAG, the deployed one is in .deployed-tag}
+    container_name: fe-dashboard
+    restart: always
+
+    environment:
+      # proxy_pass of default.conf.template: /api/x reaches the backend as /v1/x.
+      BACKEND_URL: ${BACKEND_URL:-http://172.20.0.10:4001/v1/}
+
+    ports:
+      - "${FE_PUBLISH:?set FE_PUBLISH in .env, the host port the reverse proxy sends the panel to}:80"
+
+    # deploy.sh waits for healthy before it calls a deploy good, and rolls back otherwise. Static
+    # files only: a backend that is down must not roll the panel back.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    # Docker keeps the container's output without limit unless told otherwise.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - pakargaming-dev
+
+networks:
+  pakargaming-dev:
+    external: true

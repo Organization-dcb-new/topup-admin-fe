@@ -3,8 +3,10 @@ FROM node:24.22.3-alpine3.24@sha256:116b800c3754b440ee0aa3ed2f20f5bf3d99a554bfd9
 
 WORKDIR /app
 
-ARG VITE_API_URL
-ENV VITE_API_URL=$VITE_API_URL
+# No build args: the bundle calls the backend at the relative /api/, which the nginx below forwards
+# to BACKEND_URL, set when the container starts (deploy/docker-compose.*.yml). VITE_API_URL is only
+# for `yarn dev` (vite.config.ts). Keep node-version in .github/workflows/ci.yml the same as this
+# image's, so CI checks the build that ships.
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile

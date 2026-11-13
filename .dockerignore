@@ -1,4 +1,27 @@
+# What the image build never needs. Everything else is copied (COPY . .), so a change to a file
+# listed here neither reaches the image nor reruns the build.
+
+# Secrets and local settings: never baked in.
+.env
+.env.*
+*.local
+
+# Installed and built inside the image.
 node_modules
 dist
+.yarn
+tmp
+
+# Logs, docs, CI and tooling.
+**/*.log
+**/*.md
+deploy
+.github
 .git
-.env
+.gitignore
+.dockerignore
+Dockerfile
+.vscode
+.idea
+.claude
+.agents
