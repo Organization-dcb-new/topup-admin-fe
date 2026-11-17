@@ -8,6 +8,8 @@ import type {
   PaymentCallbackLogDetail,
   PaymentCallbackLogFilters,
   ProviderOrderLog,
+  ProviderOrderLogDashboard,
+  ProviderOrderLogDashboardFilters,
   ProviderOrderLogDetail,
   ProviderOrderLogFilters,
   ProviderOrderStatus,
@@ -65,6 +67,29 @@ export const useProviderOrderLogs = (filters: ProviderOrderLogFilters, enabled =
       return res.data
     },
     enabled,
+    placeholderData: keepPreviousData,
+  })
+
+/**
+ * The sums of the logs the list's filters match (GET /provider-order-logs/dashboard). Its key starts like the
+ * list's, so whatever refreshes the logs (a status check) refreshes it too.
+ */
+export const useProviderOrderLogDashboard = (filters: ProviderOrderLogDashboardFilters) =>
+  useQuery({
+    queryKey: ['provider-order-logs', 'dashboard', filters],
+    queryFn: async (): Promise<ProviderOrderLogDashboard> => {
+      const res = await api.get('/provider-order-logs/dashboard', {
+        params: {
+          search: filters.search || undefined,
+          operation: filters.operation || undefined,
+          result: filters.result || undefined,
+          order_id: filters.orderId || undefined,
+          start_date: filters.startDate || undefined,
+          end_date: filters.endDate || undefined,
+        },
+      })
+      return res.data.data
+    },
     placeholderData: keepPreviousData,
   })
 

@@ -105,6 +105,39 @@ export interface ProviderOrderLogFilters {
   endDate?: string
 }
 
+/** The dashboard takes the list's filters, without paging. */
+export type ProviderOrderLogDashboardFilters = Omit<ProviderOrderLogFilters, 'page' | 'limit'>
+
+/** One WIB day of logs (YYYY-MM-DD); only days that have logs are sent. */
+export interface ProviderDailyCount {
+  date: string
+  sent: number
+  success: number
+  failed: number
+}
+
+/** GET /provider-order-logs/dashboard: the sums of the logs the list's filters match. */
+export interface ProviderOrderLogDashboard {
+  total: number
+  /** How many of our orders the logs are about. */
+  orders: number
+  by_type: Record<ProviderLogType, number>
+  by_result: Record<ProviderLogResult, number>
+  /** SUCCESS out of SUCCESS + FAILED, in percent; null when nothing was answered. */
+  success_rate: number | null
+  /** Round trips of our requests to the supplier, in ms. */
+  response_time_ms: { avg: number | null; p95: number | null; max: number | null }
+  /** Busiest first. */
+  operations: { operation: ProviderLogOperation | string; total: number; success: number; failed: number; avg_response_ms: number | null }[]
+  /** Why logs failed, most frequent first (at most 10): the supplier's code, "HTTP <status>", NO_RESPONSE, CALLBACK_NOT_APPLIED or OTHER. */
+  failure_codes: { code: string; count: number }[]
+  /** Oldest first. */
+  daily: ProviderDailyCount[]
+  /** RFC3339, null when none. */
+  last_log_at: string | null
+  last_callback_at: string | null
+}
+
 export interface ProviderTransaction {
   id: string
   product_name: string

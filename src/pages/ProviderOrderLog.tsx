@@ -7,6 +7,7 @@ import type { DateRange } from 'react-day-picker'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass } from '@/components/Auth/hud-styles'
+import { ProviderLogDashboard } from '@/components/IntegrationLog/ProviderLogDashboard'
 import { ProviderResultChip, SupplierCodeChip } from '@/components/IntegrationLog/integration-log-parts'
 import { logCardClass, logRowLinkClass, useProviderLogLabel } from '@/components/IntegrationLog/integration-log-meta'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
@@ -15,7 +16,7 @@ import { DateRangeFilter } from '@/components/ui/date-range-filter'
 import { Input } from '@/components/ui/input'
 import { Segmented } from '@/components/ui/segmented'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useProviderOrderLogs } from '@/hooks/useIntegrationLog'
+import { useProviderOrderLogDashboard, useProviderOrderLogs } from '@/hooks/useIntegrationLog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { cn } from '@/lib/utils'
 import { PROVIDER_LOG_OPERATIONS, type ProviderOrderLog } from '@/types/integration-log'
@@ -36,17 +37,23 @@ export default function ProviderOrderLogPage() {
   const [range, setRange] = useState<DateRange | undefined>()
 
   const debouncedSearch = useDebounce(search.trim(), 350)
-  const { data, isLoading, isError, isFetching, isPlaceholderData, refetch } = useProviderOrderLogs({
-    page,
-    limit: PAGE_SIZE,
+  // The list and its dashboard read the same filters, so the cards sum up exactly the logs listed.
+  const filters = {
     search: debouncedSearch,
     operation: operation === 'all' ? undefined : operation,
     result: result === 'all' ? undefined : result,
     startDate: range?.from ? format(range.from, 'yyyy-MM-dd') : undefined,
     endDate: range?.from ? format(range.to ?? range.from, 'yyyy-MM-dd') : undefined,
-  })
+  }
+  const { data, isLoading, isError, isFetching, isPlaceholderData, refetch } = useProviderOrderLogs({ page, limit: PAGE_SIZE, ...filters })
+  const dashboard = useProviderOrderLogDashboard(filters)
   const logs = data?.data ?? []
   const total = data?.meta?.total_data
+  const refreshing = isFetching || dashboard.isFetching
+  const refresh = () => {
+    void refetch()
+    void dashboard.refetch()
+  }
 
   const filtered = !!(search || operation !== 'all' || result !== 'all' || range?.from)
   const update = <T,>(setter: (v: T) => void) => (v: T) => {
@@ -78,12 +85,12 @@ export default function ProviderOrderLogPage() {
             )}
             <button
               type='button'
-              onClick={() => void refetch()}
-              disabled={isFetching}
+              onClick={refresh}
+              disabled={refreshing}
               aria-label={t('integrationLog.refresh')}
               className='inline-flex h-9 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition-colors hover:text-brand-purple disabled:opacity-60'
             >
-              <RefreshCw className={cn('size-4', isFetching && 'animate-spin')} aria-hidden />
+              <RefreshCw className={cn('size-4', refreshing && 'animate-spin')} aria-hidden />
             </button>
           </div>
         </header>
@@ -137,6 +144,12 @@ export default function ProviderOrderLogPage() {
             </div>
           </div>
         </div>
+
+        {dashboard.isError ? (
+          <AuthAlert>{t('providerOrderLogPage.dashboard.loadError')}</AuthAlert>
+        ) : (
+          <ProviderLogDashboard data={dashboard.data} loading={dashboard.isLoading} stale={dashboard.isPlaceholderData} />
+        )}
 
         {isError && (
           <div className='space-y-3'>
