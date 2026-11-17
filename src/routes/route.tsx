@@ -13,6 +13,7 @@ import ReferralPage from '@/pages/Referral'
 import ReferralDetailPage from '@/pages/ReferralDetail'
 import PaymentDetailPage from '@/pages/TransactionDetail'
 import BannerPage from '@/pages/Banner'
+import AnnouncementPage from '@/pages/Announcement'
 import ShowPage from '@/pages/Show'
 import InputPages from '@/pages/Input'
 import OrderPages from '@/pages/Order'
@@ -142,6 +143,14 @@ const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.bannerView}>
             <BannerPage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'announcements',
+        element: (
+          <RoleGuard permission={PERM.announcementView}>
+            <AnnouncementPage />
           </RoleGuard>
         ),
       },

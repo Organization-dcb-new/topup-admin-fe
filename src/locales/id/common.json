@@ -47,6 +47,7 @@
       "pelanggan": "Pelanggan",
       "konten": "Konten",
       "banner": "Banner",
+      "pengumuman": "Pengumuman",
       "acara": "Acara",
       "artikel": "Artikel",
       "inventaris": "Inventaris",
@@ -1803,6 +1804,139 @@
       "deleteError": "Gagal menghapus pemeliharaan"
     }
   },
+  "announcementPage": {
+    "eyebrow": "// Konten storefront",
+    "title": "Pengumuman",
+    "subtitle": "Pemberitahuan penting untuk pemain. Tiap pengumuman tampil sebagai bar tipis di atas halaman atau sebagai popup, sesuai jadwal tayangnya.",
+    "total": "{{live}} tayang · {{count}} total",
+    "addBtn": "Buat pengumuman",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat pengumuman. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada pengumuman",
+    "emptyBody": "Buat pengumuman untuk memberi tahu pemain soal gangguan, promo, atau info penting lainnya.",
+    "wib": "WIB",
+    "hasImage": "Ada gambar",
+    "toggleActive": "Pengumuman aktif: {{name}}",
+    "editBtn": "Ubah {{name}}",
+    "deleteBtn": "Hapus {{name}}",
+    "updatedBy": "Diperbarui {{who}} · {{date}}",
+    "columns": {
+      "title": "Judul",
+      "display": "Tampilan",
+      "level": "Level",
+      "status": "Status",
+      "schedule": "Jadwal",
+      "updated": "Diperbarui",
+      "actions": "Aksi"
+    },
+    "status": {
+      "live": "Tayang",
+      "scheduled": "Terjadwal",
+      "ended": "Selesai",
+      "off": "Nonaktif"
+    },
+    "display": {
+      "bar": "Bar",
+      "popup": "Popup"
+    },
+    "level": {
+      "info": "Info",
+      "warning": "Peringatan",
+      "promo": "Promo"
+    },
+    "linkKind": {
+      "none": "Tanpa tautan",
+      "internal": "Halaman toko",
+      "external": "Tautan luar"
+    },
+    "schedule": {
+      "now": "Sekarang",
+      "noEnd": "Tanpa batas"
+    },
+    "preview": {
+      "label": "Pratinjau",
+      "note": "Gambaran kasar. Tampilan akhirnya mengikuti storefront.",
+      "titlePlaceholder": "Judul pengumuman",
+      "defaultLabel": "label bawaan"
+    },
+    "form": {
+      "addEyebrow": "// Pengumuman baru",
+      "editEyebrow": "// Ubah pengumuman",
+      "addTitle": "Buat pengumuman",
+      "editTitle": "Ubah pengumuman",
+      "description": "Teks biasa, tanpa HTML. Waktu dalam WIB (UTC+7).",
+      "titleLabel": "Judul",
+      "titlePlaceholder": "Contoh: Pembayaran QRIS sedang gangguan",
+      "bodyLabel": "Isi",
+      "bodyPlaceholder": "Jelaskan singkat apa yang terjadi atau apa yang ditawarkan.",
+      "bodyHint": "Opsional. Teks biasa; baris baru ikut tampil.",
+      "displayLabel": "Tampilan",
+      "displayHint": {
+        "bar": "Strip tipis di atas setiap halaman.",
+        "popup": "Jendela di tengah layar, bisa pakai gambar."
+      },
+      "levelLabel": "Level",
+      "levelHint": {
+        "info": "Info umum, warna netral.",
+        "warning": "Gangguan atau masalah yang perlu diketahui pemain.",
+        "promo": "Penawaran, diskon, atau event."
+      },
+      "linkLabel": "Tautan",
+      "linkPlaceholder": "/games/mlbb atau https://…",
+      "linkHint": "Opsional. Pakai path toko seperti /games/mlbb, atau URL lengkap https://… untuk situs lain.",
+      "linkLabelLabel": "Label tautan",
+      "linkLabelPlaceholder": "Contoh: Lihat promo",
+      "linkLabelHint": "Opsional. Kosongkan untuk memakai label bawaan storefront. Hanya tampil jika tautan diisi.",
+      "imageLabel": "Gambar popup",
+      "imageHint": "Opsional. Tampil di atas teks popup. Disarankan 16:9, mis. 1200 × 675 px · JPG/WebP.",
+      "imageRemove": "Hapus gambar",
+      "scheduleLabel": "Jadwal tayang",
+      "startLabel": "Mulai",
+      "endLabel": "Selesai",
+      "startHint": "Kosong: tayang begitu disimpan.",
+      "endHint": "Kosong: tayang tanpa batas.",
+      "clear": "Kosongkan",
+      "showFor": "Tayang selama",
+      "days": "{{count}} hari",
+      "activeLabel": "Aktif",
+      "activeOnHint": "Aktif: tayang di storefront sesuai jadwal.",
+      "activeOffHint": "Nonaktif: disimpan sebagai draf, tidak pernah tayang.",
+      "cancel": "Batal",
+      "create": "Buat pengumuman",
+      "save": "Simpan perubahan",
+      "saving": "Menyimpan…",
+      "errors": {
+        "titleRequired": "Beri judul pengumuman ini.",
+        "titleMax": "Judul maksimal 100 karakter.",
+        "bodyMax": "Isi maksimal 500 karakter.",
+        "linkInvalid": "Tautan harus path toko seperti /games/mlbb atau URL http(s) lengkap.",
+        "linkLabelMax": "Label tautan maksimal 40 karakter.",
+        "imageInvalid": "Gambar harus berupa URL http(s). Unggah ulang gambarnya.",
+        "orderInvalid": "Waktu selesai harus setelah waktu mulai."
+      }
+    },
+    "errors": {
+      "title": "Judul wajib diisi, maksimal 100 karakter.",
+      "level": "Level harus Info, Peringatan, atau Promo.",
+      "display": "Tampilan harus Bar atau Popup.",
+      "notFound": "Pengumuman ini sudah tidak ada. Daftar dimuat ulang."
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Hapus pengumuman",
+      "title": "Hapus “{{name}}”?",
+      "description": "Pengumuman ini dihapus permanen dan langsung hilang dari storefront.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "toasts": {
+      "created": "Pengumuman dibuat",
+      "updated": "Pengumuman diperbarui",
+      "deleted": "Pengumuman dihapus",
+      "createError": "Gagal membuat pengumuman",
+      "updateError": "Gagal memperbarui pengumuman",
+      "deleteError": "Gagal menghapus pengumuman"
+    }
+  },
   "adminPage": {
     "eyebrow": "// Kontrol akses",
     "title": "Pengguna admin",
@@ -2254,6 +2388,7 @@
       "show": "Acara",
       "blog": "Artikel",
       "maintenance": "Pemeliharaan",
+      "announcement": "Pengumuman",
       "referral": "Kode referral",
       "admin": "Pengguna admin",
       "role": "Role",

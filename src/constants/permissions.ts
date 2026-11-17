@@ -76,6 +76,11 @@ export const PERM = {
   maintenanceUpdate: 'maintenance.update',
   maintenanceDelete: 'maintenance.delete',
 
+  announcementView: 'announcement.view',
+  announcementCreate: 'announcement.create',
+  announcementUpdate: 'announcement.update',
+  announcementDelete: 'announcement.delete',
+
   referralView: 'referral.view',
   referralCreate: 'referral.create',
   referralUpdate: 'referral.update',
@@ -123,6 +128,10 @@ const NOC_PERMISSIONS: Permission[] = [
   PERM.blogCreate,
   PERM.blogUpdate,
   PERM.blogDelete,
+  PERM.announcementView,
+  PERM.announcementCreate,
+  PERM.announcementUpdate,
+  PERM.announcementDelete,
   PERM.categoryProductView,
   PERM.categoryProductCreate,
   PERM.categoryProductUpdate,

@@ -16,6 +16,7 @@ import {
   PiImagesDuotone,
   PiKeyDuotone,
   PiLockKeyDuotone,
+  PiMegaphoneDuotone,
   PiPackageDuotone,
   PiPulseDuotone,
   PiPlugsConnectedDuotone,
@@ -77,6 +78,7 @@ export const sidebarMenus: SidebarSection[] = [
         icon: PiImagesDuotone,
         children: [
           { label: 'Banner', path: '/banners', icon: PiFlagBannerDuotone, permission: PERM.bannerView },
+          { label: 'Pengumuman', path: '/announcements', icon: PiMegaphoneDuotone, permission: PERM.announcementView },
           { label: 'Acara', path: '/shows', icon: PiStorefrontDuotone, permission: PERM.showView },
           { label: 'Artikel', path: '/blog', icon: PiArticleDuotone, permission: PERM.blogView },
         ],

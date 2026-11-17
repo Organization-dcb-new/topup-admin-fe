@@ -47,6 +47,7 @@
       "pelanggan": "Customers",
       "konten": "Content",
       "banner": "Banner",
+      "pengumuman": "Announcements",
       "acara": "Shows",
       "artikel": "Articles",
       "inventaris": "Inventory",
@@ -1847,6 +1848,141 @@
       "deleteError": "Couldn’t delete maintenance"
     }
   },
+  "announcementPage": {
+    "eyebrow": "// Storefront content",
+    "title": "Announcements",
+    "subtitle": "Important notices for players. Each one shows as a thin bar above the page or as a popup, on its own schedule.",
+    "total_one": "{{live}} live · {{count}} announcement",
+    "total_other": "{{live}} live · {{count}} announcements",
+    "addBtn": "New announcement",
+    "retry": "Try again",
+    "loadError": "Couldn’t load announcements. Check your connection and try again.",
+    "emptyTitle": "No announcements yet",
+    "emptyBody": "Write one to tell players about an outage, a promo or anything else they should know.",
+    "wib": "WIB",
+    "hasImage": "Has image",
+    "toggleActive": "Announcement active: {{name}}",
+    "editBtn": "Edit {{name}}",
+    "deleteBtn": "Delete {{name}}",
+    "updatedBy": "Updated by {{who}} · {{date}}",
+    "columns": {
+      "title": "Title",
+      "display": "Display",
+      "level": "Level",
+      "status": "Status",
+      "schedule": "Schedule",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "status": {
+      "live": "Live",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "off": "Off"
+    },
+    "display": {
+      "bar": "Bar",
+      "popup": "Popup"
+    },
+    "level": {
+      "info": "Info",
+      "warning": "Warning",
+      "promo": "Promo"
+    },
+    "linkKind": {
+      "none": "No link",
+      "internal": "Store page",
+      "external": "External link"
+    },
+    "schedule": {
+      "now": "Now",
+      "noEnd": "No end"
+    },
+    "preview": {
+      "label": "Preview",
+      "note": "A rough sketch. The storefront decides the final look.",
+      "titlePlaceholder": "Announcement title",
+      "defaultLabel": "default label"
+    },
+    "form": {
+      "addEyebrow": "// New announcement",
+      "editEyebrow": "// Edit announcement",
+      "addTitle": "New announcement",
+      "editTitle": "Edit announcement",
+      "description": "Plain text, no HTML. Times are in WIB (UTC+7).",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. QRIS payments are down",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Briefly explain what is happening or what is on offer.",
+      "bodyHint": "Optional. Plain text; line breaks are kept.",
+      "displayLabel": "Display",
+      "displayHint": {
+        "bar": "A thin strip above every page.",
+        "popup": "A window in the middle of the screen, can have an image."
+      },
+      "levelLabel": "Level",
+      "levelHint": {
+        "info": "General information, neutral colour.",
+        "warning": "An outage or problem players should know about.",
+        "promo": "An offer, discount or event."
+      },
+      "linkLabel": "Link",
+      "linkPlaceholder": "/games/mlbb or https://…",
+      "linkHint": "Optional. Use a store path such as /games/mlbb, or a full https://… URL for another site.",
+      "linkLabelLabel": "Link label",
+      "linkLabelPlaceholder": "e.g. See the promo",
+      "linkLabelHint": "Optional. Leave empty to use the storefront’s default label. Only shown when there is a link.",
+      "imageLabel": "Popup image",
+      "imageHint": "Optional. Shown above the popup text. 16:9 recommended, e.g. 1200 × 675 px · JPG/WebP.",
+      "imageRemove": "Remove image",
+      "scheduleLabel": "Schedule",
+      "startLabel": "Start",
+      "endLabel": "End",
+      "startHint": "Empty: shows as soon as it is saved.",
+      "endHint": "Empty: shows with no end.",
+      "clear": "Clear",
+      "showFor": "Show for",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "activeLabel": "Active",
+      "activeOnHint": "On: shows on the storefront according to the schedule.",
+      "activeOffHint": "Off: saved as a draft, never shown.",
+      "cancel": "Cancel",
+      "create": "Create announcement",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "errors": {
+        "titleRequired": "Give this announcement a title.",
+        "titleMax": "The title can be at most 100 characters.",
+        "bodyMax": "The body can be at most 500 characters.",
+        "linkInvalid": "The link must be a store path such as /games/mlbb or a full http(s) URL.",
+        "linkLabelMax": "The link label can be at most 40 characters.",
+        "imageInvalid": "The image must be an http(s) URL. Upload it again.",
+        "orderInvalid": "The end must be after the start."
+      }
+    },
+    "errors": {
+      "title": "A title is required, at most 100 characters.",
+      "level": "Level must be Info, Warning or Promo.",
+      "display": "Display must be Bar or Popup.",
+      "notFound": "This announcement no longer exists. The list has been reloaded."
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Delete announcement",
+      "title": "Delete “{{name}}”?",
+      "description": "This announcement is deleted for good and disappears from the storefront right away.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "created": "Announcement created",
+      "updated": "Announcement updated",
+      "deleted": "Announcement deleted",
+      "createError": "Couldn’t create the announcement",
+      "updateError": "Couldn’t update the announcement",
+      "deleteError": "Couldn’t delete the announcement"
+    }
+  },
   "adminPage": {
     "eyebrow": "// Access control",
     "title": "Admin users",
@@ -2311,6 +2447,7 @@
       "show": "Shows",
       "blog": "Articles",
       "maintenance": "Maintenance",
+      "announcement": "Announcements",
       "referral": "Referral codes",
       "admin": "Admin users",
       "role": "Roles",
