@@ -18,6 +18,7 @@ export const useGetProductCallbackLogs = (filters: ProductCallbackLogFilters) =>
           end_date: filters.endDate || undefined,
           search: filters.search || undefined,
           status: filters.status || undefined,
+          source: filters.source || undefined,
           min_price: filters.minPrice || undefined,
           max_price: filters.maxPrice || undefined,
           sort_by: filters.sortBy || undefined,

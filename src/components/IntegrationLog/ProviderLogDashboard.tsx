@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BarChart3, Layers, Percent, ScrollText, Timer, TriangleAlert, Webhook, type LucideIcon } from 'lucide-react'
+import { BarChart3, Clock, Layers, Percent, ScrollText, Timer, TriangleAlert, type LucideIcon } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { DashboardPanel } from '@/components/Dashboard/DashboardPanel'
@@ -78,21 +78,13 @@ export function ProviderLogDashboard({ data, loading, stale }: Props) {
             }
             loading={loading}
           />
+          {/* LapakGaming's callbacks are not taken (we ask for statuses), so the last exchange is shown instead. */}
           <Tile
             order={3}
-            icon={Webhook}
-            label={t('providerOrderLogPage.dashboard.lastCallback')}
-            value={data?.last_callback_at ? formatBackendDateTime(data.last_callback_at, 'dd MMM, HH:mm') : t('providerOrderLogPage.dashboard.never')}
-            hint={
-              data
-                ? data.last_callback_at
-                  ? t('providerOrderLogPage.dashboard.callbacks', {
-                      count: data.by_type.CALLBACK_FROM_PROVIDER,
-                      formatted: formatNumber(data.by_type.CALLBACK_FROM_PROVIDER),
-                    })
-                  : t('providerOrderLogPage.dashboard.neverHint')
-                : undefined
-            }
+            icon={Clock}
+            label={t('providerOrderLogPage.dashboard.lastLog')}
+            value={data?.last_log_at ? formatBackendDateTime(data.last_log_at, 'dd MMM, HH:mm') : '—'}
+            hint={data ? t('providerOrderLogPage.dashboard.lastLogHint') : undefined}
             loading={loading}
           />
         </ul>

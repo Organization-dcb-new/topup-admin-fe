@@ -10,7 +10,7 @@ import { hudEyebrowClass, hudInputClass } from '@/components/Auth/hud-styles'
 import { Segmented } from '@/components/ui/segmented'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { HudPagination } from '@/components/Layout/hud-pagination'
-import { PriceDelta, StockChip } from '@/components/ProductCallbackLog/callback-log-parts'
+import { PriceDelta, SourceChip, StockChange } from '@/components/ProductCallbackLog/callback-log-parts'
 import { DateRangeFilter } from '@/components/ui/date-range-filter'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -19,11 +19,12 @@ import { useGetProductCallbackLogs } from '@/hooks/useProductCallbackLog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { ProductCallbackLogResponse } from '@/types/product_callback_log'
+import { PRODUCT_CHANGE_SOURCES, type ProductCallbackLogResponse, type ProductChangeSource } from '@/types/product_callback_log'
 
 const PAGE_SIZE = 30
 
 type StockFilter = 'all' | 'available' | 'empty'
+type SourceFilter = 'all' | ProductChangeSource
 const SORTS = {
   newest: { sortBy: 'created_at', sortOrder: 'desc' },
   oldest: { sortBy: 'created_at', sortOrder: 'asc' },
@@ -38,6 +39,7 @@ export default function ProductCallbackLogPage() {
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [stock, setStock] = useState<StockFilter>('all')
+  const [source, setSource] = useState<SourceFilter>('all')
   const [range, setRange] = useState<DateRange | undefined>()
   const [sort, setSort] = useState<SortKey>('newest')
   const [showPrice, setShowPrice] = useState(false)
@@ -54,6 +56,7 @@ export default function ProductCallbackLogPage() {
     limit: PAGE_SIZE,
     search: debouncedSearch,
     status: stock === 'all' ? undefined : stock,
+    source: source === 'all' ? undefined : source,
     startDate: range?.from ? format(range.from, 'yyyy-MM-dd') : undefined,
     endDate: range?.from ? format(range.to ?? range.from, 'yyyy-MM-dd') : undefined,
     minPrice: debouncedMin,
@@ -63,7 +66,7 @@ export default function ProductCallbackLogPage() {
   const logs = data?.data ?? []
   const total = data?.meta?.total_data
 
-  const filtered = !!(search || stock !== 'all' || range?.from || minPrice || maxPrice || sort !== 'newest')
+  const filtered = !!(search || stock !== 'all' || source !== 'all' || range?.from || minPrice || maxPrice || sort !== 'newest')
   // Any filter change starts from the first page again.
   const update = <T,>(setter: (v: T) => void) => (v: T) => {
     setter(v)
@@ -72,6 +75,7 @@ export default function ProductCallbackLogPage() {
   const reset = () => {
     setSearch('')
     setStock('all')
+    setSource('all')
     setRange(undefined)
     setSort('newest')
     setMinPrice('')
@@ -137,6 +141,15 @@ export default function ProductCallbackLogPage() {
             </div>
 
             <div className='flex flex-wrap items-center gap-2'>
+              <Segmented
+                value={source}
+                onChange={update(setSource)}
+                label={t('productCallbackLogPage.sourceLabel')}
+                options={(['all', ...PRODUCT_CHANGE_SOURCES] as const).map((s) => ({
+                  value: s,
+                  label: s === 'all' ? t('productCallbackLogPage.sourceAll') : t(`productCallbackLogPage.source.${s}`),
+                }))}
+              />
               <button
                 type='button'
                 onClick={() => setShowPrice((v) => !v)}
@@ -252,6 +265,9 @@ function LogRow({ log, order }: { log: ProductCallbackLogResponse; order: number
             {log.provider_code && <span> · {log.provider_code}</span>}
             <span className='lg:hidden'> · {formatBackendDateTime(log.created_at, 'dd MMM, HH:mm')}</span>
           </p>
+          <div className='mt-1'>
+            <SourceChip source={log.source} />
+          </div>
         </div>
         <div className='col-span-2 flex flex-wrap items-center gap-x-2 gap-y-1 lg:col-span-1'>
           <span className='text-xs tabular-nums text-slate-400 line-through decoration-slate-300'>{formatCurrency(log.previous_price)}</span>
@@ -260,7 +276,7 @@ function LogRow({ log, order }: { log: ProductCallbackLogResponse; order: number
           <PriceDelta previous={log.previous_price} current={log.price} />
         </div>
         <div className='col-start-2 row-start-1 lg:col-start-auto lg:row-start-auto'>
-          <StockChip status={log.status} />
+          <StockChange previous={log.previous_status} current={log.status} />
         </div>
         <ChevronRight
           className='hidden size-4 text-slate-300 transition-transform duration-300 ease-hud group-hover:translate-x-0.5 group-hover:text-brand-purple lg:block'

@@ -100,7 +100,7 @@ export const sidebarMenus: SidebarSection[] = [
           },
           { label: 'Produk anomali', icon: PiWarningDiamondDuotone, path: '/anomaly', permission: PERM.productViewAnomaly },
           { label: 'Field input', icon: PiTextboxDuotone, path: '/input', permission: PERM.gameInputUpdate },
-          { label: 'Log callback produk', icon: PiPlugsConnectedDuotone, path: '/products/callback-logs', permission: PERM.productViewCallbackLog },
+          { label: 'Log update produk', icon: PiPlugsConnectedDuotone, path: '/products/callback-logs', permission: PERM.productViewCallbackLog },
         ],
       },
       {
