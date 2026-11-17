@@ -21,9 +21,9 @@ map "$request_method $uri" $pg_panel_api {
     "~^[A-Z]+ /api/blogs/admin(/|$)" 1;
 
     # Groups that also serve storefront reads: their writes are all admin, their reads only the panel's.
-    "~^(POST|PUT|PATCH|DELETE) /api/(games|shows|banners|maintenances|category-product|payment-categories)(/|$)" 1;
+    "~^(POST|PUT|PATCH|DELETE) /api/(games|shows|banners|maintenances|announcements|category-product|payment-categories)(/|$)" 1;
     "~^GET /api/games/(pagination|names|letter|[0-9A-Fa-f-]{36})/?$" 1;
-    "~^GET /api/(shows|maintenances)/admin/?$" 1;
+    "~^GET /api/(shows|maintenances|announcements)/admin/?$" 1;
     "~^GET /api/(banners|category-product|payment-categories)/?$" 1;
 
     # Products: the supplier's POST callback lives here too.
