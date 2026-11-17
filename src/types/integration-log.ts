@@ -123,6 +123,10 @@ export interface ProviderOrderStatus {
   status: string
   transactions: ProviderTransaction[] | null
   checked_at: string
+  /** Our order's status after the check. */
+  order_status: string
+  /** True when the check settled the order: LapakGaming had finished one still PROCESSING here. */
+  order_updated: boolean
 }
 
 export interface ListResponse<T> {

@@ -2481,6 +2481,8 @@
       "liveAnswer": "Live answer",
       "liveNotOk": "LapakGaming didn't return SUCCESS. The order may never have been sent, or was refused; see the Create order logs below.",
       "checkedAt": "Checked at {{time}}. The order status wasn't changed.",
+      "checkedAtUpdated": "Checked at {{time}}.",
+      "orderUpdated": "LapakGaming had finished this order. Order status is now",
       "empty": "No exchanges with LapakGaming yet. The order is sent once the payment succeeds."
     },
     "trail": {

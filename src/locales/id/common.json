@@ -2424,6 +2424,8 @@
       "liveAnswer": "Jawaban live",
       "liveNotOk": "LapakGaming tidak mengembalikan SUCCESS. Order mungkin belum pernah terkirim atau ditolak; cek log Buat order di bawah.",
       "checkedAt": "Dicek pukul {{time}}. Status pesanan tidak diubah.",
+      "checkedAtUpdated": "Dicek pukul {{time}}.",
+      "orderUpdated": "LapakGaming sudah menyelesaikan order ini. Status pesanan sekarang",
       "empty": "Belum ada pertukaran dengan LapakGaming. Order dikirim setelah pembayaran sukses."
     },
     "trail": {

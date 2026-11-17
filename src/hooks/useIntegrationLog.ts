@@ -1,6 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { api } from '@/api/axios'
+import { transactionsQueryKey } from '@/hooks/useTransaction'
 import type {
   ListResponse,
   PaymentCallbackLog,
@@ -77,13 +78,21 @@ export const useProviderOrderLog = (id: string) =>
     enabled: !!id,
   })
 
-/** Asks LapakGaming for the order's live status. The check itself is logged, so the order's logs refresh after it. */
+/**
+ * Asks LapakGaming for the order's live status. The check itself is logged, so the order's logs refresh after it.
+ * An order LapakGaming has finished but is still PROCESSING here is settled by the check, so the transaction reloads too.
+ */
 export const useCheckProviderStatus = (orderId: string | undefined) => {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async (): Promise<ProviderOrderStatus> => {
       const res = await api.post(`/provider-order-logs/orders/${orderId}/check-status`)
       return res.data.data
+    },
+    onSuccess: (status) => {
+      if (!status.order_updated) return
+      void queryClient.invalidateQueries({ queryKey: ['transaction-detail'] })
+      void queryClient.invalidateQueries({ queryKey: transactionsQueryKey })
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['provider-order-logs'] }),
   })

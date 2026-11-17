@@ -10,7 +10,7 @@ import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { cn } from '@/lib/utils'
 import type { TransactionDetail } from '@/types/transaction'
 import { DetailField, DetailPanel, EmptyValue } from './detail-parts'
-import { ProviderStatusChip } from './TransactionParts'
+import { OrderStatusChip, ProviderStatusChip } from './TransactionParts'
 
 const TRAIL_LIMIT = 10
 
@@ -144,7 +144,17 @@ export function TransactionProviderPanel({ detail, order }: PanelProps) {
                 {tx.note && <span className='text-slate-500'> · {tx.note}</span>}
               </p>
             ))}
-            <p className='text-slate-400'>{t('transactionDetailPage.provider.checkedAt', { time: formatBackendDateTime(live.checked_at, 'HH:mm:ss') })}</p>
+            {live.order_updated && (
+              <p className='flex flex-wrap items-center gap-1.5 font-medium text-emerald-700'>
+                {t('transactionDetailPage.provider.orderUpdated')}
+                <OrderStatusChip status={live.order_status} />
+              </p>
+            )}
+            <p className='text-slate-400'>
+              {t(live.order_updated ? 'transactionDetailPage.provider.checkedAtUpdated' : 'transactionDetailPage.provider.checkedAt', {
+                time: formatBackendDateTime(live.checked_at, 'HH:mm:ss'),
+              })}
+            </p>
           </div>
         )}
       </div>
