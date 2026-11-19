@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { PRICE_MAX_PERCENT } from '@/components/Games/game-utils'
+import { blankAsMissing } from '@/schemas/product'
 
 const text = z.string().trim()
 
@@ -64,11 +65,14 @@ export const gameEditSchema = z.object({
 export type GameEditFormInput = z.input<typeof gameEditSchema>
 export type GameEditFormValues = z.output<typeof gameEditSchema>
 
+// Applied to every product of the game, so a blank field must not save as 0% (see blankAsMissing).
 export const gamePriceSchema = z.object({
-  additional_percent: z.coerce
-    .number({ error: 'gamePriceDialog.errors.percentInvalid' })
-    .min(0, 'gamePriceDialog.errors.percentInvalid')
-    .max(PRICE_MAX_PERCENT, 'gamePriceDialog.errors.percentMax'),
+  additional_percent: blankAsMissing(
+    z.coerce
+      .number({ error: 'gamePriceDialog.errors.percentInvalid' })
+      .min(0, 'gamePriceDialog.errors.percentInvalid')
+      .max(PRICE_MAX_PERCENT, 'gamePriceDialog.errors.percentMax')
+  ),
 })
 
 export type GamePriceFormInput = z.input<typeof gamePriceSchema>

@@ -12,7 +12,7 @@ import { Segmented } from '@/components/ui/segmented'
 import { useUpdateProductPrice } from '@/hooks/useProduct'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { productPriceSchema, type ProductPriceFormInput, type ProductPriceFormValues } from '@/schemas/product'
+import { isBlank, productPriceSchema, type ProductPriceFormInput, type ProductPriceFormValues } from '@/schemas/product'
 import type { Product, ProductPriceType } from '@/types/product'
 import { markupOf, sellingPriceFor } from './product-pricing'
 import { useRetained } from '@/hooks/useRetained'
@@ -88,7 +88,8 @@ function PriceForm({ product, pending, onCancel, onSave }: PriceFormProps) {
   })
   const [type, rawValue] = useWatch({ control, name: ['type', 'value'] })
   const value = Number(rawValue)
-  const valid = Number.isFinite(value) && value >= 0
+  // Number('') is 0: a blank field must not preview (or count) as a 0 markup.
+  const valid = !isBlank(rawValue) && Number.isFinite(value) && value >= 0
   const selling = valid ? sellingPriceFor(base, type, value) : product.selling_price
   const margin = selling - base
   const unchanged = valid && Math.round(selling) === Math.round(product.selling_price) && type === initialType
@@ -96,8 +97,13 @@ function PriceForm({ product, pending, onCancel, onSave }: PriceFormProps) {
   // Switching kind keeps the selling price: the value is converted to the other unit.
   const switchType = (next: ProductPriceType) => {
     if (next === type) return
+    if (!valid) {
+      // Nothing to convert: keep what was typed (blank stays blank rather than turning into 0).
+      setValue('type', next)
+      return
+    }
     const converted =
-      !valid || base <= 0
+      base <= 0
         ? 0
         : next === 'fee'
           ? Math.round((base * value) / 100)
