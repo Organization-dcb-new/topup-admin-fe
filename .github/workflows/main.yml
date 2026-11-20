@@ -139,5 +139,6 @@ jobs:
           DEPLOY_DIR: /data/prod-deploy/fe-dashboard-prod
           COMPOSE_SRC: deploy/docker-compose.prod.yml
           CONTAINER: fe-dashboard
-          NETWORK: pakargaming-prod
+          NETWORK: pakargaming-prod-dashboard
+          BACKEND_CONTAINER: backend-prod
         run: bash deploy/deploy.sh

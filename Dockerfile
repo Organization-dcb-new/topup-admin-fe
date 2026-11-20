@@ -23,6 +23,10 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 COPY default.conf.template /etc/nginx/templates/default.conf.template
 
+# The template's set_real_ip_from: nobody but the container itself until the server names the
+# reverse proxy's address (REAL_IP_FROM in deploy/docker-compose.*.yml).
+ENV REAL_IP_FROM=127.0.0.1
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

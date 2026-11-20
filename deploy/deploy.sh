@@ -10,7 +10,10 @@
 #   DEPLOY_DIR      folder on the server that holds the compose project and its .env
 #   COMPOSE_SRC     compose file in the checkout, e.g. deploy/docker-compose.prod.yml
 #   CONTAINER       container_name in that compose file: fe-dashboard
-#   NETWORK         external Docker network that compose file joins, e.g. pakargaming-prod
+#   NETWORK         external Docker network that compose file joins, e.g. pakargaming-prod-dashboard;
+#                   the backend's deploy creates it (topup-be deploy/NETWORKS.md)
+#   BACKEND_CONTAINER  the backend's container, e.g. backend-prod: the deploy stops while it isn't
+#                   on NETWORK yet
 #   IMAGE_REPO      ghcr.io/<owner>/<repo>, lowercase
 #   NEW_TAG         image tag to deploy, e.g. prod-1.2.3
 #   TAG_PREFIX      prod- or dev-; older images with it are removed after a good deploy
@@ -93,9 +96,17 @@ printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdi
 # Leave no registry credential behind on the server.
 trap 'docker logout ghcr.io >/dev/null 2>&1 || true' EXIT
 
+# The backend's deploy (topup-be deploy/deploy.sh) creates this network and joins the backend to it
+# (topup-be deploy/NETWORKS.md). Before that, this app would start where it can't reach the backend:
+# stop instead, before the running container is touched.
 if ! docker network inspect "$NETWORK" >/dev/null 2>&1; then
-  echo "Creating network $NETWORK..."
-  docker network create --driver bridge --subnet 172.20.0.0/16 "$NETWORK"
+  echo "❌ Network $NETWORK does not exist yet: deploy topup-be first, which creates it (topup-be deploy/NETWORKS.md)."
+  exit 1
+fi
+if [ -n "${BACKEND_CONTAINER:-}" ] &&
+  ! docker inspect --format '{{range $name, $v := .NetworkSettings.Networks}}{{$name}}{{"\n"}}{{end}}' "$BACKEND_CONTAINER" 2>/dev/null | grep -qx "$NETWORK"; then
+  echo "❌ $BACKEND_CONTAINER is not on $NETWORK yet: deploy topup-be first (topup-be deploy/NETWORKS.md)."
+  exit 1
 fi
 
 cd "$DEPLOY_DIR"
@@ -167,8 +178,15 @@ current_backend_url() {
     sed -n 's/^BACKEND_URL=//p' | head -n 1
 }
 
+# moved_backend VALUE: VALUE with the backend's old address on the network the apps used to share
+# replaced by its address on NETWORK (topup-be deploy/NETWORKS.md), for a value taken from the
+# container before.
+moved_backend() {
+  printf '%s' "${1//172.20.0.10:4001/172.16.11.10:4001}"
+}
+
 carry_over FE_PUBLISH "$(current_publish)"
-carry_over BACKEND_URL "$(current_backend_url)"
+carry_over BACKEND_URL "$(moved_backend "$(current_backend_url)")"
 
 # Keep the compose file now in use (whatever its name, in compose's own order of preference) for a
 # rollback, then make docker-compose.yml the only one, so a manual `docker compose` on the server
@@ -201,6 +219,15 @@ if ! IMAGE_TAG="$NEW_TAG" compose config --quiet; then
   echo "❌ $COMPOSE_SRC does not resolve on this server; the server's previous compose file is back in place."
   echo "   If FE_PUBLISH is missing: add the host port the reverse proxy sends the panel to, e.g."
   echo "   FE_PUBLISH=127.0.0.1:4173, to $DEPLOY_DIR/.env"
+  restore_compose
+  exit 1
+fi
+
+# The backend's address on the network every app used to share (172.20.0.10) can't be reached from
+# NETWORK: a BACKEND_URL still naming it in .env stops here.
+if IMAGE_TAG="$NEW_TAG" compose config 2>/dev/null | grep -Eq '^[[:space:]]+BACKEND_URL: .*172\.20\.'; then
+  echo "❌ BACKEND_URL names the backend's old address (172.20.x), which $NETWORK can't reach."
+  echo "   In $DEPLOY_DIR/.env set BACKEND_URL=http://172.16.11.10:4001/v1/ (or remove the line for that default), then deploy again (topup-be deploy/NETWORKS.md)."
   restore_compose
   exit 1
 fi
@@ -251,6 +278,15 @@ fi
 
 # For a manual `docker compose` on the server: IMAGE_TAG=$(cat .deployed-tag) docker compose up -d
 printf '%s\n' "$NEW_TAG" >.deployed-tag
+
+# Whether the panel reaches the backend through its own nginx, the way every admin's request will.
+# Only reported, never a rollback: a backend that is down is not this deploy's to fix.
+if PROBE="$(docker exec "$CONTAINER" wget -q -T 5 -O /dev/null http://127.0.0.1/api/health 2>&1)"; then
+  echo "Backend answers $CONTAINER through its nginx"
+else
+  echo "⚠️ $CONTAINER can't reach the backend: ${PROBE:-no answer}. Check BACKEND_URL in $DEPLOY_DIR/.env"
+  echo "   (default http://172.16.11.10:4001/v1/) and that the backend is on $NETWORK."
+fi
 
 # docker image prune only removes untagged images, and every deploy leaves a tagged one behind.
 # Keep the newest KEEP_IMAGES versions, and always the one now running and the rollback target.

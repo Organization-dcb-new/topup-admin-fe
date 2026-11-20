@@ -937,7 +937,7 @@
   "productCallbackLogPage": {
     "eyebrow": "// Feed penyedia",
     "title": "Log update produk",
-    "subtitle": "Setiap perubahan harga atau stok produk dari supplier, beserta sumbernya. Harga kita minta ke LapakGaming (sync 12 jam, sync admin, checkout); hanya yang berubah yang dicatat. Harga supplier naik berarti margin menipis.",
+    "subtitle": "Setiap perubahan harga atau stok produk dari supplier, beserta sumbernya: push LapakGaming, job sync harian, sync admin, atau checkout. Hanya yang berubah yang dicatat. Harga supplier naik berarti margin menipis.",
     "total": "{{formatted}} update",
     "searchPlaceholder": "Cari kode produk",
     "stockLabel": "Stok",
@@ -955,10 +955,10 @@
       "CALLBACK": "Push LapakGaming"
     },
     "sourceHint": {
-      "SCHEDULER": "Job sync 12 jam bertanya ke LapakGaming",
+      "SCHEDULER": "Job sync harian bertanya ke LapakGaming",
       "MANUAL_SYNC": "Admin menyinkronkan produk game ini",
       "CHECKOUT": "Checkout bertanya ke LapakGaming dan menemukan perubahan",
-      "CALLBACK": "Dikirim LapakGaming (sebelum 17 Nov 2026)"
+      "CALLBACK": "Dikirim LapakGaming lewat Product Update Callback"
     },
     "datePlaceholder": "Semua tanggal",
     "sortLabel": "Urutkan",

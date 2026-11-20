@@ -946,7 +946,7 @@
   "productCallbackLogPage": {
     "eyebrow": "// Provider feed",
     "title": "Product update log",
-    "subtitle": "Every change in a product's supplier price or stock, and where it came from. We ask LapakGaming for prices (the 12-hour sync, an admin's sync, checkout); only what changed is logged. A higher supplier price means a thinner margin.",
+    "subtitle": "Every change in a product's supplier price or stock, and where it came from: LapakGaming's push, the daily sync job, an admin's sync or checkout. Only what changed is logged. A higher supplier price means a thinner margin.",
     "total_one": "{{formatted}} update",
     "total_other": "{{formatted}} updates",
     "searchPlaceholder": "Search product code",
@@ -965,10 +965,10 @@
       "CALLBACK": "LapakGaming push"
     },
     "sourceHint": {
-      "SCHEDULER": "The 12-hour sync job asked LapakGaming",
+      "SCHEDULER": "The daily sync job asked LapakGaming",
       "MANUAL_SYNC": "An admin synced the game's products",
       "CHECKOUT": "A checkout asked LapakGaming and found it changed",
-      "CALLBACK": "LapakGaming pushed it (before 17 Nov 2026)"
+      "CALLBACK": "LapakGaming pushed it (Product Update Callback)"
     },
     "datePlaceholder": "Any date",
     "sortLabel": "Sort",

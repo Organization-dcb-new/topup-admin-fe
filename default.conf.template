@@ -1,5 +1,6 @@
 # Admin panel nginx: serves the SPA and forwards to the backend only the routes the panel calls.
-# The image renders this file (envsubst fills in BACKEND_URL) into /etc/nginx/conf.d, inside `http`.
+# The image renders this file (envsubst fills in BACKEND_URL and REAL_IP_FROM) into /etc/nginx/conf.d,
+# inside `http`.
 
 # The scheme the browser used. Behind a TLS proxy that is its X-Forwarded-Proto, so the backend
 # marks the admin cookie Secure; reached directly, it is this server's own scheme.
@@ -44,11 +45,17 @@ server {
     listen 80;
     server_tokens off;
 
-    # Behind a reverse proxy, name it here so $remote_addr (and with it the backend's admin IP
-    # allowlist and activity log) is the admin's address instead of the proxy's:
-    # set_real_ip_from 172.16.0.0/12;
-    # real_ip_header X-Forwarded-For;
-    # real_ip_recursive on;
+    # The admin's own address. Behind the host's reverse proxy every connection comes from the
+    # gateway of the panel's network (172.16.11.1), which is what the backend's ALLOWED_AUTH_IPS and
+    # activity log would otherwise see for every admin. From REAL_IP_FROM alone, X-Forwarded-For is
+    # believed: walking it from the right, the first address that is not REAL_IP_FROM is the one the
+    # reverse proxy saw. The reverse proxy must set it ($proxy_add_x_forwarded_for or $remote_addr);
+    # one that passes a browser's header on untouched lets an admin choose the address
+    # (topup-be deploy/NETWORKS.md, step 5, tells how to check). REAL_IP_FROM=127.0.0.1, the default,
+    # believes nobody but the container itself: $remote_addr stays the gateway.
+    set_real_ip_from ${REAL_IP_FROM};
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
 
     # On every response, API included. No location below sets add_header, so they all inherit these.
     # Images come from the bucket and supplier CDNs (http when the bucket runs without TLS); styles
