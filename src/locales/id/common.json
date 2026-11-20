@@ -65,6 +65,7 @@
       "keamanan": "Keamanan",
       "twoFa": "2FA",
       "pemeliharaan": "Pemeliharaan",
+      "stopTransaksi": "Stop transaksi",
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk",
@@ -1804,6 +1805,95 @@
       "deleteError": "Gagal menghapus pemeliharaan"
     }
   },
+  "transactionStopPage": {
+    "eyebrow": "// Kontrol sistem",
+    "title": "Stop Transaksi",
+    "subtitle": "Tombol darurat untuk menghentikan checkout baru. Storefront tetap bisa dibuka, dan pembayaran yang sudah dibuat tetap dibayar dan diproses. Untuk menutup seluruh storefront, pakai Pemeliharaan.",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat status stop transaksi. Periksa koneksi lalu coba lagi.",
+    "wib": "WIB",
+    "status": {
+      "eyebrow": "// Status checkout",
+      "stopped": "STOP",
+      "running": "Berjalan",
+      "stoppedBody": "Checkout baru sedang ditolak.",
+      "runningBody": "Pembeli bisa checkout seperti biasa.",
+      "since": "Dihentikan sejak",
+      "resumeAt": "Buka lagi otomatis",
+      "resumeManual": "Tidak dijadwalkan",
+      "resumeManualHint": "Tetap stop sampai dibuka manual",
+      "autoReopened": "Dibuka lagi otomatis pada {{date}} WIB ({{when}}).",
+      "messageLabel": "Pesan untuk pembeli",
+      "defaultMessageNote": "Teks bawaan, karena pesan dikosongkan.",
+      "updatedBy": "Diubah oleh {{who}} · {{date}}",
+      "neverChanged": "Belum pernah diubah"
+    },
+    "impact": {
+      "title": "Selama stop",
+      "checkout": "Checkout baru",
+      "checkoutValue": "Ditolak",
+      "browse": "Melihat toko & katalog",
+      "browseValue": "Tetap jalan",
+      "pending": "Pembayaran yang sudah dibuat",
+      "pendingValue": "Tetap dibayar & diproses"
+    },
+    "form": {
+      "eyebrow": "// Kendali",
+      "titleRunning": "Hentikan transaksi",
+      "titleStopped": "Stop sedang berlaku",
+      "descriptionRunning": "Isi pesan dan jadwal buka bila perlu, lalu hentikan. Keduanya opsional.",
+      "descriptionStopped": "Ubah pesan atau jadwal buka tanpa membuka transaksi, atau buka transaksi sekarang.",
+      "messageLabel": "Pesan untuk pembeli",
+      "messageHint": "Opsional. Kosongkan untuk memakai teks bawaan (contoh di kolom).",
+      "resumeLabel": "Buka lagi otomatis",
+      "resumeHint": "Opsional. Kosongkan agar tetap stop sampai dibuka manual.",
+      "resumeIn": "Buka dalam",
+      "clear": "Kosongkan",
+      "stopBtn": "Stop transaksi sekarang",
+      "resumeBtn": "Buka transaksi lagi",
+      "saveBtn": "Simpan perubahan",
+      "errors": {
+        "messageMax": "Pesan maksimal 300 karakter.",
+        "resumeInPast": "Waktu buka harus di masa depan."
+      }
+    },
+    "readOnly": {
+      "title": "Hanya lihat",
+      "body": "Anda bisa melihat status stop transaksi, tetapi tidak punya izin untuk mengubahnya."
+    },
+    "confirm": {
+      "cancel": "Batal",
+      "stop": {
+        "eyebrow": "// Stop transaksi",
+        "title": "Stop transaksi sekarang?",
+        "description": "Checkout baru di storefront langsung ditolak. Pembeli tetap bisa melihat toko, dan pembayaran yang sudah dibuat tetap dibayar dan diproses.",
+        "confirm": "Stop transaksi",
+        "messageLabel": "Pesan untuk pembeli",
+        "resumeLabel": "Buka lagi otomatis",
+        "resumeAt": "{{date}} WIB ({{when}})",
+        "resumeManual": "Tidak, tetap stop sampai dibuka manual"
+      },
+      "resume": {
+        "eyebrow": "// Buka transaksi",
+        "title": "Buka transaksi lagi?",
+        "description": "Pembeli bisa checkout lagi mulai sekarang. Jadwal buka otomatis dihapus; pesan disimpan untuk stop berikutnya.",
+        "confirm": "Buka transaksi"
+      }
+    },
+    "indicator": {
+      "label": "Transaksi STOP",
+      "short": "STOP",
+      "aria": "Transaksi sedang di-stop. Buka halaman Stop Transaksi."
+    },
+    "toasts": {
+      "stopped": "Transaksi dihentikan",
+      "resumed": "Transaksi dibuka lagi",
+      "saved": "Perubahan disimpan",
+      "stopError": "Gagal menghentikan transaksi",
+      "resumeError": "Gagal membuka transaksi",
+      "saveError": "Gagal menyimpan perubahan"
+    }
+  },
   "announcementPage": {
     "eyebrow": "// Konten storefront",
     "title": "Pengumuman",
@@ -2388,6 +2478,7 @@
       "show": "Acara",
       "blog": "Artikel",
       "maintenance": "Pemeliharaan",
+      "transaction_stop": "Stop transaksi",
       "announcement": "Pengumuman",
       "referral": "Kode referral",
       "admin": "Pengguna admin",

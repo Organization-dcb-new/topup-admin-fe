@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { HealthStatusMenu } from './health-status-menu'
 import { LanguageSwitch } from './language-switch'
 import { findActivePath, findTrail, useSidebarCopy, visibleMenus } from './sidebar-nav'
+import { TransactionStopIndicator } from './transaction-stop-indicator'
 import { UserMenu } from './user-menu'
 
 interface NavbarProps {
@@ -39,6 +40,7 @@ export function Navbar({ onToggleSidebar, toggleLabel, sidebarExpanded }: Navbar
       <Breadcrumbs />
 
       <div className='ml-auto flex shrink-0 items-center gap-2'>
+        <TransactionStopIndicator />
         <HealthStatusMenu />
         <LanguageSwitch />
         <UserMenu />

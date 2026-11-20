@@ -28,6 +28,7 @@ export const SIDEBAR_I18N_KEY_BY_TEXT: Record<string, string> = {
   Keamanan: 'sidebar.menu.keamanan',
   '2FA': 'sidebar.menu.twoFa',
   Pemeliharaan: 'sidebar.menu.pemeliharaan',
+  'Stop transaksi': 'sidebar.menu.stopTransaksi',
   Pengguna: 'sidebar.menu.pengguna',
   'Log admin': 'sidebar.menu.logAdmin',
   'Log callback produk': 'sidebar.menu.productCallbackLog',

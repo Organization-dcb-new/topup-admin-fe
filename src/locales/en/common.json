@@ -65,6 +65,7 @@
       "keamanan": "Security",
       "twoFa": "2FA",
       "pemeliharaan": "Maintenance",
+      "stopTransaksi": "Stop transactions",
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs",
@@ -1848,6 +1849,95 @@
       "deleteError": "Couldn’t delete maintenance"
     }
   },
+  "transactionStopPage": {
+    "eyebrow": "// System control",
+    "title": "Stop Transactions",
+    "subtitle": "Emergency switch that stops new checkouts. The storefront stays browsable, and payments already made are still paid and fulfilled. To close the whole storefront, use Maintenance.",
+    "retry": "Try again",
+    "loadError": "Couldn’t load the transaction stop status. Check your connection and try again.",
+    "wib": "WIB",
+    "status": {
+      "eyebrow": "// Checkout status",
+      "stopped": "STOP",
+      "running": "Running",
+      "stoppedBody": "New checkouts are being refused.",
+      "runningBody": "Buyers can check out as usual.",
+      "since": "Stopped since",
+      "resumeAt": "Reopens automatically",
+      "resumeManual": "Not scheduled",
+      "resumeManualHint": "Stays stopped until reopened by hand",
+      "autoReopened": "Reopened automatically at {{date}} WIB ({{when}}).",
+      "messageLabel": "Message to buyers",
+      "defaultMessageNote": "Default text, as the message is empty.",
+      "updatedBy": "Changed by {{who}} · {{date}}",
+      "neverChanged": "Never changed"
+    },
+    "impact": {
+      "title": "While stopped",
+      "checkout": "New checkouts",
+      "checkoutValue": "Refused",
+      "browse": "Browsing store & catalog",
+      "browseValue": "Still works",
+      "pending": "Payments already made",
+      "pendingValue": "Still paid & fulfilled"
+    },
+    "form": {
+      "eyebrow": "// Controls",
+      "titleRunning": "Stop transactions",
+      "titleStopped": "Stop in force",
+      "descriptionRunning": "Add a message and a reopen time if you need them, then stop. Both are optional.",
+      "descriptionStopped": "Change the message or reopen time without reopening, or reopen transactions now.",
+      "messageLabel": "Message to buyers",
+      "messageHint": "Optional. Leave empty to use the default text (shown in the field).",
+      "resumeLabel": "Reopen automatically",
+      "resumeHint": "Optional. Leave empty to stay stopped until reopened by hand.",
+      "resumeIn": "Reopen in",
+      "clear": "Clear",
+      "stopBtn": "Stop transactions now",
+      "resumeBtn": "Reopen transactions",
+      "saveBtn": "Save changes",
+      "errors": {
+        "messageMax": "The message can be at most 300 characters.",
+        "resumeInPast": "The reopen time must be in the future."
+      }
+    },
+    "readOnly": {
+      "title": "View only",
+      "body": "You can see the transaction stop status, but you don’t have permission to change it."
+    },
+    "confirm": {
+      "cancel": "Cancel",
+      "stop": {
+        "eyebrow": "// Stop transactions",
+        "title": "Stop transactions now?",
+        "description": "New checkouts on the storefront are refused right away. Buyers can still browse the store, and payments already made are still paid and fulfilled.",
+        "confirm": "Stop transactions",
+        "messageLabel": "Message to buyers",
+        "resumeLabel": "Reopen automatically",
+        "resumeAt": "{{date}} WIB ({{when}})",
+        "resumeManual": "No, stays stopped until reopened by hand"
+      },
+      "resume": {
+        "eyebrow": "// Reopen transactions",
+        "title": "Reopen transactions?",
+        "description": "Buyers can check out again from now on. The automatic reopen time is cleared; the message is kept for the next stop.",
+        "confirm": "Reopen"
+      }
+    },
+    "indicator": {
+      "label": "Transactions STOPPED",
+      "short": "STOP",
+      "aria": "Transactions are stopped. Open the Stop Transactions page."
+    },
+    "toasts": {
+      "stopped": "Transactions stopped",
+      "resumed": "Transactions reopened",
+      "saved": "Changes saved",
+      "stopError": "Couldn’t stop transactions",
+      "resumeError": "Couldn’t reopen transactions",
+      "saveError": "Couldn’t save changes"
+    }
+  },
   "announcementPage": {
     "eyebrow": "// Storefront content",
     "title": "Announcements",
@@ -2447,6 +2537,7 @@
       "show": "Shows",
       "blog": "Articles",
       "maintenance": "Maintenance",
+      "transaction_stop": "Transaction stop",
       "announcement": "Announcements",
       "referral": "Referral codes",
       "admin": "Admin users",

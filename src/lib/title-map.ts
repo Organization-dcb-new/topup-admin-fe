@@ -4,6 +4,7 @@ export const pageTitleMap: Record<string, string> = {
   '/payment-methods-categories': 'Payments Method Categories',
   '/summary': 'Summary',
   '/maintenances': 'Pemeliharaan',
+  '/transaction-stop': 'Stop Transaksi',
   '/admin': 'Users',
 
   '/transactions': 'Transactions',

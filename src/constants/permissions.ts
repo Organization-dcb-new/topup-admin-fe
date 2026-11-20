@@ -76,6 +76,11 @@ export const PERM = {
   maintenanceUpdate: 'maintenance.update',
   maintenanceDelete: 'maintenance.delete',
 
+  /** See the switch that stops new checkouts while the storefront stays open. */
+  transactionStopView: 'transaction_stop.view',
+  /** Stop or reopen checkout, and change the buyer message / reopen time. */
+  transactionStopUpdate: 'transaction_stop.update',
+
   announcementView: 'announcement.view',
   announcementCreate: 'announcement.create',
   announcementUpdate: 'announcement.update',

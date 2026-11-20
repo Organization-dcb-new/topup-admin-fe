@@ -27,6 +27,7 @@ import Setup2FAPage from '@/pages/SetupAuth'
 import Required2FAPage from '@/pages/Required2FA'
 import AdminManagementPage from '@/pages/Admin'
 import MaintenancePage from '@/pages/Maintenance'
+import TransactionStopPage from '@/pages/TransactionStop'
 import AdminLogPage from '@/pages/AdminLog'
 import AdminLogDetailPage from '@/pages/AdminLogDetail'
 import ActivityLogPage from '@/pages/ActivityLog'
@@ -330,6 +331,14 @@ const router = createBrowserRouter([
         element: (
           <RoleGuard permission={PERM.maintenanceView}>
             <MaintenancePage />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: 'transaction-stop',
+        element: (
+          <RoleGuard permission={PERM.transactionStopView}>
+            <TransactionStopPage />
           </RoleGuard>
         ),
       },

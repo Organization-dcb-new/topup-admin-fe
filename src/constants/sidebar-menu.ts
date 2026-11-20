@@ -11,6 +11,7 @@ import {
   PiDiamondDuotone,
   PiFlagBannerDuotone,
   PiGameControllerDuotone,
+  PiHandPalmDuotone,
   PiHandshakeDuotone,
   PiIdentificationBadgeDuotone,
   PiImagesDuotone,
@@ -151,6 +152,12 @@ export const sidebarMenus: SidebarSection[] = [
             icon: PiWrenchDuotone,
             path: '/maintenances',
             permission: PERM.maintenanceView,
+          },
+          {
+            label: 'Stop transaksi',
+            icon: PiHandPalmDuotone,
+            path: '/transaction-stop',
+            permission: PERM.transactionStopView,
           },
           {
             label: 'Pengguna',
