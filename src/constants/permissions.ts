@@ -117,6 +117,7 @@ const ALL_PERMISSIONS = Object.values(PERM)
 const NOC_PERMISSIONS: Permission[] = [
   PERM.dashboardView,
   PERM.transactionView,
+  PERM.transactionStopView,
   PERM.gameView,
   PERM.productView,
   PERM.productViewAnomaly,
