@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronRight, Eye, Gamepad2, Pencil, Percent, Plus, RefreshCw, RotateCcw, Search, SearchX, Zap, type LucideIcon } from 'lucide-react'
+import { ChevronRight, EyeOff, Gamepad2, Pencil, Percent, Plus, RefreshCw, RotateCcw, Search, SearchX, Wrench, Zap, type LucideIcon } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
@@ -10,9 +10,9 @@ import { ConfirmActionDialog } from '@/components/Games/ConfirmActionDialog'
 import EditBulkAllPriceModal from '@/components/Games/EditBulkAllPriceModal'
 import { GameFormDialog } from '@/components/Games/GameFormDialog'
 import { GameImageDialog } from '@/components/Games/GameImageDialog'
-import { GameStatusChips, GameThumb, GameToggles } from '@/components/Games/GameParts'
+import { GameStatusChips, GameStatusControl, GameThumb } from '@/components/Games/GameParts'
 import { GamePriceDialog } from '@/components/Games/GamePriceDialog'
-import { formatMarkup } from '@/components/Games/game-utils'
+import { formatMarkup, gameStatus } from '@/components/Games/game-utils'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { HudPagination } from '@/components/Layout/hud-pagination'
 import { Input } from '@/components/ui/input'
@@ -22,11 +22,11 @@ import { useDebounce } from '@/hooks/useDebounce'
 import { useGetGames, useInitGamesFromProvider } from '@/hooks/useGame'
 import { usePermissions } from '@/hooks/usePermissions'
 import { cn } from '@/lib/utils'
-import type { Game } from '@/types/game'
+import type { Game, GameStatus } from '@/types/game'
 
 const PAGE_SIZE = 20
 
-const STATUSES = ['all', 'active', 'inactive'] as const
+const STATUSES = ['all', 'ACTIVE', 'MAINTENANCE', 'HIDDEN'] as const
 const IMAGES = ['all', 'with_image', 'no_image'] as const
 
 function pick<T extends string>(value: string | null, allowed: readonly T[], fallback: T): T {
@@ -63,7 +63,7 @@ export default function GamePage() {
   const { data, isLoading, isError, isFetching, isPlaceholderData, refetch } = useGetGames(page, PAGE_SIZE, {
     search: debouncedQ,
     image,
-    ...(status !== 'all' && { is_active: status === 'active' }),
+    ...(status !== 'all' && { status: status as GameStatus }),
   })
   const games = data?.data ?? []
   const meta = data?.meta
@@ -110,7 +110,7 @@ export default function GamePage() {
         </header>
 
         {meta && (
-          <ul className='grid grid-cols-3 gap-3 sm:gap-4'>
+          <ul className='grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4'>
             <StatTile
               order={0}
               icon={Gamepad2}
@@ -119,8 +119,17 @@ export default function GamePage() {
               value={meta.total_data}
               locale={locale}
             />
-            <StatTile order={1} icon={Zap} label={t('gamePage.stats.active')} hint={t('gamePage.stats.allGames')} value={meta.game_active} locale={locale} tone='emerald' />
-            <StatTile order={2} icon={Eye} label={t('gamePage.stats.shown')} hint={t('gamePage.stats.allGames')} value={meta.game_show} locale={locale} tone='cyan' />
+            <StatTile order={1} icon={Zap} label={t('gamePage.status.ACTIVE')} hint={t('gamePage.statusHint.ACTIVE')} value={meta.status_counts?.ACTIVE ?? meta.game_active} locale={locale} tone='emerald' />
+            <StatTile
+              order={2}
+              icon={Wrench}
+              label={t('gamePage.status.MAINTENANCE')}
+              hint={t('gamePage.statusHint.MAINTENANCE')}
+              value={meta.status_counts?.MAINTENANCE ?? Math.max(0, meta.game_show - meta.game_active)}
+              locale={locale}
+              tone='amber'
+            />
+            <StatTile order={3} icon={EyeOff} label={t('gamePage.status.HIDDEN')} hint={t('gamePage.statusHint.HIDDEN')} value={meta.status_counts?.HIDDEN ?? 0} locale={locale} />
           </ul>
         )}
 
@@ -253,7 +262,7 @@ interface StatTileProps {
   hint?: string
   value: number
   locale?: string
-  tone?: 'emerald' | 'cyan'
+  tone?: 'emerald' | 'cyan' | 'amber'
 }
 
 function StatTile({ order, icon: Icon, label, hint, value, locale, tone }: StatTileProps) {
@@ -266,7 +275,7 @@ function StatTile({ order, icon: Icon, label, hint, value, locale, tone }: StatT
             <p
               className={cn(
                 'mt-1 font-display text-2xl font-bold',
-                tone === 'emerald' ? 'text-emerald-600' : tone === 'cyan' ? 'text-cyan-600' : 'text-slate-900'
+                tone === 'emerald' ? 'text-emerald-600' : tone === 'cyan' ? 'text-cyan-600' : tone === 'amber' ? 'text-amber-600' : 'text-slate-900'
               )}
             >
               {value.toLocaleString(locale)}
@@ -276,7 +285,13 @@ function StatTile({ order, icon: Icon, label, hint, value, locale, tone }: StatT
           <span
             className={cn(
               'hidden size-10 shrink-0 place-items-center hud-clip-sm sm:grid',
-              tone === 'emerald' ? 'bg-emerald-50 text-emerald-600' : tone === 'cyan' ? 'bg-cyan-50 text-cyan-600' : 'bg-brand-purple/10 text-brand-purple'
+              tone === 'emerald'
+                ? 'bg-emerald-50 text-emerald-600'
+                : tone === 'cyan'
+                  ? 'bg-cyan-50 text-cyan-600'
+                  : tone === 'amber'
+                    ? 'bg-amber-50 text-amber-600'
+                    : 'bg-brand-purple/10 text-brand-purple'
             )}
           >
             <Icon className='size-5' aria-hidden />
@@ -334,7 +349,7 @@ function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice 
             <Link
               to={`/games/${game.id}`}
               state={linkState}
-              className={cn('truncate font-semibold transition-colors hover:text-brand-purple', game.is_active ? 'text-slate-900' : 'text-slate-500')}
+              className={cn('truncate font-semibold transition-colors hover:text-brand-purple', gameStatus(game) === 'ACTIVE' ? 'text-slate-900' : 'text-slate-500')}
             >
               {game.name}
             </Link>
@@ -356,7 +371,7 @@ function GameRow({ game, order, listSearch, canUpdate, onImage, onEdit, onPrice 
         <p>{markupText}</p>
       </div>
 
-      <GameToggles game={game} />
+      <GameStatusControl game={game} />
 
       <div className='flex items-center gap-0.5 justify-self-end'>
         <Can permission={PERM.gameUpdate}>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Clapperboard, EyeOff, Gamepad2, ListPlus, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react'
+import { Clapperboard, Earth, EyeOff, Gamepad2, ListPlus, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch'
 import { PERM } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
 import { toUpdatePayload, useDeleteShow, useGetShows, useUpdateShow } from '@/hooks/useShow'
+import { HOME_REGION, regionName } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import type { Show } from '@/types/show'
 import { useRetained } from '@/hooks/useRetained'
@@ -142,12 +143,16 @@ interface ShowCardProps {
 }
 
 function ShowCard({ show, order, onEdit, onGames, onDelete }: ShowCardProps) {
-  const { t } = useTranslation('common')
+  const { t, i18n } = useTranslation('common')
   const { can } = usePermissions()
   const canUpdate = can(PERM.showUpdate)
   const update = useUpdateShow(undefined, 'showPage.toasts.flagsSaved')
   const games = show.games ?? []
   const [imageFailed, setImageFailed] = useState(false)
+  // Only worth a row once buyers of more than one region see this show; home region first.
+  const regionGames = Object.entries(show.region_games ?? {}).sort(([a], [b]) =>
+    a === HOME_REGION ? -1 : b === HOME_REGION ? 1 : a.localeCompare(b)
+  )
 
   const setFlag = (key: ShowBadgeKey | 'is_show', value: boolean) =>
     update.mutate({ id: show.id, payload: { ...toUpdatePayload(show), [key]: value } })
@@ -277,6 +282,28 @@ function ShowCard({ show, order, onEdit, onGames, onDelete }: ShowCardProps) {
                   </button>
                 </Can>
               </div>
+              {regionGames.length > 1 && (
+                <div
+                  className='mt-3 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-3 text-xs text-slate-500'
+                  title={t('showPage.regions.hint')}
+                >
+                  <Earth className='size-3.5 text-slate-400' aria-hidden />
+                  <span>{t('showPage.regions.label')}</span>
+                  {regionGames.map(([code, count]) => (
+                    <span
+                      key={code}
+                      title={regionName(code, i18n.resolvedLanguage)}
+                      className={cn(
+                        'inline-flex items-center gap-1 px-1.5 py-0.5 hud-clip-sm',
+                        count > 0 ? 'bg-slate-100 text-slate-700' : 'bg-amber-50 text-amber-800'
+                      )}
+                    >
+                      <span className='font-mono text-[11px] font-semibold uppercase'>{code}</span>
+                      <span className='tabular-nums'>{t('showPage.regions.count', { count })}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className='mt-auto flex items-center justify-end gap-0.5 border-t border-slate-100 pt-3'>

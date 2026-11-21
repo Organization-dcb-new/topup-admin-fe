@@ -1,14 +1,28 @@
 export type ProviderStatus = 'ACTIVE' | 'INACTIVE' | 'ERROR'
 
+/** One server env variable that holds a supplier credential. Its value never leaves the server. */
+export type ProviderCredential = {
+  env: string
+  set: boolean
+}
+
 export type Provider = {
   id: string
   name: string
   code: string
+  /** Base URL of the supplier's API. */
   api_url: string
-  /** Despite the name, the backend stores and returns the key as-is; treat it as a secret. */
-  api_key_encrypted: string
+  /** Credentials live in the server env; this only names the variables and whether they are set. */
+  credentials?: ProviderCredential[]
   status: ProviderStatus
-  balance: number
+  /** False for a provider left over from a supplier the backend no longer integrates. It can be switched off, not on. */
+  supported?: boolean
+  /** The backend can ask this supplier for our deposit balance (GET /providers/:id/balance). */
+  balance_supported?: boolean
+  /** The supplier sells per country (LapakGaming); its countries are set on GET/PUT /providers/:id/regions. */
+  regions_supported?: boolean
+  /** The countries its catalog sync pulls (config "regions"), ['id'] when the config lists none. */
+  regions?: string[]
   /** Lower runs first. */
   priority: number
   config?: Record<string, unknown> | null
@@ -17,24 +31,12 @@ export type Provider = {
   updated_at: string
 }
 
-/** POST /providers; `config` is a JSON string. */
-export type ProviderCreatePayload = {
-  name: string
-  code: string
-  api_url: string
-  api_key_encrypted: string
-  priority: number
-  config: string
-}
-
 /**
- * PUT /providers/:id. The backend overwrites the key with whatever is sent, so the current key
- * must be sent back when it isn't being changed.
+ * PUT /providers/:id, the only write: providers are created by the backend and never deleted.
+ * Name and code are fixed by the backend's supplier list. An empty `config` keeps the stored one.
  */
 export type ProviderUpdatePayload = {
-  name: string
   api_url: string
-  api_key_encrypted: string
   status: ProviderStatus
   priority: number
   config: string
@@ -46,19 +48,30 @@ export interface ProviderResponse {
   status: string
 }
 
-export interface LapakGamingBalanceResponse {
-  status: string
-  message: string
-  data: {
-    balance: number
-  }
+/** GET /providers/:id/balance: our deposit at the supplier, asked live. */
+export type ProviderBalance = {
+  provider_id: string
+  balance: number
+  /** RFC3339 in WIB. */
+  checked_at: string
 }
 
-export interface PpobBalanceResponse {
-  status: string
-  message: string
-  data: {
-    balance: number
-    username: string
-  }
+/** One of the supplier's countries on the region settings (GET /providers/:id/regions). */
+export type ProviderRegion = {
+  code: string
+  /** English; shown through regionName in the admin's language. */
+  name: string
+  currency: string
+  /** The catalog sync pulls this country. */
+  synced: boolean
+  /** Categories stored for the country, the ones tied to a game, and the listed games tied to them. */
+  brands: number
+  mapped_brands: number
+  listed_games: number
+}
+
+/** Every country the supplier sells for, the synced ones first. */
+export type ProviderRegions = {
+  provider_id: string
+  regions: ProviderRegion[]
 }

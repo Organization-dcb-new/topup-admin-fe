@@ -8,6 +8,10 @@ export const PERM = {
 
   transactionView: 'transaction.view',
   transactionExport: 'transaction.export',
+  /** Send a paid order whose supplier order failed to the supplier again. */
+  transactionRetry: 'transaction.retry',
+  /** See the real voucher codes, buyer email, IP and game account; the API masks them otherwise. */
+  transactionReveal: 'transaction.reveal',
 
   orderView: 'order.view',
   customerView: 'customer.view',
@@ -28,10 +32,6 @@ export const PERM = {
   productViewAnomaly: 'product.view_anomaly',
   productViewCallbackLog: 'product.view_callback_log',
 
-  categoryView: 'category.view',
-  categoryCreate: 'category.create',
-  categoryUpdate: 'category.update',
-  categoryDelete: 'category.delete',
 
   categoryProductView: 'category_product.view',
   categoryProductCreate: 'category_product.create',
@@ -41,15 +41,15 @@ export const PERM = {
   gameInputUpdate: 'game_input.update',
 
   providerView: 'provider.view',
-  providerCreate: 'provider.create',
   providerUpdate: 'provider.update',
-  providerDelete: 'provider.delete',
-  providerViewBalance: 'provider.view_balance',
 
   paymentMethodView: 'payment_method.view',
   paymentMethodCreate: 'payment_method.create',
   paymentMethodUpdate: 'payment_method.update',
   paymentMethodDelete: 'payment_method.delete',
+
+  paymentCallbackView: 'payment_callback.view',
+  providerOrderLogView: 'provider_order_log.view',
 
   paymentCategoryView: 'payment_category.view',
   paymentCategoryCreate: 'payment_category.create',
@@ -76,6 +76,16 @@ export const PERM = {
   maintenanceUpdate: 'maintenance.update',
   maintenanceDelete: 'maintenance.delete',
 
+  /** See the switch that stops new checkouts while the storefront stays open. */
+  transactionStopView: 'transaction_stop.view',
+  /** Stop or reopen checkout, and change the buyer message / reopen time. */
+  transactionStopUpdate: 'transaction_stop.update',
+
+  announcementView: 'announcement.view',
+  announcementCreate: 'announcement.create',
+  announcementUpdate: 'announcement.update',
+  announcementDelete: 'announcement.delete',
+
   referralView: 'referral.view',
   referralCreate: 'referral.create',
   referralUpdate: 'referral.update',
@@ -92,6 +102,7 @@ export const PERM = {
   roleDelete: 'role.delete',
 
   adminLogView: 'admin_log.view',
+  activityLogView: 'activity_log.view',
   uploadCreate: 'upload.create',
 
   integrationViewBalance: 'integration.view_balance',
@@ -102,11 +113,11 @@ export type Permission = (typeof PERM)[keyof typeof PERM]
 
 const ALL_PERMISSIONS = Object.values(PERM)
 
-/** Mirrors `nocPermissions` in the backend seeder. */
+/** Mirrors `nocPermissions` in the backend seeder: no export, retry or reveal of buyer data. */
 const NOC_PERMISSIONS: Permission[] = [
   PERM.dashboardView,
   PERM.transactionView,
-  PERM.transactionExport,
+  PERM.transactionStopView,
   PERM.gameView,
   PERM.productView,
   PERM.productViewAnomaly,
@@ -123,6 +134,10 @@ const NOC_PERMISSIONS: Permission[] = [
   PERM.blogCreate,
   PERM.blogUpdate,
   PERM.blogDelete,
+  PERM.announcementView,
+  PERM.announcementCreate,
+  PERM.announcementUpdate,
+  PERM.announcementDelete,
   PERM.categoryProductView,
   PERM.categoryProductCreate,
   PERM.categoryProductUpdate,

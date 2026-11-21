@@ -1,11 +1,13 @@
 import { useId, useState } from 'react'
-import { useForm, useWatch, type UseFormRegisterReturn } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { isAxiosError } from 'axios'
 import { useTranslation } from 'react-i18next'
-import { Eye, EyeOff, KeyRound, UserPlus } from 'lucide-react'
+import { KeyRound, UserPlus } from 'lucide-react'
 
 import { AuthAlert, AuthSubmitButton, FieldMessage } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass, hudInputClass, hudLabelClass } from '@/components/Auth/hud-styles'
+import { PasswordInput } from '@/components/Auth/PasswordInput'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -43,6 +45,8 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
   const ids = useId()
   const roleOptions = useRoleOptions()
   const create = useCreateAdmin(onDone)
+  // A password the backend's policy refuses comes back as a 400 whose text is shown as is.
+  const [policyError, setPolicyError] = useState<string | null>(null)
 
   const {
     register,
@@ -67,14 +71,18 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
 
   const onSubmit = (values: CreateAdminFormValues) => {
     const roleId = roleOptions.find((o) => o.slug === values.role)?.id
+    setPolicyError(null)
     create.mutate(
       { ...values, ...(roleId && { role_id: roleId }) },
       {
         onError: (err) => {
-          const known = FIELD_ERRORS[serverMessage(err) ?? '']
+          const message = serverMessage(err)
+          const known = FIELD_ERRORS[message ?? '']
           if (known) {
             setError(known[0], { message: known[1] })
             setFocus(known[0])
+          } else if (isAxiosError(err) && err.response?.status === 400 && message) {
+            setPolicyError(message)
           } else {
             setError('root', { message: 'adminPage.form.errors.generic' })
           }
@@ -108,6 +116,7 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
       </div>
 
       {errors.root?.message && <AuthAlert>{t(errors.root.message)}</AuthAlert>}
+      {policyError && <AuthAlert>{policyError}</AuthAlert>}
 
       <div className='space-y-4'>
         <div className='space-y-2'>
@@ -133,8 +142,8 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
             id={`${ids}-password`}
             autoComplete='new-password'
             invalid={!!errors.password}
-            describedBy={`${ids}-password-hint`}
-            registration={register('password')}
+            aria-describedby={`${ids}-password-hint`}
+            {...register('password')}
           />
           {errors.password?.message ? (
             <FieldMessage tone='error'>{t(errors.password.message)}</FieldMessage>
@@ -164,7 +173,7 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
           id={`${ids}-confirm`}
           autoComplete='current-password'
           invalid={!!errors.confirm_admin_password}
-          registration={register('confirm_admin_password')}
+          {...register('confirm_admin_password')}
         />
         {errors.confirm_admin_password?.message && (
           <FieldMessage tone='error'>{t(errors.confirm_admin_password.message)}</FieldMessage>
@@ -187,43 +196,5 @@ function CreateAdminForm({ onDone }: { onDone: () => void }) {
         </div>
       </div>
     </form>
-  )
-}
-
-interface PasswordInputProps {
-  id: string
-  autoComplete: string
-  invalid: boolean
-  describedBy?: string
-  registration: UseFormRegisterReturn
-}
-
-function PasswordInput({ id, autoComplete, invalid, describedBy, registration }: PasswordInputProps) {
-  const { t } = useTranslation()
-  const [visible, setVisible] = useState(false)
-  const label = visible ? t('adminPage.form.hidePassword') : t('adminPage.form.showPassword')
-
-  return (
-    <div className='relative'>
-      <Input
-        id={id}
-        type={visible ? 'text' : 'password'}
-        autoComplete={autoComplete}
-        aria-invalid={invalid}
-        aria-describedby={describedBy}
-        className={cn(hudInputClass, 'bg-white pr-11')}
-        {...registration}
-      />
-      <button
-        type='button'
-        onClick={() => setVisible((v) => !v)}
-        aria-label={label}
-        title={label}
-        aria-pressed={visible}
-        className='absolute inset-y-0 right-0 grid w-11 place-items-center text-slate-400 transition-colors hover:text-brand-purple focus-visible:text-brand-purple focus-visible:outline-none'
-      >
-        {visible ? <EyeOff className='size-4' aria-hidden /> : <Eye className='size-4' aria-hidden />}
-      </button>
-    </div>
   )
 }

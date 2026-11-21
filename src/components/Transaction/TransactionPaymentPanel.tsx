@@ -23,6 +23,16 @@ export function TransactionPaymentPanel({ detail, order }: { detail: Transaction
         <DetailField label={t('transactionDetailPage.payment.channel')}>
           <ChannelChip channel={detail.payment_channel} />
         </DetailField>
+        {detail.gateway && (
+          <DetailField label={t('transactionDetailPage.payment.gateway')}>
+            {t(`transactionDetailPage.payment.gatewayName.${detail.gateway === 'paylabs' ? 'paylabs' : 'redision'}`)}
+          </DetailField>
+        )}
+        {detail.gateway_reference && (
+          <DetailField label={t('transactionDetailPage.payment.gatewayReference')} copy={detail.gateway_reference} mono>
+            {detail.gateway_reference}
+          </DetailField>
+        )}
         <DetailField label={t('transactionDetailPage.payment.number')} copy={detail.payment_number || undefined} mono>
           {detail.payment_number || <EmptyValue />}
         </DetailField>

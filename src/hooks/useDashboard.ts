@@ -4,6 +4,7 @@ import type {
   DashboardOverviewResponse,
   DashboardRange,
   DashboardTimeseriesResponse,
+  FxRateBoard,
 } from '@/types/dashboard'
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
@@ -97,4 +98,23 @@ export const useDashboardTimeseries = (
     enabled: isRangeReady(params),
     placeholderData: keepPreviousData,
     staleTime: 30_000,
+  })
+
+/**
+ * LapakGaming's exchange rates into rupiah. The backend keeps them ten minutes and LapakGaming
+ * changes them daily, so they are not refetched more often than that. A 502/503 (LapakGaming
+ * not configured or giving no rate) is not retried.
+ */
+export const useLapakGamingFxRates = () =>
+  useQuery<FxRateBoard>({
+    queryKey: ['dashboard-fx-rates'],
+    queryFn: async () => {
+      const { data } = await api.get<{ data: FxRateBoard }>(`${DASHBOARD_BASE}/fx-rates`)
+      return data.data
+    },
+    staleTime: 10 * 60 * 1000,
+    retry: (count, error) => {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      return status !== 502 && status !== 503 && count < 1
+    },
   })

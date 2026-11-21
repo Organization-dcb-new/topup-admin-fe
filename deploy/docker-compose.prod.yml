@@ -1,0 +1,61 @@
+# Admin panel on the production server.
+#
+# The deploy job (.github/workflows/main.yml → deploy/deploy.sh) installs this file as
+# /data/prod-deploy/fe-dashboard-prod/docker-compose.yml and starts it with IMAGE_TAG set to the
+# version it deploys. Change it here, not on the server: the next deploy overwrites the server's copy.
+#
+# What is the server's, not the repo's, goes in the .env beside it (compose reads it for the ${...}
+# below; the container gets only what `environment` lists):
+#   FE_PUBLISH    required: the host side of the port mapping, where the reverse proxy sends the
+#                 panel's traffic. A port (4173, every address) or address:port (127.0.0.1:4173).
+#   BACKEND_URL   where nginx forwards the panel's /api/ calls, ending in /v1/. Default: the backend
+#                 on the panel's own network, pakargaming-prod-dashboard (topup-be: deploy/NETWORKS.md).
+#   REAL_IP_FROM  172.16.11.1 to pass the admins' own addresses to the backend (see below).
+# The first deploy with deploy.sh copies both from the container running then.
+#
+# By hand on the server, with the version that is deployed:
+#   IMAGE_TAG=$(cat .deployed-tag) docker compose up -d
+services:
+  fe-dashboard:
+    image: ${IMAGE_REPO:-ghcr.io/organization-dcb-new/topup-admin-fe}:${IMAGE_TAG:?set IMAGE_TAG, the deployed one is in .deployed-tag}
+    container_name: fe-dashboard
+    restart: always
+
+    environment:
+      # proxy_pass of default.conf.template: /api/x reaches the backend as /v1/x.
+      BACKEND_URL: ${BACKEND_URL:-http://172.16.11.10:4001/v1/}
+      # The address the host's reverse proxy reaches the panel from (the gateway of its network,
+      # 172.16.11.1): from it alone, nginx believes X-Forwarded-For for the admin's own address.
+      # 127.0.0.1 = believe nobody, so the backend sees every admin as 172.16.11.1. Set it once the
+      # backend's ALLOWED_AUTH_IPS lists the admins' real addresses (topup-be deploy/NETWORKS.md, step 5).
+      REAL_IP_FROM: ${REAL_IP_FROM:-127.0.0.1}
+
+    ports:
+      - "${FE_PUBLISH:?set FE_PUBLISH in .env, the host port the reverse proxy sends the panel to}:80"
+
+    # deploy.sh waits for healthy before it calls a deploy good, and rolls back otherwise. Static
+    # files only: a backend that is down must not roll the panel back.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+    # Docker keeps the container's output without limit unless told otherwise.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    # The panel's own network, shared with the backend alone (topup-be: deploy/NETWORKS.md): the
+    # storefront can't reach it. The fixed address is the one the backend's DASHBOARD_NETWORK names:
+    # once that is set, admin routes answer this container only.
+    networks:
+      pakargaming-prod-dashboard:
+        ipv4_address: 172.16.11.40
+
+networks:
+  pakargaming-prod-dashboard:
+    external: true

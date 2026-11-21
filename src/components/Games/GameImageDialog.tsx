@@ -85,7 +85,7 @@ function GameImageForm({ game, onDone }: { game: ImageGame; onDone: () => void }
             onUploadingChange={setUploadingThumb}
             aspectClassName='aspect-square'
             labelledBy={`${ids}-thumb`}
-            hint={t('gameImageModal.thumbnailHint')}
+            hint={t('imageDropzone.hints.gameThumbnail')}
             error={submitted && !thumbnail ? t('gameImageModal.thumbnailRequired') : undefined}
           />
         </div>
@@ -111,9 +111,9 @@ function GameImageForm({ game, onDone }: { game: ImageGame; onDone: () => void }
             value={banner}
             onChange={setBanner}
             onUploadingChange={setUploadingBanner}
-            aspectClassName='aspect-[21/9]'
+            aspectClassName='aspect-[3/1]'
             labelledBy={`${ids}-banner`}
-            hint={t('gameImageModal.bannerHint')}
+            hint={t('imageDropzone.hints.gameBanner')}
           />
         </div>
       </div>

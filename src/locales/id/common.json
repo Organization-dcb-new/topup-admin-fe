@@ -47,6 +47,7 @@
       "pelanggan": "Pelanggan",
       "konten": "Konten",
       "banner": "Banner",
+      "pengumuman": "Pengumuman",
       "acara": "Acara",
       "artikel": "Artikel",
       "inventaris": "Inventaris",
@@ -59,15 +60,20 @@
       "metode": "Metode",
       "kategoriPembayaran": "Kategori pembayaran",
       "penyedia": "Penyedia",
+      "katalogSupplier": "Katalog supplier",
       "referral": "Kode referral",
       "keamanan": "Keamanan",
       "twoFa": "2FA",
       "pemeliharaan": "Pemeliharaan",
+      "stopTransaksi": "Stop transaksi",
       "pengguna": "Pengguna",
       "logAdmin": "Log admin",
       "productCallbackLog": "Log callback produk",
-      "roles": "Role & akses"
-    }
+      "roles": "Role & akses",
+      "paylabsCallbacks": "Callback Paylabs",
+      "providerOrderLogs": "Log order supplier"
+    },
+    "changePassword": "Ganti password"
   },
   "pagination": {
     "label": "Halaman",
@@ -81,16 +87,23 @@
   "imageDropzone": {
     "title": "Klik atau tarik gambar ke sini",
     "dropNow": "Lepaskan untuk mengunggah",
-    "formats": "JPG, PNG, WebP, atau SVG · maks 10 MB",
+    "formats": "JPG, PNG, WebP, atau SVG · maks {{max}}",
     "replace": "Ganti gambar",
     "uploading": "Mengunggah {{percent}}%",
     "errors": {
-      "invalidType": "File tersebut bukan gambar.",
-      "tooLarge": "Ukuran gambar lebih dari 10 MB.",
+      "invalidType": "Format harus JPG, PNG, WebP, atau SVG.",
+      "tooLarge": "Ukuran gambar lebih dari {{max}}. Kecilkan atau kompres dulu.",
       "uploadFailed": "Gagal mengunggah. Coba lagi atau pilih gambar lain."
     },
     "titleShort": "Unggah gambar",
-    "formatsShort": "PNG/SVG · maks 10 MB"
+    "hints": {
+      "banner": "2560 × 800 px (16:5), minimal 1280 × 400 · JPG/WebP. Jauhkan teks penting dari tepi bawah dan samping (tertutup tombol carousel).",
+      "gameThumbnail": "Persegi 512 × 512 px (minimal 256 × 256) · JPG/PNG/WebP.",
+      "gameBanner": "Opsional. 2400 × 800 px (3:1) · JPG/WebP. Taruh objek penting di tengah; tepinya terpotong di HP dan desktop.",
+      "paymentLogo": "Logo melebar ±300 × 120 px, PNG transparan/SVG, tanpa margin kosong.",
+      "icon": "Persegi 256 × 256 px, PNG transparan/SVG.",
+      "blogThumbnail": "1600 × 900 px (16:9) · JPG/WebP. Tampil di atas artikel dan di kartunya."
+    }
   },
   "dateRangeFilter": {
     "clear": "Hapus tanggal"
@@ -185,7 +198,8 @@
     "PROCESSING": "Diproses",
     "FAILED": "Gagal",
     "EXPIRED": "Kedaluwarsa",
-    "REFUNDED": "Dikembalikan"
+    "REFUNDED": "Dikembalikan",
+    "FULFILMENT_FAILED": "Gagal dikirim ke supplier"
   },
   "summaryPage": {
     "title": "Ringkasan",
@@ -232,7 +246,8 @@
     "entries": "{{count}} entri",
     "kind": {
       "in": "Pembayaran masuk",
-      "out": "Biaya penyedia"
+      "out": "Biaya penyedia",
+      "fee": "Biaya gateway"
     },
     "via": "via {{method}}",
     "order": "Order {{id}}",
@@ -561,7 +576,6 @@
       "editTitle": "Ubah banner",
       "description": "Unggah gambar lebar dan tentukan ke mana banner mengarah saat diklik.",
       "imageLabel": "Gambar",
-      "imageHint": "Gambar lebar paling pas; bingkai ini kira-kira menunjukkan potongan di carousel.",
       "linkLabel": "Tautan tujuan",
       "linkPlaceholder": "/games/mobile-legends atau https://…",
       "linkHint": "Opsional. Pakai /path untuk halaman toko atau URL lengkap untuk situs lain. Kosongkan jika banner tidak perlu bisa diklik.",
@@ -627,7 +641,6 @@
       },
       "publishedAt": "Terbit {{date}}",
       "thumbnailLabel": "Thumbnail",
-      "thumbnailHint": "Paling pas 16:9; tampil di atas artikel dan di kartunya.",
       "categoryLabel": "Game",
       "categoryPlaceholder": "Pilih game",
       "categorySearch": "Cari game",
@@ -684,15 +697,12 @@
   "gamePage": {
     "eyebrow": "// Katalog",
     "title": "Game",
-    "subtitle": "Semua game yang dijual toko. Aktifkan atau matikan game, pilih yang tampil di storefront, dan atur markup.",
+    "subtitle": "Semua game yang dijual toko. Atur statusnya (aktif, maintenance, tersembunyi) dan markup harganya.",
     "syncBtn": "Sinkron dari provider",
     "addBtn": "Tambah game",
     "stats": {
       "total": "Game",
       "results": "Hasil",
-      "active": "Aktif",
-      "shown": "Tampil",
-      "allGames": "dari semua game",
       "totalHint": "di katalog",
       "resultsHint": "sesuai filter"
     },
@@ -702,8 +712,9 @@
       "image": "Thumbnail",
       "statusOptions": {
         "all": "Semua",
-        "active": "Aktif",
-        "inactive": "Nonaktif"
+        "ACTIVE": "Aktif",
+        "MAINTENANCE": "Maintenance",
+        "HIDDEN": "Tersembunyi"
       },
       "imageOptions": {
         "all": "Semua gambar",
@@ -733,40 +744,46 @@
       "pending": "Menyinkronkan…"
     },
     "status": {
-      "active": "Aktif",
-      "inactive": "Nonaktif",
-      "shown": "Tampil",
-      "hidden": "Tersembunyi",
-      "featured": "Unggulan",
+      "ACTIVE": "Aktif",
+      "MAINTENANCE": "Maintenance",
+      "HIDDEN": "Tersembunyi",
       "checkId": "Cek ID"
-    },
-    "toggle": {
-      "active": "Aktif",
-      "activeAria": "Terima pesanan untuk {{name}}",
-      "shown": "Tampil",
-      "shownAria": "Tampilkan {{name}} di storefront"
     },
     "toasts": {
       "created": "Game ditambahkan",
       "updated": "Game disimpan",
       "updateError": "Gagal menyimpan game",
-      "shown": "Game kini tampil di storefront",
-      "hidden": "Game kini disembunyikan dari storefront",
-      "activated": "Game diaktifkan",
-      "deactivated": "Game dinonaktifkan",
       "statusError": "Gagal mengubah status game",
       "imagesSaved": "Gambar disimpan",
       "imagesError": "Gagal menyimpan gambar",
-      "deleted": "Game dihapus",
-      "deleteError": "Gagal menghapus game",
-      "deleteInUse": "Game ini masih punya produk atau pesanan, jadi tidak bisa dihapus. Nonaktifkan saja.",
       "priceSaved": "Markup diterapkan",
       "priceError": "Gagal menerapkan markup",
       "productsSynced": "Produk disinkronkan dari provider",
       "gamesSynced": "Game disinkronkan dari provider",
-      "syncError": "Sinkronisasi gagal"
+      "syncError": "Sinkronisasi gagal",
+      "status": {
+        "ACTIVE": "Game aktif: tampil dan bisa dibeli",
+        "MAINTENANCE": "Game dalam maintenance: tetap tampil, belum bisa dibeli",
+        "HIDDEN": "Game disembunyikan dari storefront"
+      },
+      "archived": "Game diarsipkan. Pilih status lain kapan saja untuk menampilkannya lagi.",
+      "archiveError": "Gagal mengarsipkan game"
     },
-    "openAria": "Buka {{name}}"
+    "openAria": "Buka {{name}}",
+    "statusHint": {
+      "ACTIVE": "Tampil dan bisa dibeli",
+      "MAINTENANCE": "Tampil, belum bisa dibeli",
+      "HIDDEN": "Tidak tampil di storefront"
+    },
+    "statusControl": "Status {{name}}",
+    "variant": {
+      "DIGITAL": "Digital",
+      "VOUCHER": "Voucher"
+    },
+    "variantHint": {
+      "DIGITAL": "Top up langsung ke akun pembeli: pembeli mengisi data akun yang diminta LapakGaming, misalnya user ID.",
+      "VOUCHER": "Pembeli tidak mengisi data akun. Kode voucher dikirim setelah order selesai."
+    }
   },
   "gameDetailPage": {
     "back": "Semua game",
@@ -786,21 +803,21 @@
       "code": "Kode",
       "copyCode": "Salin kode",
       "slug": "Slug",
-      "category": "Kategori",
       "popularity": "Popularitas",
-      "developer": "Developer",
-      "publisher": "Publisher",
       "created": "Dibuat",
-      "updated": "Diperbarui"
+      "updated": "Diperbarui",
+      "variant": "Jenis",
+      "region": "Region",
+      "supplierBrand": "Kategori LapakGaming",
+      "supplierBrandNone": "Belum terhubung"
     },
     "about": {
       "title": "Teks storefront",
       "description": "Tampil untuk pembeli di halaman game.",
       "edit": "Ubah",
       "descriptionLabel": "Deskripsi",
-      "instructionLabel": "Cara top up",
       "notSet": "Belum diisi",
-      "empty": "Belum ada deskripsi atau petunjuk.",
+      "empty": "Belum ada deskripsi.",
       "showMore": "Selengkapnya",
       "showLess": "Ringkas"
     },
@@ -808,7 +825,9 @@
       "title": "Field checkout",
       "description": "Yang diisi pembeli sebelum membayar.",
       "edit": "Ubah label",
-      "empty": "Game ini tidak punya field checkout."
+      "empty": "Game ini tidak punya field checkout.",
+      "missing_other": "Kategori LapakGaming {{code}} meminta {{fields}}, tapi game ini belum punya input itu. Checkout game ini ditolak sampai input-nya ada. Jalankan Sync katalog di halaman Penyedia untuk menambahkannya.",
+      "emptyVoucher": "Game voucher: pembeli tidak mengisi data akun. Kode voucher dikirim setelah order selesai."
     },
     "products": {
       "title": "Produk",
@@ -857,19 +876,17 @@
       "cancel": "Batal",
       "pending": "Menyinkronkan…"
     },
-    "danger": {
-      "title": "Hapus game ini",
-      "body": "Menghapus game beserta field checkout-nya. Untuk berhenti menjual tanpa kehilangan data, nonaktifkan saja.",
-      "button": "Hapus game"
-    },
-    "delete": {
-      "eyebrow": "// Hapus game",
-      "title": "Hapus {{name}}?",
-      "description": "Game dan field checkout-nya dihapus permanen. Game yang masih punya produk atau pesanan tidak bisa dihapus.",
-      "confirm": "Hapus",
-      "cancel": "Batal"
-    },
-    "eyebrowCategory": "// {{category}}"
+    "archive": {
+      "title": "Arsipkan game ini",
+      "body": "Game disembunyikan dari storefront. Produk, pesanan, acara, dan hubungan supplier-nya tetap ada, jadi bisa ditampilkan lagi kapan saja.",
+      "button": "Arsipkan",
+      "eyebrow": "// Arsipkan game",
+      "dialogTitle": "Arsipkan {{name}}?",
+      "description": "Statusnya jadi Tersembunyi: hilang dari storefront dan tidak bisa dibeli. Tidak ada data yang dihapus. Pilih status Aktif kapan saja untuk mengembalikannya.",
+      "confirm": "Arsipkan game",
+      "cancel": "Batal",
+      "pending": "Mengarsipkan…"
+    }
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -911,10 +928,8 @@
     "title": "Gambar {{name}}",
     "description": "Thumbnail tampil di daftar dan pencarian. Banner jadi kepala halaman game di storefront.",
     "thumbnailLabel": "Thumbnail",
-    "thumbnailHint": "Persegi, minimal 256 × 256.",
     "thumbnailRequired": "Game wajib punya thumbnail.",
     "bannerLabel": "Banner",
-    "bannerHint": "Opsional. Gambar lebar, sekitar 21:9.",
     "removeBanner": "Hapus banner",
     "cancel": "Batal",
     "save": "Simpan gambar",
@@ -922,8 +937,8 @@
   },
   "productCallbackLogPage": {
     "eyebrow": "// Feed penyedia",
-    "title": "Log callback produk",
-    "subtitle": "Update harga dan stok yang dikirim penyedia untuk tiap produk. Harga penyedia naik berarti margin menipis.",
+    "title": "Log update produk",
+    "subtitle": "Setiap perubahan harga atau stok produk dari supplier, beserta sumbernya: push LapakGaming, job sync harian, sync admin, atau checkout. Hanya yang berubah yang dicatat. Harga supplier naik berarti margin menipis.",
     "total": "{{formatted}} update",
     "searchPlaceholder": "Cari kode produk",
     "stockLabel": "Stok",
@@ -931,6 +946,20 @@
     "stock": {
       "available": "Tersedia",
       "empty": "Kosong"
+    },
+    "sourceLabel": "Sumber",
+    "sourceAll": "Semua",
+    "source": {
+      "SCHEDULER": "Job sync",
+      "MANUAL_SYNC": "Sync admin",
+      "CHECKOUT": "Checkout",
+      "CALLBACK": "Push LapakGaming"
+    },
+    "sourceHint": {
+      "SCHEDULER": "Job sync harian bertanya ke LapakGaming",
+      "MANUAL_SYNC": "Admin menyinkronkan produk game ini",
+      "CHECKOUT": "Checkout bertanya ke LapakGaming dan menemukan perubahan",
+      "CALLBACK": "Dikirim LapakGaming lewat Product Update Callback"
     },
     "datePlaceholder": "Semua tanggal",
     "sortLabel": "Urutkan",
@@ -947,18 +976,18 @@
     "reset": "Reset filter",
     "noChange": "Tetap",
     "retry": "Coba lagi",
-    "loadError": "Gagal memuat log callback. Periksa koneksi lalu coba lagi.",
-    "emptyTitle": "Belum ada callback",
-    "emptyBody": "Update produk dari penyedia akan muncul di sini saat masuk.",
+    "loadError": "Gagal memuat log update. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada update",
+    "emptyBody": "Perubahan harga dan stok muncul di sini begitu sync menemukannya.",
     "noMatchTitle": "Tidak ada update yang cocok",
     "noMatchBody": "Coba perluas rentang tanggal atau kurangi filter.",
     "detail": {
-      "back": "Kembali ke log callback",
+      "back": "Kembali ke log update",
       "eyebrow": "// Update produk",
-      "loadError": "Gagal memuat callback ini. Mungkin sudah dihapus.",
+      "loadError": "Gagal memuat update ini. Mungkin sudah dihapus.",
       "previousPrice": "Harga sebelumnya",
       "newPrice": "Harga baru",
-      "receivedAt": "Diterima",
+      "receivedAt": "Dicatat",
       "providerTime": "Waktu penyedia",
       "level": "Level",
       "logId": "ID log",
@@ -1090,13 +1119,12 @@
   "providerPage": {
     "eyebrow": "// Rantai pasokan",
     "title": "Penyedia",
-    "subtitle": "API hulu yang memproses top-up. Order dikirim ke penyedia aktif sesuai prioritas, angka terkecil lebih dulu.",
+    "subtitle": "API hulu yang memproses top-up. Daftarnya mengikuti integrasi yang ada di backend; di sini kamu mengatur status, prioritas, base URL, dan konfigurasinya. Order dikirim ke penyedia aktif sesuai prioritas, angka terkecil lebih dulu.",
     "total": "{{active}} dari {{count}} aktif",
-    "addBtn": "Tambah penyedia",
     "retry": "Coba lagi",
     "loadError": "Gagal memuat penyedia. Periksa koneksi lalu coba lagi.",
     "emptyTitle": "Belum ada penyedia",
-    "emptyBody": "Hubungkan API penyedia agar order bisa diproses.",
+    "emptyBody": "Penyedia dibuat otomatis oleh backend saat berjalan, satu untuk setiap integrasi supplier. Cek log backend kalau daftar ini tetap kosong.",
     "priorityShort": "Prio",
     "priorityTitle": "Prioritas: angka kecil dipakai lebih dulu",
     "status": {
@@ -1105,77 +1133,270 @@
       "ERROR": "Error"
     },
     "toggleActive": "Pakai {{name}} untuk order",
-    "apiUrl": "URL API",
-    "apiKey": "Kunci API",
+    "unsupported": "Tidak didukung",
+    "unsupportedHint": "Backend versi ini tidak punya integrasi untuk penyedia ini, jadi penyedia ini tidak bisa diaktifkan.",
+    "apiUrl": "Base URL",
+    "credentials": "Kredensial",
+    "credentialSet": "{{env}} sudah di-set di server",
+    "credentialMissing": "{{env}} belum di-set di server",
+    "credentialStatusSet": "sudah di-set",
+    "credentialStatusMissing": "belum di-set",
     "config": "Konfigurasi",
     "timeout": "Timeout {{seconds}} dtk",
     "noTimeout": "Timeout bawaan",
     "moreConfig": "{{count}} pengaturan lain",
-    "noKey": "Kunci belum diisi",
-    "showKey": "Tampilkan kunci API",
-    "hideKey": "Sembunyikan kunci API",
-    "copyKey": "Salin kunci API",
-    "copyUrl": "Salin URL API",
+    "copyUrl": "Salin base URL",
     "copied": "Disalin",
     "copyFailed": "Gagal menyalin",
     "updatedAt": "Diperbarui {{date}}",
     "editBtn": "Ubah {{name}}",
-    "deleteBtn": "Hapus {{name}}",
     "balance": {
-      "lapak": "Saldo Lapak Gaming",
-      "ppob": "Saldo PPOB",
+      "label": "Saldo",
       "error": "Gagal mengambil saldo",
-      "refresh": "Muat ulang {{name}}"
+      "refresh": "Cek ulang saldo {{name}}",
+      "checkedAt": "dicek {{time}}",
+      "unsupported": "Belum bisa dicek untuk penyedia ini"
     },
     "form": {
-      "addEyebrow": "// Penyedia baru",
       "editEyebrow": "// Ubah penyedia",
-      "addTitle": "Tambah penyedia",
-      "editTitle": "Ubah penyedia",
-      "addDescription": "Detail koneksi ke API penyedia. Penyedia baru langsung aktif.",
-      "editDescription": "Perbarui koneksi, prioritas, atau status penyedia ini.",
-      "nameLabel": "Nama",
-      "codeLabel": "Kode",
-      "codeLocked": "Kode tidak bisa diubah setelah dibuat.",
-      "urlLabel": "URL API",
-      "keyLabel": "Kunci API",
-      "keyHint": "Dikirim apa adanya ke backend; hanya admin dengan akses penyedia yang bisa membacanya.",
-      "keyKeepPlaceholder": "Kosongkan untuk memakai kunci saat ini",
-      "keyKeepHint": "Kosongkan untuk mempertahankan kunci tersimpan. Mengetik di sini akan menggantinya.",
+      "editTitle": "Ubah {{name}}",
+      "editDescription": "Atur base URL, status, prioritas, dan konfigurasinya. Nama dan kode mengikuti integrasi di backend.",
+      "urlLabel": "Base URL",
+      "credentialsLabel": "Kredensial",
+      "credentialsEditHint": "Dibaca dari env server, bukan dari form ini. Untuk mengganti kunci, ubah env-nya lalu restart backend.",
       "priorityLabel": "Prioritas",
-      "priorityHint": "Angka lebih kecil dicoba lebih dulu bila beberapa penyedia bisa memproses order.",
       "statusLabel": "Status",
       "configLabel": "Konfigurasi (JSON)",
-      "configHint": "Objek JSON, misalnya {\"timeout\": 30} untuk timeout 30 detik.",
+      "configHint": "Objek JSON untuk pengaturan yang tidak rahasia, misalnya {\"timeout\": 30} untuk timeout 30 detik. \"regions\" memilih negara yang ikut di-sync dari LapakGaming, misalnya {\"regions\": [\"id\", \"my\"]}; tanpa itu hanya Indonesia.",
       "cancel": "Batal",
-      "create": "Tambah penyedia",
       "save": "Simpan perubahan",
       "saving": "Menyimpan…",
       "errors": {
-        "nameRequired": "Beri nama penyedia.",
-        "codeRequired": "Beri kode penyedia.",
-        "codeTaken": "Kode ini sudah dipakai penyedia lain.",
         "urlInvalid": "Gunakan URL lengkap yang diawali http:// atau https://.",
-        "keyRequired": "Masukkan kunci API.",
+        "urlSecret": "Base URL tidak boleh berisi kredensial, misalnya user:password@ atau ?apikey=. Simpan di env server.",
         "priorityInvalid": "Gunakan bilangan bulat, 0 atau lebih.",
         "configInvalid": "Ini bukan objek JSON yang valid.",
-        "generic": "Gagal menambah penyedia. Periksa data lalu coba lagi."
+        "configSecret": "Konfigurasi tidak boleh berisi kredensial (api_key, secret, token, password, PIN). Simpan di env server."
       }
     },
-    "deleteConfirm": {
-      "eyebrow": "// Hapus penyedia",
-      "title": "Hapus {{name}}?",
-      "description": "Order tidak bisa lagi dikirim ke penyedia ini. Game dan produk yang bergantung padanya bisa berhenti berfungsi.",
-      "confirm": "Hapus penyedia",
-      "cancel": "Batal"
-    },
     "toasts": {
-      "created": "Penyedia ditambahkan",
       "updated": "Penyedia diperbarui",
       "statusSaved": "Status penyedia diperbarui",
-      "deleted": "Penyedia dihapus",
-      "updateError": "Gagal memperbarui penyedia",
-      "deleteError": "Gagal menghapus penyedia"
+      "updateError": "Gagal memperbarui penyedia"
+    },
+    "regions": {
+      "label": "Region",
+      "manage": "Atur",
+      "eyebrow": "Region supplier",
+      "title": "Region {{name}}",
+      "description": "Negara yang ditarik saat sync katalog. Storefront menampilkan region yang punya game tampil, dan pembeli memilihnya di navbar.",
+      "searchPlaceholder": "Cari negara, kode, atau mata uang",
+      "selected": "{{count}} negara di-sync",
+      "listLabel": "Negara LapakGaming",
+      "loading": "Memuat negara…",
+      "loadError": "Daftar negara gagal dimuat.",
+      "noMatch": "Tidak ada negara yang cocok.",
+      "brands": "{{count}} brand",
+      "listedGames": "{{count}} game tampil",
+      "notSynced": "Belum pernah di-sync",
+      "homeOff": "{{name}} tidak di-sync: brand dan produk game {{name}} tidak diperbarui saat sync katalog.",
+      "hint": "Negara baru terisi setelah sync katalog berikutnya. Negara yang dilepas tetap menyimpan brand dan game-nya; game-nya tetap tampil sampai disembunyikan.",
+      "savedTitle": "Region disimpan",
+      "savedAdded": "Brand dan produk {{names}} masuk setelah sync katalog {{name}} berikutnya. Setelah itu, hubungkan brand-nya ke game di Katalog Supplier.",
+      "savedNoNew": "Tidak ada negara baru, jadi tidak perlu sync ulang.",
+      "syncNow": "Sync katalog sekarang",
+      "close": "Tutup",
+      "toasts": {
+        "saved": "Region disimpan",
+        "saveError": "Region gagal disimpan"
+      }
+    }
+  },
+  "supplierCatalogPage": {
+    "eyebrow": "// Rantai pasokan",
+    "title": "Katalog supplier",
+    "subtitle": "Semua yang dijual supplier, ditarik lengkap dari API mereka. Hubungkan brand ke game dan produk supplier ke produk storefront supaya bisa dipakai.",
+    "total": {
+      "brands": "{{formatted}} brand",
+      "products": "{{formatted}} produk"
+    },
+    "refresh": "Muat ulang daftar",
+    "retry": "Coba lagi",
+    "noProvider": "Belum ada penyedia. Penyedia dibuat otomatis oleh backend saat berjalan.",
+    "emptyTitle": "Katalog masih kosong",
+    "emptyBody": "Tarik katalog supplier dengan tombol Sync katalog di atas.",
+    "noMatchTitle": "Tidak ada yang cocok",
+    "noMatchBody": "Ubah atau hapus filter untuk melihat lebih banyak.",
+    "never": "Belum pernah",
+    "yes": "Ya",
+    "no": "Tidak",
+    "close": "Tutup",
+    "autoMapped": "Otomatis (kode atau SKU sama)",
+    "tabs": {
+      "label": "Tampilan",
+      "brands": "Brand",
+      "products": "Produk"
+    },
+    "filters": {
+      "search": {
+        "brands": "Cari nama atau kode brand",
+        "products": "Cari nama produk atau SKU"
+      },
+      "mapping": "Status mapping",
+      "mappingOptions": {
+        "all": "Semua",
+        "UNMAPPED": "Belum dipetakan",
+        "MAPPED": "Dipetakan",
+        "IGNORED": "Diabaikan"
+      },
+      "stock": "Stok",
+      "stockOptions": {
+        "all": "Semua",
+        "available": "Tersedia",
+        "empty": "Kosong"
+      },
+      "brand": "Brand: {{name}}",
+      "clearBrand": "Tampilkan semua brand",
+      "reset": "Reset filter",
+      "region": "Region",
+      "regionAll": "Semua region"
+    },
+    "mapping": {
+      "UNMAPPED": "Belum dipetakan",
+      "MAPPED": "Dipetakan",
+      "IGNORED": "Diabaikan"
+    },
+    "stock": {
+      "available": "Tersedia",
+      "empty": "Kosong",
+      "unknown": "Tidak diketahui"
+    },
+    "columns": {
+      "brand": "Brand",
+      "products": "Produk",
+      "mapping": "Mapping",
+      "lastSeen": "Terakhir terlihat",
+      "product": "Produk",
+      "brandCode": "Brand",
+      "cost": "Modal",
+      "stock": "Stok"
+    },
+    "row": {
+      "checkId": "Cek ID",
+      "products": "{{formatted}} produk",
+      "disabled": "Tidak dipakai untuk routing",
+      "voucher": "Voucher"
+    },
+    "sync": {
+      "label": "Sinkronisasi katalog",
+      "provider": "Supplier",
+      "never": "Katalog supplier ini belum pernah ditarik.",
+      "counts": "{{brands}} brand · {{products}} produk",
+      "failed": "{{count}} brand gagal",
+      "runningSince": "berjalan sejak {{time}}",
+      "finishedAt": "selesai {{time}}",
+      "runningHint": "Sync berjalan di server. Status di sini diperbarui sendiri, dan halaman ini boleh ditinggal.",
+      "start": "Sync katalog",
+      "running": "Sedang sync…",
+      "status": {
+        "RUNNING": "Berjalan",
+        "SUCCEEDED": "Berhasil",
+        "PARTIAL": "Sebagian",
+        "FAILED": "Gagal"
+      }
+    },
+    "brand": {
+      "eyebrow": "// Brand supplier",
+      "notFound": "Brand tidak ditemukan",
+      "notFoundBody": "Brand ini mungkin sudah tidak ada. Tutup lalu muat ulang daftarnya.",
+      "mapping": "Mapping",
+      "game": "Game",
+      "products": "Produk di supplier",
+      "checkId": "Cek ID di supplier",
+      "lastSeen": "Terakhir terlihat",
+      "mappedBy": "Dipetakan oleh",
+      "tieTitle": "Hubungkan ke game",
+      "tieHint": "Pilih game storefront yang dipasok brand ini. Satu game hanya bisa terhubung ke satu brand dari supplier yang sama.",
+      "pickGame": "Pilih game",
+      "tie": "Hubungkan",
+      "sync": "Sync produk brand ini",
+      "importGame": "Buat game baru dari brand ini",
+      "importGameHint": "Membuat game baru beserta field input-nya dari data supplier, lalu langsung menghubungkannya. Kalau gamenya sudah ada, pilih saja di atas.",
+      "importProducts": "Import produk",
+      "importProductsHint": "Import produk membuat produk storefront untuk produk supplier yang belum dipetakan, di harga modal tanpa markup. Atur harga jualnya di halaman produk.",
+      "untie": "Lepas dari game",
+      "ignore": "Abaikan",
+      "unignore": "Batalkan abaikan",
+      "showProducts": "Lihat {{count}} produk",
+      "region": "Region",
+      "variant": "Jenis"
+    },
+    "product": {
+      "eyebrow": "// Produk supplier",
+      "notFound": "Produk tidak ditemukan",
+      "notFoundBody": "Produk ini mungkin sudah tidak ada. Tutup lalu muat ulang daftarnya.",
+      "cost": "Modal",
+      "stock": "Stok di supplier",
+      "brand": "Brand",
+      "subProvider": "Sub-server",
+      "costUpdated": "Modal terakhir berubah",
+      "lastSeen": "Terakhir terlihat",
+      "mapping": "Mapping",
+      "mappedBy": "Dipetakan oleh",
+      "tieTitle": "Hubungkan ke produk",
+      "tieHint": "Pilih produk {{game}} yang dipenuhi produk supplier ini. Produk dengan nama yang sama ditaruh paling atas.",
+      "brandNotTied": "Brand produk ini belum terhubung ke game. Hubungkan brand-nya dulu, baru produknya bisa dipetakan.",
+      "openBrand": "Buka brand",
+      "openGame": "Buka game {{name}}",
+      "pickProduct": "Pilih produk",
+      "loadingProducts": "Memuat produk…",
+      "searchProduct": "Cari produk",
+      "noProducts": "Tidak ada produk yang cocok",
+      "sameName": "Nama sama",
+      "tie": "Hubungkan",
+      "untie": "Lepas dari produk",
+      "ignore": "Abaikan",
+      "unignore": "Batalkan abaikan",
+      "offerTitle": "Pemakaian untuk routing",
+      "offerHint": "Nanti, saat order bisa dikirim lewat beberapa supplier, produk yang tidak dipakai dilewati dan prioritas yang lebih kecil dicoba lebih dulu.",
+      "enabled": "Dipakai",
+      "disabled": "Tidak dipakai",
+      "priority": "Prioritas",
+      "savePriority": "Simpan"
+    },
+    "raw": {
+      "title": "Data asli dari supplier",
+      "copy": "Salin JSON",
+      "copyFailed": "Gagal menyalin"
+    },
+    "toasts": {
+      "syncStarted": "Sync katalog dimulai",
+      "brandSynced": "{{count}} produk disinkronkan",
+      "brandMapping": {
+        "MAPPED": "Brand terhubung ke game",
+        "UNMAPPED": "Brand dilepas dari game",
+        "IGNORED": "Brand diabaikan"
+      },
+      "brandImported": "Game {{name}} dibuat dan terhubung",
+      "productsImported": "{{created}} produk dibuat, {{mapped}} dipetakan, {{skipped}} dilewati",
+      "productMapping": {
+        "MAPPED": "Produk terhubung",
+        "UNMAPPED": "Produk dilepas",
+        "IGNORED": "Produk diabaikan"
+      },
+      "productUpdated": "Produk supplier diperbarui"
+    },
+    "errors": {
+      "generic": "Ada yang gagal. Coba lagi sebentar lagi.",
+      "notFound": "Data ini sudah tidak ada. Muat ulang daftarnya.",
+      "syncRunning": "Sync untuk supplier ini masih berjalan. Tunggu sampai selesai.",
+      "supplierUnavailable": "Supplier tidak bisa dihubungi atau menolak permintaan. Coba lagi nanti.",
+      "gameTaken": "Game itu sudah terhubung ke brand lain dari supplier yang sama.",
+      "codeTakenOtherSupplier": "Sudah ada game dengan kode ini dari supplier lain. Hubungkan brand ini ke game yang tepat secara manual.",
+      "productOtherGame": "Produk itu milik game lain, bukan game yang dipasok brand ini.",
+      "brandNotMapped": "Hubungkan brand ke game dulu, atau buat game baru darinya.",
+      "brandAlreadyMapped": "Brand ini sudah terhubung ke game.",
+      "noCatalog": "Supplier ini belum punya integrasi katalog."
     }
   },
   "paymentMethodPage": {
@@ -1193,6 +1414,8 @@
     "uncategorized": "Tanpa kategori",
     "methodCount": "{{count}} metode",
     "inactive": "Nonaktif",
+    "unsupported": "Tidak didukung",
+    "unsupportedHint": "Paylabs tidak menyediakan metode ini, jadi tidak bisa diaktifkan.",
     "fee": "Biaya",
     "limit": "Nominal",
     "feeFree": "Gratis",
@@ -1211,7 +1434,6 @@
       "nameLabel": "Nama",
       "codeLabel": "Kode kanal",
       "typeLabel": "Tipe",
-      "providerLabel": "Gateway",
       "feeSection": "Biaya yang dibebankan ke pemain",
       "feePercentLabel": "Persentase",
       "feeFixedLabel": "Tetap",
@@ -1233,13 +1455,25 @@
         "nameRequired": "Beri nama metode.",
         "codeRequired": "Masukkan kode kanal.",
         "typeRequired": "Masukkan tipe.",
-        "providerRequired": "Masukkan gateway.",
         "feeInvalid": "Gunakan angka mulai 0 (persentase maks 100).",
         "amountInvalid": "Gunakan nominal 0 atau lebih.",
         "maxBelowMin": "Maksimum harus sama atau lebih dari minimum.",
         "orderInvalid": "Gunakan bilangan bulat.",
-        "configInvalid": "Ini bukan objek JSON yang valid."
-      }
+        "configInvalid": "Ini bukan objek JSON yang valid.",
+        "methodRequired": "Pilih metode.",
+        "fullNameRequired": "Masukkan nama tampilan."
+      },
+      "methodLabel": "Metode",
+      "methodPlaceholder": "Pilih metode",
+      "methodLoading": "Memuat daftar metode…",
+      "catalogError": "Daftar metode gagal dimuat. Coba buka ulang form ini.",
+      "alreadyAdded": "sudah ada",
+      "methodInfo": "Kode {{code}} · {{type}}",
+      "methodFixed": "Metode tidak bisa diganti. Buat metode baru kalau perlu metode lain.",
+      "fullNameLabel": "Nama tampilan",
+      "fullNameHint": "Nama yang dilihat pembeli saat memilih metode.",
+      "unsupported": "Paylabs tidak menyediakan metode ini, jadi metode ini tidak bisa diaktifkan lagi.",
+      "unsupportedActiveHint": "Metode ini tidak didukung Paylabs, jadi tetap nonaktif."
     },
     "deleteConfirm": {
       "eyebrow": "// Hapus metode",
@@ -1256,6 +1490,12 @@
       "createError": "Gagal menambah metode pembayaran",
       "updateError": "Gagal memperbarui metode pembayaran",
       "deleteError": "Gagal menghapus metode pembayaran"
+    },
+    "type": {
+      "QRIS": "QRIS",
+      "EWALLET": "E-wallet",
+      "VA": "Virtual Account",
+      "RETAIL": "Gerai retail"
     }
   },
   "paymentCategoryPage": {
@@ -1387,7 +1627,7 @@
     "games": {
       "eyebrow": "// Susunan game",
       "title": "Game di {{name}}",
-      "description": "Centang game yang tampil di bagian ini. Menyimpan akan mengganti seluruh daftar.",
+      "description": "Centang game yang tampil di bagian ini. Menyimpan mengganti daftar di acara ini saja; game tetap ada di acara lain.",
       "searchPlaceholder": "Cari game",
       "listLabel": "Game",
       "selected": "{{count}} game dipilih",
@@ -1395,12 +1635,10 @@
       "loading": "Memuat game…",
       "noGames": "Tidak ada game.",
       "noMatch": "Tidak ada game yang cocok.",
-      "inShow": "Di {{name}}",
-      "willMove": "Pindah dari {{name}}",
-      "movingNote": "Satu game hanya bisa ada di satu acara. {{count}} game terpilih akan dipindahkan dari acara asalnya.",
       "cancel": "Batal",
       "save": "Simpan game",
-      "saving": "Menyimpan…"
+      "saving": "Menyimpan…",
+      "alsoIn": "Juga di {{name}}"
     },
     "deleteConfirm": {
       "eyebrow": "// Hapus acara",
@@ -1419,6 +1657,11 @@
       "updateError": "Gagal memperbarui acara",
       "deleteError": "Gagal menghapus acara",
       "gamesError": "Gagal menyimpan game"
+    },
+    "regions": {
+      "label": "Per region:",
+      "count": "{{count}} game",
+      "hint": "Jumlah game yang dilihat pembeli tiap region: tiap game diganti versi region pembeli, dan game tanpa versi region itu tidak tampil."
     }
   },
   "inputPage": {
@@ -1462,6 +1705,22 @@
       "saved": "Field disimpan",
       "savedMany": "{{count}} field disimpan",
       "saveError": "Gagal menyimpan field"
+    },
+    "rules": {
+      "title": "Aturan isian",
+      "min": "Min. karakter",
+      "max": "Maks. karakter",
+      "pattern": "Pola (regex)",
+      "patternPlaceholder": "mis. [0-9]+",
+      "hint": "Dicek saat checkout. Kosongkan untuk menerima isian apa saja. Pola harus cocok dengan seluruh isian.",
+      "fixFirst": "Perbaiki aturan isian dulu.",
+      "errors": {
+        "number": "Panjang harus bilangan bulat, 0 atau lebih.",
+        "tooLong": "Panjang paling banyak 255 karakter.",
+        "crossed": "Min. karakter tidak boleh lebih dari maks.",
+        "pattern": "Pola ini bukan regex yang valid.",
+        "patternTooLong": "Pola paling panjang 200 karakter."
+      }
     }
   },
   "maintenancePage": {
@@ -1546,6 +1805,228 @@
       "deleteError": "Gagal menghapus pemeliharaan"
     }
   },
+  "transactionStopPage": {
+    "eyebrow": "// Kontrol sistem",
+    "title": "Stop Transaksi",
+    "subtitle": "Tombol darurat untuk menghentikan checkout baru. Storefront tetap bisa dibuka, dan pembayaran yang sudah dibuat tetap dibayar dan diproses. Untuk menutup seluruh storefront, pakai Pemeliharaan.",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat status stop transaksi. Periksa koneksi lalu coba lagi.",
+    "wib": "WIB",
+    "status": {
+      "eyebrow": "// Status checkout",
+      "stopped": "STOP",
+      "running": "Berjalan",
+      "stoppedBody": "Checkout baru sedang ditolak.",
+      "runningBody": "Pembeli bisa checkout seperti biasa.",
+      "since": "Dihentikan sejak",
+      "resumeAt": "Buka lagi otomatis",
+      "resumeManual": "Tidak dijadwalkan",
+      "resumeManualHint": "Tetap stop sampai dibuka manual",
+      "autoReopened": "Dibuka lagi otomatis pada {{date}} WIB ({{when}}).",
+      "messageLabel": "Pesan untuk pembeli",
+      "defaultMessageNote": "Teks bawaan, karena pesan dikosongkan.",
+      "updatedBy": "Diubah oleh {{who}} · {{date}}",
+      "neverChanged": "Belum pernah diubah"
+    },
+    "impact": {
+      "title": "Selama stop",
+      "checkout": "Checkout baru",
+      "checkoutValue": "Ditolak",
+      "browse": "Melihat toko & katalog",
+      "browseValue": "Tetap jalan",
+      "pending": "Pembayaran yang sudah dibuat",
+      "pendingValue": "Tetap dibayar & diproses"
+    },
+    "form": {
+      "eyebrow": "// Kendali",
+      "titleRunning": "Hentikan transaksi",
+      "titleStopped": "Stop sedang berlaku",
+      "descriptionRunning": "Isi pesan dan jadwal buka bila perlu, lalu hentikan. Keduanya opsional.",
+      "descriptionStopped": "Ubah pesan atau jadwal buka tanpa membuka transaksi, atau buka transaksi sekarang.",
+      "messageLabel": "Pesan untuk pembeli",
+      "messageHint": "Opsional. Kosongkan untuk memakai teks bawaan (contoh di kolom).",
+      "resumeLabel": "Buka lagi otomatis",
+      "resumeHint": "Opsional. Kosongkan agar tetap stop sampai dibuka manual.",
+      "resumeIn": "Buka dalam",
+      "clear": "Kosongkan",
+      "stopBtn": "Stop transaksi sekarang",
+      "resumeBtn": "Buka transaksi lagi",
+      "saveBtn": "Simpan perubahan",
+      "errors": {
+        "messageMax": "Pesan maksimal 300 karakter.",
+        "resumeInPast": "Waktu buka harus di masa depan."
+      }
+    },
+    "readOnly": {
+      "title": "Hanya lihat",
+      "body": "Anda bisa melihat status stop transaksi, tetapi tidak punya izin untuk mengubahnya."
+    },
+    "confirm": {
+      "cancel": "Batal",
+      "stop": {
+        "eyebrow": "// Stop transaksi",
+        "title": "Stop transaksi sekarang?",
+        "description": "Checkout baru di storefront langsung ditolak. Pembeli tetap bisa melihat toko, dan pembayaran yang sudah dibuat tetap dibayar dan diproses.",
+        "confirm": "Stop transaksi",
+        "messageLabel": "Pesan untuk pembeli",
+        "resumeLabel": "Buka lagi otomatis",
+        "resumeAt": "{{date}} WIB ({{when}})",
+        "resumeManual": "Tidak, tetap stop sampai dibuka manual"
+      },
+      "resume": {
+        "eyebrow": "// Buka transaksi",
+        "title": "Buka transaksi lagi?",
+        "description": "Pembeli bisa checkout lagi mulai sekarang. Jadwal buka otomatis dihapus; pesan disimpan untuk stop berikutnya.",
+        "confirm": "Buka transaksi"
+      }
+    },
+    "indicator": {
+      "label": "Transaksi STOP",
+      "short": "STOP",
+      "aria": "Transaksi sedang di-stop. Buka halaman Stop Transaksi."
+    },
+    "toasts": {
+      "stopped": "Transaksi dihentikan",
+      "resumed": "Transaksi dibuka lagi",
+      "saved": "Perubahan disimpan",
+      "stopError": "Gagal menghentikan transaksi",
+      "resumeError": "Gagal membuka transaksi",
+      "saveError": "Gagal menyimpan perubahan"
+    }
+  },
+  "announcementPage": {
+    "eyebrow": "// Konten storefront",
+    "title": "Pengumuman",
+    "subtitle": "Pemberitahuan penting untuk pemain. Tiap pengumuman tampil sebagai bar tipis di atas halaman atau sebagai popup, sesuai jadwal tayangnya.",
+    "total": "{{live}} tayang · {{count}} total",
+    "addBtn": "Buat pengumuman",
+    "retry": "Coba lagi",
+    "loadError": "Gagal memuat pengumuman. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada pengumuman",
+    "emptyBody": "Buat pengumuman untuk memberi tahu pemain soal gangguan, promo, atau info penting lainnya.",
+    "wib": "WIB",
+    "hasImage": "Ada gambar",
+    "toggleActive": "Pengumuman aktif: {{name}}",
+    "editBtn": "Ubah {{name}}",
+    "deleteBtn": "Hapus {{name}}",
+    "updatedBy": "Diperbarui {{who}} · {{date}}",
+    "columns": {
+      "title": "Judul",
+      "display": "Tampilan",
+      "level": "Level",
+      "status": "Status",
+      "schedule": "Jadwal",
+      "updated": "Diperbarui",
+      "actions": "Aksi"
+    },
+    "status": {
+      "live": "Tayang",
+      "scheduled": "Terjadwal",
+      "ended": "Selesai",
+      "off": "Nonaktif"
+    },
+    "display": {
+      "bar": "Bar",
+      "popup": "Popup"
+    },
+    "level": {
+      "info": "Info",
+      "warning": "Peringatan",
+      "promo": "Promo"
+    },
+    "linkKind": {
+      "none": "Tanpa tautan",
+      "internal": "Halaman toko",
+      "external": "Tautan luar"
+    },
+    "schedule": {
+      "now": "Sekarang",
+      "noEnd": "Tanpa batas"
+    },
+    "preview": {
+      "label": "Pratinjau",
+      "note": "Gambaran kasar. Tampilan akhirnya mengikuti storefront.",
+      "titlePlaceholder": "Judul pengumuman",
+      "defaultLabel": "label bawaan"
+    },
+    "form": {
+      "addEyebrow": "// Pengumuman baru",
+      "editEyebrow": "// Ubah pengumuman",
+      "addTitle": "Buat pengumuman",
+      "editTitle": "Ubah pengumuman",
+      "description": "Teks biasa, tanpa HTML. Waktu dalam WIB (UTC+7).",
+      "titleLabel": "Judul",
+      "titlePlaceholder": "Contoh: Pembayaran QRIS sedang gangguan",
+      "bodyLabel": "Isi",
+      "bodyPlaceholder": "Jelaskan singkat apa yang terjadi atau apa yang ditawarkan.",
+      "bodyHint": "Opsional. Teks biasa; baris baru ikut tampil.",
+      "displayLabel": "Tampilan",
+      "displayHint": {
+        "bar": "Strip tipis di atas setiap halaman.",
+        "popup": "Jendela di tengah layar, bisa pakai gambar."
+      },
+      "levelLabel": "Level",
+      "levelHint": {
+        "info": "Info umum, warna netral.",
+        "warning": "Gangguan atau masalah yang perlu diketahui pemain.",
+        "promo": "Penawaran, diskon, atau event."
+      },
+      "linkLabel": "Tautan",
+      "linkPlaceholder": "/games/mlbb atau https://…",
+      "linkHint": "Opsional. Pakai path toko seperti /games/mlbb, atau URL lengkap https://… untuk situs lain.",
+      "linkLabelLabel": "Label tautan",
+      "linkLabelPlaceholder": "Contoh: Lihat promo",
+      "linkLabelHint": "Opsional. Kosongkan untuk memakai label bawaan storefront. Hanya tampil jika tautan diisi.",
+      "imageLabel": "Gambar popup",
+      "imageHint": "Opsional. Tampil di atas teks popup. Disarankan 16:9, mis. 1200 × 675 px · JPG/WebP.",
+      "imageRemove": "Hapus gambar",
+      "scheduleLabel": "Jadwal tayang",
+      "startLabel": "Mulai",
+      "endLabel": "Selesai",
+      "startHint": "Kosong: tayang begitu disimpan.",
+      "endHint": "Kosong: tayang tanpa batas.",
+      "clear": "Kosongkan",
+      "showFor": "Tayang selama",
+      "days": "{{count}} hari",
+      "activeLabel": "Aktif",
+      "activeOnHint": "Aktif: tayang di storefront sesuai jadwal.",
+      "activeOffHint": "Nonaktif: disimpan sebagai draf, tidak pernah tayang.",
+      "cancel": "Batal",
+      "create": "Buat pengumuman",
+      "save": "Simpan perubahan",
+      "saving": "Menyimpan…",
+      "errors": {
+        "titleRequired": "Beri judul pengumuman ini.",
+        "titleMax": "Judul maksimal 100 karakter.",
+        "bodyMax": "Isi maksimal 500 karakter.",
+        "linkInvalid": "Tautan harus path toko seperti /games/mlbb atau URL http(s) lengkap.",
+        "linkLabelMax": "Label tautan maksimal 40 karakter.",
+        "imageInvalid": "Gambar harus berupa URL http(s). Unggah ulang gambarnya.",
+        "orderInvalid": "Waktu selesai harus setelah waktu mulai."
+      }
+    },
+    "errors": {
+      "title": "Judul wajib diisi, maksimal 100 karakter.",
+      "level": "Level harus Info, Peringatan, atau Promo.",
+      "display": "Tampilan harus Bar atau Popup.",
+      "notFound": "Pengumuman ini sudah tidak ada. Daftar dimuat ulang."
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Hapus pengumuman",
+      "title": "Hapus “{{name}}”?",
+      "description": "Pengumuman ini dihapus permanen dan langsung hilang dari storefront.",
+      "confirm": "Hapus",
+      "cancel": "Batal"
+    },
+    "toasts": {
+      "created": "Pengumuman dibuat",
+      "updated": "Pengumuman diperbarui",
+      "deleted": "Pengumuman dihapus",
+      "createError": "Gagal membuat pengumuman",
+      "updateError": "Gagal memperbarui pengumuman",
+      "deleteError": "Gagal menghapus pengumuman"
+    }
+  },
   "adminPage": {
     "eyebrow": "// Kontrol akses",
     "title": "Pengguna admin",
@@ -1574,7 +2055,7 @@
       "usernameLabel": "Username",
       "emailLabel": "Email",
       "passwordLabel": "Kata sandi",
-      "passwordHint": "Minimal 6 karakter. Bagikan kepada mereka secara pribadi.",
+      "passwordHint": "Minimal 12 karakter dan bukan alamat emailnya. Bagikan kepada mereka secara pribadi.",
       "roleLabel": "Role",
       "confirmLabel": "Konfirmasi dengan kata sandi Anda",
       "confirmHint": "Menambah admin berarti memberi akses, jadi masukkan kata sandi Anda sendiri untuk menyetujuinya.",
@@ -1591,10 +2072,11 @@
         "emailRequired": "Masukkan emailnya.",
         "emailInvalid": "Format email tidak valid.",
         "emailTaken": "Admin dengan email ini sudah ada.",
-        "passwordMin": "Gunakan minimal 6 karakter.",
+        "passwordMin": "Gunakan minimal 12 karakter.",
         "confirmRequired": "Masukkan kata sandi Anda untuk menyetujui.",
         "confirmInvalid": "Kata sandi Anda salah.",
-        "generic": "Gagal menambah admin. Periksa data lalu coba lagi."
+        "generic": "Gagal menambah admin. Periksa data lalu coba lagi.",
+        "passwordIsEmail": "Kata sandi tidak boleh sama dengan email."
       }
     },
     "roleDialog": {
@@ -1780,6 +2262,20 @@
     "health": {
       "degradedTitle": "Sebagian layanan bermasalah",
       "degradedBody": "Terdampak: {{services}}. Order bisa gagal sampai layanan pulih."
+    },
+    "fx": {
+      "title": "Kurs LapakGaming",
+      "subtitle": "Harga 1 unit mata uang dalam rupiah menurut LapakGaming, yang memperbaruinya setiap hari. Mata uang region yang di-sync tampil paling atas.",
+      "fetchedAt": "diambil {{time}}",
+      "synced": "Di-sync",
+      "buy": "Beli",
+      "sell": "Jual",
+      "updated": "per {{date}}",
+      "updatedStale": "per {{date}} · sudah lama",
+      "showAll": "Tampilkan semua ({{count}})",
+      "showLess": "Tampilkan lebih sedikit",
+      "missing": "Tidak ada kurs untuk {{currencies}}.",
+      "loadError": "Kurs LapakGaming gagal dimuat."
     }
   },
   "unauthorizedPage": {
@@ -1904,7 +2400,9 @@
     "onTip": "Ponsel hilang? Pilih “Pakai kode pemulihan” di halaman login.",
     "disable": "Nonaktifkan 2FA",
     "disableTitle": "Nonaktifkan autentikasi dua faktor?",
-    "disableBody": "Akun hanya akan dilindungi kata sandi. Masukkan kode dari aplikasi authenticator untuk konfirmasi.",
+    "disableBody": "Akun hanya akan dilindungi kata sandi, dan role yang wajib 2FA harus mengaktifkannya lagi saat login berikutnya. Masukkan kata sandi dan kode dari aplikasi authenticator untuk konfirmasi.",
+    "passwordLabel": "Kata sandi Anda",
+    "alreadyOn": "2FA sudah aktif di akun ini. Nonaktifkan 2FA dulu untuk mengaturnya ulang.",
     "keepOn": "Tetap aktif",
     "disabling": "Menonaktifkan…",
     "deactivated": "2FA telah dinonaktifkan.",
@@ -1912,6 +2410,12 @@
     "fileAccount": "Akun: {{email}}",
     "fileGenerated": "Dibuat: {{date}}",
     "fileNote": "Setiap kode hanya bisa dipakai sekali. Simpan file ini di tempat aman."
+  },
+  "twoFaRequired": {
+    "eyebrow": "Wajib untuk akun admin",
+    "title": "Aktifkan 2FA untuk melanjutkan",
+    "description": "Akun admin wajib memakai autentikasi dua faktor. Atur sekarang, lalu panel langsung terbuka.",
+    "logout": "Keluar"
   },
   "rolesPage": {
     "eyebrow": "Keamanan",
@@ -1965,7 +2469,6 @@
       "summary": "Rekap",
       "game": "Game",
       "product": "Produk",
-      "category": "Kategori",
       "category_product": "Kategori produk",
       "game_input": "Field input",
       "provider": "Penyedia",
@@ -1975,13 +2478,17 @@
       "show": "Acara",
       "blog": "Artikel",
       "maintenance": "Pemeliharaan",
+      "transaction_stop": "Stop transaksi",
+      "announcement": "Pengumuman",
       "referral": "Kode referral",
       "admin": "Pengguna admin",
       "role": "Role",
       "admin_log": "Log admin",
       "upload": "Unggahan",
       "integration": "Integrasi",
-      "security": "Keamanan"
+      "security": "Keamanan",
+      "payment_callback": "Callback pembayaran",
+      "provider_order_log": "Log order supplier"
     },
     "actions": {
       "view": "Lihat",
@@ -2027,6 +2534,7 @@
   "authErrors": {
     "forbidden": "Anda tidak punya izin untuk melakukan itu. Hubungi developer jika butuh akses.",
     "invalidCredentials": "Email/nama pengguna atau kata sandi salah.",
+    "wrongPassword": "Kata sandi saat ini salah.",
     "invalidOtp": "Kode salah atau kedaluwarsa. Gunakan kode terbaru dari aplikasi Anda.",
     "invalidRecoveryCode": "Kode pemulihan tidak valid atau sudah pernah dipakai.",
     "tooManyAttempts": "Terlalu banyak percobaan. Tunggu sebentar, lalu coba lagi.",
@@ -2058,7 +2566,8 @@
       "COMPLETED": "Selesai",
       "FAILED": "Gagal",
       "EXPIRED": "Kedaluwarsa",
-      "REFUNDED": "Dikembalikan"
+      "REFUNDED": "Dikembalikan",
+      "FULFILMENT_FAILED": "Gagal dikirim ke supplier"
     },
     "timeline": {
       "label": "Progres",
@@ -2072,7 +2581,8 @@
         "PROCESSING": "Gateway sedang mengonfirmasi pembayaran.",
         "FAILED": "Pembayaran tidak berhasil.",
         "EXPIRED": "Pelanggan tidak membayar tepat waktu.",
-        "REFUNDED": "Dana sudah dikembalikan ke pelanggan."
+        "REFUNDED": "Dana sudah dikembalikan ke pelanggan.",
+        "FULFILMENT_FAILED": "Pelanggan sudah membayar."
       },
       "fulfilmentHint": {
         "waiting": "Dimulai setelah pembayaran masuk.",
@@ -2083,7 +2593,8 @@
         "COMPLETED": "Sudah masuk ke akun pelanggan.",
         "FAILED": "Provider gagal mengirimkannya.",
         "EXPIRED": "Pesanan kedaluwarsa sebelum dikirim.",
-        "REFUNDED": "Pesanan sudah dikembalikan dananya."
+        "REFUNDED": "Pesanan sudah dikembalikan dananya.",
+        "FULFILMENT_FAILED": "Pesanan gagal dikirim ke supplier dan menunggu dikirim ulang."
       }
     },
     "item": {
@@ -2098,7 +2609,8 @@
       "paid": "Dibayar",
       "margin": "Margin",
       "providerStatus": "Status provider",
-      "fromListHint": "Margin dan status provider hanya tersedia di daftar transaksi. Buka transaksi ini dari sana untuk melihatnya."
+      "fromListHint": "Margin dan status provider hanya tersedia di daftar transaksi. Buka transaksi ini dari sana untuk melihatnya.",
+      "vouchers": "Kode voucher ({{count}})"
     },
     "customer": {
       "title": "Pelanggan",
@@ -2121,7 +2633,13 @@
       "awaitingBody": "Pelanggan masih bisa membayar dengan detail di bawah.",
       "noInstructions": "Gateway tidak mengirim kode QR, nomor VA, atau halaman pembayaran untuk transaksi ini.",
       "qrAlt": "Kode QR pembayaran",
-      "qrHint": "Pindai untuk membayar"
+      "qrHint": "Pindai untuk membayar",
+      "gateway": "Gateway",
+      "gatewayReference": "No. transaksi gateway",
+      "gatewayName": {
+        "paylabs": "Paylabs",
+        "redision": "Redision (sebelum pindah ke Paylabs)"
+      }
     },
     "refs": {
       "title": "Referensi",
@@ -2130,6 +2648,56 @@
       "orderId": "ID pesanan",
       "providerRef": "Referensi provider (TID)",
       "paymentMethodId": "ID metode pembayaran"
+    },
+    "paylabs": {
+      "title": "Callback Paylabs",
+      "empty": "Belum ada callback dari Paylabs. Paylabs hanya mengirim saat pembayaran final (sukses atau gagal).",
+      "otherGateway": "Transaksi ini dibayar lewat gateway lama, jadi tidak ada callback Paylabs."
+    },
+    "provider": {
+      "title": "Order di LapakGaming",
+      "storedStatus": "Status tersimpan",
+      "tid": "TID",
+      "check": "Cek status di LapakGaming",
+      "checking": "Mengecek…",
+      "checkFailed": "Gagal menghubungi LapakGaming.",
+      "liveAnswer": "Jawaban live",
+      "liveNotOk": "LapakGaming tidak mengembalikan SUCCESS. Order mungkin belum pernah terkirim atau ditolak; cek log Buat order di bawah.",
+      "checkedAt": "Dicek pukul {{time}}. Status pesanan tidak diubah.",
+      "checkedAtUpdated": "Dicek pukul {{time}}.",
+      "orderUpdated": "LapakGaming sudah menyelesaikan order ini. Status pesanan sekarang",
+      "empty": "Belum ada pertukaran dengan LapakGaming. Order dikirim setelah pembayaran sukses."
+    },
+    "trail": {
+      "seeAll": "Lihat semua ({{count}})",
+      "openList": "Buka di daftar",
+      "loadError": "Gagal memuat log."
+    },
+    "retryFulfilment": {
+      "title": "Pesanan gagal dikirim ke supplier",
+      "body": "Pelanggan sudah membayar, tetapi pesanan tidak sampai ke supplier. Periksa saldo dan log supplier, lalu kirim ulang.",
+      "bodyNoAccess": "Pelanggan sudah membayar, tetapi pesanan tidak sampai ke supplier. Minta admin yang berwenang untuk mengirim ulang.",
+      "button": "Kirim ulang ke supplier",
+      "confirmEyebrow": "Pemenuhan pesanan",
+      "confirmTitle": "Kirim ulang ke supplier?",
+      "confirmBody": "Pesanan {{number}} akan dikirim lagi ke supplier dan memakai saldo deposit. Lanjutkan hanya jika supplier memang belum memprosesnya.",
+      "confirm": "Kirim ulang",
+      "pending": "Mengirim…",
+      "cancel": "Batal",
+      "success": "Pesanan dikirim ulang ke supplier.",
+      "successStatus": "Pesanan dikirim ulang ke supplier. Status sekarang: {{status}}.",
+      "error": "Gagal mengirim ulang pesanan. Coba lagi."
+    },
+    "reveal": {
+      "show": "Tampilkan",
+      "hide": "Sembunyikan",
+      "showHint": "Tampilkan voucher dan data pembeli yang asli. Setiap tampilan dicatat.",
+      "hideHint": "Samarkan lagi",
+      "masked": "Disamarkan",
+      "shownNote": "Data asli hanya tampil di halaman ini dan tercatat di log admin.",
+      "accountHidden": "Akun game dan IP disamarkan. Tekan Tampilkan untuk melihatnya.",
+      "accountHiddenNoAccess": "Akun game dan IP disamarkan untuk role Anda.",
+      "error": "Gagal menampilkan data asli. Coba lagi."
     }
   },
   "referralPage": {
@@ -2365,7 +2933,7 @@
   "gameForm": {
     "addEyebrow": "// Game baru",
     "addTitle": "Tambah game",
-    "addDescription": "Hubungkan dengan kode game di provider, lalu isi yang tampil di storefront.",
+    "addDescription": "Isi identitas dan tampilan game di storefront. Supplier yang menjualnya dihubungkan lewat Katalog supplier.",
     "editEyebrow": "// Ubah game",
     "editTitle": "Ubah {{name}}",
     "editDescription": "Hanya kolom yang kamu ubah yang disimpan.",
@@ -2378,28 +2946,16 @@
     "providerPlaceholder": "Pilih provider",
     "providerLoading": "Memuat provider…",
     "providerNoAccess": "Kamu tidak punya akses ke daftar provider. Minta admin yang punya akses untuk menambahkan game ini.",
-    "codeLabel": "Kode game di provider",
-    "codeHint": "Kode yang dipakai provider untuk game ini, mis. MOBILELEGENDS.",
-    "categoryLabel": "Kategori",
-    "categoryPlaceholder": "Pilih kategori",
-    "categoryLoading": "Memuat kategori…",
-    "categoryFallback": "Daftar kategori tidak tersedia, jadi hanya kategori yang sudah dipakai game lain yang bisa dipilih.",
-    "categoryError": "Gagal memuat kategori.",
+    "codeLabel": "Kode game",
+    "codeHint": "Opsional. Kode internal game; kosongkan dan dibuat dari slug. Kode di supplier diatur di Katalog supplier.",
     "nameLabel": "Nama game",
     "slugLabel": "Slug",
-    "slugWillChange": "Mengubah nama juga mengubah slug, dan ikut mengubah tautan storefront.",
-    "developerLabel": "Developer",
-    "publisherLabel": "Publisher",
+    "slugWillChange": "Slug adalah alamat game di storefront. Mengubahnya membuat tautan lama tidak berlaku lagi.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
-    "bannerHint": "Opsional. Gambar lebar, sekitar 21:9.",
     "descriptionLabel": "Deskripsi",
     "descriptionPlaceholder": "Beberapa kalimat tentang game untuk pembeli",
-    "instructionLabel": "Cara top up",
-    "instructionPlaceholder": "Di mana pembeli menemukan user ID, dan apa yang harus diisi",
     "popularityLabel": "Popularitas",
-    "featuredLabel": "Unggulan",
-    "featuredHint": "Tonjolkan game ini di storefront.",
     "inputsEmpty": "Tidak ada field checkout. Pembeli tidak akan diminta mengisi apa pun.",
     "inputsHint": "Semua field wajib diisi saat checkout. Key adalah nama yang dikirim ke provider.",
     "inputNumber": "Field {{number}}",
@@ -2426,22 +2982,22 @@
     "errors": {
       "providerRequired": "Pilih provider.",
       "providerMissing": "Provider itu sudah tidak ada. Pilih yang lain.",
-      "categoryRequired": "Pilih kategori.",
-      "categoryMissing": "Kategori itu sudah tidak ada. Pilih yang lain.",
       "nameRequired": "Isi nama game.",
       "slugRequired": "Isi slug.",
       "slugTaken": "Slug ini sudah dipakai game lain.",
-      "codeRequired": "Isi kode game di provider.",
       "thumbnailRequired": "Unggah thumbnail.",
       "inputKeyRequired": "Isi key.",
       "inputKeyFormat": "Gunakan huruf kecil, angka, dan garis bawah.",
       "inputKeyDuplicate": "Setiap field butuh key sendiri.",
       "inputLabelRequired": "Isi label.",
       "popularityInvalid": "Isi bilangan bulat, 0 atau lebih.",
-      "popularityZero": "Popularitas tidak bisa dikembalikan ke 0 di sini.",
       "cannotClear": "Kolom ini tidak bisa dikosongkan. Isi nilai baru atau biarkan nilai lama.",
-      "createGeneric": "Gagal menambahkan game. Periksa isian lalu coba lagi."
-    }
+      "createGeneric": "Gagal menambahkan game. Periksa isian lalu coba lagi.",
+      "codeTaken": "Kode ini sudah dipakai game lain."
+    },
+    "codePlaceholder": "Dibuat dari slug",
+    "statusLabel": "Status awal",
+    "statusHint": "Game baru sebaiknya mulai tersembunyi sampai gambar dan produknya siap."
   },
   "gamePriceDialog": {
     "gameEyebrow": "// Atur markup",
@@ -2469,6 +3025,217 @@
     "errors": {
       "percentInvalid": "Isi persentase, 0 atau lebih.",
       "percentMax": "Markup maksimal {{max}}%."
+    }
+  },
+  "integrationLog": {
+    "all": "Semua",
+    "reset": "Reset filter",
+    "retry": "Coba lagi",
+    "refresh": "Muat ulang",
+    "datePlaceholder": "Semua tanggal",
+    "noMatchTitle": "Tidak ada log yang cocok",
+    "noMatchBody": "Coba perluas rentang tanggal atau kurangi filter.",
+    "receivedAt": "Diterima",
+    "duration": "Durasi",
+    "ms": "{{ms}} ms",
+    "logId": "ID log",
+    "openTransaction": "Buka transaksi",
+    "copy": "Salin",
+    "copied": "Tersalin",
+    "copyFailed": "Gagal menyalin",
+    "emptyPayload": "Kosong.",
+    "unverified": "Belum terverifikasi",
+    "signatureValid": "Signature valid",
+    "signatureInvalid": "Signature tidak valid",
+    "outcome": {
+      "PROCESSED": "Diproses",
+      "DUPLICATE": "Duplikat",
+      "FAILED": "Gagal diproses",
+      "REJECTED": "Ditolak",
+      "UNAVAILABLE": "Paylabs nonaktif"
+    },
+    "outcomeHint": {
+      "PROCESSED": "Signature valid dan status pembayaran diperbarui. Paylabs dibalas errCode 0, jadi tidak mengirim ulang.",
+      "DUPLICATE": "Signature valid, tapi pembayaran sudah berstatus ini atau sudah dibayar. Dibalas errCode 0 supaya Paylabs berhenti mengirim ulang.",
+      "FAILED": "Signature valid, tapi status gagal diterapkan (lihat pesan error). Paylabs dibalas errCode 1 dan akan mengirim ulang, sampai 8 kali dalam sekitar 55 menit.",
+      "REJECTED": "Ditolak dengan 401 karena signature, merchant ID atau isi body tidak cocok. Data order di bawah belum terverifikasi; bisa jadi bukan dari Paylabs.",
+      "UNAVAILABLE": "Dijawab 503 karena integrasi Paylabs belum dikonfigurasi di server ini."
+    },
+    "paylabsStatus": {
+      "01": "Pending",
+      "02": "Sukses",
+      "09": "Gagal"
+    },
+    "result": {
+      "SENT": "Terkirim",
+      "SUCCESS": "Sukses",
+      "FAILED": "Gagal"
+    },
+    "operation": {
+      "CREATE_ORDER": "Buat order",
+      "CHECK_STATUS": "Cek status",
+      "CALLBACK": "Callback"
+    },
+    "logType": {
+      "REQUEST_TO_PROVIDER": "Request",
+      "RESPONSE_FROM_PROVIDER": "Response",
+      "CALLBACK_FROM_PROVIDER": "Dari supplier"
+    }
+  },
+  "paymentCallbackLogPage": {
+    "eyebrow": "// Payment gateway",
+    "title": "Callback Paylabs",
+    "subtitle": "Setiap notifikasi yang dikirim Paylabs ke kita apa adanya, termasuk yang ditolak, beserta apa yang kita lakukan dengannya. Paylabs hanya mengirim saat status pembayaran final.",
+    "total": "{{formatted}} callback",
+    "searchPlaceholder": "Cari nomor pembayaran, request ID, trade no, atau ID",
+    "statusLabel": "Status Paylabs",
+    "statusAll": "Semua status",
+    "outcomeLabel": "Hasil",
+    "noReference": "Tanpa referensi",
+    "loadError": "Gagal memuat callback. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada callback",
+    "emptyBody": "Notifikasi dari Paylabs akan muncul di sini saat masuk.",
+    "detail": {
+      "back": "Kembali ke callback Paylabs",
+      "eyebrow": "// Notifikasi Paylabs",
+      "loadError": "Gagal memuat callback ini.",
+      "amount": "Nominal",
+      "paymentType": "Tipe pembayaran",
+      "requestId": "Request ID",
+      "merchantTradeNo": "Merchant trade no",
+      "platformTradeNo": "Platform trade no (Paylabs)",
+      "reply": "Balasan kita",
+      "ack": "errCode {{code}} · HTTP {{http}}",
+      "httpOnly": "HTTP {{http}}, tanpa errCode",
+      "clientIp": "IP pengirim",
+      "paymentStatus": "Status transaksi sekarang",
+      "body": "Body yang diterima",
+      "headers": "Header",
+      "replyBody": "Balasan ke Paylabs",
+      "noReply": "Tidak ada balasan bertanda tangan; Paylabs hanya menerima status HTTP."
+    }
+  },
+  "providerOrderLogPage": {
+    "eyebrow": "// Supplier",
+    "title": "Log order supplier",
+    "subtitle": "Order yang kita kirim ke LapakGaming, jawabannya, cek status, dan callback darinya. LapakGaming membalas sebagian error dengan HTTP 200, jadi kodenya ikut dinilai.",
+    "total": "{{formatted}} log",
+    "searchPlaceholder": "Cari nomor pembayaran, TID, atau ID",
+    "operationLabel": "Operasi",
+    "resultLabel": "Hasil",
+    "noOrder": "Order tidak dikenal",
+    "loadError": "Gagal memuat log. Periksa koneksi lalu coba lagi.",
+    "emptyTitle": "Belum ada log",
+    "emptyBody": "Log muncul saat order pertama dikirim ke supplier.",
+    "dashboard": {
+      "scope": "Total untuk semua log yang cocok",
+      "loadError": "Gagal memuat ringkasan. Daftar di bawah tetap bisa dipakai.",
+      "total": "Log",
+      "orders_one": "Dari {{formatted}} pesanan",
+      "orders_other": "Dari {{formatted}} pesanan",
+      "successRate": "Tingkat sukses",
+      "successHint": "{{success}} sukses · {{failed}} gagal",
+      "noAnswers": "Belum ada jawaban",
+      "responseTime": "Rata-rata respons",
+      "responseHint": "p95 {{p95}} · maks {{max}}",
+      "lastLog": "Log terakhir",
+      "lastLogHint": "Request atau jawaban LapakGaming terakhir",
+      "chartTitle": "Jawaban per hari",
+      "chartAria": "Jawaban supplier yang sukses dan gagal per hari",
+      "chartEmpty": "Belum ada jawaban di rentang ini.",
+      "viewLabel": "Tampilan",
+      "viewChart": "Grafik",
+      "viewTable": "Tabel",
+      "date": "Tanggal",
+      "success": "Sukses",
+      "failed": "Gagal",
+      "sent": "Request dikirim",
+      "failureTitle": "Penyebab gagal",
+      "failureEmpty": "Tidak ada yang gagal.",
+      "failureCode": {
+        "NO_RESPONSE": "tidak ada jawaban (timeout atau jaringan)",
+        "CALLBACK_NOT_APPLIED": "callback tidak diterapkan",
+        "OTHER": "error lain"
+      },
+      "operationsTitle": "Per operasi",
+      "operation": "Operasi",
+      "avg": "Rata-rata"
+    },
+    "detail": {
+      "back": "Kembali ke log order supplier",
+      "eyebrow": "// {{provider}}",
+      "loadError": "Gagal memuat log ini.",
+      "payment": "Nomor pembayaran",
+      "tid": "TID supplier",
+      "orderId": "ID pesanan",
+      "http": "HTTP",
+      "request": "Request",
+      "response": "Response",
+      "callbackBody": "Body callback",
+      "responseElsewhere": "Response-nya dicatat sebagai log tersendiri tepat setelah request ini."
+    }
+  },
+  "activityLogPage": {
+    "eyebrow": "Keamanan",
+    "title": "Log aktivitas",
+    "subtitle": "Semua request yang mengubah data (selain GET) dari siapa pun: pembeli, tamu, admin, dan callback Paylabs/LapakGaming. Disimpan 90 hari; password, token, dan kode disembunyikan.",
+    "total": "{{formatted}} request",
+    "searchPlaceholder": "Cari email, IP, endpoint, ID data, atau pesan",
+    "actorLabel": "Pelaku",
+    "methodLabel": "Method",
+    "outcomeLabel": "Hasil",
+    "actor": {
+      "ADMIN": "Admin",
+      "USER": "Pembeli",
+      "GUEST": "Tamu",
+      "SYSTEM": "Sistem",
+      "ANONYMOUS": "Tidak dikenal"
+    },
+    "outcome": {
+      "success": "Berhasil",
+      "failed": "Gagal"
+    },
+    "unknownActor": "Tidak dikenal",
+    "noOrigin": "Asal tidak diketahui",
+    "loadError": "Log aktivitas gagal dimuat.",
+    "emptyTitle": "Belum ada aktivitas",
+    "emptyBody": "Request yang mengubah data akan muncul di sini.",
+    "detail": {
+      "back": "Kembali ke log aktivitas",
+      "loadError": "Entri log gagal dimuat atau sudah lewat 90 hari.",
+      "eyebrow": "Request",
+      "time": "Waktu",
+      "ip": "Alamat IP",
+      "device": "Perangkat",
+      "path": "Path",
+      "resource": "ID data",
+      "openResource": "Buka data terkait",
+      "openCustomer": "Buka pembeli",
+      "body": "Isi request",
+      "noBody": "Tanpa isi request",
+      "redactedNote": "Password, token, OTP, kode voucher, dan kode rahasia lain disembunyikan; nomor HP hanya 3 digit terakhir. Upload file hanya dicatat jenis dan ukurannya."
+    }
+  },
+  "changePassword": {
+    "eyebrow": "// Keamanan akun",
+    "title": "Ganti password",
+    "description": "Setelah diganti, sesi akun ini di perangkat lain akan dikeluarkan.",
+    "currentLabel": "Kata sandi saat ini",
+    "newLabel": "Kata sandi baru",
+    "newHint": "Minimal {{count}} karakter dan bukan alamat email Anda.",
+    "confirmLabel": "Ulangi kata sandi baru",
+    "submit": "Simpan",
+    "saving": "Menyimpan…",
+    "cancel": "Batal",
+    "success": "Password diganti. Sesi di perangkat lain sudah dikeluarkan.",
+    "error": "Gagal mengganti password. Coba lagi.",
+    "errors": {
+      "currentRequired": "Masukkan kata sandi saat ini.",
+      "newMin": "Gunakan minimal 12 karakter.",
+      "newIsEmail": "Kata sandi tidak boleh sama dengan email Anda.",
+      "newSameAsCurrent": "Pilih kata sandi yang berbeda dari yang sekarang.",
+      "confirmRequired": "Ulangi kata sandi baru.",
+      "confirmMismatch": "Kata sandi tidak sama."
     }
   }
 }

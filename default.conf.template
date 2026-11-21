@@ -1,33 +1,111 @@
+# Admin panel nginx: serves the SPA and forwards to the backend only the routes the panel calls.
+# The image renders this file (envsubst fills in BACKEND_URL and REAL_IP_FROM) into /etc/nginx/conf.d,
+# inside `http`.
+
+# The scheme the browser used. Behind a TLS proxy that is its X-Forwarded-Proto, so the backend
+# marks the admin cookie Secure; reached directly, it is this server's own scheme.
+map $http_x_forwarded_proto $pg_forwarded_proto {
+    default $scheme;
+    https   https;
+    http    http;
+}
+
+# Backend routes the panel calls (every `api.*` call under src/), as "METHOD /api/path". Anything else
+# under /api/ answers 404 here: the buyer routes (sign-in, check ID, checkout, order history), the
+# supplier and payment callbacks and the websocket belong to the storefront, which adds Turnstile and
+# the buyer's IP. When the panel starts calling a new endpoint, add it here.
+map "$request_method $uri" $pg_panel_api {
+    default 0;
+
+    # Groups whose backend routes all require an admin session.
+    "~^[A-Z]+ /api/(admin|admin-logs|activity-logs|customers|providers|supplier-brands|supplier-products|provider-order-logs|summary|dashboard|cashflows|orders|game-inputs|payment-methods)(/|$)" 1;
+    "~^[A-Z]+ /api/blogs/admin(/|$)" 1;
+
+    # Groups that also serve storefront reads: their writes are all admin, their reads only the panel's.
+    "~^(POST|PUT|PATCH|DELETE) /api/(games|shows|banners|maintenances|announcements|transaction-stop|category-product|payment-categories)(/|$)" 1;
+    "~^GET /api/games/(pagination|names|letter|[0-9A-Fa-f-]{36})/?$" 1;
+    "~^GET /api/(shows|maintenances|announcements|transaction-stop)/admin/?$" 1;
+    "~^GET /api/(banners|category-product|payment-categories)/?$" 1;
+
+    # Products: the supplier's POST callback lives here too.
+    "~^(PATCH|DELETE) /api/products/" 1;
+    "~^GET /api/products/(admin|anomaly|callback-logs(/[^/]+)?|game/[^/]+(/available)?)/?$" 1;
+
+    # Transactions: checkout, check ID and the buyer's own reads live here too.
+    "~^GET /api/transactions/?$" 1;
+    "~^GET /api/transactions/(export-csv|detail/[^/]+)/?$" 1;
+    "~^POST /api/transactions/detail/[^/]+/(retry-fulfilment|reveal)/?$" 1;
+
+    "~^GET /api/payment-callback/logs(/[^/]+)?/?$" 1;
+    "~^POST /api/upload/?$" 1;
+    "~^GET /api/health/?$" 1;
+}
+
 server {
     listen 80;
-    
+    server_tokens off;
+
+    # The admin's own address. Behind the host's reverse proxy every connection comes from the
+    # gateway of the panel's network (172.16.11.1), which is what the backend's ALLOWED_AUTH_IPS and
+    # activity log would otherwise see for every admin. From REAL_IP_FROM alone, X-Forwarded-For is
+    # believed: walking it from the right, the first address that is not REAL_IP_FROM is the one the
+    # reverse proxy saw. The reverse proxy must set it ($proxy_add_x_forwarded_for or $remote_addr);
+    # one that passes a browser's header on untouched lets an admin choose the address
+    # (topup-be deploy/NETWORKS.md, step 5, tells how to check). REAL_IP_FROM=127.0.0.1, the default,
+    # believes nobody but the container itself: $remote_addr stays the gateway.
+    set_real_ip_from ${REAL_IP_FROM};
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+
+    # On every response, API included. No location below sets add_header, so they all inherit these.
+    # Images come from the bucket and supplier CDNs (http when the bucket runs without TLS); styles
+    # and fonts from Google Fonts; react-hot-toast injects a <style> tag.
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: http:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "same-origin" always;
+    add_header Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()" always;
+    add_header Cross-Origin-Opener-Policy "same-origin" always;
+    # Only once the panel is reachable over https alone (browsers then refuse plain http for a year):
+    # add_header Strict-Transport-Security "max-age=31536000" always;
+
     location / {
         root /usr/share/nginx/html;
         index index.html index.htm;
-       
+
         try_files $uri $uri/ /index.html;
     }
 
     location /api/ {
-      
+        if ($pg_panel_api = 0) {
+            return 404;
+        }
+
         proxy_pass ${BACKEND_URL};
 
         proxy_set_header Host $proxy_host;
 
+        # Overwritten, never appended: a browser must not choose the address the backend sees.
+        proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
-        proxy_set_header X-Real-IP $proxy_add_x_forwarded_for;
-        
+        proxy_set_header X-Forwarded-Proto $pg_forwarded_proto;
+
+        # Only the storefront server speaks for buyers; drop what a browser could send in its place.
+        proxy_set_header X-Client-IP "";
+        proxy_set_header X-Client-User-Agent "";
+        proxy_set_header X-Storefront-Key "";
+
+        # The panel opens no websockets.
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_cache_bypass $http_upgrade;
-        
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+
+        # Image uploads are up to 2 MB in the panel (5 MB at the backend); nginx's default is 1 MB.
+        client_max_body_size 5m;
     }
 
     location /assets/ {
         root /usr/share/nginx/html;
+        # Hashed file names, so they can be cached for good.
         expires 1y;
-        add_header Cache-Control "public";
     }
 }

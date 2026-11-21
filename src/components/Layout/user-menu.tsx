@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown, Loader2, LogOut, ShieldAlert } from 'lucide-react'
+import { ChevronDown, KeyRound, Loader2, LogOut, ShieldAlert } from 'lucide-react'
 
 import brandMark from '@/assets/brand/pakargaming-mark.webp'
+import { ChangePasswordDialog } from '@/components/Auth/ChangePasswordDialog'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { authStorage, useAuthUser } from '@/lib/auth'
@@ -16,12 +17,13 @@ const ROLE_BADGE: Record<string, string> = {
   noc: 'bg-amber-50 text-amber-700',
 }
 
-/** Avatar button in the navbar: who is signed in, a 2FA reminder, and log out. */
+/** Avatar button in the navbar: who is signed in, a 2FA reminder, password change and log out. */
 export function UserMenu() {
   const { t } = useTranslation('common')
   const { user, role } = useAuthUser()
   const [open, setOpen] = useState(false)
   const [confirmLogout, setConfirmLogout] = useState(false)
+  const [changePassword, setChangePassword] = useState(false)
 
   const name: string = user?.username || user?.email?.split('@')[0] || 'Admin'
   const roleKey: string = role ?? 'admin'
@@ -64,9 +66,9 @@ export function UserMenu() {
           sideOffset={8}
           className='z-[60] w-64 overflow-hidden rounded-xl border-slate-200 p-0 shadow-xl'
           onOpenAutoFocus={(e) => e.preventDefault()}
-          // Handing over to the logout dialog: returning focus to the avatar would pull it out of the dialog.
+          // Handing over to a dialog: returning focus to the avatar would pull it out of the dialog.
           onCloseAutoFocus={(e) => {
-            if (confirmLogout) e.preventDefault()
+            if (confirmLogout || changePassword) e.preventDefault()
           }}
         >
           <div className='h-1 bg-linear-to-r from-brand-purple to-brand-cyan' aria-hidden />
@@ -107,6 +109,17 @@ export function UserMenu() {
               type='button'
               onClick={() => {
                 setOpen(false)
+                setChangePassword(true)
+              }}
+              className='flex w-full items-center gap-2.5 px-2.5 py-2 font-display text-xs font-semibold uppercase tracking-[0.15em] text-slate-700 hud-clip-sm transition-colors hover:bg-slate-100 hover:text-brand-purple'
+            >
+              <KeyRound className='size-4' aria-hidden />
+              {t('sidebar.changePassword')}
+            </button>
+            <button
+              type='button'
+              onClick={() => {
+                setOpen(false)
                 setConfirmLogout(true)
               }}
               className='flex w-full items-center gap-2.5 px-2.5 py-2 font-display text-xs font-semibold uppercase tracking-[0.15em] text-rose-600 hud-clip-sm transition-colors hover:bg-rose-50'
@@ -117,6 +130,8 @@ export function UserMenu() {
           </div>
         </PopoverContent>
       </Popover>
+
+      <ChangePasswordDialog open={changePassword} onOpenChange={setChangePassword} />
 
       <LogoutDialog
         open={confirmLogout}

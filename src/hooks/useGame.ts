@@ -5,6 +5,7 @@ import type {
   GameCreateRequest,
   GameImageRequest,
   GamesResponse,
+  GameStatus,
   GameUpdateRequest,
 } from '@/types/game'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -20,7 +21,7 @@ export type GetGamesParams = {
   search?: string
   image?: 'all' | 'with_image' | 'no_image'
   /** Omit for all games. */
-  is_active?: boolean
+  status?: GameStatus
   game_id?: string
 }
 
@@ -34,9 +35,9 @@ export function gameServerMessage(err: unknown) {
 const serverMessage = gameServerMessage
 
 export function useGetGames(page: number, limit: number, params: GetGamesParams = {}) {
-  const { search = '', image = 'all', is_active, game_id } = params
+  const { search = '', image = 'all', status, game_id } = params
   return useQuery<GamesResponse>({
-    queryKey: [...gamesQueryKey, page, limit, search, image, is_active ?? 'all', game_id ?? ''],
+    queryKey: [...gamesQueryKey, page, limit, search, image, status ?? 'all', game_id ?? ''],
     queryFn: async () => {
       const { data } = await api.get('/games/pagination', {
         params: {
@@ -46,7 +47,7 @@ export function useGetGames(page: number, limit: number, params: GetGamesParams 
           // The backend pastes the search into its ORDER BY unescaped, so a quote breaks the query.
           // `_` is LIKE's one-character wildcard: it still matches the quote in the name filter.
           ...(search.trim() && { search: search.trim().replace(/'/g, '_') }),
-          ...(is_active !== undefined && { is_active }),
+          ...(status && { status }),
           ...(game_id && { game_id }),
         },
       })
@@ -108,37 +109,27 @@ export function useUpdateGame(onDone?: () => void) {
     onSuccess: (_res, { id, payload }) => {
       toast.success(i18n.t('gamePage.toasts.updated'))
       invalidate(id)
-      // Shows list their games, so a visibility change shows up there too.
-      if (payload.is_show !== undefined) void queryClient.invalidateQueries({ queryKey: ['shows'] })
+      // Shows list their games, so a status change shows up there too.
+      if (payload.status !== undefined) void queryClient.invalidateQueries({ queryKey: ['shows'] })
       onDone?.()
     },
     onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.updateError')),
   })
 }
 
-export function useToggleGameShow(id: string) {
+/** PATCH /games/status/:id: one status sets both whether the game is listed and whether it sells. */
+export function useSetGameStatus(id: string) {
   const invalidate = useInvalidateGame()
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (is_show: boolean) => api.put(`/games/${id}`, { is_show }),
-    onSuccess: (_res, isShow) => {
-      toast.success(i18n.t(isShow ? 'gamePage.toasts.shown' : 'gamePage.toasts.hidden'))
+    mutationFn: (status: GameStatus) => api.patch(`/games/status/${id}`, { status }),
+    onSuccess: (_res, status) => {
+      toast.success(i18n.t(`gamePage.toasts.status.${status}`))
       invalidate(id)
+      // Shows list only listed games.
       void queryClient.invalidateQueries({ queryKey: ['shows'] })
     },
-    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.updateError')),
-  })
-}
-
-export function useToggleGameStatus(id: string) {
-  const invalidate = useInvalidateGame()
-  return useMutation({
-    mutationFn: (is_active: boolean) => api.patch(`/games/status/${id}`, { is_active }),
-    onSuccess: (_res, isActive) => {
-      toast.success(i18n.t(isActive ? 'gamePage.toasts.activated' : 'gamePage.toasts.deactivated'))
-      invalidate(id)
-    },
-    onError: () => toast.error(i18n.t('gamePage.toasts.statusError')),
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.statusError')),
   })
 }
 
@@ -158,24 +149,22 @@ export function useUpdateGameImage(onDone?: () => void) {
   })
 }
 
-export function useDeleteGame(onDone?: () => void) {
+/**
+ * DELETE /games/:id archives the game: it goes HIDDEN and keeps its products, orders and shows.
+ * Setting another status brings it back.
+ */
+export function useArchiveGame(onDone?: () => void) {
   const invalidate = useInvalidateGame()
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (id: string) => api.delete(`/games/${id}`),
     onSuccess: (_res, id) => {
-      toast.success(i18n.t('gamePage.toasts.deleted'))
-      invalidate()
-      // Dropped rather than refetched: the game no longer exists.
-      queryClient.removeQueries({ queryKey: ['game', id] })
+      toast.success(i18n.t('gamePage.toasts.archived'))
+      invalidate(id)
+      void queryClient.invalidateQueries({ queryKey: ['shows'] })
       onDone?.()
     },
-    onError: (err) => {
-      const message = serverMessage(err)
-      // Products and orders reference the game, so the database refuses while any exist.
-      if (message && /foreign key|23503/i.test(message)) toast.error(i18n.t('gamePage.toasts.deleteInUse'))
-      else toast.error(message || i18n.t('gamePage.toasts.deleteError'))
-    },
+    onError: (err) => toast.error(serverMessage(err) || i18n.t('gamePage.toasts.archiveError')),
   })
 }
 
@@ -229,13 +218,17 @@ export function useInitGamesFromProvider(onDone?: () => void) {
   })
 }
 
+/** The backend sends `data: null` when there are no games, and a `= []` default only covers undefined. */
+async function fetchGameNames(): Promise<GameNames[]> {
+  const res = await api.get('/games/names')
+  const raw = res.data?.data
+  return Array.isArray(raw) ? raw : []
+}
+
 export function useGetGameNames(enabled = true) {
   return useQuery<GameNames[]>({
     queryKey: ['game-names'],
-    queryFn: async () => {
-      const res = await api.get('/games/names')
-      return res.data.data
-    },
+    queryFn: fetchGameNames,
     enabled,
   })
 }
@@ -243,9 +236,6 @@ export function useGetGameNames(enabled = true) {
 export function useGetGameNamesWithType() {
   return useQuery<GameNames[]>({
     queryKey: ['game-names'],
-    queryFn: async () => {
-      const res = await api.get('/games/names')
-      return res.data.data
-    },
+    queryFn: fetchGameNames,
   })
 }

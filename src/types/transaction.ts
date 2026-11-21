@@ -44,10 +44,21 @@ export interface PaymentResponse {
  * Every payment status the backend can send. `Payment['status']` keeps the common ones (other pages key
  * maps by it), so treat incoming values as this wider union and expect unknown strings too.
  */
-export type TransactionStatus = Payment['status'] | 'WAITING' | 'REFUNDED'
+export type TransactionStatus = Payment['status'] | 'WAITING' | 'REFUNDED' | 'FULFILMENT_FAILED'
 
-/** Fulfilment status of the order behind a payment. */
-export type OrderFulfilmentStatus = 'PENDING' | 'PAID' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | 'EXPIRED' | 'REFUNDED'
+/**
+ * Fulfilment status of the order behind a payment. `FULFILMENT_FAILED`: the buyer paid, but placing the
+ * order with the supplier failed; it waits for an admin to send it again.
+ */
+export type OrderFulfilmentStatus =
+  | 'PENDING'
+  | 'PAID'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'FULFILMENT_FAILED'
+  | 'EXPIRED'
+  | 'REFUNDED'
 
 /** GET /transactions query; dates are `yyyy-MM-dd HH:mm:ss` and the backend reads them as UTC. */
 export interface TransactionListFilters {
@@ -84,6 +95,11 @@ export interface TransactionDetailOrderItem {
   unit_price: number
   subtotal: number
   voucher_code: string
+  /** The supplier's raw fulfilment status, e.g. SUCCESS or USER_ID_EMPTY. Older backends do not send it. */
+  status_provider?: string
+  /** The supplier's order id (TID). */
+  provider_order_id?: string
+  margin?: number
 }
 
 export interface TransactionDetailOrder {
@@ -101,8 +117,8 @@ export interface TransactionDetailOrder {
 }
 
 /**
- * GET /transactions/detail/:id. It has no margin or provider status (those only come with the list),
- * and the customer's IP, game fields and TID sit under `order`.
+ * GET /transactions/detail/:id. Margin and provider status sit under `order_item` (older backends only
+ * sent them with the list), and the customer's IP, game fields and TID under `order`.
  */
 export interface TransactionDetail {
   id: string
@@ -111,6 +127,10 @@ export interface TransactionDetail {
   amount: number
   status: string
   payment_method_id: string
+  /** Gateway that took the payment: `paylabs`, or `redision` for payments made before the switch. Older backends do not send it. */
+  gateway?: 'paylabs' | 'redision'
+  /** The gateway's own order number (Paylabs), for looking the payment up in its dashboard. */
+  gateway_reference?: string
   payment_channel: string
   order_item: TransactionDetailOrderItem
   order: TransactionDetailOrder
@@ -121,8 +141,19 @@ export interface TransactionDetail {
   qr_string: string
   va_number: string
   guide?: PaymentGuide
-  /** `yyyy-MM-dd HH:mm:ss` in WIB. */
+  /** RFC3339 in WIB; older backends sent `yyyy-MM-dd HH:mm:ss` in WIB. */
   created_at: string
+}
+
+/**
+ * POST /transactions/detail/:id/reveal. The list, detail and export always mask the voucher codes,
+ * buyer email, IP and game account; this returns them for one transaction, and the backend logs it.
+ */
+export interface TransactionReveal {
+  voucher_codes: string[]
+  customer_email: string
+  client_ip: string
+  meta_data: Record<string, unknown> | null
 }
 
 /** What the list knows about a row and the detail endpoint doesn't; passed along as router state. */

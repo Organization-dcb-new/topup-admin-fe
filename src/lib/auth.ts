@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useQuery, type QueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
-import { api } from '@/api/axios'
+import { api, MFA_SETUP_REQUIRED_MESSAGE, REQUIRED_2FA_PATH } from '@/api/axios'
 import { defaultPermissionsForRole } from '@/constants/permissions'
 
 export const AUTH_ME_QUERY_KEY = ['auth-me']
@@ -10,18 +10,22 @@ export interface AuthSession {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- /admin/me profile is untyped across the app
   user: any
   mfa_pending: boolean
+  /** Signed in with the password, but the account must set up 2FA before anything else opens. */
+  mfa_setup: boolean
 }
 
-const SIGNED_OUT: AuthSession = { user: null, mfa_pending: false }
+const SIGNED_OUT: AuthSession = { user: null, mfa_pending: false, mfa_setup: false }
+
+export { REQUIRED_2FA_PATH }
 
 /** Paths that must never be used as a post-login destination. */
-const AUTH_PATHS = ['/login', '/verify-otp']
+const AUTH_PATHS = ['/login', '/verify-otp', REQUIRED_2FA_PATH]
 
 export const authStorage = {
   getToken(): string | null {
     return null
   },
-  setToken(_token: string) {},
+  setToken() {},
   async clearToken(): Promise<void> {
     try {
       await api.post('/admin/logout')
@@ -34,10 +38,14 @@ export const authStorage = {
 export async function fetchAuthSession(): Promise<AuthSession> {
   try {
     const res = await api.get('/admin/me')
-    return { user: res.data.data, mfa_pending: false }
+    const user = res.data.data
+    return { user, mfa_pending: false, mfa_setup: user?.two_factor_setup_required === true }
   } catch (err) {
     if (isAxiosError(err) && err.response?.data?.message === 'MFA_REQUIRED') {
-      return { user: null, mfa_pending: true }
+      return { user: null, mfa_pending: true, mfa_setup: false }
+    }
+    if (isAxiosError(err) && err.response?.data?.message === MFA_SETUP_REQUIRED_MESSAGE) {
+      return { user: null, mfa_pending: false, mfa_setup: true }
     }
     throw err
   }
@@ -88,7 +96,8 @@ export function useAuthUser() {
   })
 
   const isMfaRequired = data?.mfa_pending === true
-  const isFullyAuthenticated = !!data?.user && !isMfaRequired
+  const isMfaSetupRequired = data?.mfa_setup === true
+  const isFullyAuthenticated = !!data?.user && !isMfaRequired && !isMfaSetupRequired
   const role: string | null = data?.user?.role ?? null
   const reported: unknown = data?.user?.permissions
 
@@ -101,6 +110,7 @@ export function useAuthUser() {
   return {
     isAuthenticated: isFullyAuthenticated,
     isMfaRequired,
+    isMfaSetupRequired,
     role,
     user: data?.user ?? null,
     permissions,

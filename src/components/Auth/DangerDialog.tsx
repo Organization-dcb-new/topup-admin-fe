@@ -58,13 +58,14 @@ export function DangerDialog({
 
           {error}
 
-          {/* Cancel first in the DOM so it, not the destructive action, gets the initial focus. */}
-          <div className='flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between'>
+          {/* Cancel first in the DOM so it, not the destructive action, gets the initial focus. Both share
+              height and notch, sit together on the right and size to their label. */}
+          <div className='flex flex-col-reverse gap-3 sm:flex-row sm:justify-end'>
             <button
               type='button'
               onClick={() => onOpenChange(false)}
               disabled={pending}
-              className='inline-flex h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-purple/40 disabled:opacity-50'
+              className='inline-flex h-11 items-center justify-center bg-slate-100 px-5 text-sm font-medium whitespace-nowrap text-slate-600 hud-clip-sm transition-colors duration-200 hover:bg-slate-200 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/50 disabled:opacity-50'
             >
               {cancelLabel}
             </button>
@@ -72,12 +73,12 @@ export function DangerDialog({
               type='button'
               disabled={pending}
               onClick={onConfirm}
-              className='inline-flex h-12 w-full items-center justify-center gap-2 bg-rose-600 font-display text-sm font-bold uppercase tracking-[0.2em] text-white hud-clip-sm transition-[background-color,transform,opacity] duration-300 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 active:scale-[0.985] disabled:opacity-70 sm:w-48'
+              className='inline-flex h-11 items-center justify-center gap-2 bg-rose-600 px-5 font-display text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap text-white hud-clip-sm transition-[background-color,transform,opacity] duration-300 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 active:scale-[0.985] disabled:opacity-70 sm:min-w-40'
             >
               {pending ? (
-                <Loader2 className='size-4 animate-spin' aria-hidden />
+                <Loader2 className='size-4 shrink-0 animate-spin' aria-hidden />
               ) : (
-                <Icon className='size-4' aria-hidden />
+                <Icon className='size-4 shrink-0' aria-hidden />
               )}
               {confirmLabel}
             </button>

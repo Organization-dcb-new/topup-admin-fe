@@ -21,6 +21,7 @@ const KNOWN_MESSAGES: Record<string, string> = {
   'invalid otp code': 'authErrors.invalidOtp',
   'kode OTP salah atau kadaluwarsa': 'authErrors.invalidOtp',
   'invalid recovery code': 'authErrors.invalidRecoveryCode',
+  'Current password is incorrect': 'authErrors.wrongPassword',
 }
 
 export function toAuthError(err: unknown, fallbackKey: string): AuthError {

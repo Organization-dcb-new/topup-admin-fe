@@ -5,120 +5,140 @@ on:
     branches:
       - dev
 
-permissions:
-  contents: write
-  packages: write
+# Every job asks for the token permissions it needs; nothing is granted by default.
+permissions: {}
 
+# One dev run at a time: two pushes in a row would otherwise race for the same version tag and
+# deploy over each other.
+concurrency:
+  group: deploy-dev-dashboard
+  cancel-in-progress: false
+
+# Actions and images are pinned to a commit or digest, so a moved tag can't change what runs.
+# The version each one was pinned at is in the comment beside it.
 jobs:
+  # yarn lint and yarn build (ci.yml, which also runs on every pull request). Nothing is built or
+  # deployed unless it passes.
+  ci:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
   build-and-push:
-    runs-on: [ self-hosted, dev ]
+    needs: ci
+    # GitHub-hosted: building never needs Docker on the dev server.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # contents: write pushes the version tag; packages: write pushes the image.
+    permissions:
+      contents: write
+      packages: write
     outputs:
       new_tag: ${{ steps.bump.outputs.new_tag }}
       repo_lower: ${{ steps.repo_lower.outputs.repo }}
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          clean: true
           fetch-depth: 0
 
-      - name: Lowercase Repo 
+      - name: Lowercase Repository Name
         id: repo_lower
-        run: echo "repo=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+        run: echo "repo=${GITHUB_REPOSITORY@L}" >> "$GITHUB_OUTPUT"
 
-      - name: Login GHCR
-        uses: docker/login-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        with:
+          driver-opts: |
+            image=moby/buildkit:v0.34.2@sha256:c5f8862f52499773af85bc07695b2379ef08e8002352b0df2c4864c91d78dabe
+
+      - name: Log in to GHCR
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Version Bump
+      # The next version is one above the highest dev-* tag, whatever commit it is on. The tag is
+      # pushed before the build: a push of a tag that already exists is refused, so no two runs
+      # build (and overwrite) the same version. A failed build only skips a number.
+      - name: Get Version & Bump
         id: bump
+        shell: bash
+        env:
+          PREFIX: dev-
+          FIRST: dev-0.0.0
         run: |
-          LATEST_TAG=$(git tag -l 'dev-*' --sort=-v:refname | sed -n '1p')
-          if [ -z "$LATEST_TAG" ]; then
-            LATEST_TAG="dev-0.0.0"
-          fi
-
-          CLEAN_TAG="${LATEST_TAG#dev-}"
+          LATEST_TAG=$(git tag --list "${PREFIX}*" | { grep -E "^${PREFIX}[0-9]+\.[0-9]+\.[0-9]+$" || true; } | sort -V | tail -n 1)
+          LATEST_TAG=${LATEST_TAG:-$FIRST}
+          CLEAN_TAG=${LATEST_TAG#"$PREFIX"}
 
           IFS='.' read -r major minor patch <<< "$CLEAN_TAG"
-          major=${major:-0}
-          minor=${minor:-0}
-          patch=${patch:-0}
-
           if [ "$patch" -eq 9 ]; then
             minor=$((minor + 1))
             patch=0
           else
             patch=$((patch + 1))
           fi
-
-          
           NEW_TAG="$major.$minor.$patch"
-          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-          echo "🚀 New Dev Version: $NEW_TAG"
-          
-      - name: Build & Push
-        uses: docker/build-push-action@v5
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "${PREFIX}${NEW_TAG}"
+          git push origin "refs/tags/${PREFIX}${NEW_TAG}"
+
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "🚀 New version: ${PREFIX}${NEW_TAG} (after ${LATEST_TAG})"
+
+      - name: Build and Push to GHCR
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
+          platforms: linux/amd64
           push: true
-          build-args: |
-            VITE_API_URL=${{ secrets.VITE_API_URL_DEV }}
           tags: |
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-latest
             ghcr.io/${{ steps.repo_lower.outputs.repo }}:dev-${{ steps.bump.outputs.new_tag }}
-
-      - name: Create Git Tag
-        run: |
-          TAG="dev-${{ steps.bump.outputs.new_tag }}"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
-            git tag $TAG
-            git push origin $TAG
-          fi
+          # Which commit an image on the server is.
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=dev-${{ steps.bump.outputs.new_tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build-and-push
+    # Only the dev branch deploys to the dev server, and only through the development
+    # environment, whose protection rules (allowed branches) are set in the repository settings.
+    if: github.ref == 'refs/heads/dev'
+    environment: development
     runs-on: [ self-hosted, dev ]
-
+    timeout-minutes: 15
+    # contents: read checks out deploy/ (the script and the compose file); packages: read pulls the image.
+    permissions:
+      contents: read
+      packages: read
     steps:
-      - name: Deploy 
-        run: |
-          set -e
+      - name: Checkout deploy files
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: deploy
 
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
-          cd /opt/dev-deploy/fe-dashboard-dev
-
-          CURRENT_IMAGE=$(docker inspect --format='{{.Config.Image}}' fe-dashboard 2>/dev/null || echo "")
-          CURRENT_TAG=$(echo $CURRENT_IMAGE | awk -F: '{print $2}')
-
-          NEW_TAG="dev-${{ needs.build-and-push.outputs.new_tag }}"
-
-          echo "Current: ${CURRENT_TAG:-none}"
-          echo "New: $NEW_TAG"
-
-          docker compose pull
-          docker compose up -d --remove-orphans
-
-          if [ $? -ne 0 ]; then
-            echo "Deploy failed ❌"
-
-            if [ -n "$CURRENT_TAG" ]; then
-              echo "Rolling back..."
-              export IMAGE_TAG=$CURRENT_TAG
-              docker compose up -d --remove-orphans
-              echo "Rollback done 🔄"
-            fi
-
-            exit 1
-          fi
-
-          docker image prune -f
-
-          echo "Deploy Success 🚀"
+      # Pulls the image, installs deploy/docker-compose.dev.yml on the server, starts it, waits for
+      # its healthcheck and rolls back when it doesn't pass; see deploy/deploy.sh.
+      - name: Deploy to Server
+        env:
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE_REPO: ghcr.io/${{ needs.build-and-push.outputs.repo_lower }}
+          NEW_TAG: dev-${{ needs.build-and-push.outputs.new_tag }}
+          TAG_PREFIX: dev-
+          DEPLOY_DIR: /opt/dev-deploy/fe-dashboard-dev
+          COMPOSE_SRC: deploy/docker-compose.dev.yml
+          CONTAINER: fe-dashboard
+          NETWORK: pakargaming-dev-dashboard
+          BACKEND_CONTAINER: backend-dev
+        run: bash deploy/deploy.sh

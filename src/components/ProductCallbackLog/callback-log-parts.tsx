@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Minus } from 'lucide-react'
 
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -22,6 +22,32 @@ export function StockChip({ status }: { status: string }) {
         aria-hidden
       />
       {known ? t(`productCallbackLogPage.stock.${status}`) : status || '—'}
+    </span>
+  )
+}
+
+const KNOWN_SOURCES = ['SCHEDULER', 'MANUAL_SYNC', 'CHECKOUT', 'CALLBACK']
+
+/** Where a change came from (the sync job, an admin's sync, checkout, or LapakGaming's old pushes). */
+export function SourceChip({ source }: { source: string }) {
+  const { t } = useTranslation('common')
+  return (
+    <span className='inline-flex items-center bg-brand-purple/[0.07] px-1.5 py-0.5 font-display text-[10px] font-semibold uppercase tracking-[0.12em] text-brand-purple/80 hud-clip-sm'>
+      {KNOWN_SOURCES.includes(source) ? t(`productCallbackLogPage.source.${source}`) : source || '—'}
+    </span>
+  )
+}
+
+/** The stock, with what it was before when it changed (available → out of stock). */
+export function StockChange({ previous, current }: { previous?: string; current: string }) {
+  if (!previous || previous === current) return <StockChip status={current} />
+  return (
+    <span className='inline-flex flex-wrap items-center gap-1'>
+      <span className='opacity-60'>
+        <StockChip status={previous} />
+      </span>
+      <ArrowRight className='size-3 text-slate-300' aria-hidden />
+      <StockChip status={current} />
     </span>
   )
 }

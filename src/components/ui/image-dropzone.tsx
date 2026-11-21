@@ -5,6 +5,7 @@ import { RefreshCw, UploadCloud } from 'lucide-react'
 import { FieldMessage } from '@/components/Auth/AuthPanel'
 import { getImageFileValidationError } from '@/helpers/validate'
 import { uploadFile } from '@/hooks/useUpload'
+import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE_LABEL } from '@/lib/file'
 import { cn } from '@/lib/utils'
 
 type UploadError = 'invalidType' | 'tooLarge' | 'uploadFailed'
@@ -14,7 +15,7 @@ interface ImageDropzoneProps {
   value: string
   onChange: (url: string) => void
   onUploadingChange?: (uploading: boolean) => void
-  /** Frame shape, e.g. `aspect-[16/7]` for banners or `aspect-square` for icons. */
+  /** Frame shape, e.g. `aspect-[16/5]` for banners or `aspect-square` for icons. */
   aspectClassName?: string
   fit?: 'cover' | 'contain'
   labelledBy: string
@@ -82,7 +83,7 @@ export function ImageDropzone({
     }
   }
 
-  const message = uploadError ? t(`imageDropzone.errors.${uploadError}`) : error
+  const message = uploadError ? t(`imageDropzone.errors.${uploadError}`, { max: MAX_FILE_SIZE_LABEL }) : error
   const hintId = `${labelledBy}-hint`
 
   return (
@@ -144,7 +145,7 @@ export function ImageDropzone({
                 </>
               )}
             </span>
-            <span className='text-xs text-slate-500 @max-[13rem]:hidden'>{t('imageDropzone.formats')}</span>
+            <span className='text-xs text-slate-500 @max-[13rem]:hidden'>{t('imageDropzone.formats', { max: MAX_FILE_SIZE_LABEL })}</span>
           </span>
         )}
 
@@ -165,7 +166,7 @@ export function ImageDropzone({
       <input
         ref={fileInput}
         type='file'
-        accept='image/*'
+        accept={ACCEPTED_IMAGE_TYPES.join(',')}
         className='hidden'
         onChange={(e) => {
           const file = e.target.files?.[0]

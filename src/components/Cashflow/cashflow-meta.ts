@@ -7,8 +7,16 @@ export type CashflowDirection = 'in' | 'out' | 'other'
 
 export function directionOf(type: CashflowItem['type']): CashflowDirection {
   if (type === 'PAYMENT_GATEWAY') return 'in'
-  if (type === 'PROVIDER') return 'out'
+  if (type === 'PROVIDER' || type === 'PAYMENT_GATEWAY_FEE') return 'out'
   return 'other'
+}
+
+/** Which `cashflowPage.kind` label a row gets; null for a type this page does not know. */
+export function kindOf(type: CashflowItem['type']): 'in' | 'out' | 'fee' | null {
+  if (type === 'PAYMENT_GATEWAY') return 'in'
+  if (type === 'PROVIDER') return 'out'
+  if (type === 'PAYMENT_GATEWAY_FEE') return 'fee'
+  return null
 }
 
 export const DIRECTION_TYPE: Record<'in' | 'out', CashflowType> = { in: 'PAYMENT_GATEWAY', out: 'PROVIDER' }
@@ -22,11 +30,12 @@ export interface ParsedNotes {
 }
 
 const PG_NOTE = /^Payment Revenue for Method:\s*(.+)$/i
+const PG_FEE_NOTE = /^Payment gateway fee \(.+?\) for method:\s*(.+)$/i
 const PROVIDER_NOTE = /^(.+?)\s+provider cost for Product:\s*(.+?),\s*TID:\s*(.*)$/i
 
 export function parseNotes(notes: string | undefined): ParsedNotes {
   const text = notes?.trim() ?? ''
-  const pg = PG_NOTE.exec(text)
+  const pg = PG_NOTE.exec(text) ?? PG_FEE_NOTE.exec(text)
   if (pg) return { method: pg[1].trim() }
   const provider = PROVIDER_NOTE.exec(text)
   if (provider) return { provider: provider[1].trim(), sku: provider[2].trim(), tid: provider[3].trim() || undefined }

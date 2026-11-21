@@ -138,7 +138,7 @@ export default function BannerPage() {
         description={
           <span className='block space-y-3'>
             {deleting && (
-              <img src={deleting.image} alt='' className='block aspect-[16/7] w-full rounded-md object-cover ring-1 ring-slate-200' />
+              <img src={deleting.image} alt='' className='block aspect-[16/5] w-full rounded-md object-cover ring-1 ring-slate-200' />
             )}
             <span className='block'>{t('bannerPage.deleteConfirm.description')}</span>
           </span>
@@ -194,7 +194,7 @@ function BannerCard({ banner, order, onPreview, onEdit, onDelete }: BannerCardPr
             type='button'
             onClick={onPreview}
             aria-label={t('bannerPage.preview', { index: order + 1 })}
-            className='group relative block aspect-[16/7] w-full overflow-hidden bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/60'
+            className='group relative block aspect-[16/5] w-full overflow-hidden bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/60'
           >
             <BannerImage
               src={banner.image}

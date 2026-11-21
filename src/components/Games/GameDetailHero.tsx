@@ -7,7 +7,7 @@ import { PERM } from '@/constants/permissions'
 import { usePermissions } from '@/hooks/usePermissions'
 import { cn } from '@/lib/utils'
 import type { Game } from '@/types/game'
-import { GameStatusChips, GameThumb, GameToggles } from './GameParts'
+import { GameStatusChips, GameStatusControl, GameThumb } from './GameParts'
 import { gamePanelButtonClass } from './game-utils'
 
 interface GameDetailHeroProps {
@@ -16,7 +16,7 @@ interface GameDetailHeroProps {
   onImages: () => void
 }
 
-/** Banner, artwork, name and the switches admins reach for first. */
+/** Banner, artwork, name and the status control admins reach for first. */
 export function GameDetailHero({ game, onEdit, onImages }: GameDetailHeroProps) {
   const { t } = useTranslation('common')
   const { can } = usePermissions()
@@ -35,7 +35,7 @@ export function GameDetailHero({ game, onEdit, onImages }: GameDetailHeroProps) 
             </span>
             <div className='min-w-0 flex-1 space-y-1.5 sm:pt-4'>
               <p className={hudEyebrowClass}>
-                {game.category?.name ? t('gameDetailPage.eyebrowCategory', { category: game.category.name }) : t('gameDetailPage.eyebrow')}
+                {t('gameDetailPage.eyebrow')}
               </p>
               <h1 className='font-display text-2xl font-bold leading-tight tracking-tight text-slate-900 sm:text-3xl'>{game.name}</h1>
               <p className='truncate text-xs text-slate-500'>
@@ -60,7 +60,7 @@ export function GameDetailHero({ game, onEdit, onImages }: GameDetailHeroProps) 
 
           <div className='mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between empty:hidden'>
             <GameStatusChips game={game} flagsOnly={canUpdate} />
-            <GameToggles game={game} />
+            <GameStatusControl game={game} />
           </div>
         </div>
       </div>

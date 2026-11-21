@@ -15,6 +15,7 @@ import { useProductsByGame } from '@/hooks/useProduct'
 import { formatCurrency } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { gamePriceSchema, type GamePriceFormInput, type GamePriceFormValues } from '@/schemas/game'
+import { isBlank } from '@/schemas/product'
 import type { Game } from '@/types/game'
 import { formatPercent, listingBasePrice, PRICE_MAX_PERCENT, sellingFromPercent } from './game-utils'
 import { useRetained } from '@/hooks/useRetained'
@@ -57,9 +58,12 @@ function GamePriceForm({ game, onDone }: { game: PriceGame; onDone: () => void }
     formState: { errors },
   } = useForm<GamePriceFormInput, unknown, GamePriceFormValues>({
     resolver: zodResolver(gamePriceSchema),
-    defaultValues: { additional_percent: game.additional_percent ?? 0 },
+    // A game without a markup starts blank, not at 0: one click on apply would otherwise set 0% on
+    // every product of the game, replacing their own markups.
+    defaultValues: { additional_percent: game.additional_percent ? game.additional_percent : '' },
   })
   const raw = useWatch({ control, name: 'additional_percent' })
+  const blank = isBlank(raw)
   const percent = Math.min(PRICE_MAX_PERCENT, Math.max(0, Number(raw) || 0))
 
   const list = products.data ?? []
@@ -133,7 +137,7 @@ function GamePriceForm({ game, onDone }: { game: PriceGame; onDone: () => void }
                     <span className='flex shrink-0 items-center gap-1.5 tabular-nums'>
                       <span className='text-slate-400'>{formatCurrency(base)}</span>
                       <ArrowRight className='size-3 text-slate-300' aria-hidden />
-                      <span className='font-semibold text-slate-900'>{formatCurrency(sellingFromPercent(base, percent))}</span>
+                      <span className='font-semibold text-slate-900'>{blank ? '—' : formatCurrency(sellingFromPercent(base, percent))}</span>
                     </span>
                   </li>
                 )
@@ -144,7 +148,7 @@ function GamePriceForm({ game, onDone }: { game: PriceGame; onDone: () => void }
       )}
 
       <p className='text-xs text-slate-500'>
-        {t('gamePriceDialog.formula', { percent: formatPercent(percent) })}
+        {t('gamePriceDialog.formula', { percent: blank ? '—' : formatPercent(percent) })}
       </p>
 
       <div className='flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:items-center sm:justify-between'>

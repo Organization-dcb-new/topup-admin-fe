@@ -1,7 +1,17 @@
 import type { PaginationMeta } from './game'
 
-/** One product update pushed by the provider (price and stock), as GET /products/callback-logs returns it. */
+/**
+ * Where a price or stock change came from: the 12-hour sync job, an admin's product sync, checkout's live
+ * price check, or LapakGaming's push (rows from before 2026-11-17; no push is taken now).
+ */
+export type ProductChangeSource = 'SCHEDULER' | 'MANUAL_SYNC' | 'CHECKOUT' | 'CALLBACK'
+export const PRODUCT_CHANGE_SOURCES: ProductChangeSource[] = ['SCHEDULER', 'MANUAL_SYNC', 'CHECKOUT', 'CALLBACK']
+
+/** One supplier price or stock change of a product, as GET /products/callback-logs returns it. */
 export interface ProductCallbackLogResponse {
+  source: ProductChangeSource | string
+  /** Stock before the change; empty on rows from before it was kept. */
+  previous_status: string
   id: string
   product_code: string
   product_name: string
@@ -34,6 +44,7 @@ export interface ProductCallbackLogFilters {
   endDate?: string
   search?: string
   status?: string
+  source?: ProductChangeSource
   minPrice?: string
   maxPrice?: string
   sortBy?: string

@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Gamepad2, RefreshCw, Trash2 } from 'lucide-react'
+import { Archive, ArrowLeft, Gamepad2, RefreshCw } from 'lucide-react'
 
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { Can } from '@/components/Auth/Can'
-import { DangerDialog } from '@/components/Auth/DangerDialog'
 import { ConfirmActionDialog } from '@/components/Games/ConfirmActionDialog'
 import { GameCheckoutPanel } from '@/components/Games/GameCheckoutPanel'
 import { GameDetailHero } from '@/components/Games/GameDetailHero'
@@ -14,10 +13,10 @@ import { GameFormDialog } from '@/components/Games/GameFormDialog'
 import { GameImageDialog } from '@/components/Games/GameImageDialog'
 import { GamePriceDialog } from '@/components/Games/GamePriceDialog'
 import { GameProductsPanel } from '@/components/Games/GameProductsPanel'
-import { isUuid, usualPercent } from '@/components/Games/game-utils'
+import { gameStatus, isUuid, usualPercent } from '@/components/Games/game-utils'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { PERM } from '@/constants/permissions'
-import { gameServerMessage, useDeleteGame, useGetGameById, useSyncGameProducts } from '@/hooks/useGame'
+import { gameServerMessage, useArchiveGame, useGetGameById, useSyncGameProducts } from '@/hooks/useGame'
 import { usePermissions } from '@/hooks/usePermissions'
 import type { Game } from '@/types/game'
 
@@ -77,15 +76,15 @@ export default function GameDetailPage() {
 
 function GameDetailView({ game }: { game: Game }) {
   const { t } = useTranslation('common')
-  const navigate = useNavigate()
   const { can } = usePermissions()
   const [editing, setEditing] = useState(false)
   const [imagesOpen, setImagesOpen] = useState(false)
   const [priceOpen, setPriceOpen] = useState(false)
   const [syncOpen, setSyncOpen] = useState(false)
-  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
   const sync = useSyncGameProducts(game.id, () => setSyncOpen(false))
-  const remove = useDeleteGame(() => navigate('/games', { replace: true }))
+  const archive = useArchiveGame(() => setArchiveOpen(false))
+  const archived = gameStatus(game) === 'HIDDEN'
 
   return (
     <>
@@ -101,22 +100,25 @@ function GameDetailView({ game }: { game: Game }) {
 
       <GameProductsPanel game={game} onPrice={() => setPriceOpen(true)} onSync={() => setSyncOpen(true)} order={4} />
 
-      <Can permission={PERM.gameDelete}>
-        <section className='flex flex-col gap-4 rounded-xl border border-rose-200 bg-rose-50/50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6'>
-          <div className='min-w-0 space-y-1'>
-            <h2 className='font-display text-base font-bold text-rose-700'>{t('gameDetailPage.danger.title')}</h2>
-            <p className='text-sm text-rose-700/80'>{t('gameDetailPage.danger.body')}</p>
-          </div>
-          <button
-            type='button'
-            onClick={() => setDeleteOpen(true)}
-            className='inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-rose-600 px-4 font-display text-xs font-bold uppercase tracking-[0.15em] text-white hud-clip-sm transition-colors hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90'
-          >
-            <Trash2 className='size-4' aria-hidden />
-            {t('gameDetailPage.danger.button')}
-          </button>
-        </section>
-      </Can>
+      {/* Archiving is HIDDEN under another name, so an archived game has nothing to do here. */}
+      {!archived && (
+        <Can permission={PERM.gameDelete}>
+          <section className='flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6'>
+            <div className='min-w-0 space-y-1'>
+              <h2 className='font-display text-base font-bold text-slate-800'>{t('gameDetailPage.archive.title')}</h2>
+              <p className='text-sm text-slate-500'>{t('gameDetailPage.archive.body')}</p>
+            </div>
+            <button
+              type='button'
+              onClick={() => setArchiveOpen(true)}
+              className='inline-flex h-10 shrink-0 items-center justify-center gap-2 bg-white px-4 font-display text-xs font-bold uppercase tracking-[0.15em] text-slate-700 ring-1 ring-inset ring-slate-300 hud-clip-sm transition-colors hover:text-brand-purple hover:ring-brand-purple/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-purple/40'
+            >
+              <Archive className='size-4' aria-hidden />
+              {t('gameDetailPage.archive.button')}
+            </button>
+          </section>
+        </Can>
+      )}
 
       <GameFormDialog open={editing} onOpenChange={setEditing} game={game} />
       <GameImageDialog game={imagesOpen ? game : null} onOpenChange={(open) => !open && setImagesOpen(false)} />
@@ -136,16 +138,19 @@ function GameDetailView({ game }: { game: Game }) {
         pending={sync.isPending}
         onConfirm={() => sync.mutate()}
       />
-      <DangerDialog
-        open={deleteOpen}
-        onOpenChange={setDeleteOpen}
-        eyebrow={t('gameDetailPage.delete.eyebrow')}
-        title={t('gameDetailPage.delete.title', { name: game.name })}
-        description={t('gameDetailPage.delete.description')}
-        confirmLabel={t('gameDetailPage.delete.confirm')}
-        cancelLabel={t('gameDetailPage.delete.cancel')}
-        pending={remove.isPending}
-        onConfirm={() => remove.mutate(game.id)}
+      <ConfirmActionDialog
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        icon={Archive}
+        spinIcon={false}
+        eyebrow={t('gameDetailPage.archive.eyebrow')}
+        title={t('gameDetailPage.archive.dialogTitle', { name: game.name })}
+        description={t('gameDetailPage.archive.description')}
+        confirmLabel={t('gameDetailPage.archive.confirm')}
+        cancelLabel={t('gameDetailPage.archive.cancel')}
+        pendingLabel={t('gameDetailPage.archive.pending')}
+        pending={archive.isPending}
+        onConfirm={() => archive.mutate(game.id)}
       />
     </>
   )

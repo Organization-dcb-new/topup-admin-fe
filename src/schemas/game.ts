@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 import { PRICE_MAX_PERCENT } from '@/components/Games/game-utils'
+import { blankAsMissing } from '@/schemas/product'
 
 const text = z.string().trim()
 
@@ -19,20 +20,18 @@ export const gameInputDraftSchema = z.object({
 export const gameCreateSchema = z
   .object({
     provider_id: z.string().min(1, 'gameForm.errors.providerRequired'),
-    category_id: z.string().min(1, 'gameForm.errors.categoryRequired'),
     name: z.string().trim().min(1, 'gameForm.errors.nameRequired'),
     slug: z
       .string()
       .trim()
       .min(1, 'gameForm.errors.slugRequired')
       .transform((v) => v.replace(/-+$/, '')),
-    code: z.string().trim().min(1, 'gameForm.errors.codeRequired'),
+    // Optional: the backend makes one from the slug.
+    code: text,
     thumbnail_url: z.string().min(1, 'gameForm.errors.thumbnailRequired'),
     banner_url: z.string(),
-    developer: text,
-    publisher: text,
     description: text,
-    instruction: text,
+    status: z.enum(['ACTIVE', 'MAINTENANCE', 'HIDDEN']),
     inputs: z.array(gameInputDraftSchema),
   })
   .superRefine((v, ctx) => {
@@ -51,26 +50,29 @@ export type GameCreateFormValues = z.output<typeof gameCreateSchema>
 
 export const gameEditSchema = z.object({
   name: z.string().trim().min(1, 'gameForm.errors.nameRequired'),
-  category_id: z.string(),
-  developer: text,
-  publisher: text,
+  slug: z
+    .string()
+    .trim()
+    .min(1, 'gameForm.errors.slugRequired')
+    .transform((v) => v.replace(/-+$/, '')),
   description: text,
-  instruction: text,
   popularity_score: z.coerce
     .number({ error: 'gameForm.errors.popularityInvalid' })
     .int('gameForm.errors.popularityInvalid')
     .min(0, 'gameForm.errors.popularityInvalid'),
-  is_featured: z.boolean(),
 })
 
 export type GameEditFormInput = z.input<typeof gameEditSchema>
 export type GameEditFormValues = z.output<typeof gameEditSchema>
 
+// Applied to every product of the game, so a blank field must not save as 0% (see blankAsMissing).
 export const gamePriceSchema = z.object({
-  additional_percent: z.coerce
-    .number({ error: 'gamePriceDialog.errors.percentInvalid' })
-    .min(0, 'gamePriceDialog.errors.percentInvalid')
-    .max(PRICE_MAX_PERCENT, 'gamePriceDialog.errors.percentMax'),
+  additional_percent: blankAsMissing(
+    z.coerce
+      .number({ error: 'gamePriceDialog.errors.percentInvalid' })
+      .min(0, 'gamePriceDialog.errors.percentInvalid')
+      .max(PRICE_MAX_PERCENT, 'gamePriceDialog.errors.percentMax')
+  ),
 })
 
 export type GamePriceFormInput = z.input<typeof gamePriceSchema>

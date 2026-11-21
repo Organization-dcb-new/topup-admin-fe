@@ -9,6 +9,7 @@ import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { DashboardFilters } from '@/components/Dashboard/DashboardFilters'
 import { DashboardSkeleton } from '@/components/Dashboard/DashboardSkeleton'
 import { FailedReasonsCard } from '@/components/Dashboard/FailedReasonsCard'
+import { FxRateCard } from '@/components/Dashboard/FxRateCard'
 import { KpiCards } from '@/components/Dashboard/KpiCards'
 import { PendingAgingCard } from '@/components/Dashboard/PendingAgingCard'
 import { ServerHealthAlert } from '@/components/Dashboard/ServerHealthAlert'
@@ -134,6 +135,8 @@ export default function DashboardPage() {
               topGames={overview.top_games}
               topPaymentMethods={overview.top_payment_methods}
             />
+
+            <FxRateCard order={7} />
           </div>
         ) : null}
       </div>

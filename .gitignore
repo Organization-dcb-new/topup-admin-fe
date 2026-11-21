@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 .env
+# Salinan .env server yang sudah diisi (deploy/dev.env, prod.env, ...); contohnya tetap masuk git
+.env.*
+*.env
+!.env.example
+!*.env.example
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

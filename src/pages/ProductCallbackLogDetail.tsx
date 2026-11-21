@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight, RadioTower } from 'lucide-react'
 import { AuthAlert } from '@/components/Auth/AuthPanel'
 import { hudEyebrowClass } from '@/components/Auth/hud-styles'
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
-import { PriceDelta, StockChip } from '@/components/ProductCallbackLog/callback-log-parts'
+import { PriceDelta, SourceChip, StockChange } from '@/components/ProductCallbackLog/callback-log-parts'
 import { CopyCodeButton } from '@/components/Referral/ReferralParts'
 import { useGetProductCallbackLogById } from '@/hooks/useProductCallbackLog'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
@@ -63,7 +63,8 @@ export default function ProductCallbackLogDetailPage() {
                           {log.provider_code}
                         </span>
                       )}
-                      <StockChip status={log.status} />
+                      <SourceChip source={log.source} />
+                      <StockChange previous={log.previous_status} current={log.status} />
                     </div>
                   </div>
                 </div>
@@ -82,9 +83,13 @@ export default function ProductCallbackLogDetailPage() {
                   <Meta label={t('productCallbackLogPage.detail.providerTime')}>
                     {providerTime ? format(providerTime, 'dd MMM yyyy, HH:mm:ss', { locale: i18n.language.startsWith('id') ? idLocale : enUS }) : '—'}
                   </Meta>
-                  <Meta label={t('productCallbackLogPage.detail.level')}>
-                    <span className='capitalize'>{log.meta_level || '—'}</span>
-                  </Meta>
+                  {log.source === 'CALLBACK' ? (
+                    <Meta label={t('productCallbackLogPage.detail.level')}>
+                      <span className='capitalize'>{log.meta_level || '—'}</span>
+                    </Meta>
+                  ) : (
+                    <Meta label={t('productCallbackLogPage.sourceLabel')}>{t(`productCallbackLogPage.sourceHint.${log.source}`, { defaultValue: log.source })}</Meta>
+                  )}
                 </dl>
 
                 <div className='flex items-center gap-2 rounded-md bg-slate-50 px-3 py-2 text-xs text-slate-500'>

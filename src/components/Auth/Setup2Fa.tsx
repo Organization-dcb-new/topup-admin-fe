@@ -1,4 +1,4 @@
-import { useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import { QRCodeSVG } from 'qrcode.react'
@@ -13,6 +13,7 @@ import {
   LifeBuoy,
   Loader2,
   QrCode,
+  ShieldAlert,
   ShieldCheck,
   ShieldOff,
   ShieldPlus,
@@ -28,10 +29,11 @@ import {
   OtpCodeInput,
 } from '@/components/Auth/AuthPanel'
 import { hudLabelClass } from '@/components/Auth/hud-styles'
+import { PasswordInput } from '@/components/Auth/PasswordInput'
 import { AnimatedHeight } from '@/components/ui/animated-height'
 import { Checkbox } from '@/components/ui/checkbox'
 import { useCooldown } from '@/hooks/useCooldown'
-import { refreshAuthSession, useAuthUser } from '@/lib/auth'
+import { refreshAuthSession, useAuthUser, type AuthSession } from '@/lib/auth'
 import { toAuthError, type AuthError } from '@/lib/auth-error'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
@@ -59,25 +61,44 @@ function secretFromOtpauth(uri: string) {
   }
 }
 
-const Setup2FA = () => {
+interface Setup2FAProps {
+  /**
+   * `page`: the 2FA page inside the panel, its own card, turning 2FA on and off.
+   * `required`: the setup an admin must finish right after the password, inside the auth card.
+   */
+  variant?: 'page' | 'required'
+  /** `required` only: 2FA is on and the session is now a full one. */
+  onActivated?: (session: AuthSession) => void
+}
+
+const Setup2FA = ({ variant = 'page', onActivated }: Setup2FAProps) => {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const { user } = useAuthUser()
-  const enabled = user?.two_factor_enabled === true
+  const required = variant === 'required'
+  const enabled = !required && user?.two_factor_enabled === true
   const cooldown = useCooldown()
   const codeId = useId()
   const hintId = `${codeId}-hint`
+  const passwordId = `${codeId}-password`
   const codeRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
   const [setup, setSetup] = useState<SetupData | null>(null)
   const [step, setStep] = useState<Step>(1)
   const [direction, setDirection] = useState<'forward' | 'back'>('forward')
   const [savedCodes, setSavedCodes] = useState(false)
   const [disableOpen, setDisableOpen] = useState(false)
   const [code, setCode] = useState('')
+  const [password, setPassword] = useState('')
   const [error, setError] = useState<AuthError | null>(null)
   const [shaking, setShaking] = useState(false)
 
   const view = enabled ? 'enabled' : setup ? 'wizard' : 'intro'
+
+  // The code field focuses itself on mount; the password comes first in the disable form.
+  useEffect(() => {
+    if (disableOpen) passwordRef.current?.focus({ preventScroll: true })
+  }, [disableOpen])
 
   const fail = (err: unknown, fallbackKey: string) => {
     // A 401 here is usually a wrong code, but re-checking the session lets the route guard
@@ -103,7 +124,15 @@ const Setup2FA = () => {
       setSavedCodes(false)
       setError(null)
     },
-    onError: (err) => fail(err, 'twoFaPage.generateError'),
+    onError: (err) => {
+      // 2FA is already on (another tab, or a stale page): it has to be turned off before a new setup.
+      if (isAxiosError(err) && err.response?.status === 409) {
+        setError({ key: 'twoFaPage.alreadyOn' })
+        void refreshAuthSession(queryClient)
+        return
+      }
+      fail(err, 'twoFaPage.generateError')
+    },
   })
 
   // A wrong code answers 401, which must not trigger the global "session expired" redirect.
@@ -111,31 +140,56 @@ const Setup2FA = () => {
     mutationFn: (otp: string) => api.post('/admin/activate', { code: otp }, { skipAuthRedirect: true }),
     onSuccess: async () => {
       // Refresh first so the card goes straight to the enabled view instead of flashing the intro.
-      await refreshAuthSession(queryClient)
+      // From a required setup the backend has just swapped the cookie for a full session.
+      const session = await refreshAuthSession(queryClient)
+      toast.success(t('twoFaPage.activated'))
+      if (required) {
+        onActivated?.(session)
+        return
+      }
       setSetup(null)
       setCode('')
       setError(null)
-      toast.success(t('twoFaPage.activated'))
     },
     onError: (err) => fail(err, 'twoFaPage.verifyError'),
   })
 
+  // Turning 2FA off takes the password as well as a code, so a stolen open session can't do it alone.
   const deactivate = useMutation({
-    mutationFn: (otp: string) => api.post('/admin/deactivate', { code: otp }, { skipAuthRedirect: true }),
+    mutationFn: (vars: { code: string; password: string }) =>
+      api.post('/admin/deactivate', vars, { skipAuthRedirect: true }),
     onSuccess: async () => {
       await refreshAuthSession(queryClient)
       setDisableOpen(false)
       setCode('')
+      setPassword('')
       setError(null)
       toast.success(t('twoFaPage.deactivated'))
     },
-    onError: (err) => fail(err, 'twoFaPage.verifyError'),
+    onError: (err) => {
+      const { key } = toAuthError(err, 'twoFaPage.verifyError')
+      if (key !== 'authErrors.wrongPassword' && key !== 'authErrors.invalidCredentials') {
+        return fail(err, 'twoFaPage.verifyError')
+      }
+      if (isAxiosError(err) && err.response?.status === 401) void refreshAuthSession(queryClient)
+      setError({ key: 'authErrors.wrongPassword' })
+      setShaking(true)
+      setPassword('')
+      setCode('')
+      passwordRef.current?.focus({ preventScroll: true })
+    },
   })
 
   const submitCode = (value: string) => {
     if (value.length !== OTP_LENGTH || cooldown.active) return
     if (view === 'wizard' && !activate.isPending) activate.mutate(value)
-    if (view === 'enabled' && !deactivate.isPending) deactivate.mutate(value)
+    if (view === 'enabled' && !deactivate.isPending) {
+      if (!password) {
+        passwordRef.current?.focus({ preventScroll: true })
+        return
+      }
+      deactivate.mutate({ code: value, password })
+    }
   }
 
   const goTo = (next: Step) => {
@@ -167,13 +221,21 @@ const Setup2FA = () => {
             description: t('twoFaPage.onDescription'),
             key: 'enabled',
           }
-        : {
-            eyebrow: t('twoFaPage.eyebrow'),
-            icon: ShieldPlus,
-            title: t('twoFaPage.title'),
-            description: t('twoFaPage.offDescription'),
-            key: 'intro',
-          }
+        : required
+          ? {
+              eyebrow: t('twoFaRequired.eyebrow'),
+              icon: ShieldAlert,
+              title: t('twoFaRequired.title'),
+              description: t('twoFaRequired.description'),
+              key: 'intro',
+            }
+          : {
+              eyebrow: t('twoFaPage.eyebrow'),
+              icon: ShieldPlus,
+              title: t('twoFaPage.title'),
+              description: t('twoFaPage.offDescription'),
+              key: 'intro',
+            }
 
   const errorAlert = error && (
     <AuthAlert key={error.key + (error.detail ?? '')}>{error.detail ?? t(error.key)}</AuthAlert>
@@ -194,7 +256,7 @@ const Setup2FA = () => {
         value={code}
         onChange={changeCode}
         onComplete={submitCode}
-        invalid={!!error}
+        invalid={!!error && error.key !== 'authErrors.wrongPassword'}
         describedBy={hintId}
       />
       <p id={hintId} className='text-center text-xs text-slate-500'>
@@ -203,18 +265,17 @@ const Setup2FA = () => {
     </div>
   )
 
-  return (
-    <div className='mx-auto max-w-2xl py-2 sm:py-6'>
-      <HudCard className='animate-in fade-in slide-in-from-bottom-4 duration-700 ease-hud'>
-        <AuthPanelHeader
-          eyebrow={header.eyebrow}
-          icon={header.icon}
-          title={header.title}
-          description={header.description}
-          contentKey={header.key}
-        />
+  const content = (
+    <>
+      <AuthPanelHeader
+        eyebrow={header.eyebrow}
+        icon={header.icon}
+        title={header.title}
+        description={header.description}
+        contentKey={header.key}
+      />
 
-        <AnimatedHeight>
+      <AnimatedHeight>
           <div key={view} className='animate-in fade-in duration-500 ease-hud'>
             {view === 'intro' && (
               <form
@@ -380,6 +441,22 @@ const Setup2FA = () => {
                         <p className='mt-1 text-sm leading-relaxed text-rose-700'>{t('twoFaPage.disableBody')}</p>
                       </div>
                       {errorAlert}
+                      <div className='space-y-2'>
+                        <label htmlFor={passwordId} className={hudLabelClass}>
+                          {t('twoFaPage.passwordLabel')}
+                        </label>
+                        <PasswordInput
+                          ref={passwordRef}
+                          id={passwordId}
+                          autoComplete='current-password'
+                          value={password}
+                          onChange={(e) => {
+                            setPassword(e.target.value)
+                            if (error) setError(null)
+                          }}
+                          invalid={error?.key === 'authErrors.wrongPassword'}
+                        />
+                      </div>
                       {codeField}
                       <div className='flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between'>
                         <button
@@ -388,6 +465,7 @@ const Setup2FA = () => {
                             setDisableOpen(false)
                             setError(null)
                             setCode('')
+                            setPassword('')
                           }}
                           className='inline-flex h-10 items-center justify-center rounded-md px-3 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900'
                         >
@@ -395,7 +473,7 @@ const Setup2FA = () => {
                         </button>
                         <button
                           type='submit'
-                          disabled={deactivate.isPending || cooldown.active || code.length !== OTP_LENGTH}
+                          disabled={deactivate.isPending || cooldown.active || code.length !== OTP_LENGTH || !password}
                           className='inline-flex h-12 w-full items-center justify-center gap-2 bg-rose-600 font-display text-sm font-bold uppercase tracking-[0.2em] text-white hud-clip-sm transition-[background-color,transform,opacity] duration-300 hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/90 active:scale-[0.985] disabled:opacity-50 sm:w-56'
                         >
                           {deactivate.isPending ? (
@@ -430,7 +508,15 @@ const Setup2FA = () => {
             )}
           </div>
         </AnimatedHeight>
-      </HudCard>
+    </>
+  )
+
+  // The required setup sits inside the auth layout's card; the panel page brings its own.
+  if (required) return content
+
+  return (
+    <div className='mx-auto max-w-2xl py-2 sm:py-6'>
+      <HudCard className='animate-in fade-in slide-in-from-bottom-4 duration-700 ease-hud'>{content}</HudCard>
     </div>
   )
 }

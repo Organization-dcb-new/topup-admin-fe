@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import toast from 'react-hot-toast'
 import { Check, CheckCircle2, CircleDashed, Copy, Eye, EyeOff, XCircle, type LucideIcon } from 'lucide-react'
 
+import { PERM } from '@/constants/permissions'
+import { usePermissions } from '@/hooks/usePermissions'
 import { copyTextToClipboard } from '@/lib/copy-to-clipboard'
 import { cn } from '@/lib/utils'
 import { maskSecret, providerState, type ProviderState } from './order-utils'
@@ -71,10 +73,22 @@ export function CopyValueButton({ value, label, className }: { value: string; la
   )
 }
 
-/** Voucher codes are what the player paid for: masked until asked for. */
+/**
+ * Voucher codes are what the player paid for: masked until asked for, and only for admins who may see
+ * buyer data (`transaction.reveal`). A code the API already masked (`••••1234`) is shown as it came.
+ */
 export function VoucherValue({ code }: { code: string }) {
   const { t } = useTranslation('common')
+  const { can } = usePermissions()
   const [revealed, setRevealed] = useState(false)
+
+  if (code.startsWith('••••') || !can(PERM.transactionReveal)) {
+    return (
+      <span className='min-w-0 flex-1 truncate font-mono text-sm text-slate-800'>
+        {code.startsWith('••••') ? code : maskSecret(code)}
+      </span>
+    )
+  }
 
   return (
     <span className='flex min-w-0 items-center gap-1'>

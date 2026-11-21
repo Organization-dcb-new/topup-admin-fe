@@ -106,7 +106,7 @@ function ShowForm({ show, onDone }: { show?: Show; onDone: () => void }) {
             aspectClassName='aspect-square'
             fit='contain'
             labelledBy={`${ids}-image`}
-            hint={t('imageDropzone.formatsShort')}
+            hint={t('imageDropzone.hints.icon')}
           />
         </div>
         <div className='space-y-4'>

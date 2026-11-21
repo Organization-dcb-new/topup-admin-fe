@@ -118,7 +118,7 @@ function PaymentCategoryForm({
             aspectClassName='aspect-square'
             fit='contain'
             labelledBy={`${ids}-icon`}
-            hint={t('imageDropzone.formatsShort')}
+            hint={t('imageDropzone.hints.icon')}
           />
         </div>
         <div className='space-y-4'>

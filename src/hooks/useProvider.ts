@@ -1,10 +1,10 @@
 import { api } from '@/api/axios'
 import i18n from '@/i18n'
+import { apiErrorMessage } from '@/hooks/useIntegrationLog'
 import type {
-  LapakGamingBalanceResponse,
-  PpobBalanceResponse,
   Provider,
-  ProviderCreatePayload,
+  ProviderBalance,
+  ProviderRegions,
   ProviderResponse,
   ProviderUpdatePayload,
 } from '@/types/provider'
@@ -22,23 +22,13 @@ export const useGetProvider = () =>
     },
   })
 
-export const useGetLapakGamingBalance = (enabled = true) =>
-  useQuery<LapakGamingBalanceResponse>({
-    queryKey: ['lapak-gaming-balance'],
+/** Our deposit at the provider's supplier, asked live from the supplier whenever the card loads. */
+export const useProviderBalance = (id: string, enabled: boolean) =>
+  useQuery<ProviderBalance>({
+    queryKey: ['provider-balance', id],
     queryFn: async () => {
-      const res = await api.get('/lapak-gaming/balance')
-      return res.data
-    },
-    enabled,
-    retry: 1,
-  })
-
-export const useGetPpobBalance = (enabled = true) =>
-  useQuery<PpobBalanceResponse>({
-    queryKey: ['ppob-balance'],
-    queryFn: async () => {
-      const res = await api.get('/providers/ppob/balance')
-      return res.data
+      const res = await api.get(`/providers/${id}/balance`)
+      return res.data.data
     },
     enabled,
     retry: 1,
@@ -47,35 +37,14 @@ export const useGetPpobBalance = (enabled = true) =>
 /** Everything PUT /providers/:id needs, taken from the provider as it is now. */
 export function toProviderUpdate(provider: Provider): ProviderUpdatePayload {
   return {
-    name: provider.name,
     api_url: provider.api_url,
-    api_key_encrypted: provider.api_key_encrypted,
     status: provider.status,
     priority: provider.priority,
     config: JSON.stringify(provider.config ?? {}),
   }
 }
 
-/** Backend error text, for the few messages the form maps onto a field. */
-export function providerErrorMessage(err: unknown) {
-  return (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-}
-
-export function useCreateProvider(onDone?: () => void) {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (payload: ProviderCreatePayload) => {
-      const res = await api.post('/providers/', payload)
-      return res.data
-    },
-    onSuccess: () => {
-      toast.success(i18n.t('providerPage.toasts.created'))
-      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
-      onDone?.()
-    },
-  })
-}
-
+/** Providers are only read and edited here: the backend creates them from its supplier integrations and never deletes them. */
 export function useUpdateProvider(onDone?: () => void, successKey = 'providerPage.toasts.updated') {
   const queryClient = useQueryClient()
   return useMutation({
@@ -92,14 +61,37 @@ export function useUpdateProvider(onDone?: () => void, successKey = 'providerPag
   })
 }
 
-export function useDeleteProvider() {
+export const providerRegionsKey = (id: string | undefined) => ['provider-regions', id] as const
+
+/** Every country the supplier sells for, with what is stored for each (GET /providers/:id/regions). */
+export const useProviderRegions = (id: string | undefined) =>
+  useQuery<ProviderRegions>({
+    queryKey: providerRegionsKey(id),
+    queryFn: async () => {
+      const res = await api.get(`/providers/${id}/regions`)
+      return res.data.data
+    },
+    enabled: !!id,
+  })
+
+/**
+ * Sets the countries the catalog sync pulls (PUT /providers/:id/regions). Only the config's
+ * "regions" changes; the backend keeps the rest of it.
+ */
+export function useUpdateProviderRegions(onDone?: (saved: ProviderRegions) => void) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (id: string) => api.delete(`/providers/${id}`),
-    onSuccess: () => {
-      toast.success(i18n.t('providerPage.toasts.deleted'))
-      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
+    mutationFn: async ({ id, regions }: { id: string; regions: string[] }) => {
+      const res = await api.put(`/providers/${id}/regions`, { regions })
+      return res.data.data as ProviderRegions
     },
-    onError: () => toast.error(i18n.t('providerPage.toasts.deleteError')),
+    onSuccess: (saved, { id }) => {
+      toast.success(i18n.t('providerPage.regions.toasts.saved'))
+      queryClient.setQueryData(providerRegionsKey(id), saved)
+      // The provider cards and the supplier catalog's region filter read the provider's config.
+      void queryClient.invalidateQueries({ queryKey: providersQueryKey })
+      onDone?.(saved)
+    },
+    onError: (err) => toast.error(apiErrorMessage(err) ?? i18n.t('providerPage.regions.toasts.saveError')),
   })
 }

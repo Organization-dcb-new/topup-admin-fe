@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { FileText, Info, Pencil } from 'lucide-react'
 
 import { formatBackendDateTime } from '@/lib/backend-datetime'
+import { HOME_REGION, regionName } from '@/lib/regions'
 import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { Game } from '@/types/game'
@@ -14,7 +15,9 @@ const DATE_PATTERN = 'dd MMM yyyy, HH:mm'
 
 /** Identifiers and bookkeeping: what support staff look up and copy. */
 export function GameOverviewPanel({ game, order }: { game: Game; order?: number }) {
-  const { t } = useTranslation('common')
+  const { t, i18n } = useTranslation('common')
+  const variant = game.variant ?? 'DIGITAL'
+  const region = game.region || HOME_REGION
 
   return (
     <DetailPanel icon={Info} title={t('gameDetailPage.overview.title')} order={order}>
@@ -30,17 +33,21 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
         <DetailRow label={t('gameDetailPage.overview.slug')}>
           <span className='min-w-0 truncate'>/{game.slug}</span>
         </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.category')}>
-          <span className='min-w-0 truncate'>{game.category?.name || '—'}</span>
+        <DetailRow label={t('gameDetailPage.overview.variant')}>
+          <span className='min-w-0 truncate' title={t(`gamePage.variantHint.${variant}`)}>{t(`gamePage.variant.${variant}`)}</span>
+        </DetailRow>
+        <DetailRow label={t('gameDetailPage.overview.region')}>
+          <span className='min-w-0 truncate'>
+            {regionName(region, i18n.resolvedLanguage)} <span className='font-mono text-xs text-slate-400'>{region.toUpperCase()}</span>
+          </span>
+        </DetailRow>
+        <DetailRow label={t('gameDetailPage.overview.supplierBrand')}>
+          <span className={cn('min-w-0 truncate', game.supplier_brand_code ? 'font-mono text-xs' : 'text-slate-400')}>
+            {game.supplier_brand_code || t('gameDetailPage.overview.supplierBrandNone')}
+          </span>
         </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.popularity')}>
           <span className='tabular-nums'>{formatNumber(game.popularity_score)}</span>
-        </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.developer')}>
-          <span className='min-w-0 truncate'>{game.developer || '—'}</span>
-        </DetailRow>
-        <DetailRow label={t('gameDetailPage.overview.publisher')}>
-          <span className='min-w-0 truncate'>{game.publisher || '—'}</span>
         </DetailRow>
         <DetailRow label={t('gameDetailPage.overview.created')}>
           <span className='tabular-nums'>{formatBackendDateTime(game.created_at, DATE_PATTERN)}</span>
@@ -54,17 +61,16 @@ export function GameOverviewPanel({ game, order }: { game: Game; order?: number 
 }
 
 interface GameAboutPanelProps {
-  game: Pick<Game, 'description' | 'instruction'>
+  game: Pick<Game, 'description'>
   /** Left out for admins who can't edit the game. */
   onEdit?: () => void
   order?: number
 }
 
-/** The storefront copy: the description and the how-to-top-up instructions. */
+/** The storefront copy: the game's description. */
 export function GameAboutPanel({ game, onEdit, order }: GameAboutPanelProps) {
   const { t } = useTranslation('common')
   const description = game.description?.trim()
-  const instruction = game.instruction?.trim()
 
   return (
     <DetailPanel
@@ -81,11 +87,8 @@ export function GameAboutPanel({ game, onEdit, order }: GameAboutPanelProps) {
         )
       }
     >
-      {description || instruction ? (
-        <div className='space-y-5'>
-          <TextBlock label={t('gameDetailPage.about.descriptionLabel')} text={description} />
-          <TextBlock label={t('gameDetailPage.about.instructionLabel')} text={instruction} />
-        </div>
+      {description ? (
+        <TextBlock label={t('gameDetailPage.about.descriptionLabel')} text={description} />
       ) : (
         <p className='text-sm text-slate-500'>{t('gameDetailPage.about.empty')}</p>
       )}

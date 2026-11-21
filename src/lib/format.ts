@@ -15,6 +15,17 @@ export function formatCurrency(value: number | null | undefined): string {
   }).format(value)
 }
 
+/** Kurs dalam rupiah, sampai dua desimal, mis. `Rp4.432,61` atau `Rp0,69`. */
+export function formatRupiahRate(value: number | null | undefined): string {
+  if (value == null || Number.isNaN(value)) return '—'
+  return new Intl.NumberFormat(activeLocale(), {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(value)
+}
+
 /** Rupiah ringkas untuk kartu/tooltip, mis. `Rp45,8 jt`. */
 export function formatCompactCurrency(value: number | null | undefined): string {
   if (value == null || Number.isNaN(value)) return '—'

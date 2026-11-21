@@ -1,27 +1,35 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, FileQuestion, RefreshCw, SearchX, TriangleAlert, type LucideIcon } from 'lucide-react'
 
 import { DashboardLayout } from '@/components/Layout/dashboard-layout'
 import { TransactionCustomerPanel, TransactionItemPanel, TransactionReferencePanel } from '@/components/Transaction/TransactionInfoPanels'
+import { TransactionPaylabsPanel, TransactionProviderPanel } from '@/components/Transaction/TransactionIntegrationPanels'
+import { TransactionFulfilmentRetry } from '@/components/Transaction/TransactionFulfilmentRetry'
 import { TransactionPaymentPanel } from '@/components/Transaction/TransactionPaymentPanel'
+import type { RevealControls } from '@/components/Transaction/TransactionReveal'
 import { TransactionSummary } from '@/components/Transaction/TransactionSummary'
-import { isInFlight, isNotFoundError, isTransactionId, useTransactionDetail } from '@/hooks/useTransaction'
+import { isFulfilmentFailed, isMaskedEmail, isMaskedVoucher } from '@/components/Transaction/transaction-meta'
+import { PERM } from '@/constants/permissions'
+import { usePermissions } from '@/hooks/usePermissions'
+import { isInFlight, isNotFoundError, isTransactionId, useRevealTransaction, useTransactionDetail } from '@/hooks/useTransaction'
 import { cn } from '@/lib/utils'
-import type { TransactionRowState } from '@/types/transaction'
+import type { TransactionDetail, TransactionReveal, TransactionRowState } from '@/types/transaction'
 
 export default function TransactionDetailPage() {
   const { t } = useTranslation('common')
   const { paymentId } = useParams<{ paymentId: string }>()
   const location = useLocation()
   const { data, isLoading, isError, error, isFetching, refetch } = useTransactionDetail(paymentId)
+  const { can } = usePermissions()
 
   // Only trust what the list handed over for this very transaction.
   const passed = (location.state as { row?: TransactionRowState } | null)?.row
   const row = passed?.id === paymentId ? passed : undefined
   const valid = isTransactionId(paymentId)
   const live = isInFlight(data)
+  const reveal = useRevealControls(paymentId ?? '', data)
 
   return (
     <DashboardLayout>
@@ -82,14 +90,17 @@ export default function TransactionDetailPage() {
         ) : data ? (
           <>
             <TransactionSummary detail={data} row={row} />
+            {isFulfilmentFailed(data) && <TransactionFulfilmentRetry detail={data} />}
             <div className='grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_23rem]'>
               <div className='space-y-6'>
-                <TransactionItemPanel detail={data} row={row} order={0} />
-                <TransactionCustomerPanel detail={data} order={1} />
+                <TransactionItemPanel detail={data} row={row} order={0} reveal={reveal} />
+                <TransactionCustomerPanel detail={data} order={1} reveal={reveal} />
+                {can(PERM.providerOrderLogView) && <TransactionProviderPanel detail={data} order={4} />}
               </div>
               <div className='space-y-6'>
                 <TransactionPaymentPanel detail={data} order={2} />
                 <TransactionReferencePanel detail={data} order={3} />
+                {can(PERM.paymentCallbackView) && <TransactionPaylabsPanel detail={data} order={5} />}
               </div>
             </div>
           </>
@@ -99,6 +110,28 @@ export default function TransactionDetailPage() {
       </div>
     </DashboardLayout>
   )
+}
+
+/**
+ * The real buyer data behind the API's masks, for this page view only: it lives in component state
+ * (not the query cache), so leaving the page or opening another transaction drops it.
+ */
+function useRevealControls(id: string, detail: TransactionDetail | undefined): RevealControls {
+  const { can } = usePermissions()
+  const reveal = useRevealTransaction(id)
+  const [revealed, setRevealed] = useState<{ id: string; data: TransactionReveal } | null>(null)
+  const masked =
+    !!detail &&
+    (isMaskedEmail(detail.order?.customer_email || detail.email) || isMaskedVoucher(detail.order_item?.voucher_code))
+
+  return {
+    data: revealed?.id === id ? revealed.data : undefined,
+    masked,
+    canReveal: can(PERM.transactionReveal),
+    pending: reveal.isPending,
+    show: () => reveal.mutate(undefined, { onSuccess: (data) => setRevealed({ id, data }) }),
+    hide: () => setRevealed(null),
+  }
 }
 
 interface DetailStateProps {

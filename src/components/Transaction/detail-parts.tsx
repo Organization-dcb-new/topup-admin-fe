@@ -9,12 +9,14 @@ interface DetailPanelProps {
   title: string
   /** Position in the page, staggers the entrance. */
   order?: number
+  /** Sits at the right end of the title bar. */
+  action?: ReactNode
   footer?: ReactNode
   children: ReactNode
 }
 
 /** A titled HUD card on the transaction detail. */
-export function DetailPanel({ icon: Icon, title, order = 0, footer, children }: DetailPanelProps) {
+export function DetailPanel({ icon: Icon, title, order = 0, action, footer, children }: DetailPanelProps) {
   return (
     <section
       className='bg-slate-200/80 p-px hud-clip animate-in fade-in slide-in-from-bottom-2 duration-500 ease-hud fill-mode-both'
@@ -24,6 +26,7 @@ export function DetailPanel({ icon: Icon, title, order = 0, footer, children }: 
         <header className='flex items-center gap-2.5 border-b border-slate-100 px-4 py-3 sm:px-5'>
           <Icon className='size-4 shrink-0 text-brand-purple' aria-hidden />
           <h2 className='font-display text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600'>{title}</h2>
+          {action && <div className='-my-1 ml-auto'>{action}</div>}
         </header>
         <div className='px-4 py-1.5 sm:px-5'>{children}</div>
         {footer && <div className='border-t border-slate-100 px-4 py-3 text-xs leading-relaxed text-slate-500 sm:px-5'>{footer}</div>}

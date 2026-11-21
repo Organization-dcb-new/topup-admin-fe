@@ -16,6 +16,8 @@ import { RailTooltip, RowLabel } from './sidebar-parts'
 import { findActivePath, useSidebarCopy, visibleMenus, type Translate } from './sidebar-nav'
 import {
   sidebarIconClass,
+  sidebarIconIdleClass,
+  sidebarIconTintClass,
   sidebarRowActiveClass,
   sidebarRowClass,
   sidebarRowIdleClass,
@@ -189,7 +191,7 @@ function NavLeaf({ item, active, rail, onNavigate, tr }: NavLeafProps) {
         <item.icon
           className={cn(
             sidebarIconClass,
-            active ? 'text-brand-purple' : 'text-slate-400 group-hover/row:text-slate-600'
+            active ? 'text-brand-purple' : sidebarIconIdleClass
           )}
           aria-hidden
         />
@@ -242,7 +244,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
           <menu.icon
             className={cn(
               sidebarIconClass,
-              containsActive ? 'text-brand-purple' : 'text-slate-400 group-hover/row:text-slate-600'
+              containsActive ? 'text-brand-purple' : sidebarIconIdleClass
             )}
             aria-hidden
           />
@@ -320,7 +322,7 @@ function NavGroup({ menu, activePath, rail, open, onToggle, onNavigate, tr }: Na
               )}
             >
               <child.icon
-                className={cn('size-4 shrink-0', active ? 'text-brand-purple' : 'text-slate-400')}
+                className={cn('size-[18px] shrink-0', sidebarIconTintClass, active ? 'text-brand-purple' : 'text-slate-500')}
                 aria-hidden
               />
               {tr(child.label)}

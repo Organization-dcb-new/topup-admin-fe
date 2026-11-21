@@ -93,9 +93,9 @@ function BannerForm({ banner, onDone }: { banner?: Banner; onDone: () => void })
           value={image}
           onChange={(url) => setValue('image', url, { shouldDirty: true, shouldValidate: isSubmitted })}
           onUploadingChange={setUploading}
-          aspectClassName='aspect-[16/7]'
+          aspectClassName='aspect-[16/5]'
           labelledBy={`${ids}-image`}
-          hint={t('bannerPage.form.imageHint')}
+          hint={t('imageDropzone.hints.banner')}
           error={errors.image?.message && t(errors.image.message)}
         />
       </div>

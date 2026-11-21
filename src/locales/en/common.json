@@ -47,6 +47,7 @@
       "pelanggan": "Customers",
       "konten": "Content",
       "banner": "Banner",
+      "pengumuman": "Announcements",
       "acara": "Shows",
       "artikel": "Articles",
       "inventaris": "Inventory",
@@ -59,15 +60,20 @@
       "metode": "Methods",
       "kategoriPembayaran": "Payment categories",
       "penyedia": "Provider",
+      "katalogSupplier": "Supplier catalog",
       "referral": "Referral codes",
       "keamanan": "Security",
       "twoFa": "2FA",
       "pemeliharaan": "Maintenance",
+      "stopTransaksi": "Stop transactions",
       "pengguna": "Users",
       "logAdmin": "Admin logs",
       "productCallbackLog": "Product callback logs",
-      "roles": "Roles & access"
-    }
+      "roles": "Roles & access",
+      "paylabsCallbacks": "Paylabs callbacks",
+      "providerOrderLogs": "Supplier order logs"
+    },
+    "changePassword": "Change password"
   },
   "pagination": {
     "label": "Pages",
@@ -81,16 +87,23 @@
   "imageDropzone": {
     "title": "Click or drop an image here",
     "dropNow": "Drop to upload",
-    "formats": "JPG, PNG, WebP or SVG · up to 10 MB",
+    "formats": "JPG, PNG, WebP or SVG · up to {{max}}",
     "replace": "Replace image",
     "uploading": "Uploading {{percent}}%",
     "errors": {
-      "invalidType": "That file isn’t an image.",
-      "tooLarge": "The image is larger than 10 MB.",
+      "invalidType": "Use a JPG, PNG, WebP or SVG image.",
+      "tooLarge": "The image is larger than {{max}}. Resize or compress it first.",
       "uploadFailed": "Upload failed. Try again, or pick another image."
     },
     "titleShort": "Upload image",
-    "formatsShort": "PNG/SVG · max 10 MB"
+    "hints": {
+      "banner": "2560 × 800 px (16:5), at least 1280 × 400 · JPG/WebP. Keep key text away from the bottom and side edges (the carousel controls cover them).",
+      "gameThumbnail": "Square 512 × 512 px (at least 256 × 256) · JPG/PNG/WebP.",
+      "gameBanner": "Optional. 2400 × 800 px (3:1) · JPG/WebP. Keep the subject centred; phones and desktops crop the edges.",
+      "paymentLogo": "Wide logo, about 300 × 120 px, transparent PNG/SVG, no empty margin.",
+      "icon": "Square 256 × 256 px, transparent PNG/SVG.",
+      "blogThumbnail": "1600 × 900 px (16:9) · JPG/WebP. It heads the article and its card."
+    }
   },
   "dateRangeFilter": {
     "clear": "Clear dates"
@@ -185,7 +198,8 @@
     "PROCESSING": "Processing",
     "FAILED": "Failed",
     "EXPIRED": "Expired",
-    "REFUNDED": "Refunded"
+    "REFUNDED": "Refunded",
+    "FULFILMENT_FAILED": "Supplier order failed"
   },
   "summaryPage": {
     "title": "Summary",
@@ -234,7 +248,8 @@
     "entries_other": "{{count}} entries",
     "kind": {
       "in": "Payment received",
-      "out": "Provider cost"
+      "out": "Provider cost",
+      "fee": "Gateway fee"
     },
     "via": "via {{method}}",
     "order": "Order {{id}}",
@@ -568,7 +583,6 @@
       "editTitle": "Edit banner",
       "description": "Upload a wide image and choose where a click on it should go.",
       "imageLabel": "Image",
-      "imageHint": "Wide images work best; this frame shows roughly how the carousel crops it.",
       "linkLabel": "Redirect link",
       "linkPlaceholder": "/games/mobile-legends or https://…",
       "linkHint": "Optional. Use a /path for a store page or a full URL for another site. Leave empty if the banner shouldn’t be clickable.",
@@ -635,7 +649,6 @@
       },
       "publishedAt": "Published {{date}}",
       "thumbnailLabel": "Thumbnail",
-      "thumbnailHint": "16:9 works best; it heads the article and its card.",
       "categoryLabel": "Game",
       "categoryPlaceholder": "Choose a game",
       "categorySearch": "Search games",
@@ -692,15 +705,12 @@
   "gamePage": {
     "eyebrow": "// Catalog",
     "title": "Games",
-    "subtitle": "Every game the store sells. Switch games on or off, choose what the storefront lists, and set markups.",
+    "subtitle": "Every game the store sells. Set each one’s status (active, maintenance, hidden) and its price markup.",
     "syncBtn": "Sync from provider",
     "addBtn": "Add game",
     "stats": {
       "total": "Games",
       "results": "Results",
-      "active": "Active",
-      "shown": "Shown",
-      "allGames": "across all games",
       "totalHint": "in the catalogue",
       "resultsHint": "match the filters"
     },
@@ -710,8 +720,9 @@
       "image": "Thumbnail",
       "statusOptions": {
         "all": "All",
-        "active": "Active",
-        "inactive": "Inactive"
+        "ACTIVE": "Active",
+        "MAINTENANCE": "Maintenance",
+        "HIDDEN": "Hidden"
       },
       "imageOptions": {
         "all": "Any image",
@@ -741,40 +752,46 @@
       "pending": "Syncing…"
     },
     "status": {
-      "active": "Active",
-      "inactive": "Inactive",
-      "shown": "Shown",
-      "hidden": "Hidden",
-      "featured": "Featured",
+      "ACTIVE": "Active",
+      "MAINTENANCE": "Maintenance",
+      "HIDDEN": "Hidden",
       "checkId": "ID check"
-    },
-    "toggle": {
-      "active": "Active",
-      "activeAria": "Take orders for {{name}}",
-      "shown": "Shown",
-      "shownAria": "Show {{name}} on the storefront"
     },
     "toasts": {
       "created": "Game added",
       "updated": "Game saved",
       "updateError": "Couldn't save the game",
-      "shown": "Game is now shown on the storefront",
-      "hidden": "Game is now hidden from the storefront",
-      "activated": "Game activated",
-      "deactivated": "Game deactivated",
       "statusError": "Couldn't change the game's status",
       "imagesSaved": "Images saved",
       "imagesError": "Couldn't save the images",
-      "deleted": "Game deleted",
-      "deleteError": "Couldn't delete the game",
-      "deleteInUse": "This game still has products or orders, so it can't be deleted. Deactivate it instead.",
       "priceSaved": "Markup applied",
       "priceError": "Couldn't apply the markup",
       "productsSynced": "Products synced from the provider",
       "gamesSynced": "Games synced from the provider",
-      "syncError": "Sync failed"
+      "syncError": "Sync failed",
+      "status": {
+        "ACTIVE": "Game is active: listed and on sale",
+        "MAINTENANCE": "Game is in maintenance: still listed, not on sale",
+        "HIDDEN": "Game is hidden from the storefront"
+      },
+      "archived": "Game archived. Pick another status any time to list it again.",
+      "archiveError": "Couldn’t archive the game"
     },
-    "openAria": "Open {{name}}"
+    "openAria": "Open {{name}}",
+    "statusHint": {
+      "ACTIVE": "Listed and on sale",
+      "MAINTENANCE": "Listed, not on sale yet",
+      "HIDDEN": "Off the storefront"
+    },
+    "statusControl": "Status of {{name}}",
+    "variant": {
+      "DIGITAL": "Digital",
+      "VOUCHER": "Voucher"
+    },
+    "variantHint": {
+      "DIGITAL": "Tops up the buyer's own account: the buyer fills in the account details LapakGaming asks for, such as a user ID.",
+      "VOUCHER": "The buyer fills in no account details. The voucher code is sent once the order is done."
+    }
   },
   "gameDetailPage": {
     "back": "All games",
@@ -794,21 +811,21 @@
       "code": "Code",
       "copyCode": "Copy code",
       "slug": "Slug",
-      "category": "Category",
       "popularity": "Popularity",
-      "developer": "Developer",
-      "publisher": "Publisher",
       "created": "Created",
-      "updated": "Updated"
+      "updated": "Updated",
+      "variant": "Type",
+      "region": "Region",
+      "supplierBrand": "LapakGaming category",
+      "supplierBrandNone": "Not tied"
     },
     "about": {
       "title": "Storefront text",
       "description": "Shown to buyers on the game's page.",
       "edit": "Edit",
       "descriptionLabel": "Description",
-      "instructionLabel": "How to top up",
       "notSet": "Not set",
-      "empty": "No description or instructions yet.",
+      "empty": "No description yet.",
       "showMore": "Show more",
       "showLess": "Show less"
     },
@@ -816,7 +833,10 @@
       "title": "Checkout fields",
       "description": "What buyers fill in before they pay.",
       "edit": "Edit labels",
-      "empty": "This game has no checkout fields."
+      "empty": "This game has no checkout fields.",
+      "missing_one": "LapakGaming category {{code}} asks for {{fields}}, but this game has no input for it. Checkout refuses this game until the input exists. Run Sync catalog on the Providers page to add it.",
+      "missing_other": "LapakGaming category {{code}} asks for {{fields}}, but this game has no inputs for them. Checkout refuses this game until the inputs exist. Run Sync catalog on the Providers page to add them.",
+      "emptyVoucher": "Voucher game: the buyer fills in no account details. The voucher code is sent once the order is done."
     },
     "products": {
       "title": "Products",
@@ -865,19 +885,17 @@
       "cancel": "Cancel",
       "pending": "Syncing…"
     },
-    "danger": {
-      "title": "Delete this game",
-      "body": "Removes the game and its checkout fields. To stop selling it but keep its data, deactivate it instead.",
-      "button": "Delete game"
-    },
-    "delete": {
-      "eyebrow": "// Delete game",
-      "title": "Delete {{name}}?",
-      "description": "The game and its checkout fields are removed for good. Games that still have products or orders can't be deleted.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
-    },
-    "eyebrowCategory": "// {{category}}"
+    "archive": {
+      "title": "Archive this game",
+      "body": "The game leaves the storefront. Its products, orders, shows and supplier ties stay, so it can be listed again any time.",
+      "button": "Archive",
+      "eyebrow": "// Archive game",
+      "dialogTitle": "Archive {{name}}?",
+      "description": "Its status becomes Hidden: off the storefront and not for sale. Nothing is deleted. Set it to Active any time to bring it back.",
+      "confirm": "Archive game",
+      "cancel": "Cancel",
+      "pending": "Archiving…"
+    }
   },
   "gameFilters": {
     "statusLabel": "Status",
@@ -919,10 +937,8 @@
     "title": "Images of {{name}}",
     "description": "The thumbnail appears in lists and search. The banner heads the game's storefront page.",
     "thumbnailLabel": "Thumbnail",
-    "thumbnailHint": "Square, at least 256 × 256.",
     "thumbnailRequired": "A game needs a thumbnail.",
     "bannerLabel": "Banner",
-    "bannerHint": "Optional. Wide image, about 21:9.",
     "removeBanner": "Remove banner",
     "cancel": "Cancel",
     "save": "Save images",
@@ -930,8 +946,8 @@
   },
   "productCallbackLogPage": {
     "eyebrow": "// Provider feed",
-    "title": "Product callback log",
-    "subtitle": "Price and stock updates the provider pushes for each product. A higher provider price means a thinner margin.",
+    "title": "Product update log",
+    "subtitle": "Every change in a product's supplier price or stock, and where it came from: LapakGaming's push, the daily sync job, an admin's sync or checkout. Only what changed is logged. A higher supplier price means a thinner margin.",
     "total_one": "{{formatted}} update",
     "total_other": "{{formatted}} updates",
     "searchPlaceholder": "Search product code",
@@ -940,6 +956,20 @@
     "stock": {
       "available": "Available",
       "empty": "Out of stock"
+    },
+    "sourceLabel": "Source",
+    "sourceAll": "All",
+    "source": {
+      "SCHEDULER": "Sync job",
+      "MANUAL_SYNC": "Admin sync",
+      "CHECKOUT": "Checkout",
+      "CALLBACK": "LapakGaming push"
+    },
+    "sourceHint": {
+      "SCHEDULER": "The daily sync job asked LapakGaming",
+      "MANUAL_SYNC": "An admin synced the game's products",
+      "CHECKOUT": "A checkout asked LapakGaming and found it changed",
+      "CALLBACK": "LapakGaming pushed it (Product Update Callback)"
     },
     "datePlaceholder": "Any date",
     "sortLabel": "Sort",
@@ -956,18 +986,18 @@
     "reset": "Reset filters",
     "noChange": "No change",
     "retry": "Try again",
-    "loadError": "Couldn’t load the callback log. Check your connection and try again.",
-    "emptyTitle": "No callbacks yet",
-    "emptyBody": "Product updates from the provider will appear here as they arrive.",
+    "loadError": "Couldn’t load the update log. Check your connection and try again.",
+    "emptyTitle": "No updates yet",
+    "emptyBody": "Price and stock changes appear here once the sync finds one.",
     "noMatchTitle": "No matching updates",
     "noMatchBody": "Try a wider date range or fewer filters.",
     "detail": {
-      "back": "Back to callback log",
+      "back": "Back to the update log",
       "eyebrow": "// Product update",
-      "loadError": "Couldn’t load this callback. It may have been removed.",
+      "loadError": "Couldn’t load this update. It may have been removed.",
       "previousPrice": "Previous price",
       "newPrice": "New price",
-      "receivedAt": "Received",
+      "receivedAt": "Logged",
       "providerTime": "Provider time",
       "level": "Level",
       "logId": "Log ID",
@@ -1108,13 +1138,12 @@
   "providerPage": {
     "eyebrow": "// Supply chain",
     "title": "Providers",
-    "subtitle": "Upstream APIs that fulfil top-ups. Orders go to active providers in priority order, lowest number first.",
+    "subtitle": "Upstream APIs that fulfil top-ups. The list follows the integrations the backend has; here you set their status, priority, base URL and config. Orders go to active providers in priority order, lowest number first.",
     "total": "{{active}} of {{count}} active",
-    "addBtn": "Add provider",
     "retry": "Try again",
     "loadError": "Couldn’t load providers. Check your connection and try again.",
     "emptyTitle": "No providers yet",
-    "emptyBody": "Connect a provider API so orders can be fulfilled.",
+    "emptyBody": "The backend creates providers on its own when it starts, one for each supplier integration. Check the backend log if this list stays empty.",
     "priorityShort": "Prio",
     "priorityTitle": "Priority: lower runs first",
     "status": {
@@ -1123,78 +1152,280 @@
       "ERROR": "Error"
     },
     "toggleActive": "Use {{name}} for orders",
-    "apiUrl": "API URL",
-    "apiKey": "API key",
+    "unsupported": "Not supported",
+    "unsupportedHint": "This version of the backend has no integration for this provider, so it can’t be switched on.",
+    "apiUrl": "Base URL",
+    "credentials": "Credentials",
+    "credentialSet": "{{env}} is set on the server",
+    "credentialMissing": "{{env}} is not set on the server",
+    "credentialStatusSet": "set",
+    "credentialStatusMissing": "not set",
     "config": "Config",
     "timeout": "Timeout {{seconds}}s",
     "noTimeout": "Default timeout",
     "moreConfig_one": "{{count}} more setting",
     "moreConfig_other": "{{count}} more settings",
-    "noKey": "No key set",
-    "showKey": "Show API key",
-    "hideKey": "Hide API key",
-    "copyKey": "Copy API key",
-    "copyUrl": "Copy API URL",
+    "copyUrl": "Copy base URL",
     "copied": "Copied",
     "copyFailed": "Couldn’t copy",
     "updatedAt": "Updated {{date}}",
     "editBtn": "Edit {{name}}",
-    "deleteBtn": "Delete {{name}}",
     "balance": {
-      "lapak": "Lapak Gaming balance",
-      "ppob": "PPOB balance",
+      "label": "Balance",
       "error": "Couldn’t fetch the balance",
-      "refresh": "Refresh {{name}}"
+      "refresh": "Check the {{name}} balance again",
+      "checkedAt": "checked {{time}}",
+      "unsupported": "Can’t be checked for this provider yet"
     },
     "form": {
-      "addEyebrow": "// New provider",
       "editEyebrow": "// Edit provider",
-      "addTitle": "Add provider",
-      "editTitle": "Edit provider",
-      "addDescription": "Connection details for the provider’s API. New providers start active.",
-      "editDescription": "Update the connection, priority or status of this provider.",
-      "nameLabel": "Name",
-      "codeLabel": "Code",
-      "codeLocked": "The code can’t change after creation.",
-      "urlLabel": "API URL",
-      "keyLabel": "API key",
-      "keyHint": "Sent as-is to the backend; only admins with provider access can read it.",
-      "keyKeepPlaceholder": "Leave empty to keep the current key",
-      "keyKeepHint": "Leave empty to keep the stored key. Typing here replaces it.",
+      "editTitle": "Edit {{name}}",
+      "editDescription": "Set the base URL, status, priority and config. The name and code come from the backend’s integration.",
+      "urlLabel": "Base URL",
+      "credentialsLabel": "Credentials",
+      "credentialsEditHint": "Read from the server env, not from this form. To change a key, update the env and restart the backend.",
       "priorityLabel": "Priority",
-      "priorityHint": "Lower numbers are tried first when several providers can fulfil an order.",
       "statusLabel": "Status",
       "configLabel": "Config (JSON)",
-      "configHint": "A JSON object, e.g. {\"timeout\": 30} for a 30-second timeout.",
+      "configHint": "A JSON object for settings that aren't secret, e.g. {\"timeout\": 30} for a 30-second timeout. \"regions\" picks the countries synced from LapakGaming, e.g. {\"regions\": [\"id\", \"my\"]}; without it, Indonesia only.",
       "cancel": "Cancel",
-      "create": "Add provider",
       "save": "Save changes",
       "saving": "Saving…",
       "errors": {
-        "nameRequired": "Give the provider a name.",
-        "codeRequired": "Give the provider a code.",
-        "codeTaken": "Another provider already uses this code.",
         "urlInvalid": "Use a full URL starting with http:// or https://.",
-        "keyRequired": "Enter the API key.",
+        "urlSecret": "The base URL can’t carry credentials such as user:password@ or ?apikey=. Put them in the server env.",
         "priorityInvalid": "Use a whole number, 0 or more.",
         "configInvalid": "This isn’t a valid JSON object.",
-        "generic": "Couldn’t add the provider. Check the details and try again."
+        "configSecret": "Config can’t hold credentials (api_key, secret, token, password, PIN). Put them in the server env."
       }
     },
-    "deleteConfirm": {
-      "eyebrow": "// Delete provider",
-      "title": "Delete {{name}}?",
-      "description": "Orders can no longer be sent to this provider. Games and products that rely on it may stop working.",
-      "confirm": "Delete provider",
-      "cancel": "Cancel"
-    },
     "toasts": {
-      "created": "Provider added",
       "updated": "Provider updated",
       "statusSaved": "Provider status updated",
-      "deleted": "Provider deleted",
-      "updateError": "Couldn’t update the provider",
-      "deleteError": "Couldn’t delete the provider"
+      "updateError": "Couldn’t update the provider"
+    },
+    "regions": {
+      "label": "Regions",
+      "manage": "Manage",
+      "eyebrow": "Supplier regions",
+      "title": "{{name}} regions",
+      "description": "Countries pulled by the catalog sync. The storefront offers the regions that have a listed game, and buyers pick one in the navbar.",
+      "searchPlaceholder": "Search country, code or currency",
+      "selected_one": "{{count}} country synced",
+      "selected_other": "{{count}} countries synced",
+      "listLabel": "LapakGaming countries",
+      "loading": "Loading countries…",
+      "loadError": "Could not load the countries.",
+      "noMatch": "No country matches.",
+      "brands_one": "{{count}} brand",
+      "brands_other": "{{count}} brands",
+      "listedGames_one": "{{count}} listed game",
+      "listedGames_other": "{{count}} listed games",
+      "notSynced": "Never synced",
+      "homeOff": "{{name}} is not synced: its brands and products are not refreshed by the catalog sync.",
+      "hint": "New countries fill in on the next catalog sync. Countries taken out keep their brands and games; the games stay listed until hidden.",
+      "savedTitle": "Regions saved",
+      "savedAdded": "{{names}} brands and products arrive with the next {{name}} catalog sync. Then tie the brands to games in the Supplier Catalog.",
+      "savedNoNew": "No new countries, so no new sync is needed.",
+      "syncNow": "Sync catalog now",
+      "close": "Close",
+      "toasts": {
+        "saved": "Regions saved",
+        "saveError": "Could not save the regions"
+      }
+    }
+  },
+  "supplierCatalogPage": {
+    "eyebrow": "// Supply chain",
+    "title": "Supplier catalog",
+    "subtitle": "Everything the suppliers sell, pulled whole from their APIs. Tie brands to games and supplier products to storefront products to put them to use.",
+    "total": {
+      "brands_one": "{{formatted}} brand",
+      "brands_other": "{{formatted}} brands",
+      "products_one": "{{formatted}} product",
+      "products_other": "{{formatted}} products"
+    },
+    "refresh": "Reload the list",
+    "retry": "Try again",
+    "noProvider": "No providers yet. The backend creates them on its own when it starts.",
+    "emptyTitle": "The catalog is empty",
+    "emptyBody": "Pull the supplier's catalog with the Sync catalog button above.",
+    "noMatchTitle": "Nothing matches",
+    "noMatchBody": "Change or clear the filters to see more.",
+    "never": "Never",
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "autoMapped": "Automatically (same code or SKU)",
+    "tabs": {
+      "label": "View",
+      "brands": "Brands",
+      "products": "Products"
+    },
+    "filters": {
+      "search": {
+        "brands": "Search brand name or code",
+        "products": "Search product name or SKU"
+      },
+      "mapping": "Mapping status",
+      "mappingOptions": {
+        "all": "All",
+        "UNMAPPED": "Not tied",
+        "MAPPED": "Tied",
+        "IGNORED": "Ignored"
+      },
+      "stock": "Stock",
+      "stockOptions": {
+        "all": "All",
+        "available": "Available",
+        "empty": "Empty"
+      },
+      "brand": "Brand: {{name}}",
+      "clearBrand": "Show every brand",
+      "reset": "Reset filters",
+      "region": "Region",
+      "regionAll": "All regions"
+    },
+    "mapping": {
+      "UNMAPPED": "Not tied",
+      "MAPPED": "Tied",
+      "IGNORED": "Ignored"
+    },
+    "stock": {
+      "available": "Available",
+      "empty": "Empty",
+      "unknown": "Unknown"
+    },
+    "columns": {
+      "brand": "Brand",
+      "products": "Products",
+      "mapping": "Mapping",
+      "lastSeen": "Last seen",
+      "product": "Product",
+      "brandCode": "Brand",
+      "cost": "Cost",
+      "stock": "Stock"
+    },
+    "row": {
+      "checkId": "ID check",
+      "products_one": "{{formatted}} product",
+      "products_other": "{{formatted}} products",
+      "disabled": "Not used for routing",
+      "voucher": "Voucher"
+    },
+    "sync": {
+      "label": "Catalog sync",
+      "provider": "Supplier",
+      "never": "This supplier's catalog has never been pulled.",
+      "counts": "{{brands}} brands · {{products}} products",
+      "failed_one": "{{count}} brand failed",
+      "failed_other": "{{count}} brands failed",
+      "runningSince": "running since {{time}}",
+      "finishedAt": "finished {{time}}",
+      "runningHint": "The sync runs on the server. This status updates on its own, and you can leave the page.",
+      "start": "Sync catalog",
+      "running": "Syncing…",
+      "status": {
+        "RUNNING": "Running",
+        "SUCCEEDED": "Succeeded",
+        "PARTIAL": "Partial",
+        "FAILED": "Failed"
+      }
+    },
+    "brand": {
+      "eyebrow": "// Supplier brand",
+      "notFound": "Brand not found",
+      "notFoundBody": "This brand may no longer exist. Close this and reload the list.",
+      "mapping": "Mapping",
+      "game": "Game",
+      "products": "Products at the supplier",
+      "checkId": "Supplier's ID check",
+      "lastSeen": "Last seen",
+      "mappedBy": "Tied by",
+      "tieTitle": "Tie to a game",
+      "tieHint": "Pick the storefront game this brand supplies. A game can be tied to only one brand of the same supplier.",
+      "pickGame": "Pick a game",
+      "tie": "Tie",
+      "sync": "Sync this brand's products",
+      "importGame": "Create a new game from this brand",
+      "importGameHint": "Creates a new game with its input fields from the supplier's data and ties it right away. If the game already exists, pick it above instead.",
+      "importProducts": "Import products",
+      "importProductsHint": "Importing creates storefront products for the supplier products that aren't tied yet, at cost with no markup. Set their selling prices on the products page.",
+      "untie": "Untie from the game",
+      "ignore": "Ignore",
+      "unignore": "Stop ignoring",
+      "showProducts_one": "Show {{count}} product",
+      "showProducts_other": "Show {{count}} products",
+      "region": "Region",
+      "variant": "Type"
+    },
+    "product": {
+      "eyebrow": "// Supplier product",
+      "notFound": "Product not found",
+      "notFoundBody": "This product may no longer exist. Close this and reload the list.",
+      "cost": "Cost",
+      "stock": "Stock at the supplier",
+      "brand": "Brand",
+      "subProvider": "Sub-server",
+      "costUpdated": "Cost last changed",
+      "lastSeen": "Last seen",
+      "mapping": "Mapping",
+      "mappedBy": "Tied by",
+      "tieTitle": "Tie to a product",
+      "tieHint": "Pick the {{game}} product this supplier product fulfils. Products with the same name are listed first.",
+      "brandNotTied": "This product's brand isn't tied to a game yet. Tie the brand first, then its products can be tied.",
+      "openBrand": "Open the brand",
+      "openGame": "Open {{name}}",
+      "pickProduct": "Pick a product",
+      "loadingProducts": "Loading products…",
+      "searchProduct": "Search products",
+      "noProducts": "No products match",
+      "sameName": "Same name",
+      "tie": "Tie",
+      "untie": "Untie from the product",
+      "ignore": "Ignore",
+      "unignore": "Stop ignoring",
+      "offerTitle": "Use for routing",
+      "offerHint": "Once orders can go through several suppliers, products that aren't used are skipped and a lower priority is tried first.",
+      "enabled": "Used",
+      "disabled": "Not used",
+      "priority": "Priority",
+      "savePriority": "Save"
+    },
+    "raw": {
+      "title": "The supplier's original data",
+      "copy": "Copy JSON",
+      "copyFailed": "Couldn’t copy"
+    },
+    "toasts": {
+      "syncStarted": "Catalog sync started",
+      "brandSynced_one": "{{count}} product synced",
+      "brandSynced_other": "{{count}} products synced",
+      "brandMapping": {
+        "MAPPED": "Brand tied to the game",
+        "UNMAPPED": "Brand untied from its game",
+        "IGNORED": "Brand ignored"
+      },
+      "brandImported": "{{name}} created and tied",
+      "productsImported": "{{created}} products created, {{mapped}} tied, {{skipped}} skipped",
+      "productMapping": {
+        "MAPPED": "Product tied",
+        "UNMAPPED": "Product untied",
+        "IGNORED": "Product ignored"
+      },
+      "productUpdated": "Supplier product updated"
+    },
+    "errors": {
+      "generic": "Something went wrong. Try again in a moment.",
+      "notFound": "This no longer exists. Reload the list.",
+      "syncRunning": "A sync for this supplier is still running. Wait for it to finish.",
+      "supplierUnavailable": "The supplier couldn’t be reached or refused the request. Try again later.",
+      "gameTaken": "That game is already tied to another brand of the same supplier.",
+      "codeTakenOtherSupplier": "A game with this code already exists for another supplier. Tie this brand to the right game by hand.",
+      "productOtherGame": "That product belongs to another game, not the one this brand supplies.",
+      "brandNotMapped": "Tie the brand to a game first, or create a new game from it.",
+      "brandAlreadyMapped": "This brand is already tied to a game.",
+      "noCatalog": "This supplier has no catalog integration yet."
     }
   },
   "paymentMethodPage": {
@@ -1213,6 +1444,8 @@
     "methodCount_one": "{{count}} method",
     "methodCount_other": "{{count}} methods",
     "inactive": "Inactive",
+    "unsupported": "Unsupported",
+    "unsupportedHint": "Paylabs does not offer this method, so it cannot be switched on.",
     "fee": "Fee",
     "limit": "Amount",
     "feeFree": "Free",
@@ -1231,7 +1464,6 @@
       "nameLabel": "Name",
       "codeLabel": "Channel code",
       "typeLabel": "Type",
-      "providerLabel": "Gateway",
       "feeSection": "Fee charged to the player",
       "feePercentLabel": "Percentage",
       "feeFixedLabel": "Fixed",
@@ -1253,13 +1485,25 @@
         "nameRequired": "Give the method a name.",
         "codeRequired": "Enter the channel code.",
         "typeRequired": "Enter the type.",
-        "providerRequired": "Enter the gateway.",
         "feeInvalid": "Use a number from 0 (percentages up to 100).",
         "amountInvalid": "Use an amount of 0 or more.",
         "maxBelowMin": "The maximum must be at least the minimum.",
         "orderInvalid": "Use a whole number.",
-        "configInvalid": "This isn’t a valid JSON object."
-      }
+        "configInvalid": "This isn’t a valid JSON object.",
+        "methodRequired": "Choose a method.",
+        "fullNameRequired": "Enter a display name."
+      },
+      "methodLabel": "Method",
+      "methodPlaceholder": "Choose a method",
+      "methodLoading": "Loading methods…",
+      "catalogError": "Could not load the method list. Try opening this form again.",
+      "alreadyAdded": "already added",
+      "methodInfo": "Code {{code}} · {{type}}",
+      "methodFixed": "The method cannot be changed. Create a new one for a different method.",
+      "fullNameLabel": "Display name",
+      "fullNameHint": "What buyers see when picking a method.",
+      "unsupported": "Paylabs does not offer this method, so it can no longer be switched on.",
+      "unsupportedActiveHint": "Paylabs does not support this method, so it stays off."
     },
     "deleteConfirm": {
       "eyebrow": "// Delete method",
@@ -1276,6 +1520,12 @@
       "createError": "Couldn’t add the payment method",
       "updateError": "Couldn’t update the payment method",
       "deleteError": "Couldn’t delete the payment method"
+    },
+    "type": {
+      "QRIS": "QRIS",
+      "EWALLET": "E-wallet",
+      "VA": "Virtual account",
+      "RETAIL": "Retail outlet"
     }
   },
   "paymentCategoryPage": {
@@ -1414,7 +1664,7 @@
     "games": {
       "eyebrow": "// Line-up",
       "title": "Games in {{name}}",
-      "description": "Tick the games this section should show. Saving replaces the whole list.",
+      "description": "Tick the games shown in this section. Saving replaces this show’s list only; the games stay in their other shows.",
       "searchPlaceholder": "Search games",
       "listLabel": "Games",
       "selected_one": "{{count}} game selected",
@@ -1423,13 +1673,10 @@
       "loading": "Loading games…",
       "noGames": "No games found.",
       "noMatch": "No games match your search.",
-      "inShow": "In {{name}}",
-      "willMove": "Moves from {{name}}",
-      "movingNote_one": "A game can only be in one show. {{count}} selected game will be moved out of its current show.",
-      "movingNote_other": "A game can only be in one show. {{count}} selected games will be moved out of their current show.",
       "cancel": "Cancel",
       "save": "Save games",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "alsoIn": "Also in {{name}}"
     },
     "deleteConfirm": {
       "eyebrow": "// Delete show",
@@ -1449,6 +1696,12 @@
       "updateError": "Couldn’t update the show",
       "deleteError": "Couldn’t delete the show",
       "gamesError": "Couldn’t save the games"
+    },
+    "regions": {
+      "label": "Per region:",
+      "count_one": "{{count}} game",
+      "count_other": "{{count}} games",
+      "hint": "Games buyers of each region see: each game is swapped for the buyer's region version, and games without one are left out."
     }
   },
   "inputPage": {
@@ -1496,6 +1749,22 @@
       "savedMany_one": "{{count}} field saved",
       "savedMany_other": "{{count}} fields saved",
       "saveError": "Couldn’t save the fields"
+    },
+    "rules": {
+      "title": "Answer rules",
+      "min": "Min. characters",
+      "max": "Max. characters",
+      "pattern": "Pattern (regex)",
+      "patternPlaceholder": "e.g. [0-9]+",
+      "hint": "Checked at checkout. Leave empty to take any answer. The pattern must match the whole answer.",
+      "fixFirst": "Fix the answer rules first.",
+      "errors": {
+        "number": "Lengths must be whole numbers, 0 or more.",
+        "tooLong": "Lengths go up to 255 characters.",
+        "crossed": "Min. characters can’t be more than max.",
+        "pattern": "This pattern isn’t a valid regex.",
+        "patternTooLong": "Patterns go up to 200 characters."
+      }
     }
   },
   "maintenancePage": {
@@ -1580,6 +1849,230 @@
       "deleteError": "Couldn’t delete maintenance"
     }
   },
+  "transactionStopPage": {
+    "eyebrow": "// System control",
+    "title": "Stop Transactions",
+    "subtitle": "Emergency switch that stops new checkouts. The storefront stays browsable, and payments already made are still paid and fulfilled. To close the whole storefront, use Maintenance.",
+    "retry": "Try again",
+    "loadError": "Couldn’t load the transaction stop status. Check your connection and try again.",
+    "wib": "WIB",
+    "status": {
+      "eyebrow": "// Checkout status",
+      "stopped": "STOP",
+      "running": "Running",
+      "stoppedBody": "New checkouts are being refused.",
+      "runningBody": "Buyers can check out as usual.",
+      "since": "Stopped since",
+      "resumeAt": "Reopens automatically",
+      "resumeManual": "Not scheduled",
+      "resumeManualHint": "Stays stopped until reopened by hand",
+      "autoReopened": "Reopened automatically at {{date}} WIB ({{when}}).",
+      "messageLabel": "Message to buyers",
+      "defaultMessageNote": "Default text, as the message is empty.",
+      "updatedBy": "Changed by {{who}} · {{date}}",
+      "neverChanged": "Never changed"
+    },
+    "impact": {
+      "title": "While stopped",
+      "checkout": "New checkouts",
+      "checkoutValue": "Refused",
+      "browse": "Browsing store & catalog",
+      "browseValue": "Still works",
+      "pending": "Payments already made",
+      "pendingValue": "Still paid & fulfilled"
+    },
+    "form": {
+      "eyebrow": "// Controls",
+      "titleRunning": "Stop transactions",
+      "titleStopped": "Stop in force",
+      "descriptionRunning": "Add a message and a reopen time if you need them, then stop. Both are optional.",
+      "descriptionStopped": "Change the message or reopen time without reopening, or reopen transactions now.",
+      "messageLabel": "Message to buyers",
+      "messageHint": "Optional. Leave empty to use the default text (shown in the field).",
+      "resumeLabel": "Reopen automatically",
+      "resumeHint": "Optional. Leave empty to stay stopped until reopened by hand.",
+      "resumeIn": "Reopen in",
+      "clear": "Clear",
+      "stopBtn": "Stop transactions now",
+      "resumeBtn": "Reopen transactions",
+      "saveBtn": "Save changes",
+      "errors": {
+        "messageMax": "The message can be at most 300 characters.",
+        "resumeInPast": "The reopen time must be in the future."
+      }
+    },
+    "readOnly": {
+      "title": "View only",
+      "body": "You can see the transaction stop status, but you don’t have permission to change it."
+    },
+    "confirm": {
+      "cancel": "Cancel",
+      "stop": {
+        "eyebrow": "// Stop transactions",
+        "title": "Stop transactions now?",
+        "description": "New checkouts on the storefront are refused right away. Buyers can still browse the store, and payments already made are still paid and fulfilled.",
+        "confirm": "Stop transactions",
+        "messageLabel": "Message to buyers",
+        "resumeLabel": "Reopen automatically",
+        "resumeAt": "{{date}} WIB ({{when}})",
+        "resumeManual": "No, stays stopped until reopened by hand"
+      },
+      "resume": {
+        "eyebrow": "// Reopen transactions",
+        "title": "Reopen transactions?",
+        "description": "Buyers can check out again from now on. The automatic reopen time is cleared; the message is kept for the next stop.",
+        "confirm": "Reopen"
+      }
+    },
+    "indicator": {
+      "label": "Transactions STOPPED",
+      "short": "STOP",
+      "aria": "Transactions are stopped. Open the Stop Transactions page."
+    },
+    "toasts": {
+      "stopped": "Transactions stopped",
+      "resumed": "Transactions reopened",
+      "saved": "Changes saved",
+      "stopError": "Couldn’t stop transactions",
+      "resumeError": "Couldn’t reopen transactions",
+      "saveError": "Couldn’t save changes"
+    }
+  },
+  "announcementPage": {
+    "eyebrow": "// Storefront content",
+    "title": "Announcements",
+    "subtitle": "Important notices for players. Each one shows as a thin bar above the page or as a popup, on its own schedule.",
+    "total_one": "{{live}} live · {{count}} announcement",
+    "total_other": "{{live}} live · {{count}} announcements",
+    "addBtn": "New announcement",
+    "retry": "Try again",
+    "loadError": "Couldn’t load announcements. Check your connection and try again.",
+    "emptyTitle": "No announcements yet",
+    "emptyBody": "Write one to tell players about an outage, a promo or anything else they should know.",
+    "wib": "WIB",
+    "hasImage": "Has image",
+    "toggleActive": "Announcement active: {{name}}",
+    "editBtn": "Edit {{name}}",
+    "deleteBtn": "Delete {{name}}",
+    "updatedBy": "Updated by {{who}} · {{date}}",
+    "columns": {
+      "title": "Title",
+      "display": "Display",
+      "level": "Level",
+      "status": "Status",
+      "schedule": "Schedule",
+      "updated": "Updated",
+      "actions": "Actions"
+    },
+    "status": {
+      "live": "Live",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "off": "Off"
+    },
+    "display": {
+      "bar": "Bar",
+      "popup": "Popup"
+    },
+    "level": {
+      "info": "Info",
+      "warning": "Warning",
+      "promo": "Promo"
+    },
+    "linkKind": {
+      "none": "No link",
+      "internal": "Store page",
+      "external": "External link"
+    },
+    "schedule": {
+      "now": "Now",
+      "noEnd": "No end"
+    },
+    "preview": {
+      "label": "Preview",
+      "note": "A rough sketch. The storefront decides the final look.",
+      "titlePlaceholder": "Announcement title",
+      "defaultLabel": "default label"
+    },
+    "form": {
+      "addEyebrow": "// New announcement",
+      "editEyebrow": "// Edit announcement",
+      "addTitle": "New announcement",
+      "editTitle": "Edit announcement",
+      "description": "Plain text, no HTML. Times are in WIB (UTC+7).",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. QRIS payments are down",
+      "bodyLabel": "Body",
+      "bodyPlaceholder": "Briefly explain what is happening or what is on offer.",
+      "bodyHint": "Optional. Plain text; line breaks are kept.",
+      "displayLabel": "Display",
+      "displayHint": {
+        "bar": "A thin strip above every page.",
+        "popup": "A window in the middle of the screen, can have an image."
+      },
+      "levelLabel": "Level",
+      "levelHint": {
+        "info": "General information, neutral colour.",
+        "warning": "An outage or problem players should know about.",
+        "promo": "An offer, discount or event."
+      },
+      "linkLabel": "Link",
+      "linkPlaceholder": "/games/mlbb or https://…",
+      "linkHint": "Optional. Use a store path such as /games/mlbb, or a full https://… URL for another site.",
+      "linkLabelLabel": "Link label",
+      "linkLabelPlaceholder": "e.g. See the promo",
+      "linkLabelHint": "Optional. Leave empty to use the storefront’s default label. Only shown when there is a link.",
+      "imageLabel": "Popup image",
+      "imageHint": "Optional. Shown above the popup text. 16:9 recommended, e.g. 1200 × 675 px · JPG/WebP.",
+      "imageRemove": "Remove image",
+      "scheduleLabel": "Schedule",
+      "startLabel": "Start",
+      "endLabel": "End",
+      "startHint": "Empty: shows as soon as it is saved.",
+      "endHint": "Empty: shows with no end.",
+      "clear": "Clear",
+      "showFor": "Show for",
+      "days_one": "{{count}} day",
+      "days_other": "{{count}} days",
+      "activeLabel": "Active",
+      "activeOnHint": "On: shows on the storefront according to the schedule.",
+      "activeOffHint": "Off: saved as a draft, never shown.",
+      "cancel": "Cancel",
+      "create": "Create announcement",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "errors": {
+        "titleRequired": "Give this announcement a title.",
+        "titleMax": "The title can be at most 100 characters.",
+        "bodyMax": "The body can be at most 500 characters.",
+        "linkInvalid": "The link must be a store path such as /games/mlbb or a full http(s) URL.",
+        "linkLabelMax": "The link label can be at most 40 characters.",
+        "imageInvalid": "The image must be an http(s) URL. Upload it again.",
+        "orderInvalid": "The end must be after the start."
+      }
+    },
+    "errors": {
+      "title": "A title is required, at most 100 characters.",
+      "level": "Level must be Info, Warning or Promo.",
+      "display": "Display must be Bar or Popup.",
+      "notFound": "This announcement no longer exists. The list has been reloaded."
+    },
+    "deleteConfirm": {
+      "eyebrow": "// Delete announcement",
+      "title": "Delete “{{name}}”?",
+      "description": "This announcement is deleted for good and disappears from the storefront right away.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "toasts": {
+      "created": "Announcement created",
+      "updated": "Announcement updated",
+      "deleted": "Announcement deleted",
+      "createError": "Couldn’t create the announcement",
+      "updateError": "Couldn’t update the announcement",
+      "deleteError": "Couldn’t delete the announcement"
+    }
+  },
   "adminPage": {
     "eyebrow": "// Access control",
     "title": "Admin users",
@@ -1609,7 +2102,7 @@
       "usernameLabel": "Username",
       "emailLabel": "Email",
       "passwordLabel": "Password",
-      "passwordHint": "At least 6 characters. Share it with them privately.",
+      "passwordHint": "At least 12 characters, and not their email address. Share it with them privately.",
       "roleLabel": "Role",
       "confirmLabel": "Confirm with your password",
       "confirmHint": "Adding an admin hands out access, so enter your own password to approve it.",
@@ -1626,10 +2119,11 @@
         "emailRequired": "Enter their email.",
         "emailInvalid": "That doesn’t look like an email address.",
         "emailTaken": "An admin with this email already exists.",
-        "passwordMin": "Use at least 6 characters.",
+        "passwordMin": "Use at least 12 characters.",
         "confirmRequired": "Enter your password to approve.",
         "confirmInvalid": "That’s not your password.",
-        "generic": "Couldn’t add the admin. Check the details and try again."
+        "generic": "Couldn’t add the admin. Check the details and try again.",
+        "passwordIsEmail": "The password can't be the email address."
       }
     },
     "roleDialog": {
@@ -1825,6 +2319,20 @@
     "health": {
       "degradedTitle": "Some services are down",
       "degradedBody": "Affected: {{services}}. Orders may fail until they recover."
+    },
+    "fx": {
+      "title": "LapakGaming exchange rates",
+      "subtitle": "What one unit of each currency costs in rupiah at LapakGaming, which updates the rates daily. Currencies of synced regions come first.",
+      "fetchedAt": "read at {{time}}",
+      "synced": "Synced",
+      "buy": "Buy",
+      "sell": "Sell",
+      "updated": "as of {{date}}",
+      "updatedStale": "as of {{date}} · old",
+      "showAll": "Show all ({{count}})",
+      "showLess": "Show less",
+      "missing": "No rate for {{currencies}}.",
+      "loadError": "Couldn't load LapakGaming's rates."
     }
   },
   "unauthorizedPage": {
@@ -1949,7 +2457,9 @@
     "onTip": "Lost your phone? Choose “Use a recovery code” on the sign-in screen.",
     "disable": "Turn off 2FA",
     "disableTitle": "Turn off two-factor authentication?",
-    "disableBody": "Your account will only be protected by its password. Enter a code from your authenticator app to confirm.",
+    "disableBody": "Your account will only be protected by its password, and roles that require 2FA must set it up again at their next sign-in. Enter your password and a code from your authenticator app to confirm.",
+    "passwordLabel": "Your password",
+    "alreadyOn": "2FA is already on for this account. Turn 2FA off first to set it up again.",
     "keepOn": "Keep 2FA on",
     "disabling": "Turning off…",
     "deactivated": "2FA has been turned off.",
@@ -1957,6 +2467,12 @@
     "fileAccount": "Account: {{email}}",
     "fileGenerated": "Generated: {{date}}",
     "fileNote": "Each code can be used once. Keep this file somewhere safe."
+  },
+  "twoFaRequired": {
+    "eyebrow": "Required for admin accounts",
+    "title": "Turn on 2FA to continue",
+    "description": "Admin accounts must use two-factor authentication. Set it up now and the panel opens right after.",
+    "logout": "Log out"
   },
   "rolesPage": {
     "eyebrow": "Security",
@@ -2012,7 +2528,6 @@
       "summary": "Summary",
       "game": "Games",
       "product": "Products",
-      "category": "Categories",
       "category_product": "Product categories",
       "game_input": "Input fields",
       "provider": "Providers",
@@ -2022,13 +2537,17 @@
       "show": "Shows",
       "blog": "Articles",
       "maintenance": "Maintenance",
+      "transaction_stop": "Transaction stop",
+      "announcement": "Announcements",
       "referral": "Referral codes",
       "admin": "Admin users",
       "role": "Roles",
       "admin_log": "Admin logs",
       "upload": "Uploads",
       "integration": "Integrations",
-      "security": "Security"
+      "security": "Security",
+      "payment_callback": "Payment callbacks",
+      "provider_order_log": "Supplier order logs"
     },
     "actions": {
       "view": "View",
@@ -2074,6 +2593,7 @@
   "authErrors": {
     "forbidden": "You don't have permission to do that. Ask a developer if you need access.",
     "invalidCredentials": "Incorrect email/username or password.",
+    "wrongPassword": "Your current password is incorrect.",
     "invalidOtp": "That code is invalid or expired. Use the latest code from your app.",
     "invalidRecoveryCode": "That recovery code isn't valid or was already used.",
     "tooManyAttempts": "Too many attempts. Take a short break, then try again.",
@@ -2105,7 +2625,8 @@
       "COMPLETED": "Completed",
       "FAILED": "Failed",
       "EXPIRED": "Expired",
-      "REFUNDED": "Refunded"
+      "REFUNDED": "Refunded",
+      "FULFILMENT_FAILED": "Supplier order failed"
     },
     "timeline": {
       "label": "Progress",
@@ -2119,7 +2640,8 @@
         "PROCESSING": "The gateway is confirming the payment.",
         "FAILED": "The payment didn't go through.",
         "EXPIRED": "The customer didn't pay in time.",
-        "REFUNDED": "The money went back to the customer."
+        "REFUNDED": "The money went back to the customer.",
+        "FULFILMENT_FAILED": "The customer has paid."
       },
       "fulfilmentHint": {
         "waiting": "Starts once the payment is in.",
@@ -2130,7 +2652,8 @@
         "COMPLETED": "Delivered to the customer's account.",
         "FAILED": "The provider couldn't deliver it.",
         "EXPIRED": "The order expired before delivery.",
-        "REFUNDED": "The order was refunded."
+        "REFUNDED": "The order was refunded.",
+        "FULFILMENT_FAILED": "Placing the order with the supplier failed; it waits to be sent again."
       }
     },
     "item": {
@@ -2145,7 +2668,8 @@
       "paid": "Paid",
       "margin": "Margin",
       "providerStatus": "Provider status",
-      "fromListHint": "Margin and provider status only come with the transaction list. Open this transaction from there to see them."
+      "fromListHint": "Margin and provider status only come with the transaction list. Open this transaction from there to see them.",
+      "vouchers": "Voucher codes ({{count}})"
     },
     "customer": {
       "title": "Customer",
@@ -2168,7 +2692,13 @@
       "awaitingBody": "The customer can still pay with the details below.",
       "noInstructions": "The gateway sent no QR code, VA number or payment page for this payment.",
       "qrAlt": "Payment QR code",
-      "qrHint": "Scan to pay"
+      "qrHint": "Scan to pay",
+      "gateway": "Gateway",
+      "gatewayReference": "Gateway reference",
+      "gatewayName": {
+        "paylabs": "Paylabs",
+        "redision": "Redision (before the move to Paylabs)"
+      }
     },
     "refs": {
       "title": "References",
@@ -2177,6 +2707,56 @@
       "orderId": "Order ID",
       "providerRef": "Provider reference (TID)",
       "paymentMethodId": "Payment method ID"
+    },
+    "paylabs": {
+      "title": "Paylabs callbacks",
+      "empty": "No callback from Paylabs yet. Paylabs only sends once the payment is final (paid or failed).",
+      "otherGateway": "This transaction was paid through the old gateway, so there are no Paylabs callbacks."
+    },
+    "provider": {
+      "title": "Order at LapakGaming",
+      "storedStatus": "Stored status",
+      "tid": "TID",
+      "check": "Check status at LapakGaming",
+      "checking": "Checking…",
+      "checkFailed": "Couldn't reach LapakGaming.",
+      "liveAnswer": "Live answer",
+      "liveNotOk": "LapakGaming didn't return SUCCESS. The order may never have been sent, or was refused; see the Create order logs below.",
+      "checkedAt": "Checked at {{time}}. The order status wasn't changed.",
+      "checkedAtUpdated": "Checked at {{time}}.",
+      "orderUpdated": "LapakGaming had finished this order. Order status is now",
+      "empty": "No exchanges with LapakGaming yet. The order is sent once the payment succeeds."
+    },
+    "trail": {
+      "seeAll": "See all ({{count}})",
+      "openList": "Open in the list",
+      "loadError": "Couldn't load logs."
+    },
+    "retryFulfilment": {
+      "title": "The supplier order failed",
+      "body": "The customer paid, but the order never reached the supplier. Check the supplier balance and logs, then send it again.",
+      "bodyNoAccess": "The customer paid, but the order never reached the supplier. Ask an admin who may resend orders.",
+      "button": "Send to supplier again",
+      "confirmEyebrow": "Order fulfilment",
+      "confirmTitle": "Send to the supplier again?",
+      "confirmBody": "Order {{number}} goes to the supplier again and uses the deposit balance. Go ahead only if the supplier has not processed it.",
+      "confirm": "Send again",
+      "pending": "Sending…",
+      "cancel": "Cancel",
+      "success": "The order was sent to the supplier again.",
+      "successStatus": "The order was sent to the supplier again. Status now: {{status}}.",
+      "error": "Couldn't send the order again. Try again."
+    },
+    "reveal": {
+      "show": "Show",
+      "hide": "Hide",
+      "showHint": "Show the real voucher and buyer data. Every view is logged.",
+      "hideHint": "Mask again",
+      "masked": "Masked",
+      "shownNote": "The real data shows on this page only, and the view is in the admin log.",
+      "accountHidden": "The game account and IP are masked. Press Show to see them.",
+      "accountHiddenNoAccess": "The game account and IP are masked for your role.",
+      "error": "Couldn't show the real data. Try again."
     }
   },
   "referralPage": {
@@ -2416,7 +2996,7 @@
   "gameForm": {
     "addEyebrow": "// New game",
     "addTitle": "Add a game",
-    "addDescription": "Link it to the provider's game code, then fill in what the storefront shows.",
+    "addDescription": "Fill in the game’s identity and storefront look. The suppliers that sell it are tied in the supplier catalog.",
     "editEyebrow": "// Edit game",
     "editTitle": "Edit {{name}}",
     "editDescription": "Only the fields you change are saved.",
@@ -2429,28 +3009,16 @@
     "providerPlaceholder": "Choose a provider",
     "providerLoading": "Loading providers…",
     "providerNoAccess": "You don't have access to the provider list. Ask an admin who does to add this game.",
-    "codeLabel": "Provider game code",
-    "codeHint": "The code the provider uses for this game, e.g. MOBILELEGENDS.",
-    "categoryLabel": "Category",
-    "categoryPlaceholder": "Choose a category",
-    "categoryLoading": "Loading categories…",
-    "categoryFallback": "The category list isn't available, so only categories other games already use are offered.",
-    "categoryError": "Couldn't load the categories.",
+    "codeLabel": "Game code",
+    "codeHint": "Optional. The game’s internal code; leave it empty to make one from the slug. Supplier codes are set in the supplier catalog.",
     "nameLabel": "Game name",
     "slugLabel": "Slug",
-    "slugWillChange": "Changing the name also changes the slug, and with it the storefront link.",
-    "developerLabel": "Developer",
-    "publisherLabel": "Publisher",
+    "slugWillChange": "The slug is the game’s storefront address. Changing it breaks links to the old one.",
     "thumbnailLabel": "Thumbnail",
     "bannerLabel": "Banner",
-    "bannerHint": "Optional. Wide image, about 21:9.",
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "A few lines about the game for buyers",
-    "instructionLabel": "How to top up",
-    "instructionPlaceholder": "Where buyers find their user ID, and what to enter",
     "popularityLabel": "Popularity",
-    "featuredLabel": "Featured",
-    "featuredHint": "Highlight this game on the storefront.",
     "inputsEmpty": "No checkout fields. Buyers won't be asked for anything.",
     "inputsHint": "Every field is required at checkout. The key is what gets sent to the provider.",
     "inputNumber": "Field {{number}}",
@@ -2477,22 +3045,22 @@
     "errors": {
       "providerRequired": "Choose a provider.",
       "providerMissing": "That provider no longer exists. Choose another.",
-      "categoryRequired": "Choose a category.",
-      "categoryMissing": "That category no longer exists. Choose another.",
       "nameRequired": "Enter the game's name.",
       "slugRequired": "Enter a slug.",
       "slugTaken": "Another game already uses this slug.",
-      "codeRequired": "Enter the provider's game code.",
       "thumbnailRequired": "Upload a thumbnail.",
       "inputKeyRequired": "Enter a key.",
       "inputKeyFormat": "Use lower-case letters, digits and underscores.",
       "inputKeyDuplicate": "Each field needs its own key.",
       "inputLabelRequired": "Enter a label.",
       "popularityInvalid": "Enter a whole number, 0 or more.",
-      "popularityZero": "Popularity can't be set back to 0 here.",
       "cannotClear": "This field can't be emptied. Enter a new value or keep the old one.",
-      "createGeneric": "Couldn't add the game. Check the fields and try again."
-    }
+      "createGeneric": "Couldn't add the game. Check the fields and try again.",
+      "codeTaken": "Another game already uses this code."
+    },
+    "codePlaceholder": "Made from the slug",
+    "statusLabel": "Starting status",
+    "statusHint": "A new game is best kept hidden until its images and products are ready."
   },
   "gamePriceDialog": {
     "gameEyebrow": "// Set markup",
@@ -2520,6 +3088,218 @@
     "errors": {
       "percentInvalid": "Enter a percentage, 0 or more.",
       "percentMax": "The markup can be at most {{max}}%."
+    }
+  },
+  "integrationLog": {
+    "all": "All",
+    "reset": "Reset filters",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "datePlaceholder": "All dates",
+    "noMatchTitle": "No matching logs",
+    "noMatchBody": "Try a wider date range or fewer filters.",
+    "receivedAt": "Received",
+    "duration": "Duration",
+    "ms": "{{ms}} ms",
+    "logId": "Log ID",
+    "openTransaction": "Open transaction",
+    "copy": "Copy",
+    "copied": "Copied",
+    "copyFailed": "Couldn't copy",
+    "emptyPayload": "Empty.",
+    "unverified": "Not verified",
+    "signatureValid": "Valid signature",
+    "signatureInvalid": "Invalid signature",
+    "outcome": {
+      "PROCESSED": "Processed",
+      "DUPLICATE": "Duplicate",
+      "FAILED": "Failed",
+      "REJECTED": "Rejected",
+      "UNAVAILABLE": "Paylabs off"
+    },
+    "outcomeHint": {
+      "PROCESSED": "Valid signature, and the payment status was updated. Paylabs got errCode 0, so it won't resend.",
+      "DUPLICATE": "Valid signature, but the payment already had this status or was already paid. Answered errCode 0 so Paylabs stops resending.",
+      "FAILED": "Valid signature, but the status couldn't be applied (see the error). Paylabs got errCode 1 and will resend, up to 8 times over about 55 minutes.",
+      "REJECTED": "Refused with a 401: the signature, merchant ID or body didn't check out. The order fields below are unverified and may not come from Paylabs.",
+      "UNAVAILABLE": "Answered 503 because Paylabs isn't configured on this server."
+    },
+    "paylabsStatus": {
+      "01": "Pending",
+      "02": "Success",
+      "09": "Failed"
+    },
+    "result": {
+      "SENT": "Sent",
+      "SUCCESS": "Success",
+      "FAILED": "Failed"
+    },
+    "operation": {
+      "CREATE_ORDER": "Create order",
+      "CHECK_STATUS": "Check status",
+      "CALLBACK": "Callback"
+    },
+    "logType": {
+      "REQUEST_TO_PROVIDER": "Request",
+      "RESPONSE_FROM_PROVIDER": "Response",
+      "CALLBACK_FROM_PROVIDER": "From supplier"
+    }
+  },
+  "paymentCallbackLogPage": {
+    "eyebrow": "// Payment gateway",
+    "title": "Paylabs callbacks",
+    "subtitle": "Every notification Paylabs sent us, as received and including rejected ones, with what we did about it. Paylabs only sends once a payment is final.",
+    "total": "{{formatted}} callbacks",
+    "searchPlaceholder": "Search payment number, request ID, trade no or ID",
+    "statusLabel": "Paylabs status",
+    "statusAll": "All statuses",
+    "outcomeLabel": "Outcome",
+    "noReference": "No reference",
+    "loadError": "Couldn't load callbacks. Check your connection and try again.",
+    "emptyTitle": "No callbacks yet",
+    "emptyBody": "Notifications from Paylabs show up here as they arrive.",
+    "detail": {
+      "back": "Back to Paylabs callbacks",
+      "eyebrow": "// Paylabs notification",
+      "loadError": "Couldn't load this callback.",
+      "amount": "Amount",
+      "paymentType": "Payment type",
+      "requestId": "Request ID",
+      "merchantTradeNo": "Merchant trade no",
+      "platformTradeNo": "Platform trade no (Paylabs)",
+      "reply": "Our reply",
+      "ack": "errCode {{code}} · HTTP {{http}}",
+      "httpOnly": "HTTP {{http}}, no errCode",
+      "clientIp": "Sender IP",
+      "paymentStatus": "Transaction status now",
+      "body": "Body received",
+      "headers": "Headers",
+      "replyBody": "Reply to Paylabs",
+      "noReply": "No signed reply; Paylabs only got the HTTP status."
+    }
+  },
+  "providerOrderLogPage": {
+    "eyebrow": "// Supplier",
+    "title": "Supplier order logs",
+    "subtitle": "Orders we sent to LapakGaming, its answers, status checks and its callbacks. LapakGaming answers some errors with HTTP 200, so its code counts too.",
+    "total": "{{formatted}} logs",
+    "searchPlaceholder": "Search payment number, TID or ID",
+    "operationLabel": "Operation",
+    "resultLabel": "Result",
+    "noOrder": "Unknown order",
+    "loadError": "Couldn't load logs. Check your connection and try again.",
+    "emptyTitle": "No logs yet",
+    "emptyBody": "Logs appear once the first order is sent to the supplier.",
+    "dashboard": {
+      "scope": "Totals for every matching log",
+      "loadError": "Couldn't load the summary. The list below still works.",
+      "total": "Logs",
+      "orders_one": "Across {{formatted}} order",
+      "orders_other": "Across {{formatted}} orders",
+      "successRate": "Success rate",
+      "successHint": "{{success}} succeeded · {{failed}} failed",
+      "noAnswers": "No answers yet",
+      "responseTime": "Avg response",
+      "responseHint": "p95 {{p95}} · max {{max}}",
+      "lastLog": "Last exchange",
+      "lastLogHint": "Our last request or LapakGaming's answer",
+      "chartTitle": "Answers per day",
+      "chartAria": "Successful and failed supplier answers per day",
+      "chartEmpty": "No answers in this range.",
+      "viewLabel": "View",
+      "viewChart": "Chart",
+      "viewTable": "Table",
+      "date": "Date",
+      "success": "Success",
+      "failed": "Failed",
+      "sent": "Requests sent",
+      "failureTitle": "Why logs failed",
+      "failureEmpty": "Nothing failed.",
+      "failureCode": {
+        "NO_RESPONSE": "no answer (timeout or network)",
+        "CALLBACK_NOT_APPLIED": "callback not applied",
+        "OTHER": "other error"
+      },
+      "operationsTitle": "By operation",
+      "operation": "Operation",
+      "avg": "Avg"
+    },
+    "detail": {
+      "back": "Back to supplier order logs",
+      "eyebrow": "// {{provider}}",
+      "loadError": "Couldn't load this log.",
+      "payment": "Payment number",
+      "tid": "Supplier TID",
+      "orderId": "Order ID",
+      "http": "HTTP",
+      "request": "Request",
+      "response": "Response",
+      "callbackBody": "Callback body",
+      "responseElsewhere": "Its response is logged as a separate entry right after this request."
+    }
+  },
+  "activityLogPage": {
+    "eyebrow": "Security",
+    "title": "Activity log",
+    "subtitle": "Every request that changes data (anything but GET), from anyone: buyers, guests, admins, and the Paylabs/LapakGaming callbacks. Kept 90 days; passwords, tokens and codes are hidden.",
+    "total_one": "{{formatted}} request",
+    "total_other": "{{formatted}} requests",
+    "searchPlaceholder": "Search email, IP, endpoint, record ID or message",
+    "actorLabel": "Actor",
+    "methodLabel": "Method",
+    "outcomeLabel": "Outcome",
+    "actor": {
+      "ADMIN": "Admin",
+      "USER": "Buyer",
+      "GUEST": "Guest",
+      "SYSTEM": "System",
+      "ANONYMOUS": "Unknown"
+    },
+    "outcome": {
+      "success": "Succeeded",
+      "failed": "Failed"
+    },
+    "unknownActor": "Unknown",
+    "noOrigin": "Origin unknown",
+    "loadError": "Could not load the activity log.",
+    "emptyTitle": "No activity yet",
+    "emptyBody": "Requests that change data show up here.",
+    "detail": {
+      "back": "Back to the activity log",
+      "loadError": "Could not load this entry, or it is past 90 days.",
+      "eyebrow": "Request",
+      "time": "Time",
+      "ip": "IP address",
+      "device": "Device",
+      "path": "Path",
+      "resource": "Record ID",
+      "openResource": "Open the record",
+      "openCustomer": "Open the buyer",
+      "body": "Request body",
+      "noBody": "No request body",
+      "redactedNote": "Passwords, tokens, OTPs, voucher codes and other secret codes are hidden; phone numbers keep their last 3 digits. File uploads are logged by type and size only."
+    }
+  },
+  "changePassword": {
+    "eyebrow": "// Account security",
+    "title": "Change password",
+    "description": "Once changed, every other session of this account is signed out.",
+    "currentLabel": "Current password",
+    "newLabel": "New password",
+    "newHint": "At least {{count}} characters, and not your email address.",
+    "confirmLabel": "Repeat the new password",
+    "submit": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "success": "Password changed. Your other sessions were signed out.",
+    "error": "Couldn't change the password. Try again.",
+    "errors": {
+      "currentRequired": "Enter your current password.",
+      "newMin": "Use at least 12 characters.",
+      "newIsEmail": "The password can't be your email address.",
+      "newSameAsCurrent": "Choose a password different from the current one.",
+      "confirmRequired": "Repeat the new password.",
+      "confirmMismatch": "The passwords don't match."
     }
   }
 }

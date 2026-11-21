@@ -9,7 +9,7 @@ import { useRetained } from '@/hooks/useRetained'
 import { formatBackendDateTime } from '@/lib/backend-datetime'
 import { formatPaymentChannel } from '@/lib/dashboard'
 import type { CashflowItem } from '@/types/cashflow'
-import { directionOf, parseNotes } from './cashflow-meta'
+import { directionOf, kindOf, parseNotes } from './cashflow-meta'
 import { CopyIdButton, DirectionTile, SignedAmount } from './CashflowParts'
 
 interface CashflowDetailDialogProps {
@@ -37,6 +37,7 @@ export function CashflowDetailDialog({ item, onOpenChange }: CashflowDetailDialo
 function CashflowDetail({ item, onClose }: { item: CashflowItem; onClose: () => void }) {
   const { t } = useTranslation('common')
   const direction = directionOf(item.type)
+  const kind = kindOf(item.type)
   const note = parseNotes(item.notes)
 
   return (
@@ -47,7 +48,7 @@ function CashflowDetail({ item, onClose }: { item: CashflowItem; onClose: () => 
         <div className='min-w-0 space-y-1'>
           <p className={hudEyebrowClass}>{t('cashflowPage.detail.eyebrow')}</p>
           <DialogTitle className='font-display text-2xl font-bold leading-tight tracking-tight text-slate-900'>
-            {direction === 'other' ? item.type : t(`cashflowPage.kind.${direction}`)}
+            {kind ? t(`cashflowPage.kind.${kind}`) : item.type}
           </DialogTitle>
           <DialogDescription className='text-sm text-slate-500'>
             {formatBackendDateTime(item.created_at, 'EEEE, dd MMM yyyy, HH:mm:ss')}

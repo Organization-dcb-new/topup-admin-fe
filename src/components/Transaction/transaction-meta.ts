@@ -7,6 +7,9 @@ export interface Tone {
 
 const NEUTRAL: Tone = { chip: 'bg-slate-100 text-slate-600', dot: 'bg-slate-400' }
 
+/** Paid, but the supplier order failed: it needs an admin, so the dot keeps signalling. */
+const FULFILMENT_FAILED: Tone = { chip: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500 animate-hud-signal' }
+
 /** Payment statuses, in the order the status filter offers them. */
 export const PAYMENT_STATUSES: TransactionStatus[] = ['PAID', 'PENDING', 'PROCESSING', 'FAILED', 'EXPIRED', 'REFUNDED']
 
@@ -18,6 +21,8 @@ const PAYMENT_TONES: Record<TransactionStatus, Tone> = {
   FAILED: { chip: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' },
   EXPIRED: { chip: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' },
   REFUNDED: { chip: 'bg-brand-purple/10 text-brand-purple', dot: 'bg-brand-purple' },
+  // An order status; listed here too in case a payment ever carries it.
+  FULFILMENT_FAILED,
 }
 
 const ORDER_TONES: Record<OrderFulfilmentStatus, Tone> = {
@@ -26,6 +31,7 @@ const ORDER_TONES: Record<OrderFulfilmentStatus, Tone> = {
   PROCESSING: PAYMENT_TONES.PROCESSING,
   COMPLETED: { chip: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
   FAILED: PAYMENT_TONES.FAILED,
+  FULFILMENT_FAILED,
   EXPIRED: PAYMENT_TONES.EXPIRED,
   REFUNDED: PAYMENT_TONES.REFUNDED,
 }
@@ -89,17 +95,36 @@ export function isAwaitingPayment(status: string | undefined) {
 export type StepState = 'done' | 'current' | 'failed' | 'upcoming'
 
 export function paymentStep(status: string): StepState {
-  if (status === 'PAID' || status === 'REFUNDED') return 'done'
+  if (status === 'PAID' || status === 'REFUNDED' || status === 'FULFILMENT_FAILED') return 'done'
   if (status === 'FAILED' || status === 'EXPIRED') return 'failed'
   return 'current'
 }
 
 /** Fulfilment only starts once the payment is through. */
 export function fulfilmentStep(orderStatus: string, paymentStatus: string): StepState {
+  // Only a paid order gets this far, whatever the payment row still says.
+  if (orderStatus === 'FULFILMENT_FAILED') return 'failed'
   if (paymentStep(paymentStatus) !== 'done') return 'upcoming'
   if (orderStatus === 'COMPLETED') return 'done'
   if (orderStatus === 'FAILED' || orderStatus === 'EXPIRED' || orderStatus === 'REFUNDED') return 'failed'
   return 'current'
+}
+
+/** Paid, but placing the supplier order failed; an admin can send it again. */
+export function isFulfilmentFailed(detail: { status: string; order?: { status?: string } | null }) {
+  return detail.order?.status === 'FULFILMENT_FAILED' || detail.status === 'FULFILMENT_FAILED'
+}
+
+/**
+ * The API masks buyer data: a voucher reads `••••` plus its last 4 characters, an email keeps the first
+ * 2 characters of its local part (`ab***@mail.com`). Older backends send the real values.
+ */
+export function isMaskedVoucher(value: string | undefined) {
+  return !!value && value.startsWith('••••')
+}
+
+export function isMaskedEmail(value: string | undefined) {
+  return !!value && value.includes('***@')
 }
 
 /** The detail endpoint sends `yyyy-MM-dd HH:mm:ss` in WIB without an offset; pin it so other time zones read it right. */

@@ -13,7 +13,7 @@ import { useRetained } from '@/hooks/useRetained'
 
 interface ShowGamesDialogProps {
   show: Show | null
-  /** Every show, to say which one a game would be moved out of. */
+  /** Every show, to say which others a game is already in. */
   shows: Show[]
   onOpenChange: (open: boolean) => void
 }
@@ -60,11 +60,14 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
   const [selected, setSelected] = useState(() => new Set(show.games?.map((g) => g.id) ?? []))
   const [search, setSearch] = useState('')
 
-  // A game belongs to at most one show; picking it here moves it out of the other one.
-  const ownerByGame = useMemo(() => {
-    const owners = new Map<string, string>()
-    for (const s of shows) if (s.id !== show.id) for (const g of s.games ?? []) owners.set(g.id, s.name)
-    return owners
+  // A game can be in any number of shows; saving here leaves its other shows alone.
+  const otherShowsByGame = useMemo(() => {
+    const others = new Map<string, string[]>()
+    for (const s of shows) {
+      if (s.id === show.id) continue
+      for (const g of s.games ?? []) others.set(g.id, [...(others.get(g.id) ?? []), s.name])
+    }
+    return others
   }, [shows, show.id])
 
   const query = search.trim().toLowerCase()
@@ -72,7 +75,6 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
   const original = new Set(show.games?.map((g) => g.id) ?? [])
   // The current line-up first. Sorted by the saved list, not the live ticks, so rows never jump under the cursor.
   const ordered = [...visible].sort((a, b) => Number(original.has(b.id)) - Number(original.has(a.id)))
-  const moving = [...selected].filter((id) => ownerByGame.has(id)).length
   const unchanged = selected.size === original.size && [...selected].every((id) => original.has(id))
 
   const toggle = (id: string) =>
@@ -131,15 +133,17 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
         ) : (
           ordered.map((game) => {
             const checked = selected.has(game.id)
-            const owner = ownerByGame.get(game.id)
+            const others = otherShowsByGame.get(game.id)?.join(', ')
             return (
               <li key={game.id}>
                 <label
                   className={cn(
-                    'flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-purple/40',
+                    'relative flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand-purple/40',
                     checked ? 'bg-brand-purple/[0.06]' : 'hover:bg-slate-50'
                   )}
                 >
+                  {/* relative on the label keeps this absolutely placed input inside its row: focusing it
+                      then scrolls the list, not the whole dialog. */}
                   <input type='checkbox' checked={checked} onChange={() => toggle(game.id)} className='sr-only' />
                   <span
                     className={cn(
@@ -152,15 +156,9 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
                   </span>
                   <Gamepad2 className={cn('size-4 shrink-0', checked ? 'text-brand-purple' : 'text-slate-300')} aria-hidden />
                   <span className='min-w-0 flex-1 truncate text-sm text-slate-800'>{game.name}</span>
-                  {owner && (
-                    <span
-                      className={cn(
-                        'max-w-[45%] shrink-0 truncate text-[11px]',
-                        checked ? 'font-medium text-amber-700' : 'text-slate-400'
-                      )}
-                      title={owner}
-                    >
-                      {checked ? t('showPage.games.willMove', { name: owner }) : t('showPage.games.inShow', { name: owner })}
+                  {others && (
+                    <span className='max-w-[45%] shrink-0 truncate text-[11px] text-slate-400' title={others}>
+                      {t('showPage.games.alsoIn', { name: others })}
                     </span>
                   )}
                 </label>
@@ -171,11 +169,6 @@ function ShowGamesPicker({ show, shows, pending, onCancel, onSave }: ShowGamesPi
       </ul>
 
       <div className='shrink-0 space-y-3 p-6 pt-4 sm:p-7 sm:pt-4'>
-        {moving > 0 && (
-          <p className='rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800'>
-            {t('showPage.games.movingNote', { count: moving })}
-          </p>
-        )}
         <div className='flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <button
             type='button'

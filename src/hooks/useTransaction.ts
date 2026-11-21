@@ -5,8 +5,10 @@ import type {
   TransactionDetail,
   TransactionExportFilters,
   TransactionListFilters,
+  TransactionReveal,
 } from '@/types/transaction'
-import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import toast from 'react-hot-toast'
 
 export const transactionsQueryKey = ['transactions'] as const
@@ -113,4 +115,63 @@ export const useExportTransactions = (onDone?: () => void) =>
       onDone?.()
     },
     onError: () => toast.error(i18n.t('transactionPage.export.error')),
+  })
+
+/** The backend's own words, except RBAC refusals: the axios interceptor already says those. */
+function errorMessage(err: unknown, fallbackKey: string) {
+  if (isAxiosError(err)) {
+    const message = err.response?.data?.message
+    if (err.response?.status === 403 && message === 'access denied: insufficient permissions') return undefined
+    if (typeof message === 'string' && message) return message
+  }
+  return i18n.t(fallbackKey)
+}
+
+/**
+ * Sends a paid order whose supplier order failed (FULFILMENT_FAILED) to the supplier again. A 409
+ * ("Order is not waiting for a retry") is shown as the backend words it.
+ */
+export const useRetryFulfilment = (id: string) => {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ data: { status: string } }>(`/transactions/detail/${id}/retry-fulfilment`)
+      return res.data.data
+    },
+    onSuccess: (data) => {
+      const status = data?.status
+        ? i18n.t(`transactionDetailPage.orderStatus.${data.status}`, { defaultValue: data.status })
+        : ''
+      toast.success(
+        status
+          ? i18n.t('transactionDetailPage.retryFulfilment.successStatus', { status })
+          : i18n.t('transactionDetailPage.retryFulfilment.success')
+      )
+    },
+    onError: (err) => {
+      const message = errorMessage(err, 'transactionDetailPage.retryFulfilment.error')
+      if (message) toast.error(message)
+    },
+    // Either way the order may have moved on; show where it stands now.
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ['transaction-detail', id] })
+      void queryClient.invalidateQueries({ queryKey: transactionsQueryKey })
+    },
+  })
+}
+
+/**
+ * The real voucher codes, buyer email, IP and game account of one transaction. Kept out of the query
+ * cache on purpose: the page holds them for as long as it is open, and every call is logged.
+ */
+export const useRevealTransaction = (id: string) =>
+  useMutation({
+    mutationFn: async () => {
+      const res = await api.post<{ data: TransactionReveal }>(`/transactions/detail/${id}/reveal`)
+      return res.data.data
+    },
+    onError: (err) => {
+      const message = errorMessage(err, 'transactionDetailPage.reveal.error')
+      if (message) toast.error(message)
+    },
   })
